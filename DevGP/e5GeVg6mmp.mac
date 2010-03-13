@@ -1,0 +1,78 @@
+/GP/detector/targetBoxXY 100 mm
+
+/GP/primary/flagHEPEvt 1
+/GP/primary/inputFile  gamma_5GeV.in
+/GP/primary/particlePositonZ  0 mm
+/GP/primary/setRMSFactorForInputFile 2.5 mm
+/GP/primary/printParameters
+/GP/stepping/recordedParticle  e+
+/GP/detector/targetThickness 10 mm
+/GP/detector/update
+/GP/detector/printParameters
+/run/beamOn 119813
+
+/GP/primary/flagHEPEvt 1
+/GP/primary/inputFile  gamma_5GeV.in
+/GP/primary/particlePositonZ  500 mm
+/GP/primary/setRMSFactorForInputFile 2.5 mm
+/GP/primary/printParameters
+/GP/stepping/recordedParticle  e+
+/GP/detector/targetThickness 10 mm
+/GP/detector/update
+/GP/detector/printParameters
+/run/beamOn 119813
+
+/GP/primary/flagHEPEvt 1
+/GP/primary/inputFile  gamma_5GeV.in
+/GP/primary/particlePositonZ  1000 mm
+/GP/primary/setRMSFactorForInputFile 2.5 mm
+/GP/primary/printParameters
+/GP/stepping/recordedParticle  e+
+/GP/detector/targetThickness 10 mm
+/GP/detector/update
+/GP/detector/printParameters
+/run/beamOn 119813
+
+/GP/primary/flagHEPEvt 1
+/GP/primary/inputFile  gamma_5GeV.in
+/GP/primary/particlePositonZ  1500 mm
+/GP/primary/setRMSFactorForInputFile 2.5 mm
+/GP/primary/printParameters
+/GP/stepping/recordedParticle  e+
+/GP/detector/targetThickness 10 mm
+/GP/detector/update
+/GP/detector/printParameters
+/run/beamOn 119813
+
+/GP/primary/flagHEPEvt 1
+/GP/primary/inputFile  gamma_5GeV.in
+/GP/primary/particlePositonZ  2000 mm
+/GP/primary/setRMSFactorForInputFile 2.5 mm
+/GP/primary/printParameters
+/GP/stepping/recordedParticle  e+
+/GP/detector/targetThickness 10 mm
+/GP/detector/update
+/GP/detector/printParameters
+/run/beamOn 119813
+
+/GP/primary/flagHEPEvt 1
+/GP/primary/inputFile  gamma_5GeV.in
+/GP/primary/particlePositonZ  2500 mm
+/GP/primary/setRMSFactorForInputFile 2.5 mm
+/GP/primary/printParameters
+/GP/stepping/recordedParticle  e+
+/GP/detector/targetThickness 10 mm
+/GP/detector/update
+/GP/detector/printParameters
+/run/beamOn 119813
+
+/GP/primary/flagHEPEvt 1
+/GP/primary/inputFile  gamma_5GeV.in
+/GP/primary/particlePositonZ  3000 mm
+/GP/primary/setRMSFactorForInputFile 2.5 mm
+/GP/primary/printParameters
+/GP/stepping/recordedParticle  e+
+/GP/detector/targetThickness 10 mm
+/GP/detector/update
+/GP/detector/printParameters
+/run/beamOn 119813

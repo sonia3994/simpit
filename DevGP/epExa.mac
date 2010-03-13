@@ -1,0 +1,58 @@
+# $Id: run.mac,v 1.6 2009/07/28 10:36:39 maire Exp $
+/GP/primary/initialParticle e-
+/GP/primary/energyDistribution 10000 10 MeV
+/GP/stepping/recordedParticle gamma
+
+/GP/primary/particlePositonZ 0.5 mm
+
+/GP/detector/targetThickness 1 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 1 mm
+/GP/detector/targetThickness 2 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 1.5 mm
+/GP/detector/targetThickness 3 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 20 mm
+/GP/detector/targetThickness 4 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 2.5 mm
+/GP/detector/targetThickness 5 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 3 mm
+/GP/detector/targetThickness 6 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 3.5 mm
+/GP/detector/targetThickness 7 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 4 mm
+/GP/detector/targetThickness 8 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 4.5 mm
+/GP/detector/targetThickness 9 mm
+/GP/detector/update
+/run/beamOn 10000
+
+/GP/primary/particlePositonZ 5 mm
+/GP/detector/targetThickness 10 mm
+/GP/detector/update
+/run/beamOn 10000
+
+
+
