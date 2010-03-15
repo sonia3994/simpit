@@ -17,7 +17,7 @@
 #/GP/field/setCaptureFieldFlag 0
 #/hits/inactivate /mydet/target
 
-/GP/primary/inputFile  gamma_5GeV.in
+/GP/primary/inputFile  ../gamma_5GeV.in
 /GP/primary/particlePositonZ  2000 mm
 /GP/primary/printParameters
 /GP/detector/printParameters

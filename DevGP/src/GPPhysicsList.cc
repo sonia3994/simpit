@@ -337,11 +337,12 @@ void GPPhysicsList::SetCuts()
 
   if (verboseLevel >0)
   {
-    G4cout << "GPhysicsList::SetCuts:\n";
+    G4cout 
+		<< "GPhysicsList::SetCuts:\n"
     	<< "gamma CutLength : " << G4BestUnit(cutGamma,"Length") 
     	<< "electron CutLength : " << G4BestUnit(cutElectron,"Length") 
     	<< "positron CutLength : " << G4BestUnit(cutPositron,"Length") 
-	<< G4endl;
+		<< G4endl;
   }
 
   // Retrieve verbose level
