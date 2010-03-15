@@ -70,6 +70,11 @@ class GPPhysicsList: public G4VUserPhysicsList
     void ConstructEM();
     void AddStepMax();
     void AddParameterisation();
+
+  protected:
+	G4double	cutGamma;
+	G4double 	cutElectron;
+	G4double	cutPositron;
 };
 
 #endif
