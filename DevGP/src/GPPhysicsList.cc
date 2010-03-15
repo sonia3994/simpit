@@ -37,7 +37,11 @@
 
 
 GPPhysicsList::GPPhysicsList()
-{;}
+{	
+cutGamma=1*um;
+cutElectron=1*um;
+cutPositron=1*um;
+}
 
 GPPhysicsList::~GPPhysicsList()
 {;}
@@ -181,12 +185,16 @@ void GPPhysicsList::ConstructProcess()
 void GPPhysicsList::ConstructEM()
 {
 
+  G4ParticleDefinition* particle; 
+  G4ProcessManager* pmanager; 
+  G4String particleName;
   theParticleIterator->reset();
+
   while( (*theParticleIterator)() )
   {
-    G4ParticleDefinition* particle = theParticleIterator->value();
-    G4ProcessManager* pmanager = particle->GetProcessManager();
-    G4String particleName = particle->GetParticleName();
+    particle = theParticleIterator->value();
+    pmanager = particle->GetProcessManager();
+    particleName = particle->GetParticleName();
      
     if (particleName == "gamma")
     {
@@ -194,16 +202,16 @@ void GPPhysicsList::ConstructEM()
       pmanager->AddDiscreteProcess(new G4PhotoElectricEffect);
       pmanager->AddDiscreteProcess(new G4ComptonScattering);
       pmanager->AddDiscreteProcess(new G4GammaConversion);
-      
     }
+
     else if (particleName == "e-")
     {
       //electron
       pmanager->AddProcess(new G4eMultipleScattering, -1, 1, 1);
       pmanager->AddProcess(new G4eIonisation,         -1, 2, 2);
       pmanager->AddProcess(new G4eBremsstrahlung,     -1, 3, 3);      
-
     }
+
     else if (particleName == "e+")
     {
       //positron
@@ -211,7 +219,6 @@ void GPPhysicsList::ConstructEM()
       pmanager->AddProcess(new G4eIonisation,         -1, 2, 2);
       pmanager->AddProcess(new G4eBremsstrahlung,     -1, 3, 3);
       pmanager->AddProcess(new G4eplusAnnihilation,    0,-1, 4);
-
     }
     ///*
     else if( particleName == "mu+" || 
@@ -222,8 +229,8 @@ void GPPhysicsList::ConstructEM()
       pmanager->AddProcess(new G4MuIonisation,        -1, 2, 2);
       pmanager->AddProcess(new G4MuBremsstrahlung,    -1, 3, 3);
       pmanager->AddProcess(new G4MuPairProduction,    -1, 4, 4);       
-             
     }
+
     else if( particleName == "proton" ||
                particleName == "pi-" ||
                particleName == "pi+"    )
@@ -233,16 +240,18 @@ void GPPhysicsList::ConstructEM()
       pmanager->AddProcess(new G4hIonisation,         -1, 2, 2);
       pmanager->AddProcess(new G4hBremsstrahlung,     -1, 3, 3);
       pmanager->AddProcess(new G4hPairProduction,     -1, 4, 4);       
-     
     }
+
     else if( particleName == "alpha" || 
 	       particleName == "He3" || 
-	       particleName == "GenericIon" ) {
+	       particleName == "GenericIon" ) 
+    {
       //Ions 
       pmanager->AddProcess(new G4hMultipleScattering, -1, 1, 1);
       pmanager->AddProcess(new G4ionIonisation,       -1, 2, 2);
            
     }
+
     else if ((!particle->IsShortLived()) &&
 	       (particle->GetPDGCharge() != 0.0) && 
 	       (particle->GetParticleName() != "chargedgeantino")) 
@@ -251,8 +260,10 @@ void GPPhysicsList::ConstructEM()
       pmanager->AddProcess(new G4hMultipleScattering, -1, 1, 1);
       pmanager->AddProcess(new G4hIonisation,         -1, 2, 2);
     }
+
     //*/
   }
+
 }
 
 
@@ -263,12 +274,17 @@ void GPPhysicsList::ConstructEM()
 void GPPhysicsList::ConstructDecay()
 {
   // Add Decay Process
+  G4ParticleDefinition* particle;
+  G4ProcessManager* pmanager;
   G4Decay* theDecayProcess = new G4Decay();
   theParticleIterator->reset();
-  while( (*theParticleIterator)() ){
-    G4ParticleDefinition* particle = theParticleIterator->value();
-    G4ProcessManager* pmanager = particle->GetProcessManager();
-    if (theDecayProcess->IsApplicable(*particle)) { 
+
+  while( (*theParticleIterator)() )
+  {
+    particle = theParticleIterator->value();
+    pmanager = particle->GetProcessManager();
+    if (theDecayProcess->IsApplicable(*particle)) 
+    { 
       pmanager ->AddProcess(theDecayProcess);
       // set ordering for PostStepDoIt and AtRestDoIt
       pmanager ->SetProcessOrdering(theDecayProcess, idxPostStep);
@@ -306,22 +322,29 @@ void GPPhysicsList::SetCuts()
 {
   //SetDefaultCutValue(1);
 
-  if (verboseLevel >0){
-    G4cout << "GPhysicsList::SetCuts:"<<G4endl;
-    G4cout << "CutLength : " << G4BestUnit(defaultCutValue,"Length") << G4endl;
-  }
   // uppress error messages even in case e/gamma/proton do not exist            
-  G4int temp = GetVerboseLevel();   
-  SetVerboseLevel(0);                                                           
+  //G4int temp = GetVerboseLevel();   
+  //SetVerboseLevel(0);                                                           
+
   //  " G4VUserPhysicsList::SetCutsWithDefault" method sets 
   //   the default cut value for all particle types 
+  //This method may not work!!!???
   //SetCutsWithDefault();   
-  SetCutValue(1*um,"gamma");
-  SetCutValue(1*um,"e+");
-  SetCutValue(1*um,"e-");
+  
+  SetCutValue(cutGamma,"gamma");
+  SetCutValue(cutElectron,"e+");
+  SetCutValue(cutPositron,"e-");
 
+  if (verboseLevel >0)
+  {
+    G4cout << "GPhysicsList::SetCuts:\n";
+    	<< "gamma CutLength : " << G4BestUnit(cutGamma,"Length") 
+    	<< "electron CutLength : " << G4BestUnit(cutElectron,"Length") 
+    	<< "positron CutLength : " << G4BestUnit(cutPositron,"Length") 
+	<< G4endl;
+  }
 
   // Retrieve verbose level
-  SetVerboseLevel(temp);  
+  //SetVerboseLevel(temp);  
 }
 
