@@ -74,7 +74,8 @@ void GPHEPEvtInterface::Init()
   particlePosZ=-3.*mm;
   CLHEP:: HepRandom::setTheSeed(time(0),time(0));
   randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.5);
-  //srand(time(0));
+
+  /*
   outputFile.open("photonInit.dat",std::fstream::out);
    if(outputFile.is_open()) 
    {
@@ -85,6 +86,7 @@ void GPHEPEvtInterface::Init()
    { 
      G4cout<<"Set output file failed: "<<G4endl;
    }
+   */
 
 }
 
@@ -150,8 +152,6 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 	G4double 	polY;
 	G4double 	polZ;
 
-    //G4double 	r;
-    //G4double 	theta;
     G4double 	x1=0;
 	G4double	y1=0;
 
@@ -177,19 +177,14 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 
     if(eRMSRflag==TRUE)
     {
-    //r=randGauss->shoot(0.0,eRMSR);
-    //r=std::abs(r);
-    //theta=G4UniformRand()*360.0;
-    //x1=r*cos(theta);
     x1=randGauss->shoot(0.0,eRMSR);
-    //y1=r*sin(theta);
     y1=randGauss->shoot(0.0,eRMSR);
     }
     else 
 	{x1=0;y1=0;} 
 
-	double	rr=sqrt(x1*x1+y1*y1);
-    outputFile<<rr<<"\n"<<-rr<<"\n";
+	//double	rr=sqrt(x1*x1+y1*y1);
+    //outputFile<<rr<<"\n"<<-rr<<"\n";
     //outputFile<<x1<<" "<<y1<<"\n";
 
 	VHEP1=VHEP1*UnitL+x1;
