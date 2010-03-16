@@ -150,9 +150,10 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 	G4double 	polY;
 	G4double 	polZ;
 
-    G4double 	r;
-    G4double 	theta;
-    G4double 	x1=0,y1=0;
+    //G4double 	r;
+    //G4double 	theta;
+    G4double 	x1=0;
+	G4double	y1=0;
 
    	const GPDetectorConstruction * detector =  
      	dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
@@ -173,21 +174,23 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
   {
     inputFile >> ISTHEP >> IDHEP >> JDAHEP1 >> JDAHEP2>> PHEP1 >> PHEP2 >> PHEP3 >> PHEP5 >>VHEP1>>VHEP2;//>>
    // G4cout<<","<<ISTHEP<<","<<IDHEP<<","<<JDAHEP1<<","<<JDAHEP2<<","<<PHEP1<<","<<PHEP2<<","<<PHEP3<<","<<PHEP5<<","<<VHEP1<<","<<VHEP2<<","<<G4endl;
+
     if(eRMSRflag==TRUE)
     {
     //r=randGauss->shoot(0.0,eRMSR);
     //r=std::abs(r);
     //theta=G4UniformRand()*360.0;
     //x1=r*cos(theta);
-    x1=randGauss->shoot(0.0,2.0);
+    x1=randGauss->shoot(0.0,eRMSR);
     //y1=r*sin(theta);
-    y1=randGauss->shoot(0.0,2.0);
+    y1=randGauss->shoot(0.0,eRMSR);
     }
     else 
 	{x1=0;y1=0;} 
 
 	double	rr=sqrt(x1*x1+y1*y1);
-    outputFile<<x1<<" "<<y1<<"\n";
+    outputFile<<rr<<"\n"<<-rr<<"\n";
+    //outputFile<<x1<<" "<<y1<<"\n";
 
 	VHEP1=VHEP1*UnitL+x1;
 	VHEP2=VHEP2*UnitL+y1;
@@ -202,10 +205,8 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 	polZ=std::sqrt(1.0-polX*polX-polY*polY);
 
     VHEP= new G4ThreeVector(VHEP1,VHEP2,VHEP3);
-    //outputFile<<VHEP->x()<<" "<<VHEP->y()<<" "<<PHEP1*UnitP<<" "<<PHEP2*UnitP<<" "<<PHEP3*UnitP<<"\n";
 
-	//double	rr=sqrt(VHEP1*VHEP1+VHEP2*VHEP2);
-    //outputFile<<rr<<"\n"<<-rr<<"\n";
+	//rr=sqrt(VHEP1*VHEP1+VHEP2*VHEP2);
 
     // create G4PrimaryParticle object
     particle = new G4PrimaryParticle( IDHEP, PHEP1, PHEP2, PHEP3);
@@ -257,10 +258,9 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
     {
       particle= HPlist[ii]->GetTheParticle();
       vertex= new G4PrimaryVertex(particle_position,particle_time);
-      //outputFile<<particle_position.x()<<" "<<particle_position.y()<<" "<<initialParticle->GetPx()<<" "<<initialParticle->GetPy()<<" "<<initialParticle->GetPz()<<"\n";
-   // create G4PrimaryVertex object
+	//create G4PrimaryVertex object
       vertex->SetPrimary( particle);
-      // Put the vertex to G4Event object
+    // Put the vertex to G4Event object
       evt->AddPrimaryVertex( vertex );
     }
 
