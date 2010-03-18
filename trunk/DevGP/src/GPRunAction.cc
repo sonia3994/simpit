@@ -41,6 +41,7 @@
 #include "G4UnitsTable.hh"
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 #include<unistd.h>
 #include<dirent.h>
@@ -77,21 +78,50 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   ss >>chrunID;
   //mkdir(filePath,0755);
   //
-  filePath="output";
+  
+  time_t time_m=time(0);
+  G4String tmpStr = primaryGenerator->GetInputFileName();
+  if(tmpStr.empty())
+  {
+	  tmpStr="PGun";
+  }
+  else
+  {
+  	size_t pos1=tmpStr.find_last_of(".");
+  	size_t pos2=tmpStr.size();
+	if(pos1>0&&pos1<pos2)
+	{
+		tmpStr.erase(pos1,pos2-1);
+	}
+	pos1=tmpStr.find_last_of("/");
+	if((pos1>=0)&&pos1<pos2)
+	{ 
+		tmpStr.erase(0,pos1+1);
+	}
+  }
+
+  filePath="../out_"+tmpStr;
+
+  tmpStr.clear();
+  tmpStr.insert(0,ctime(&time_m));
+  replace(tmpStr.begin(),tmpStr.end(),' ','-');
+  tmpStr.resize(24);
+  filePath+="_"+tmpStr+"/";
+G4cout<<"mkdir: "<<filePath<<G4endl;  
   mkdir(filePath,0755);
 
-  fileName=filePath + "/"+"SumAtExitOfTar.dat";
+  fileName=filePath +"SumAtExitOfTar.dat";
   paraFile.open(fileName,ios::ate|ios::app);
 
-  fileName=filePath+"/"+chrunID+"ExitOfTar.dat";
+  fileName=filePath+chrunID+"ExitOfTar.dat";
   dataFileDT.open(fileName);
 
-  fileName=filePath+"/"+chrunID+"ExitOfCap.dat";  
+  fileName=filePath+chrunID+"ExitOfCap.dat";  
   dataFileDC.open(fileName);
 
   if(targetSDFlag)
   {
-  fileName=filePath+"/"+chrunID+"EddInTar.dat";
+  fileName=filePath+chrunID+"EddInTar.dat";
   eddHandle.open(fileName);
   }
 

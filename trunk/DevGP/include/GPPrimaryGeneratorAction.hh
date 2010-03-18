@@ -66,6 +66,7 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetParticleMomentumDistr(G4double,G4double);
 //    G4String GetParticleStyle()	{return n_particle;};
     inline G4int GetParticleInitNumber()	{return n_particle;}
+    inline G4String GetInputFileName()		{return	inputFile;}
     inline G4double GetParticleEnergyMean()	{return eEnergyMean;}
     inline G4double GetParticleEnergyRMS()	{return eEnergyRMS;}
     inline G4double GetParticlePositionMean()	{return ePositionMean;}

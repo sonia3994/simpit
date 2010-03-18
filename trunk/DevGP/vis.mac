@@ -1,9 +1,0 @@
-#visualization
-/vis/open OGLIX
-/vis/drawVolume
-#add trajectories and hits to the visualization
-/vis/scene/add/trajectories
-/vis/scene/add/hits
-#set the view camera view
-/vis/viewer/set/viewpointThetaPhi 45 45
-/vis/viewer/zoomTo 10
