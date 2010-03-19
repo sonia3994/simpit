@@ -160,6 +160,7 @@ G4cout<<"mkdir: "<<filePath<<G4endl;
   sumETar = sum2ETar = 0.;
   sumLTrack = sum2LTrack = 0.; 
   positronPerRun=0;
+	actualG=0;
   //
   edd.clear();
   if(targetSDFlag)
@@ -214,6 +215,7 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
   //
   G4cout
      << "\n--------------------Results------------------------------\n"
+     << "\n The actual gamma impinged the target: "<<actualG <<"\n"
      << "\n Total number of this Run:"<<positronPerRun<<"\n"
      << "\n Total energy deposited in Target of this run : " << G4BestUnit(sumETar,"Energy")
      << "\n Mean energy deposited in Target per event of this run : " << G4BestUnit(sumETar/NbOfEvents,"Energy")
