@@ -56,6 +56,7 @@ public:
     
   void FillPerEvent(G4double,G4double,G4int); 
   void AddEddHit(G4int, G4int, G4int, G4double);
+  void AddActualG(G4int t){actualG+=t;};
   std::ofstream dataFileDT;
   std::ofstream dataFileDC;
 //  std::ofstream& GetDataFile(){return dataFile;};
@@ -63,6 +64,7 @@ private:
   G4double sumETar, sum2ETar;
   G4double sumLTrack, sum2LTrack;
   G4int  positronPerRun;
+  G4int  actualG;
   GPPrimaryGeneratorAction* primaryGenerator;
   GPDetectorConstruction*   mydetector;
   std::ofstream paraFile;

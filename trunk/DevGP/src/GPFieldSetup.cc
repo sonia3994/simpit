@@ -86,19 +86,27 @@ void GPMagneticField::GetFieldValue(const G4double Point[3], G4double *Bfield) c
   static G4double tarL=detector->GetTargetThickness();
   static G4double capL=detector->GetCaptureLength();
   static G4double capR=detector->GetCaptureRadius();
-  //double x=Point[0];
-  //double y=Point[1];
-  //double z=Point[2];
-  //std::ofstream fs("test",std::fstream::app);
-  //WriteToFile(x,y,z);
-  //fs<<x<<" "<<y<<" "<<z<<std::endl;
-//  std::cout<<Point[2]/mm<<",";
-  Bfield[0]=0;
-  Bfield[1]=0;
-  if(Point[2]>=tarL/2&&(sqr(Point[0])+sqr(Point[1]))<capR*capR&&Point[2]<(tarL/2+capL))
-  Bfield[2]=B0/(1+alpha*(Point[2]-tarL/2));
+  static G4double r2;
+  static G4double fz;
+  static G4double fz2;
+	r2=(sqr(Point[0])+sqr(Point[1]));
+  if(Point[2]>=tarL/2&&Point[2]<(tarL/2+capL)&&r2<capR*capR)
+  {
+	fz=B0/(1+alpha*(Point[2]-tarL/2));
+	fz2=sqr(fz);
+  	Bfield[0]=0.5*Point[0]*fz2*alpha/B0;
+  	Bfield[1]=0.5*Point[1]*fz2*alpha/B0;
+	Bfield[2]=fz;
+	//
+	//Bz(z,r)=f(z);f(z)=B0/(1+alpha*z)
+	//Br(z,r)=-0.5*r*df(z)/dz;
+
   //Bfield[2]=0.5*tesla;
-  else Bfield[2]=0;
+  }
+  else 
+  { 
+	  Bfield[0]=Bfield[1]=Bfield[2]=0;
+  }
   Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
@@ -122,7 +130,7 @@ GPFieldSetup::GPFieldSetup()
   fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
   fLocalEquation = new G4Mag_UsualEqRhs(fLocalMagneticField); 
  
-  fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
+  fMinStep     = 10*um ; // minimal step of 1 mm is default
   fStepperType = 4 ;      // ClassicalRK4 is default stepper
 
   fFieldManager = GetGlobalFieldManager();

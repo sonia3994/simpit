@@ -102,7 +102,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
   {
 	eventaction->AddTargetED(stepE);
   }
-
+ 
   if (particleName==particle)
   {
 /*	if (preVolume == detector->GetTarget()&&postVolume==detector->GetVacuum())
@@ -149,6 +149,17 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 //*/	
   postVolume=preVolume;
   }
+	else if(particleName=="gamma")
+	{
+		if (preVolume == detector->GetTarget()&&postVolume==detector->GetTran())
+		{  
+  			GPRunAction* user_run_action =
+  			(GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
+			user_run_action->AddActualG(1);
+		}
+
+  		postVolume=preVolume;
+	}
 
 //  passedVolume=preVolume;
   //example of saving random number seed of this event, under condition
