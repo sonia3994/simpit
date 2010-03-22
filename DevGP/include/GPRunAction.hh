@@ -72,6 +72,8 @@ private:
   std::vector<G4double > edd;
   std::vector<G4int> eddDim;
   G4bool targetSDFlag; 
+
+  G4String filePath;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
