@@ -80,11 +80,11 @@ GPDetectorConstruction::GPDetectorConstruction()
     tranTubeOuterRadius = 50*mm;
     tranTubeStartAngle = 0.*deg;
     tranTubeSpanningAngle = 360.*deg;
-    tranTubeLength =3400.0*mm;
+    tranTubeLength =4500.0*mm;
 
     worldX = 500.0*mm;
     worldY = 500.0*mm;
-    worldZ = 5000.0*mm;
+    worldZ = 10000.0*mm;
         
     DefineMaterials();
     //SetTargetMaterial ("Galactic");
