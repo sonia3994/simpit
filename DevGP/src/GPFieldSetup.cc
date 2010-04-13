@@ -59,8 +59,11 @@
 //////////////////////////////////////////////////////////////////////////
 GPMagneticField::GPMagneticField()
 {
-  B0=6*tesla;
-  alpha=22/m;
+  	B0=6*tesla;
+  	alpha=22/m;
+	fieldType=1;
+	highQL=1*m;
+	lowQL=8*cm;
 //  G4String file="test";
 //  fs.open(file,std::fstream::app);
 }
@@ -77,15 +80,39 @@ void GPMagneticField::WriteToFile(double x, double y, double z)
 
 }*/
 
+void GPMagneticField::GetDetectorParameter() 
+{
+  	const GPDetectorConstruction * detector =
+         dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
+  	G4double	tarL=detector->GetTargetThickness();
+  	G4double	capL=detector->GetCaptureLength();
+  	G4double	capR=detector->GetCaptureRadius();
+}
 
 void GPMagneticField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
-  //G4cout<<"z: "<<Point[2]<<G4endl;
-  const GPDetectorConstruction * detector =
+	//GetDetectorParameter();
+	switch(fieldType)
+	{
+		case 0:
+			GetFieldValueAMD(Point, Bfield);
+			break;
+		case 1:
+			GetFieldValueQWT(Point, Bfield);
+			break;
+		default:
+			GetFieldValueAMD(Point, Bfield);
+	}
+
+}
+void GPMagneticField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const
+{
+  	const GPDetectorConstruction * detector =
          dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
-  static G4double tarL=detector->GetTargetThickness();
-  static G4double capL=detector->GetCaptureLength();
-  static G4double capR=detector->GetCaptureRadius();
+  	G4double	tarL=detector->GetTargetThickness();
+  	G4double	capL=detector->GetCaptureLength();
+  	G4double	capR=detector->GetCaptureRadius();
+  //G4cout<<"z: "<<Point[2]<<G4endl;
   static G4double r2;
   static G4double fz;
   static G4double fz2;
@@ -107,7 +134,44 @@ void GPMagneticField::GetFieldValue(const G4double Point[3], G4double *Bfield) c
   { 
 	  Bfield[0]=Bfield[1]=Bfield[2]=0;
   }
+
   Bfield[3]=Bfield[4]=Bfield[5]=0;
+}
+
+void GPMagneticField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const
+{
+  	const GPDetectorConstruction * detector =
+         dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
+  	G4double	tarL=detector->GetTargetThickness();
+  	G4double	capL=detector->GetCaptureLength();
+  	G4double	capR=detector->GetCaptureRadius();
+
+	G4double r2=(Point[0]*Point[0])+(Point[1]*Point[1]);
+	if(r2<capR*capR)
+	{
+		if(Point[2]>tarL/2&&Point[2]<(tarL/2+highQL))
+		{
+  			Bfield[0]=0;
+  			Bfield[1]=0;
+			Bfield[2]=6*tesla;
+			
+		}
+		else if(Point[2]>(tarL/2+highQL)&&Point[2]<(tarL/2+highQL+lowQL))
+		{
+  			Bfield[0]=0;
+  			Bfield[1]=0;
+			Bfield[2]=0.5*tesla;
+			
+		}
+
+	}
+
+  	else 
+  	{ 
+	  	Bfield[0]=Bfield[1]=Bfield[2]=0;
+  	}
+
+  	Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
 
@@ -185,6 +249,7 @@ void GPFieldSetup::UpdateField()
   {
   	  fFieldManager->SetDetectorField(NULL );
   }
+
   if(captureFieldFlag)
   {
 	  fLocalFieldManager->SetDetectorField(fLocalMagneticField );
@@ -293,20 +358,6 @@ void GPFieldSetup::SetFieldValue(G4double fieldStrength)
 {
 //  fLocalMagneticField->SetFieldValueB0(fieldStrength); 
   //G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
-  //this->SetFieldValue( fieldSetVec ); 
-  //    *************
-
-}
-
-void GPFieldSetup::SetFieldValueB0(G4double fieldStrength)
-{
-  fLocalMagneticField->SetFieldValueB0(fieldStrength); 
-
-}
-
-void GPFieldSetup::SetFieldValueAlpha(G4double fieldStrength)
-{
-  fLocalMagneticField->SetFieldValueAlpha(fieldStrength); 
   //G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
   //this->SetFieldValue( fieldSetVec ); 
   //    *************
@@ -316,6 +367,11 @@ void GPFieldSetup::SetFieldValueAlpha(G4double fieldStrength)
 //
 // Set the value of the Global Field
 //
+
+void GPFieldSetup::SetFieldValueB0(G4double      fieldValue) 
+{
+	fLocalMagneticField->SetFieldValueB0(fieldValue);
+}
 
 void GPFieldSetup::SetFieldValue(G4ThreeVector fieldVector)
 {
