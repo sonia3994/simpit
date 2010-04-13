@@ -50,15 +50,28 @@ class GPFieldMessenger;
 class GPMagneticField : public G4MagneticField
 {
 public:
-  GPMagneticField();
-  ~GPMagneticField();
-  void SetFieldValueB0(G4double      fieldValue){B0=fieldValue;} ;
-  void SetFieldValueAlpha(G4double      fieldValue) {alpha=fieldValue;};
-  void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  void WriteToFile(double x, double y, double z);
+  	GPMagneticField();
+  	~GPMagneticField();
+  	void SetFieldValueB0(G4double      fieldValue){B0=fieldValue;} ;
+  	void SetFieldValueAlpha(G4double      fieldValue) {alpha=fieldValue;};
+  	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
+  	void WriteToFile(double x, double y, double z);
+
 private:
-  G4double B0;
-  G4double alpha;
+  	void GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const;
+  	void GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const;
+	void GetDetectorParameter(); 
+
+private:
+  	G4double 	B0;
+  	G4double 	alpha;
+	G4double	highQL;
+	G4double	lowQL;
+  	G4int		fieldType;
+private:
+  	//G4double 	tarL;
+  	//G4double 	capL;
+  	//G4double 	capR;
   //std::ofstream fs;
   //GPDetectorConstruction* detector;
 };
