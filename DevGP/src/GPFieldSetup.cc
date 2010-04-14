@@ -117,7 +117,7 @@ void GPMagneticField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield
   static G4double fz;
   static G4double fz2;
 	r2=(sqr(Point[0])+sqr(Point[1]));
-  if(Point[2]>=tarL/2&&Point[2]<(tarL/2+capL)&&r2<capR*capR)
+  if(Point[2]>tarL/2&&Point[2]<=(tarL/2+capL)&&r2<capR*capR)
   {
 	fz=B0/(1+alpha*(Point[2]-tarL/2));
 	fz2=sqr(fz);
@@ -149,14 +149,14 @@ void GPMagneticField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield
 	G4double r2=(Point[0]*Point[0])+(Point[1]*Point[1]);
 	if(r2<capR*capR)
 	{
-		if(Point[2]>tarL/2&&Point[2]<(tarL/2+highQL))
+		if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
 		{
   			Bfield[0]=0;
   			Bfield[1]=0;
 			Bfield[2]=6*tesla;
 			
 		}
-		else if(Point[2]>(tarL/2+highQL)&&Point[2]<(tarL/2+highQL+lowQL))
+		else if(Point[2]>(tarL/2+highQL)&&Point[2]<=(tarL/2+highQL+lowQL))
 		{
   			Bfield[0]=0;
   			Bfield[1]=0;
