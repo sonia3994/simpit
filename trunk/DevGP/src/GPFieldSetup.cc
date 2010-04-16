@@ -62,8 +62,8 @@ GPAMDField::GPAMDField()
   	B0=6*tesla;
   	alpha=22/m;
 	fieldType=1;
-	highQL=1*m;
-	lowQL=8*cm;
+	highQL=8*cm;
+	lowQL=1*m;
 //  G4String file="test";
 //  fs.open(file,std::fstream::app);
 }
