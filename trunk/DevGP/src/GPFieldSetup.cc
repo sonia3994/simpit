@@ -57,7 +57,7 @@
 #include <fstream>
 #include <sstream>
 //////////////////////////////////////////////////////////////////////////
-GPMagneticField::GPMagneticField()
+GPAMDField::GPAMDField()
 {
   	B0=6*tesla;
   	alpha=22/m;
@@ -68,19 +68,19 @@ GPMagneticField::GPMagneticField()
 //  fs.open(file,std::fstream::app);
 }
 
-GPMagneticField::~GPMagneticField()
+GPAMDField::~GPAMDField()
 {
 //fs.close();
 }
 /*
-void GPMagneticField::WriteToFile(double x, double y, double z)
+void GPAMDField::WriteToFile(double x, double y, double z)
 {
 
   fs<<x<<" "<<y<<" "<<z<<std::endl;
 
 }*/
 
-void GPMagneticField::GetDetectorParameter() 
+void GPAMDField::GetDetectorParameter() 
 {
   	const GPDetectorConstruction * detector =
          dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
@@ -89,7 +89,7 @@ void GPMagneticField::GetDetectorParameter()
   	G4double	capR=detector->GetCaptureRadius();
 }
 
-void GPMagneticField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
+void GPAMDField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
 	//GetDetectorParameter();
 	switch(fieldType)
@@ -105,7 +105,7 @@ void GPMagneticField::GetFieldValue(const G4double Point[3], G4double *Bfield) c
 	}
 
 }
-void GPMagneticField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const
+void GPAMDField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const
 {
   	const GPDetectorConstruction * detector =
          dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
@@ -138,7 +138,7 @@ void GPMagneticField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield
   Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
-void GPMagneticField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const
+void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const
 {
   	const GPDetectorConstruction * detector =
          dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
@@ -187,12 +187,12 @@ GPFieldSetup::GPFieldSetup()
 		       G4ThreeVector(3.3*tesla,
                                      0.0,              // 0.5*tesla,
                                      0.0       ));
-  fLocalMagneticField = new GPMagneticField();
+  fAMDField = new GPAMDField();
 
   fFieldMessenger = new GPFieldMessenger(this) ;  
  
   fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
-  fLocalEquation = new G4Mag_UsualEqRhs(fLocalMagneticField); 
+  fLocalEquation = new G4Mag_UsualEqRhs(fAMDField); 
  
   fMinStep     = 10*um ; // minimal step of 1 mm is default
   fStepperType = 4 ;      // ClassicalRK4 is default stepper
@@ -221,7 +221,7 @@ GPFieldSetup::~GPFieldSetup()
   //if(fMagneticField) 		delete fMagneticField;
   if(fLocalFieldManager) 	delete fLocalFieldManager ;
   if(fMagneticField) 		delete fMagneticField;
-  if(fLocalMagneticField) 	delete fLocalMagneticField;
+  if(fAMDField) 	delete fAMDField;
   if(fChordFinder)   		delete fChordFinder;
   if(fLocalChordFinder)		delete fLocalChordFinder;
   if(fStepper)       		delete fStepper;
@@ -252,7 +252,7 @@ void GPFieldSetup::UpdateField()
 
   if(captureFieldFlag)
   {
-	  fLocalFieldManager->SetDetectorField(fLocalMagneticField );
+	  fLocalFieldManager->SetDetectorField(fAMDField );
   }
   else
   {
@@ -263,7 +263,7 @@ void GPFieldSetup::UpdateField()
   if(fLocalChordFinder) delete fLocalChordFinder;
 
   fChordFinder = new G4ChordFinder( fMagneticField, fMinStep,fStepper);
-  fLocalChordFinder = new G4ChordFinder( fLocalMagneticField,fMinStep,fLocalStepper);
+  fLocalChordFinder = new G4ChordFinder( fAMDField,fMinStep,fLocalStepper);
 
   fFieldManager->SetChordFinder( fChordFinder );
   fLocalFieldManager->SetChordFinder( fLocalChordFinder );
@@ -340,12 +340,18 @@ void GPFieldSetup::SetStepper()
 // Set the value of the Global Field to fieldValue along Z
 //
 
+void GPFieldSetup::SetCaptureType(G4int t) 
+{
+	fAMDField->SetCaptureType(t);
+}
+
+
 void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
 {
   captureFieldFlag=t; 
   if(captureFieldFlag)
   {
-	  fLocalFieldManager->SetDetectorField(fLocalMagneticField );
+	  fLocalFieldManager->SetDetectorField(fAMDField );
 	  G4cout<<"Active the capture field!"<<G4endl;
   }
   else
@@ -356,7 +362,7 @@ void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
 }
 void GPFieldSetup::SetFieldValue(G4double fieldStrength)
 {
-//  fLocalMagneticField->SetFieldValueB0(fieldStrength); 
+//  fAMDField->SetFieldValueB0(fieldStrength); 
   //G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
   //G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
   //this->SetFieldValue( fieldSetVec ); 
@@ -370,7 +376,7 @@ void GPFieldSetup::SetFieldValue(G4double fieldStrength)
 
 void GPFieldSetup::SetFieldValueB0(G4double      fieldValue) 
 {
-	fLocalMagneticField->SetFieldValueB0(fieldValue);
+	fAMDField->SetFieldValueB0(fieldValue);
 }
 
 void GPFieldSetup::SetFieldValue(G4ThreeVector fieldVector)

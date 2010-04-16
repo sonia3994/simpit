@@ -53,6 +53,11 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
   StepperCmd->SetDefaultValue(4);
   StepperCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
+  CaptureType = new G4UIcmdWithAnInteger("/GP/field/setCaptureType",this);
+  CaptureType->SetGuidance("Select capture type for magnetic field");
+  CaptureType->SetParameterName("choice",true);
+  CaptureType->SetDefaultValue(0);
+  CaptureType->AvailableForStates(G4State_PreInit,G4State_Idle);
  
   UpdateCmd = new G4UIcmdWithoutParameter("/GP/field/update",this);
   UpdateCmd->SetGuidance("Update field.");
@@ -89,6 +94,7 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
 GPFieldMessenger::~GPFieldMessenger()
 {
   delete StepperCmd;
+  delete CaptureType;
   delete MagFieldCmd;
   delete MinStepCmd;
   delete GPdetDir;
@@ -107,10 +113,17 @@ void GPFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
   { 
     fEMfieldSetup->SetStepperType(StepperCmd->GetNewIntValue(newValue));
   }  
+
+  if( command == CaptureType )
+  { 
+    fEMfieldSetup->SetCaptureType(CaptureType->GetNewIntValue(newValue));
+  }  
+
   if( command == UpdateCmd )
   { 
     fEMfieldSetup->UpdateField(); 
   }
+
   if( command == MagFieldCmd )
   { 
     fEMfieldSetup->SetFieldValueB0(MagFieldCmd->GetNewDoubleValue(newValue));
@@ -120,6 +133,7 @@ void GPFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
     G4cout << "Set field value to " <<fEMfieldSetup->GetConstantFieldValue() / gauss << " Gauss " << G4endl;
 
   }
+
   if( command == MinStepCmd )
   { 
     fEMfieldSetup->SetMinStep(MinStepCmd->GetNewDoubleValue(newValue));
