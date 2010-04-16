@@ -155,7 +155,8 @@ void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) con
   			Bfield[0]=0;
   			Bfield[1]=0;
 			//Bfield[2]=6*tesla;
-			Bfield[2]=5.5*tesla/(1+exp(Point[2]-8*cm))+0.5*tesla;
+			Bfield[2]=5.5*tesla/(1+exp(Point[2]-tarL/2-8*cm))+0.5*tesla;
+			//Bfield[2]=6*tesla/(1+1720*(Point[2]-tarL/2)*(Point[2]-tarL/2));
 			
 		}
 		/*
