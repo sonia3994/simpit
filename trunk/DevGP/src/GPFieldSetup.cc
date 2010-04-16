@@ -149,13 +149,16 @@ void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) con
 	G4double r2=(Point[0]*Point[0])+(Point[1]*Point[1]);
 	if(r2<capR*capR)
 	{
-		if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
+		//if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
+		if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL+lowQL))
 		{
   			Bfield[0]=0;
   			Bfield[1]=0;
-			Bfield[2]=6*tesla;
+			//Bfield[2]=6*tesla;
+			Bfield[2]=5.5*tesla/(1+exp(Point[2]-8*cm))+0.5*tesla;
 			
 		}
+		/*
 		else if(Point[2]>(tarL/2+highQL)&&Point[2]<=(tarL/2+highQL+lowQL))
 		{
   			Bfield[0]=0;
@@ -163,6 +166,7 @@ void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) con
 			Bfield[2]=0.5*tesla;
 			
 		}
+		*/
 
 	}
 
