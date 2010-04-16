@@ -47,15 +47,15 @@ class G4MagIntegratorStepper;
 class GPFieldMessenger;
 //class GPDetectorConstruction;
 
-class GPMagneticField : public G4MagneticField
+class GPAMDField : public G4MagneticField
 {
 public:
-  	GPMagneticField();
-  	~GPMagneticField();
+  	GPAMDField();
+  	~GPAMDField();
   	void SetFieldValueB0(G4double      fieldValue){B0=fieldValue;} ;
   	void SetFieldValueAlpha(G4double      fieldValue) {alpha=fieldValue;};
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  	void WriteToFile(double x, double y, double z);
+  	void SetCaptureType(G4int t) {fieldType=t;};
 
 private:
   	void GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const;
@@ -95,6 +95,7 @@ public:
   void UpdateField();
 
   void SetCaptureFieldFlag(G4bool) ;
+  void SetCaptureType(G4int) ;
   void SetFieldValue(G4ThreeVector fieldVector) ;
   void SetFieldValue(G4double      fieldValue) ;
   void SetFieldValueB0(G4double      fieldValue) ;
@@ -117,7 +118,7 @@ protected:
   G4Mag_UsualEqRhs*       fLocalEquation ; 
 
   G4MagneticField*        fMagneticField ; 
-  GPMagneticField*        fLocalMagneticField ; 
+  GPAMDField*        		fAMDField ; 
 
   G4MagIntegratorStepper* fStepper ;
   G4MagIntegratorStepper* fLocalStepper ;
