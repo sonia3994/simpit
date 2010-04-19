@@ -67,7 +67,7 @@ void GPEventAction::BeginOfEventAction(const G4Event* evt)
 {  
   G4int evtNb = evt->GetEventID();
 //  if (evtNb%printModulo == 0) 
-    if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
+    if (G4EventManager::GetEventManager()->GetVerboseLevel()>=0)
     { 
     G4cout << "\n---> Begin of event: " << evtNb << G4endl;
     CLHEP::HepRandom::showEngineStatus();

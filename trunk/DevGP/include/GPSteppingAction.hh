@@ -55,6 +55,7 @@ public:
 
   void UserSteppingAction(const G4Step*);
   void SetSelectedParticle(G4String);
+  void Init();
     
 private:
   void WriteToFileDT(G4ThreeVector,G4ThreeVector,G4double);
@@ -65,6 +66,10 @@ private:
   GPDetectorConstruction* detector;
   GPEventAction*          eventaction;
   GPSteppingMessenger*	steppingMessenger;
+    const G4VPhysicalVolume* capturePhys;
+    const G4VPhysicalVolume* targetPhys;
+    const G4VPhysicalVolume* transferPhys;
+    const G4VPhysicalVolume* vacuumPhys;
   
 };
 

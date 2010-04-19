@@ -65,10 +65,20 @@ GPSteppingAction::~GPSteppingAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void GPSteppingAction::Init()
+{
+
+  targetPhys=detector->GetTargetPhysical(); 
+  capturePhys=detector->GetCapturePhysical(); 
+  transferPhys=detector->GetTransferPhysical(); 
+  vacuumPhys = detector->GetVacuumPhysical();
+
+}
+
 void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-  static G4VPhysicalVolume* postVolume=NULL; 
-  static G4VPhysicalVolume* preVolume;
+  static G4VPhysicalVolume* postPhys=NULL; 
+  static G4VPhysicalVolume* previousPhys;
   static G4StepPoint* preStepPoint;
   static G4StepPoint* postStepPoint;
   static G4String particleName;
@@ -85,31 +95,33 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
   preStepPoint=aStep->GetPreStepPoint();
   postStepPoint=aStep->GetPostStepPoint();
 
+/*
    		position=preStepPoint->GetPosition();
    		momentum=preStepPoint->GetMomentum();
         G4cout<<"x: "<<position.x()<<" y: "<<position.y()<<" z: "<<position.z()<<" px: "
 			<<momentum.x()<<" py: "<<momentum.y()<<" pz: "<<momentum.z()<<G4endl; 
+*/
   // get volume of the current step and the post volume
   // collect energy and track length step by step
   //= preStepPoint->GetPhysicalVolume();
 
   particleName = aStep->GetTrack()->GetDefinition()->GetParticleName();
-  //preVolume= preStepPoint->GetTouchableHandle()->GetVolume();
-  preVolume= preStepPoint->GetPhysicalVolume();
-  //postVolume= postStepPoint->GetPhysicalVolume();
-  //postVolume= postStepPoint->GetTouchableHandle()->GetVolume();
+  //previousPhys= preStepPoint->GetTouchableHandle()->GetVolume();
+  previousPhys= preStepPoint->GetPhysicalVolume();
+  //postPhys= postStepPoint->GetPhysicalVolume();
+  //postPhys= postStepPoint->GetTouchableHandle()->GetVolume();
 
   if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
     stepL = aStep->GetStepLength();
       
-  if (preVolume==detector->GetTarget()) 
+  if (previousPhys==targetPhys) 
   {
 	eventaction->AddTargetED(stepE);
   }
  
   if (particleName==particle)
   {
-/*	if (preVolume == detector->GetTarget()&&postVolume==detector->GetVacuum())
+/*	if (previousPhys == targetPhys&&postPhys==vacuumPhys)
 	{  
    		position=preStepPoint->GetPosition();
    		momentum=preStepPoint->GetMomentum();
@@ -119,7 +131,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
    		WriteToFileDT(position,momentum,totalE);
 	}
 	  
-	if (preVolume == detector->GetTarget()&&postVolume==detector->GetTran())
+	if (previousPhys == targetPhys&&postPhys==transferPhys)
 	{  
    		position=preStepPoint->GetPosition();
    		momentum=preStepPoint->GetMomentum();
@@ -131,7 +143,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	
 */
 ///*	
-	if (preVolume == detector->GetCapture()&&postVolume==detector->GetTarget())
+	if (previousPhys == capturePhys&&postPhys==targetPhys)
 	{  
    		position=preStepPoint->GetPosition();
    		momentum=preStepPoint->GetMomentum();
@@ -140,7 +152,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
    		eventaction->AddTargetStep(stepL);
    		WriteToFileDT(position,momentum,totalE);
 	}
-	if(preVolume==detector->GetVacuum()&&postVolume==detector->GetCapture())
+	if(previousPhys==vacuumPhys&&postPhys==capturePhys)
  	{
    		position=preStepPoint->GetPosition();
    		momentum=preStepPoint->GetMomentum();
@@ -151,21 +163,21 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
    			WriteToFileDC(position,momentum,totalE);
 	}
 //*/	
-  postVolume=preVolume;
+  postPhys=previousPhys;
   }
 	else if(particleName=="gamma")
 	{
-		if (preVolume == detector->GetTarget()&&postVolume==detector->GetTran())
+		if (previousPhys == targetPhys&&postPhys==transferPhys)
 		{  
   			GPRunAction* user_run_action =
   			(GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
 			user_run_action->AddActualG(1);
 		}
 
-  		postVolume=preVolume;
+  		postPhys=previousPhys;
 	}
 
-//  passedVolume=preVolume;
+//  passedVolume=previousPhys;
   //example of saving random number seed of this event, under condition
   //// if (condition) G4RunManager::GetRunManager()->rndmSaveThisEvent(); 
 }
