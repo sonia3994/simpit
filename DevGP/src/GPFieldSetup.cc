@@ -60,6 +60,7 @@
 GPAMDField::GPAMDField()
 {
   	B0=6*tesla;
+  	B0=0.5*tesla;
   	alpha=22/m;
 	fieldType=1;
 	highQL=8*cm;
@@ -145,6 +146,8 @@ void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) con
   	G4double	tarL=detector->GetTargetThickness();
   	G4double	capL=detector->GetCaptureLength();
   	G4double	capR=detector->GetCaptureRadius();
+  	static	G4double	feiMi;
+  	static	G4double	feiMiOne;
 
 	G4double r2=(Point[0]*Point[0])+(Point[1]*Point[1]);
 	if(r2<capR*capR)
@@ -152,11 +155,21 @@ void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) con
 		//if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
 		if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL+lowQL))
 		{
-  			Bfield[0]=0;
-  			Bfield[1]=0;
+			feiMi=exp((Point[2]-tarL/2-highQL)/mm);
+			feiMiOne=1/(1+feiMi);
+  			Bfield[0]=Point[0]*(B0-B1)*feiMi*sqr(feiMiOne)/2;
+  			Bfield[1]=Point[1]*Bfield[0]/Point[0];
+			Bfield[2]=(B0-B1)*feiMiOne+B1;
+
+			//feiMi=1/(1+1720*sqr(Point[2]-tarL/2)/m/m);
+			//feiMiOne=1/(1+feiMi);
+  			//Bfield[0]=Point[0]*B0*1720*Point[2]*sqr(feiMi);
+  			//Bfield[1]=Point[1]*Bfield[0]/Point[0];
+			//Bfield[2]=B0*feiMi;
+
+  			//Bfield[0]=0;
+  			//Bfield[1]=0;
 			//Bfield[2]=6*tesla;
-			Bfield[2]=5.5*tesla/(1+exp(Point[2]-tarL/2-8*cm))+0.5*tesla;
-			//Bfield[2]=6*tesla/(1+1720*(Point[2]-tarL/2)*(Point[2]-tarL/2));
 			
 		}
 		/*

@@ -64,6 +64,7 @@ private:
 
 private:
   	G4double 	B0;
+  	G4double 	B1;
   	G4double 	alpha;
 	G4double	highQL;
 	G4double	lowQL;
