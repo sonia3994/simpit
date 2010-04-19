@@ -85,6 +85,10 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
   preStepPoint=aStep->GetPreStepPoint();
   postStepPoint=aStep->GetPostStepPoint();
 
+   		position=preStepPoint->GetPosition();
+   		momentum=preStepPoint->GetMomentum();
+        G4cout<<"x: "<<position.x()<<" y: "<<position.y()<<" z: "<<position.z()<<" px: "
+			<<momentum.x()<<" py: "<<momentum.y()<<" pz: "<<momentum.z()<<G4endl; 
   // get volume of the current step and the post volume
   // collect energy and track length step by step
   //= preStepPoint->GetPhysicalVolume();

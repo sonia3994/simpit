@@ -114,29 +114,29 @@ void GPAMDField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) con
   	G4double	capL=detector->GetCaptureLength();
   	G4double	capR=detector->GetCaptureRadius();
   //G4cout<<"z: "<<Point[2]<<G4endl;
-  static G4double r2;
-  static G4double fz;
-  static G4double fz2;
-	r2=(sqr(Point[0])+sqr(Point[1]));
+  	static G4double r2;
+  	static G4double fz;
+  	static G4double fz2;
+	r2=sqr(Point[0])+sqr(Point[1]);
   if(Point[2]>tarL/2&&Point[2]<=(tarL/2+capL)&&r2<capR*capR)
   {
 	fz=B0/(1+alpha*(Point[2]-tarL/2));
 	fz2=sqr(fz);
-  	Bfield[0]=0.5*Point[0]*fz2*alpha/B0;
-  	Bfield[1]=0.5*Point[1]*fz2*alpha/B0;
-	Bfield[2]=fz;
 	//
 	//Bz(z,r)=f(z);f(z)=B0/(1+alpha*z)
 	//Br(z,r)=-0.5*r*df(z)/dz;
+  	Bfield[0]=0.5*Point[0]*fz2*alpha/B0;
+  	Bfield[1]=0.5*Point[1]*fz2*alpha/B0;
+	Bfield[2]=fz;
 
-  //Bfield[2]=0.5*tesla;
+  	//Bfield[2]=0.5*tesla;
   }
   else 
   { 
 	  Bfield[0]=Bfield[1]=Bfield[2]=0;
   }
 
-  Bfield[3]=Bfield[4]=Bfield[5]=0;
+  	Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
 void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const
@@ -149,7 +149,7 @@ void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) con
   	static	G4double	feiMi;
   	static	G4double	feiMiOne;
 
-	G4double r2=(Point[0]*Point[0])+(Point[1]*Point[1]);
+	G4double 	r2=sqr(Point[0])+sqr(Point[1]);
 	if(r2<capR*capR)
 	{
 		//if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
@@ -212,7 +212,7 @@ GPFieldSetup::GPFieldSetup()
   fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
   fLocalEquation = new G4Mag_UsualEqRhs(fAMDField); 
  
-  fMinStep     = 10*um ; // minimal step of 1 mm is default
+  fMinStep     = 1*mm ; // minimal step of 1 mm is default
   fStepperType = 4 ;      // ClassicalRK4 is default stepper
 
   fFieldManager = GetGlobalFieldManager();
