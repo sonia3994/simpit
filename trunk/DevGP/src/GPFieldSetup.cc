@@ -106,23 +106,24 @@ void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield)
   	static G4double fz;
   	static G4double fz2;
 	r2=sqr(Point[0])+sqr(Point[1]);
-  if(Point[2]>tarL/2&&Point[2]<=(tarL/2+capL)&&r2<capR*capR)
-  {
-	fz=B0/(1+alpha*(Point[2]-tarL/2));
-	fz2=sqr(fz);
-	//
-	//Bz(z,r)=f(z);f(z)=B0/(1+alpha*z)
-	//Br(z,r)=-0.5*r*df(z)/dz;
-  	Bfield[0]=0.5*Point[0]*fz2*alpha/B0;
-  	Bfield[1]=0.5*Point[1]*fz2*alpha/B0;
-	Bfield[2]=fz;
 
-  	//Bfield[2]=0.5*tesla;
-  }
-  else 
-  { 
-	  Bfield[0]=Bfield[1]=Bfield[2]=0;
-  }
+  	if(Point[2]>tarL/2&&Point[2]<=(tarL/2+capL)&&r2<capR*capR)
+  	{
+		fz=B0/(1+alpha*(Point[2]-tarL/2));
+		fz2=sqr(fz);
+		//
+		//Bz(z,r)=f(z);f(z)=B0/(1+alpha*z)
+		//Br(z,r)=-0.5*r*df(z)/dz;
+  		Bfield[0]=0.5*Point[0]*fz2*alpha/B0;
+  		Bfield[1]=0.5*Point[1]*fz2*alpha/B0;
+		Bfield[2]=fz;
+
+  		//Bfield[2]=0.5*tesla;
+  	}
+  	else 
+  	{ 
+	  	Bfield[0]=Bfield[1]=Bfield[2]=0;
+  	}
 
   	Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
@@ -131,42 +132,40 @@ void GPCaptureField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield)
 {
   	static	G4double	feiMi;
   	static	G4double	feiMiOne;
+	static	G4double 	r2;
+	r2=sqr(Point[0])+sqr(Point[1]);
 
-	G4double 	r2=sqr(Point[0])+sqr(Point[1]);
-	if(r2<capR*capR)
+	//if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
+	if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL+lowQL)&&r2<capR*capR)
 	{
-		//if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
-		if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL+lowQL))
-		{
-/*
-			feiMi=exp((Point[2]-tarL/2-highQL)/mm);
-			feiMiOne=1/(1+feiMi);
-  			Bfield[0]=Point[0]*(B0-B1)*feiMi*sqr(feiMiOne)/2;
-  			Bfield[1]=Point[1]*Bfield[0]/Point[0];
-			Bfield[2]=(B0-B1)*feiMiOne+B1;
-*/
-///*
-			feiMi=1/(1+1720*sqr(Point[2]-tarL/2)/m/m);
-			feiMiOne=1/(1+feiMi);
-  			Bfield[0]=Point[0]*B0*1720*Point[2]*sqr(feiMi);
-  			Bfield[1]=Point[1]*Bfield[0]/Point[0];
-			Bfield[2]=B0*feiMi;
-//*/
-/*
-  			Bfield[0]=0;
-  			Bfield[1]=0;
-			Bfield[2]=6*tesla;
-*/
-		}
-/*
-		else if(Point[2]>(tarL/2+highQL)&&Point[2]<=(tarL/2+highQL+lowQL))
-		{
-  			Bfield[0]=0;
-  			Bfield[1]=0;
-			Bfield[2]=0.5*tesla;
-		}
-*/
+		///*
+     	feiMi=exp((Point[2]-tarL/2-highQL)/mm);
+		feiMiOne=1/(1+feiMi);
+  		Bfield[0]=Point[0]*(B0-B1)*feiMi*sqr(feiMiOne)/2;
+  		Bfield[1]=Point[1]*Bfield[0]/Point[0];
+		Bfield[2]=(B0-B1)*feiMiOne+B1;
+		//*/
+		/*
+		feiMi=1/(1+1720*sqr(Point[2]-tarL/2)/m/m);
+		feiMiOne=1/(1+feiMi);
+  		Bfield[0]=Point[0]*B0*1720*Point[2]*sqr(feiMi);
+  		Bfield[1]=Point[1]*Bfield[0]/Point[0];
+		Bfield[2]=B0*feiMi;
+		*/
+		/*
+  		Bfield[0]=0;
+  		Bfield[1]=0;
+		Bfield[2]=6*tesla;
+		*/
 	}
+	/*
+	else if(Point[2]>(tarL/2+highQL)&&Point[2]<=(tarL/2+highQL+lowQL))
+	{
+  		Bfield[0]=0;
+  		Bfield[1]=0;
+		Bfield[2]=0.5*tesla;
+	}
+	*/
 
   	else 
   	{ 
@@ -185,34 +184,34 @@ GPFieldSetup::GPFieldSetup()
   :  fChordFinder(0), fLocalChordFinder(0), fStepper(0),fLocalStepper(0)
 {
 
-  fMagneticField = new G4UniformMagField(
-		       G4ThreeVector(3.3*tesla,
-                                     0.0,              // 0.5*tesla,
-                                     0.0       ));
-  fCaptureField = new GPCaptureField();
-
-  fFieldMessenger = new GPFieldMessenger(this) ;  
- 
-  fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
-  fLocalEquation = new G4Mag_UsualEqRhs(fCaptureField); 
- 
-  fMinStep     = 1*mm ; // minimal step of 1 mm is default
-  fStepperType = 4 ;      // ClassicalRK4 is default stepper
-
-  fFieldManager = GetGlobalFieldManager();
-  fLocalFieldManager = new G4FieldManager();
-  captureFieldFlag=TRUE;
-  globalFieldFlag=FALSE;
-
-  UpdateField();
+  	fMagneticField = new G4UniformMagField(
+  	  	       G4ThreeVector(3.3*tesla,
+  	                                   0.0,              // 0.5*tesla,
+  	                                   0.0       ));
+  	fCaptureField = new GPCaptureField();
+  	
+  	fFieldMessenger = new GPFieldMessenger(this) ;  
+  	
+  	fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
+  	fLocalEquation = new G4Mag_UsualEqRhs(fCaptureField); 
+  	
+  	fMinStep     = 1*mm ; // minimal step of 1 mm is default
+  	fStepperType = 4 ;      // ClassicalRK4 is default stepper
+  	
+  	fFieldManager = GetGlobalFieldManager();
+  	fLocalFieldManager = new G4FieldManager();
+  	captureFieldFlag=TRUE;
+  	globalFieldFlag=FALSE;
+  	
+  	UpdateField();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 
 GPFieldSetup::GPFieldSetup(G4ThreeVector fieldVector)
 {    
-  fMagneticField = new G4UniformMagField(fieldVector);
-  GetGlobalFieldManager()->CreateChordFinder(fMagneticField);
+  	fMagneticField = new G4UniformMagField(fieldVector);
+  	GetGlobalFieldManager()->CreateChordFinder(fMagneticField);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -220,17 +219,17 @@ GPFieldSetup::GPFieldSetup(G4ThreeVector fieldVector)
 GPFieldSetup::~GPFieldSetup()
 {
  
-  //if(fMagneticField) 		delete fMagneticField;
-  if(fLocalFieldManager) 	delete fLocalFieldManager ;
-  if(fMagneticField) 		delete fMagneticField;
-  if(fCaptureField) 	delete fCaptureField;
-  if(fChordFinder)   		delete fChordFinder;
-  if(fLocalChordFinder)		delete fLocalChordFinder;
-  if(fStepper)       		delete fStepper;
-  if(fLocalStepper)      	delete fLocalStepper;
-  if(fEquation)			delete fEquation; 
-  if(fLocalEquation)		delete fLocalEquation; 
-  if(fFieldMessenger)       	delete fFieldMessenger;
+  	//if(fMagneticField) 	delete fMagneticField;
+  	if(fLocalFieldManager) 	delete fLocalFieldManager ;
+  	if(fMagneticField) 		delete fMagneticField;
+  	if(fCaptureField) 		delete fCaptureField;
+  	if(fChordFinder)   		delete fChordFinder;
+  	if(fLocalChordFinder)	delete fLocalChordFinder;
+  	if(fStepper)       		delete fStepper;
+  	if(fLocalStepper)      	delete fLocalStepper;
+  	if(fEquation)			delete fEquation; 
+  	if(fLocalEquation)		delete fLocalEquation; 
+  	if(fFieldMessenger)     delete fFieldMessenger;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -240,35 +239,35 @@ GPFieldSetup::~GPFieldSetup()
 
 void GPFieldSetup::UpdateField()
 {
-  SetStepper();
-  G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
-
-  if(globalFieldFlag)
-  {
-  	  fFieldManager->SetDetectorField(fMagneticField );
-  }
-  else
-  {
-  	  fFieldManager->SetDetectorField(NULL );
-  }
-
-  if(captureFieldFlag)
-  {
-	  fLocalFieldManager->SetDetectorField(fCaptureField );
-  }
-  else
-  {
-	  fLocalFieldManager->SetDetectorField(NULL );
-  }
-
-  if(fChordFinder) delete fChordFinder;
-  if(fLocalChordFinder) delete fLocalChordFinder;
-
-  fChordFinder = new G4ChordFinder( fMagneticField, fMinStep,fStepper);
-  fLocalChordFinder = new G4ChordFinder( fCaptureField,fMinStep,fLocalStepper);
-
-  fFieldManager->SetChordFinder( fChordFinder );
-  fLocalFieldManager->SetChordFinder( fLocalChordFinder );
+	SetStepper();
+	G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
+	
+	if(globalFieldFlag)
+	{
+		fFieldManager->SetDetectorField(fMagneticField );
+	}
+	else
+	{
+		fFieldManager->SetDetectorField(NULL );
+	}
+	
+	if(captureFieldFlag)
+	{
+		fLocalFieldManager->SetDetectorField(fCaptureField );
+	}
+	else
+	{
+		fLocalFieldManager->SetDetectorField(NULL );
+	}
+	
+	if(fChordFinder) delete fChordFinder;
+	if(fLocalChordFinder) delete fLocalChordFinder;
+	
+	fChordFinder = new G4ChordFinder( fMagneticField, fMinStep,fStepper);
+	fLocalChordFinder = new G4ChordFinder( fCaptureField,fMinStep,fLocalStepper);
+	
+	fFieldManager->SetChordFinder( fChordFinder );
+	fLocalFieldManager->SetChordFinder( fLocalChordFinder );
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -278,63 +277,63 @@ void GPFieldSetup::UpdateField()
 
 void GPFieldSetup::SetStepper()
 {
-  if(fStepper) delete fStepper;
-  if(fLocalStepper) delete fLocalStepper;
-
-  switch ( fStepperType ) 
-  {
-    case 0:  
-      fStepper = new G4ExplicitEuler( fEquation ); 
-      fLocalStepper = new G4ExplicitEuler( fLocalEquation ); 
-      G4cout<<"G4ExplicitEuler is calledS"<<G4endl;     
-      break;
-    case 1:  
-      fStepper = new G4ImplicitEuler( fEquation );      
-      fLocalStepper = new G4ImplicitEuler( fLocalEquation );      
-      G4cout<<"G4ImplicitEuler is called"<<G4endl;     
-      break;
-    case 2:  
-      fStepper = new G4SimpleRunge( fEquation );        
-      fLocalStepper = new G4SimpleRunge( fLocalEquation );        
-      G4cout<<"G4SimpleRunge is called"<<G4endl;     
-      break;
-    case 3:  
-      fStepper = new G4SimpleHeum( fEquation );         
-      fLocalStepper = new G4SimpleHeum( fLocalEquation );         
-      G4cout<<"G4SimpleHeum is called"<<G4endl;     
-      break;
-    case 4:  
-      fStepper = new G4ClassicalRK4( fEquation );       
-      fLocalStepper = new G4ClassicalRK4( fLocalEquation );       
-      G4cout<<"G4ClassicalRK4 (default) is called"<<G4endl;     
-      break;
-    case 5:  
-      fStepper = new G4HelixExplicitEuler( fEquation ); 
-      fLocalStepper = new G4HelixExplicitEuler( fLocalEquation ); 
-      G4cout<<"G4HelixExplicitEuler is called"<<G4endl;     
-      break;
-    case 6:  
-      fStepper = new G4HelixImplicitEuler( fEquation ); 
-      fLocalStepper = new G4HelixImplicitEuler( fLocalEquation ); 
-      G4cout<<"G4HelixImplicitEuler is called"<<G4endl;     
-      break;
-    case 7:  
-      fStepper = new G4HelixSimpleRunge( fEquation );   
-      fLocalStepper = new G4HelixSimpleRunge( fLocalEquation );   
-      G4cout<<"G4HelixSimpleRunge is called"<<G4endl;     
-      break;
-    case 8:  
-      fStepper = new G4CashKarpRKF45( fEquation );      
-      fLocalStepper = new G4CashKarpRKF45( fLocalEquation );      
-      G4cout<<"G4CashKarpRKF45 is called"<<G4endl;     
-      break;
-    case 9:  
-      fStepper = new G4RKG3_Stepper( fEquation );       
-      fLocalStepper = new G4RKG3_Stepper( fLocalEquation );       
-      G4cout<<"G4RKG3_Stepper is called"<<G4endl;     
-      break;
-    default: fStepper = 0;
-  }
+	if(fStepper) delete fStepper;
+	if(fLocalStepper) delete fLocalStepper;
+	
+	switch ( fStepperType ) 
+	{
+		case 0:  
+		  fStepper = new G4ExplicitEuler( fEquation ); 
+		  fLocalStepper = new G4ExplicitEuler( fLocalEquation ); 
+		  G4cout<<"G4ExplicitEuler is calledS"<<G4endl;     
+		  break;
+		case 1:  
+		  fStepper = new G4ImplicitEuler( fEquation );      
+		  fLocalStepper = new G4ImplicitEuler( fLocalEquation );      
+		  G4cout<<"G4ImplicitEuler is called"<<G4endl;     
+		  break;
+		case 2:  
+		  fStepper = new G4SimpleRunge( fEquation );        
+		  fLocalStepper = new G4SimpleRunge( fLocalEquation );        
+		  G4cout<<"G4SimpleRunge is called"<<G4endl;     
+		  break;
+		case 3:  
+		  fStepper = new G4SimpleHeum( fEquation );         
+		  fLocalStepper = new G4SimpleHeum( fLocalEquation );         
+		  G4cout<<"G4SimpleHeum is called"<<G4endl;     
+		  break;
+		case 4:  
+		  fStepper = new G4ClassicalRK4( fEquation );       
+		  fLocalStepper = new G4ClassicalRK4( fLocalEquation );       
+		  G4cout<<"G4ClassicalRK4 (default) is called"<<G4endl;     
+		  break;
+		case 5:  
+		  fStepper = new G4HelixExplicitEuler( fEquation ); 
+		  fLocalStepper = new G4HelixExplicitEuler( fLocalEquation ); 
+		  G4cout<<"G4HelixExplicitEuler is called"<<G4endl;     
+		  break;
+		case 6:  
+		  fStepper = new G4HelixImplicitEuler( fEquation ); 
+		  fLocalStepper = new G4HelixImplicitEuler( fLocalEquation ); 
+		  G4cout<<"G4HelixImplicitEuler is called"<<G4endl;     
+		  break;
+		case 7:  
+		  fStepper = new G4HelixSimpleRunge( fEquation );   
+		  fLocalStepper = new G4HelixSimpleRunge( fLocalEquation );   
+		  G4cout<<"G4HelixSimpleRunge is called"<<G4endl;     
+		  break;
+		case 8:  
+		  fStepper = new G4CashKarpRKF45( fEquation );      
+		  fLocalStepper = new G4CashKarpRKF45( fLocalEquation );      
+		  G4cout<<"G4CashKarpRKF45 is called"<<G4endl;     
+		  break;
+		case 9:  
+		  fStepper = new G4RKG3_Stepper( fEquation );       
+		  fLocalStepper = new G4RKG3_Stepper( fLocalEquation );       
+		  G4cout<<"G4RKG3_Stepper is called"<<G4endl;     
+		  break;
+		default: fStepper = 0;
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -350,17 +349,17 @@ void GPFieldSetup::SetCaptureType(G4int t)
 
 void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
 {
-  captureFieldFlag=t; 
-  if(captureFieldFlag)
-  {
-	  fLocalFieldManager->SetDetectorField(fCaptureField );
-	  G4cout<<"Active the capture field!"<<G4endl;
-  }
-  else
-  {
-	  fLocalFieldManager->SetDetectorField(NULL );
-	  G4cout<<"Inative the capture field!"<<G4endl;
-  }
+	captureFieldFlag=t; 
+	if(captureFieldFlag)
+	{
+	    fLocalFieldManager->SetDetectorField(fCaptureField );
+	    G4cout<<"Active the capture field!"<<G4endl;
+	}
+	else
+	{
+	    fLocalFieldManager->SetDetectorField(NULL );
+	    G4cout<<"Inative the capture field!"<<G4endl;
+	}
 }
 void GPFieldSetup::SetFieldValue(G4double fieldStrength)
 {
@@ -383,28 +382,28 @@ void GPFieldSetup::SetFieldValueB0(G4double      fieldValue)
 
 void GPFieldSetup::SetFieldValue(G4ThreeVector fieldVector)
 {
-  if(fMagneticField) delete fMagneticField;
-
-  if(fieldVector != G4ThreeVector(0.,0.,0.))
-  { 
-    fMagneticField = new  G4UniformMagField(fieldVector);
-  }
-  else 
-  {
-    // If the new field's value is Zero, then 
-    //  setting the pointer to zero ensures 
-    //  that it is not used for propagation.
-    fMagneticField = 0; 
-  }
-
-  // Either  
-  //   - UpdateField() to reset all (ChordFinder, Equation);
-     // UpdateField();
-  //   or simply update the field manager & equation of motion 
-  //      with pointer to new field
-  //GetGlobalFieldManager()->SetDetectorField(fMagneticField);
-  GetGlobalFieldManager()->SetDetectorField(NULL);
-  fEquation->SetFieldObj( fMagneticField ); 
+	if(fMagneticField) delete fMagneticField;
+	
+	if(fieldVector != G4ThreeVector(0.,0.,0.))
+	{ 
+	  fMagneticField = new  G4UniformMagField(fieldVector);
+	}
+	else 
+	{
+	  // If the new field's value is Zero, then 
+	  //  setting the pointer to zero ensures 
+	  //  that it is not used for propagation.
+	  fMagneticField = 0; 
+	}
+	
+	// Either  
+	//   - UpdateField() to reset all (ChordFinder, Equation);
+	   // UpdateField();
+	//   or simply update the field manager & equation of motion 
+	//      with pointer to new field
+	//GetGlobalFieldManager()->SetDetectorField(fMagneticField);
+	GetGlobalFieldManager()->SetDetectorField(NULL);
+	fEquation->SetFieldObj( fMagneticField ); 
 
 }
 

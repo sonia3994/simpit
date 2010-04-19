@@ -84,7 +84,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   GPCaptureField* captureField=static_cast< GPCaptureField*>(g4Field);
   if(captureField) captureField->Init();
 
-   G4UserSteppingAction* g4steppingAction=const_cast<G4UserSteppingAction *>(G4RunManager::GetRunManager()->GetUserSteppingAction());
+  G4UserSteppingAction* g4steppingAction=const_cast<G4UserSteppingAction *>(G4RunManager::GetRunManager()->GetUserSteppingAction());
   GPSteppingAction* gpSteppingAction=static_cast<GPSteppingAction *>(g4steppingAction);
   if(gpSteppingAction) gpSteppingAction->Init();
 
