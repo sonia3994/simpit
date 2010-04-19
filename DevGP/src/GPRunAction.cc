@@ -33,10 +33,13 @@
 #include "GPRunAction.hh"
 #include "GPPrimaryGeneratorAction.hh"
 #include "GPDetectorConstruction.hh"
+#include "GPFieldSetup.hh"
+#include "GPSteppingAction.hh"
 
 #include "globals.hh"
 #include "G4Run.hh"
 #include "G4RunManager.hh"
+#include "G4FieldManager.hh"
 #include "G4SDManager.hh"
 #include "G4UnitsTable.hh"
 #include <fstream>
@@ -76,6 +79,14 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 { 
 //inform the runManager to save random number seed
   G4RunManager::GetRunManager()->SetRandomNumberStore(true);
+
+  G4Field* g4Field=const_cast<G4Field *>(mydetector->GetCaptureLogical()->GetFieldManager()->GetDetectorField());
+  GPCaptureField* captureField=static_cast< GPCaptureField*>(g4Field);
+  if(captureField) captureField->Init();
+
+   G4UserSteppingAction* g4steppingAction=const_cast<G4UserSteppingAction *>(G4RunManager::GetRunManager()->GetUserSteppingAction());
+  GPSteppingAction* gpSteppingAction=static_cast<GPSteppingAction *>(g4steppingAction);
+  if(gpSteppingAction) gpSteppingAction->Init();
 
   G4String fileName;
   G4String chrunID;

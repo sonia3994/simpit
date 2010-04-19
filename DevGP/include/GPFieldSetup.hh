@@ -45,13 +45,13 @@ class G4ChordFinder;
 class G4Mag_UsualEqRhs;
 class G4MagIntegratorStepper;
 class GPFieldMessenger;
-//class GPDetectorConstruction;
 
-class GPAMDField : public G4MagneticField
+class GPCaptureField : public G4MagneticField
 {
 public:
-  	GPAMDField();
-  	~GPAMDField();
+  	GPCaptureField();
+  	~GPCaptureField();
+	void Init();
   	void SetFieldValueB0(G4double      fieldValue){B0=fieldValue;} ;
   	void SetFieldValueAlpha(G4double      fieldValue) {alpha=fieldValue;};
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
@@ -60,7 +60,6 @@ public:
 private:
   	void GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const;
   	void GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const;
-	void GetDetectorParameter(); 
 
 private:
   	G4double 	B0;
@@ -70,11 +69,9 @@ private:
 	G4double	lowQL;
   	G4int		fieldType;
 private:
-  	//G4double 	tarL;
-  	//G4double 	capL;
-  	//G4double 	capR;
-  //std::ofstream fs;
-  //GPDetectorConstruction* detector;
+  	G4double 	tarL;
+  	G4double 	capL;
+  	G4double 	capR;
 };
 
 
@@ -119,7 +116,7 @@ protected:
   G4Mag_UsualEqRhs*       fLocalEquation ; 
 
   G4MagneticField*        fMagneticField ; 
-  GPAMDField*        		fAMDField ; 
+  GPCaptureField*        		fCaptureField ; 
 
   G4MagIntegratorStepper* fStepper ;
   G4MagIntegratorStepper* fLocalStepper ;

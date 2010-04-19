@@ -57,7 +57,7 @@
 #include <fstream>
 #include <sstream>
 //////////////////////////////////////////////////////////////////////////
-GPAMDField::GPAMDField()
+GPCaptureField::GPCaptureField()
 {
   	B0=6*tesla;
   	B0=0.5*tesla;
@@ -69,30 +69,24 @@ GPAMDField::GPAMDField()
 //  fs.open(file,std::fstream::app);
 }
 
-GPAMDField::~GPAMDField()
+GPCaptureField::~GPCaptureField()
 {
 //fs.close();
 }
-/*
-void GPAMDField::WriteToFile(double x, double y, double z)
+
+void GPCaptureField::Init()
 {
 
-  fs<<x<<" "<<y<<" "<<z<<std::endl;
-
-}*/
-
-void GPAMDField::GetDetectorParameter() 
-{
   	const GPDetectorConstruction * detector =
-         dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
-  	G4double	tarL=detector->GetTargetThickness();
-  	G4double	capL=detector->GetCaptureLength();
-  	G4double	capR=detector->GetCaptureRadius();
+         static_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
+  	tarL=detector->GetTargetThickness();
+  	capL=detector->GetCaptureLength();
+  	capR=detector->GetCaptureRadius();
 }
 
-void GPAMDField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
+
+void GPCaptureField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
-	//GetDetectorParameter();
 	switch(fieldType)
 	{
 		case 0:
@@ -106,14 +100,8 @@ void GPAMDField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 	}
 
 }
-void GPAMDField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const
+void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const
 {
-  	const GPDetectorConstruction * detector =
-         dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
-  	G4double	tarL=detector->GetTargetThickness();
-  	G4double	capL=detector->GetCaptureLength();
-  	G4double	capR=detector->GetCaptureRadius();
-  //G4cout<<"z: "<<Point[2]<<G4endl;
   	static G4double r2;
   	static G4double fz;
   	static G4double fz2;
@@ -139,13 +127,8 @@ void GPAMDField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) con
   	Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
-void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const
+void GPCaptureField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const
 {
-  	const GPDetectorConstruction * detector =
-         dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
-  	G4double	tarL=detector->GetTargetThickness();
-  	G4double	capL=detector->GetCaptureLength();
-  	G4double	capR=detector->GetCaptureRadius();
   	static	G4double	feiMi;
   	static	G4double	feiMiOne;
 
@@ -155,33 +138,34 @@ void GPAMDField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield) con
 		//if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
 		if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL+lowQL))
 		{
+/*
 			feiMi=exp((Point[2]-tarL/2-highQL)/mm);
 			feiMiOne=1/(1+feiMi);
   			Bfield[0]=Point[0]*(B0-B1)*feiMi*sqr(feiMiOne)/2;
   			Bfield[1]=Point[1]*Bfield[0]/Point[0];
 			Bfield[2]=(B0-B1)*feiMiOne+B1;
-
-			//feiMi=1/(1+1720*sqr(Point[2]-tarL/2)/m/m);
-			//feiMiOne=1/(1+feiMi);
-  			//Bfield[0]=Point[0]*B0*1720*Point[2]*sqr(feiMi);
-  			//Bfield[1]=Point[1]*Bfield[0]/Point[0];
-			//Bfield[2]=B0*feiMi;
-
-  			//Bfield[0]=0;
-  			//Bfield[1]=0;
-			//Bfield[2]=6*tesla;
-			
+*/
+///*
+			feiMi=1/(1+1720*sqr(Point[2]-tarL/2)/m/m);
+			feiMiOne=1/(1+feiMi);
+  			Bfield[0]=Point[0]*B0*1720*Point[2]*sqr(feiMi);
+  			Bfield[1]=Point[1]*Bfield[0]/Point[0];
+			Bfield[2]=B0*feiMi;
+//*/
+/*
+  			Bfield[0]=0;
+  			Bfield[1]=0;
+			Bfield[2]=6*tesla;
+*/
 		}
-		/*
+/*
 		else if(Point[2]>(tarL/2+highQL)&&Point[2]<=(tarL/2+highQL+lowQL))
 		{
   			Bfield[0]=0;
   			Bfield[1]=0;
 			Bfield[2]=0.5*tesla;
-			
 		}
-		*/
-
+*/
 	}
 
   	else 
@@ -205,12 +189,12 @@ GPFieldSetup::GPFieldSetup()
 		       G4ThreeVector(3.3*tesla,
                                      0.0,              // 0.5*tesla,
                                      0.0       ));
-  fAMDField = new GPAMDField();
+  fCaptureField = new GPCaptureField();
 
   fFieldMessenger = new GPFieldMessenger(this) ;  
  
   fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
-  fLocalEquation = new G4Mag_UsualEqRhs(fAMDField); 
+  fLocalEquation = new G4Mag_UsualEqRhs(fCaptureField); 
  
   fMinStep     = 1*mm ; // minimal step of 1 mm is default
   fStepperType = 4 ;      // ClassicalRK4 is default stepper
@@ -239,7 +223,7 @@ GPFieldSetup::~GPFieldSetup()
   //if(fMagneticField) 		delete fMagneticField;
   if(fLocalFieldManager) 	delete fLocalFieldManager ;
   if(fMagneticField) 		delete fMagneticField;
-  if(fAMDField) 	delete fAMDField;
+  if(fCaptureField) 	delete fCaptureField;
   if(fChordFinder)   		delete fChordFinder;
   if(fLocalChordFinder)		delete fLocalChordFinder;
   if(fStepper)       		delete fStepper;
@@ -270,7 +254,7 @@ void GPFieldSetup::UpdateField()
 
   if(captureFieldFlag)
   {
-	  fLocalFieldManager->SetDetectorField(fAMDField );
+	  fLocalFieldManager->SetDetectorField(fCaptureField );
   }
   else
   {
@@ -281,7 +265,7 @@ void GPFieldSetup::UpdateField()
   if(fLocalChordFinder) delete fLocalChordFinder;
 
   fChordFinder = new G4ChordFinder( fMagneticField, fMinStep,fStepper);
-  fLocalChordFinder = new G4ChordFinder( fAMDField,fMinStep,fLocalStepper);
+  fLocalChordFinder = new G4ChordFinder( fCaptureField,fMinStep,fLocalStepper);
 
   fFieldManager->SetChordFinder( fChordFinder );
   fLocalFieldManager->SetChordFinder( fLocalChordFinder );
@@ -360,7 +344,7 @@ void GPFieldSetup::SetStepper()
 
 void GPFieldSetup::SetCaptureType(G4int t) 
 {
-	fAMDField->SetCaptureType(t);
+	fCaptureField->SetCaptureType(t);
 }
 
 
@@ -369,7 +353,7 @@ void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
   captureFieldFlag=t; 
   if(captureFieldFlag)
   {
-	  fLocalFieldManager->SetDetectorField(fAMDField );
+	  fLocalFieldManager->SetDetectorField(fCaptureField );
 	  G4cout<<"Active the capture field!"<<G4endl;
   }
   else
@@ -380,7 +364,7 @@ void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
 }
 void GPFieldSetup::SetFieldValue(G4double fieldStrength)
 {
-//  fAMDField->SetFieldValueB0(fieldStrength); 
+//  fCaptureField->SetFieldValueB0(fieldStrength); 
   //G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
   //G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
   //this->SetFieldValue( fieldSetVec ); 
@@ -394,7 +378,7 @@ void GPFieldSetup::SetFieldValue(G4double fieldStrength)
 
 void GPFieldSetup::SetFieldValueB0(G4double      fieldValue) 
 {
-	fAMDField->SetFieldValueB0(fieldValue);
+	fCaptureField->SetFieldValueB0(fieldValue);
 }
 
 void GPFieldSetup::SetFieldValue(G4ThreeVector fieldVector)

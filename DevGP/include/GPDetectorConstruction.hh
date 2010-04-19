@@ -52,10 +52,11 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     ~GPDetectorConstruction();
     G4VPhysicalVolume* Construct();
 
-    inline const G4VPhysicalVolume* GetVacuum() const        {return worldPhys;};
-    inline const G4VPhysicalVolume* GetTarget()  const       {return targetPhys;};
-    inline const G4VPhysicalVolume* GetCapture()  const       {return capturePhys;};
-    inline const G4VPhysicalVolume* GetTran()  const       {return tranPhys;};
+    inline const G4VPhysicalVolume* GetVacuumPhysical() const        {return worldPhys;};
+    inline const G4VPhysicalVolume* GetTargetPhysical()  const       {return targetPhys;};
+    inline const G4VPhysicalVolume* GetCapturePhysical()  const       {return capturePhys;};
+    inline const G4VPhysicalVolume* GetTransferPhysical()  const       {return tranPhys;};
+    inline const G4LogicalVolume* 	GetCaptureLogical()		const		{return captureLog;};
 
     void SetTargetThickness(G4double);
     void SetTargetXY(G4double);
