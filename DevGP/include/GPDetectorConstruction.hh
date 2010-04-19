@@ -69,6 +69,9 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     void SetWorldSizeZ(G4double);
     inline G4double GetTargetThickness()	const	{return targetBoxZ;};
     inline G4double GetTargetXY()		const	{return targetBoxX;};
+    inline G4double GetTargetX()		const	{return targetBoxX;};
+    inline G4double GetTargetY()		const	{return targetBoxY;};
+    inline G4double GetTargetLength()	const	{return targetBoxZ;};
     inline G4double GetCaptureLength()		const	{return captureTubeLength;};
     inline G4double GetCaptureRadius()		const	{return captureTubeOuterRadius;};
     inline G4double GetWorldSizeX() 		const	{return worldX;}; 

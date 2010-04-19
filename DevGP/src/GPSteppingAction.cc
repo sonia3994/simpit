@@ -52,15 +52,15 @@ GPSteppingAction::GPSteppingAction(GPDetectorConstruction* det,
                                          GPEventAction* evt)
 :detector(det), eventaction(evt)					 
 { 
-  particle="e+";
-  steppingMessenger = new GPSteppingMessenger(this);
+  	particle="e+";
+  	steppingMessenger = new GPSteppingMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPSteppingAction::~GPSteppingAction()
 { 
-  delete steppingMessenger;
+  	delete 	steppingMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -68,143 +68,109 @@ GPSteppingAction::~GPSteppingAction()
 void GPSteppingAction::Init()
 {
 
-  targetPhys=detector->GetTargetPhysical(); 
-  capturePhys=detector->GetCapturePhysical(); 
-  transferPhys=detector->GetTransferPhysical(); 
-  vacuumPhys = detector->GetVacuumPhysical();
+	targetPhys = detector->GetTargetPhysical(); 
+	capturePhys = detector->GetCapturePhysical(); 
+	transferPhys = detector->GetTransferPhysical(); 
+	vacuumPhys = detector->GetVacuumPhysical();
+    targetL = detector->GetTargetLength();
+    targetX = detector->GetTargetX();
+    targetY = detector->GetTargetY();
+    captureL = detector->GetCaptureLength();
+    captureR = detector->GetCaptureRadius();
 
 }
 
 void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-  static G4VPhysicalVolume* postPhys=NULL; 
-  static G4VPhysicalVolume* previousPhys;
-  static G4StepPoint* preStepPoint;
-  static G4StepPoint* postStepPoint;
-  static G4String particleName;
-  static G4double stepE;
-  static G4ThreeVector position;
-  static G4ThreeVector momentum;
-  static G4double totalE; 
-  static G4double stepL;
-  
-  stepE=aStep->GetTotalEnergyDeposit();
-  if(stepE<0)
-    {return;}
+	static G4VPhysicalVolume* postPhys=NULL; 
+	static G4VPhysicalVolume* prevPhys;
+	static G4StepPoint* prevStepPoint;
+	static G4StepPoint* postStepPoint;
+	static G4String particleName;
+	static G4double stepE;
+	static G4ThreeVector prevPos;
+	static G4ThreeVector postPos;
+	static G4ThreeVector prevMom;
+	static G4ThreeVector postMom;
+	static G4double totalE; 
+	static G4double stepL;
+	
+	stepE=aStep->GetTotalEnergyDeposit();
+	if(stepE<0)
+	  {return;}
+	
+	prevStepPoint=aStep->GetPreStepPoint();
+	postStepPoint=aStep->GetPostStepPoint();
 
-  preStepPoint=aStep->GetPreStepPoint();
-  postStepPoint=aStep->GetPostStepPoint();
+	particleName = aStep->GetTrack()->GetDefinition()->GetParticleName();
+	prevPhys= prevStepPoint->GetPhysicalVolume();
 
-/*
-   		position=preStepPoint->GetPosition();
-   		momentum=preStepPoint->GetMomentum();
-        G4cout<<"x: "<<position.x()<<" y: "<<position.y()<<" z: "<<position.z()<<" px: "
-			<<momentum.x()<<" py: "<<momentum.y()<<" pz: "<<momentum.z()<<G4endl; 
-*/
-  // get volume of the current step and the post volume
-  // collect energy and track length step by step
-  //= preStepPoint->GetPhysicalVolume();
-
-  particleName = aStep->GetTrack()->GetDefinition()->GetParticleName();
-  //previousPhys= preStepPoint->GetTouchableHandle()->GetVolume();
-  previousPhys= preStepPoint->GetPhysicalVolume();
-  //postPhys= postStepPoint->GetPhysicalVolume();
-  //postPhys= postStepPoint->GetTouchableHandle()->GetVolume();
-
-  if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
-    stepL = aStep->GetStepLength();
-      
-  if (previousPhys==targetPhys) 
-  {
-	eventaction->AddTargetED(stepE);
-  }
- 
-  if (particleName==particle)
-  {
-/*	if (previousPhys == targetPhys&&postPhys==vacuumPhys)
-	{  
-   		position=preStepPoint->GetPosition();
-   		momentum=preStepPoint->GetMomentum();
-   		totalE=preStepPoint->GetTotalEnergy();
-   		eventaction->AddPositron(position,momentum,totalE);
-   		eventaction->AddTargetStep(stepL);
-   		WriteToFileDT(position,momentum,totalE);
-	}
-	  
-	if (previousPhys == targetPhys&&postPhys==transferPhys)
-	{  
-   		position=preStepPoint->GetPosition();
-   		momentum=preStepPoint->GetMomentum();
-   		totalE=preStepPoint->GetTotalEnergy();
-   		eventaction->AddPositron(position,momentum,totalE);
-   		eventaction->AddTargetStep(stepL);
-   		WriteToFileDT(position,momentum,totalE);
+	prevPos=prevStepPoint->GetPosition();
+	postPos=postStepPoint->GetPosition();
+	prevMom=prevStepPoint->GetMomentum();
+	postMom=postStepPoint->GetMomentum();
+	totalE=prevStepPoint->GetTotalEnergy();
+	
+	if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
+	  stepL = aStep->GetStepLength();
+	    
+	if (prevPhys==targetPhys) 
+	{
+	  eventaction->AddTargetED(stepE);
 	}
 	
-*/
-///*	
-	if (previousPhys == capturePhys&&postPhys==targetPhys)
-	{  
-   		position=preStepPoint->GetPosition();
-   		momentum=preStepPoint->GetMomentum();
-   		totalE=preStepPoint->GetTotalEnergy();
-   		eventaction->AddPositron(position,momentum,totalE);
-   		eventaction->AddTargetStep(stepL);
-   		WriteToFileDT(position,momentum,totalE);
-	}
-	if(previousPhys==vacuumPhys&&postPhys==capturePhys)
- 	{
-   		position=preStepPoint->GetPosition();
-   		momentum=preStepPoint->GetMomentum();
-   		totalE=preStepPoint->GetTotalEnergy();
-   		//eventaction->AddPositron(positon,momentum,totalE);
-   		//eventaction->AddTargetStep(stepL);
-   		if(((position.x()*position.x()+position.y()*position.y())<=(400*mm*mm))&&(position.z()>=detector->GetCaptureLength()))
-   			WriteToFileDC(position,momentum,totalE);
-	}
-//*/	
-  postPhys=previousPhys;
-  }
+	if (particleName==particle)
+	{
+		///*	
+		if (prevPhys == capturePhys&&postPhys==targetPhys)
+		{  
+			eventaction->AddPositron(prevPos,prevMom,totalE);
+			eventaction->AddTargetStep(stepL);
+			WriteToFileDT(prevPos,prevMom,totalE);
+		}
+		if(prevPhys==vacuumPhys&&postPhys==capturePhys)
+		{
+			//eventaction->AddPositron(positon,prevMom,totalE);
+			//eventaction->AddTargetStep(stepL);
+			if((sqr(prevPos.x())+sqr(prevPos.y()))<=400*mm*mm&&prevPos.z()>=(captureL+targetL/2))
+				WriteToFileDC(prevPos,prevMom,totalE);
+		}
+		//*/	
+  	postPhys=prevPhys;
+  	}
 	else if(particleName=="gamma")
 	{
-		if (previousPhys == targetPhys&&postPhys==transferPhys)
+		if (prevPhys == targetPhys&&postPhys==transferPhys)
 		{  
   			GPRunAction* user_run_action =
   			(GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
 			user_run_action->AddActualG(1);
 		}
 
-  		postPhys=previousPhys;
+  		postPhys=prevPhys;
 	}
 
-//  passedVolume=previousPhys;
-  //example of saving random number seed of this event, under condition
-  //// if (condition) G4RunManager::GetRunManager()->rndmSaveThisEvent(); 
 }
+
 void GPSteppingAction::WriteToFileDT(G4ThreeVector P,G4ThreeVector M,G4double T)
 {
-//  G4RunManager* theRunManager =  G4RunManager::GetRunManager();
-  GPRunAction* user_run_action =
-  (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
-//  writeFile=user_run_action->GetDataFile();
-
-  user_run_action->dataFileDT
-	<<P.x()<<" "<<P.y()<<" "
-  	<<M.x()<<" "<<M.y()<<" "<<M.z()<<" "
-	<<T<<G4endl;
-
+	GPRunAction* user_run_action =
+	(GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
+	user_run_action->dataFileDT
+	  <<P.x()<<" "<<P.y()<<" "
+	  <<M.x()<<" "<<M.y()<<" "<<M.z()<<" "
+	  <<T<<G4endl;
+	
 }
 void GPSteppingAction::WriteToFileDC(G4ThreeVector P,G4ThreeVector M,G4double T)
 {
-//  G4RunManager* theRunManager =  G4RunManager::GetRunManager();
-  GPRunAction* user_run_action =
-  (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
-//  writeFile=user_run_action->GetDataFile();
-  user_run_action->dataFileDC
-	<<P.x()<<" "<<P.y()<<" "
-  	<<M.x()<<" "<<M.y()<<" "<<M.z()<<" "
-	<<T<<G4endl;
-
+	GPRunAction* user_run_action =
+	(GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
+	user_run_action->dataFileDC
+	  <<P.x()<<" "<<P.y()<<" "
+	  <<M.x()<<" "<<M.y()<<" "<<M.z()<<" "
+	  <<T<<G4endl;
+	
 }
 void GPSteppingAction::SetSelectedParticle(G4String tmpParticle)
 {

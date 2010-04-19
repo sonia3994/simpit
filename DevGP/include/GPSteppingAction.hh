@@ -70,6 +70,11 @@ private:
     const G4VPhysicalVolume* targetPhys;
     const G4VPhysicalVolume* transferPhys;
     const G4VPhysicalVolume* vacuumPhys;
+    G4double targetL;
+    G4double targetX;
+    G4double targetY;
+    G4double captureL;
+    G4double captureR;
   
 };
 
