@@ -132,13 +132,14 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 		{
 			//eventaction->AddPositron(positon,prevMom,totalE);
 			//eventaction->AddTargetStep(stepL);
-			if((sqr(prevPos.x())+sqr(prevPos.y()))<=400*mm*mm&&prevPos.z()>=(captureL+targetL/2))
+			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=4*cm*cm&&prevPos.z()>=(captureL+targetL/2))
 				WriteToFileDC(prevPos,prevMom,totalE);
 		}
 		//*/	
   	postPhys=prevPhys;
   	}
-	else if(particleName=="gamma")
+
+	if(particleName=="gamma")
 	{
 		if (prevPhys == targetPhys&&postPhys==transferPhys)
 		{  
