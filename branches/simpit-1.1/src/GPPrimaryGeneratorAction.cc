@@ -56,7 +56,8 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction(GPDetectorConstruction* myDC)
   eMomentumMean=0.0;
   eMomentumRMS=0.01;
   particlePosZ=-3.0*mm;
- 
+  bunchLength=6*ns;
+
   verbose=0;
   n_particle = 1;
   G4int index=getpid();
@@ -154,7 +155,7 @@ void GPPrimaryGeneratorAction::SetParticleEnergyDistr(G4double tmpMean,G4double 
   eEnergyMean=tmpMean;
   eEnergyRMS=tmpRMS;
   G4cout<<"The initial energy distribution is set to mean: 	"
-	 	<<tmpMean<<" MeV, rms: "<< tmpRMS<<" MeV."<<G4endl;
+	 	<<tmpMean/MeV<<" MeV, rms: "<< tmpRMS/MeV<<" MeV."<<G4endl;
 }
 
 void GPPrimaryGeneratorAction::SetParticlePositionDistr(G4double tmpMean,G4double tmpRMS)
@@ -162,13 +163,19 @@ void GPPrimaryGeneratorAction::SetParticlePositionDistr(G4double tmpMean,G4doubl
   ePositionMean=tmpMean;
   ePositionRMS=tmpRMS;
   G4cout<<"The initial position distribution is set to mean: 	"
-	 	<<tmpMean<<" mm, rms: "<< tmpRMS<<" mm."<<G4endl;
+	 	<<tmpMean/mm<<" mm, rms: "<< tmpRMS/mm<<" mm."<<G4endl;
 }
 
 void GPPrimaryGeneratorAction::SetParticlePositionZ(G4double tmp)
 {
   particlePosZ=tmp;
   if(HEPEvt!=0) HEPEvt->SetParticlePosZ(tmp);
+}
+
+void GPPrimaryGeneratorAction::SetBunchLength(G4double tmp)
+{
+  bunchLength=tmp;
+  if(HEPEvt!=0) HEPEvt->SetBunchLength(tmp);
 }
 
 void GPPrimaryGeneratorAction::SetParticleMomentumDistr(G4double tmpMean,G4double tmpRMS)

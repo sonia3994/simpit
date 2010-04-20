@@ -141,6 +141,12 @@ GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(
   ParPosZCmd->SetUnitCategory("Length");    
   ParPosZCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
+  BunchLengthCmd = new G4UIcmdWithADoubleAndUnit("/GP/primary/bunchLength",this);
+  BunchLengthCmd->SetGuidance("Set bunch length");
+  BunchLengthCmd->SetParameterName("BunchLength",false);
+  BunchLengthCmd->SetUnitCategory("Time");    
+  BunchLengthCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
   InputFileRMSFactorCmd = new G4UIcmdWithADoubleAndUnit("/GP/primary/setRMSFactorForInputFile",this);
   InputFileRMSFactorCmd->SetGuidance("Set RMS factor for point electron beam impinge the crystal.");
   InputFileRMSFactorCmd->SetParameterName("RMSFactorElectronBeam",false);
@@ -166,6 +172,7 @@ GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()
   delete						PosDistrCmd;
   delete						MomDistrCmd;
   delete						ParPosZCmd;
+  delete						BunchLengthCmd;
   delete						PrintParaCmd;
   delete						EnergyUnitCmd;
   delete						MomentumUnitCmd;
@@ -230,6 +237,12 @@ void GPPrimaryGeneratorMessenger::SetNewValue(
    {
    GPPrimary->SetParticlePositionZ(ParPosZCmd->GetNewDoubleValue(newValue));
    }
+
+   if(command == BunchLengthCmd)
+   {
+   GPPrimary->SetBunchLength(BunchLengthCmd->GetNewDoubleValue(newValue));
+   }
+
    if(command == PrintParaCmd)
    {GPPrimary->PrintPrimaryMessage();}
    

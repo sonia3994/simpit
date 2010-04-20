@@ -82,6 +82,7 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetMomentumUnit(G4String);
     void SetLengthUnit(G4String);
     void SetInputFileRMSFactor(G4double);    
+    void SetBunchLength(G4double);    
     void PrintPrimaryMessage();
 
   private:
@@ -96,6 +97,7 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double 	eMomentumMean;
     G4double 	eMomentumRMS;
     G4double 	particlePosZ;
+    G4double 	bunchLength;
     
     G4bool 						HEPEvtFlag;
     G4ParticleGun* 				particleGun;

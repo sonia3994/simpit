@@ -74,6 +74,7 @@ private:
   G4UIcommand*					MomDistrCmd;
   G4UIcmdWithADoubleAndUnit*			ParPosZCmd;
   G4UIcmdWithADoubleAndUnit*			InputFileRMSFactorCmd;
+  G4UIcmdWithADoubleAndUnit*			BunchLengthCmd;
   G4UIcmdWithoutParameter* 			PrintParaCmd;
 };
 

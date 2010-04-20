@@ -87,7 +87,7 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
     void SetInputFile(G4String );
 
     inline void SetParticlePosZ(G4double t)
-    {particlePosZ=t;G4cout<<"The particle Z axis is set to: "<<t<<" mm"<<G4endl;};
+    {particlePosZ=t;G4cout<<"The particle Z axis is set to: "<<t/mm<<" mm"<<G4endl;};
 
     inline void SetEnergyUnit(G4String t)
     {UnitE=G4UIcommand::ValueOf(t);G4cout<<"The energy unit of input file is set to: "<<t<<G4endl;};
@@ -99,7 +99,10 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
     {UnitL=G4UIcommand::ValueOf(t);G4cout<<"The length unit of input file is set to: "<<t<<G4endl;};
 
     inline void SetInputFileRMSFactor(G4double t)
-    {eRMSR=t;G4cout<<"The input file's dimension rms factor is set to: "<<t<<"mm"<<G4endl;};
+    {eRMSR=t;G4cout<<"The input file's dimension rms factor is set to: "<<t/mm<<"mm"<<G4endl;};
+
+    inline void SetBunchLength(G4double t)
+    {bunchLength=t;G4cout<<"The bunch length is set to: "<<t/ns<<"ns"<<G4endl;};
   
   public:
     void GeneratePrimaryVertex(G4Event* evt);
@@ -113,6 +116,7 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
     G4double	UnitP;
     G4double	UnitL;
     G4double	particlePosZ;
+    G4double	bunchLength;
     G4double	eRMSR;
     G4bool		eRMSRflag;
     G4ThreeVector* 	VHEP;

@@ -57,81 +57,82 @@ GPHEPEvtInterface::GPHEPEvtInterface():inputFile(NULL)
 
 GPHEPEvtInterface::GPHEPEvtInterface(G4String evfile)
 {
-  Init();
-  SetInputFile(evfile);
+	Init();
+	SetInputFile(evfile);
 }
 
 void GPHEPEvtInterface::Init()
 {
-  UnitE=MeV;
-  UnitP=MeV;
-  UnitL=cm;
-  eRMSR=2.5*mm;
-  eRMSRflag=TRUE;
-  G4ThreeVector zero;
-  particle_position = zero;
-  particle_time = 0.0;
-  particlePosZ=-3.*mm;
-  CLHEP:: HepRandom::setTheSeed(time(0),time(0));
-  randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.5);
-
-  /*
-  outputFile.open("photonInit.dat",std::fstream::out);
-   if(outputFile.is_open()) 
-   {
-     G4cout<<"Set output file successed: "<<G4endl;
-     outputFile.clear();
-   }
-   else 
-   { 
-     G4cout<<"Set output file failed: "<<G4endl;
-   }
-   */
-
+	UnitE=MeV;
+	UnitP=MeV;
+	UnitL=cm;
+	eRMSR=2.5*mm;
+	bunchLength=6*ns;
+	eRMSRflag=TRUE;
+	G4ThreeVector zero;
+	particle_position = zero;
+	particle_time = 0.0;
+	particlePosZ=-3.*mm;
+	CLHEP:: HepRandom::setTheSeed(time(0),time(0));
+	randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.5);
+	
+	/*
+	outputFile.open("photonInit.dat",std::fstream::out);
+	 if(outputFile.is_open()) 
+	 {
+	   G4cout<<"Set output file successed: "<<G4endl;
+	   outputFile.clear();
+	 }
+	 else 
+	 { 
+	   G4cout<<"Set output file failed: "<<G4endl;
+	 }
+	 */
+	
 }
 
 GPHEPEvtInterface::~GPHEPEvtInterface()
 {  
-       	if(inputFile.is_open()) inputFile.close();
-        if(outputFile.is_open()) outputFile.close();
+	if(inputFile.is_open()) inputFile.close();
+	if(outputFile.is_open()) outputFile.close();
 }
 
 void GPHEPEvtInterface::SetInputFile(G4String tmp)
 {
-   if(inputFile.is_open())
-   {
-     inputFile.close();
-     G4cout<<"Close input file: "<<fileName<<G4endl;
-   }
-   
-   inputFile.open(tmp,std::fstream::in);
-//   inputFile=inf;
-   if(inputFile.is_open()) 
-   {
-     fileName=tmp;
-     G4cout<<"Set input file successed: "<<tmp<<G4endl;
-     inputFile.clear();
-   }
-   else 
-   { 
-     G4cout<<"Set input file failed: "<<tmp<<G4endl;
-   }
-
+	if(inputFile.is_open())
+	{
+	  inputFile.close();
+	  G4cout<<"Close input file: "<<fileName<<G4endl;
+	}
+	
+	inputFile.open(tmp,std::fstream::in);
+	
+	if(inputFile.is_open()) 
+	{
+	  fileName=tmp;
+	  G4cout<<"Set input file successed: "<<tmp<<G4endl;
+	  inputFile.clear();
+	}
+	else 
+	{ 
+	  G4cout<<"Set input file failed: "<<tmp<<G4endl;
+	}
+	
 }
 
 void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 {
-  if(!inputFile.is_open()) 
-  {
-      G4cout<<"did not set the input file: "<<G4endl;
-      return;
-   }
-
-  if(inputFile.eof()) 
-  {
-    G4Exception("End-Of-File : HEPEvt input file");
-    return;
-  }
+	if(!inputFile.is_open()) 
+	{
+	    G4cout<<"did not set the input file: "<<G4endl;
+	    return;
+	 }
+	
+	if(inputFile.eof()) 
+	{
+	  G4Exception("End-Of-File : HEPEvt input file");
+	  return;
+	}
 
     G4int 	NHEP;  // number of entries
     G4int 	ISTHEP;   // status code
@@ -170,108 +171,106 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
     inputFile>>NHEP;
   //  G4cout<<"The entries of this event: "<<NHEP<<G4endl;
 
-  for(G4int i=0; i<NHEP; i++ )
-  {
-    inputFile >> ISTHEP >> IDHEP >> JDAHEP1 >> JDAHEP2>> PHEP1 >> PHEP2 >> PHEP3 >> PHEP5 >>VHEP1>>VHEP2;//>>
-   // G4cout<<","<<ISTHEP<<","<<IDHEP<<","<<JDAHEP1<<","<<JDAHEP2<<","<<PHEP1<<","<<PHEP2<<","<<PHEP3<<","<<PHEP5<<","<<VHEP1<<","<<VHEP2<<","<<G4endl;
-
-    if(eRMSRflag==TRUE)
-    {
-    x1=randGauss->shoot(0.0,eRMSR);
-    y1=randGauss->shoot(0.0,eRMSR);
-    }
-    else 
-	{x1=0;y1=0;} 
-
-	//double	rr=sqrt(x1*x1+y1*y1);
-    //outputFile<<rr<<"\n"<<-rr<<"\n";
-    //outputFile<<x1<<" "<<y1<<"\n";
-
-	VHEP1=VHEP1*UnitL+x1;
-	VHEP2=VHEP2*UnitL+y1;
-
-	PHEP1=PHEP1*UnitP;
-	PHEP2=PHEP2*UnitP;
-	PHEP3=PHEP3*UnitP;
-	PHEP5=PHEP5*UnitE;
-
-	polX=G4UniformRand();
-	polY=G4UniformRand();
-	polZ=std::sqrt(1.0-polX*polX-polY*polY);
-
-    VHEP= new G4ThreeVector(VHEP1,VHEP2,VHEP3);
-
-	//rr=sqrt(VHEP1*VHEP1+VHEP2*VHEP2);
-
-    // create G4PrimaryParticle object
-    particle = new G4PrimaryParticle( IDHEP, PHEP1, PHEP2, PHEP3);
-    particle->SetMass( PHEP5 );
-	particle->SetPolarization(polX,polY,polZ);
-
-    // create G4HEPEvtParticle object
-    hepParticle = new G4HEPEvtParticle( particle, ISTHEP, JDAHEP1, JDAHEP2 );
-
-    // Store
-    HPlist.push_back( hepParticle );
-    PosList.push_back(VHEP);
-  }
-
-  // check if there is at least one particle
-  if( HPlist.size() == 0 ) return; 
-
-  // make connection between daughter particles decayed from 
-  // the same mother
-  for( size_t i=0; i<HPlist.size(); i++ )
-  {
-    if( HPlist[i]->GetJDAHEP1() > 0 ) //  it has daughters
-    {
-      G4int jda1 = HPlist[i]->GetJDAHEP1()-1; // FORTRAN index starts from 1
-      G4int jda2 = HPlist[i]->GetJDAHEP2()-1; // but C++ starts from 0.
-      mother = HPlist[i]->GetTheParticle();
-      for( G4int j=jda1; j<=jda2; j++ )
-      {
-        daughter = HPlist[j]->GetTheParticle();
-        if(HPlist[j]->GetISTHEP()>0)
-        {
-          mother->SetDaughter( daughter );
-          HPlist[j]->Done();
-        }
+  	for(G4int i=0; i<NHEP; i++ )
+  	{
+		inputFile >> ISTHEP >> IDHEP >> JDAHEP1 >> JDAHEP2>> PHEP1 >> PHEP2 >> PHEP3 >> PHEP5 >>VHEP1>>VHEP2;//>>
 		
-      }
+		if(eRMSRflag==TRUE)
+		{
+			x1=randGauss->shoot(0.0,eRMSR);
+			y1=randGauss->shoot(0.0,eRMSR);
+		}
+		else 
+		{x1=0;y1=0;} 
+		
+		//double	rr=sqrt(x1*x1+y1*y1);
+		//outputFile<<rr<<"\n"<<-rr<<"\n";
+		//outputFile<<x1<<" "<<y1<<"\n";
+		
+		VHEP1=VHEP1*UnitL+x1;
+		VHEP2=VHEP2*UnitL+y1;
+		
+		PHEP1=PHEP1*UnitP;
+		PHEP2=PHEP2*UnitP;
+		PHEP3=PHEP3*UnitP;
+		PHEP5=PHEP5*UnitE;
+		
+		polX=G4UniformRand();
+		polY=G4UniformRand();
+		polZ=std::sqrt(1.0-polX*polX-polY*polY);
+		
+		VHEP= new G4ThreeVector(VHEP1,VHEP2,VHEP3);
+		
+		//rr=sqrt(VHEP1*VHEP1+VHEP2*VHEP2);
+		
+		// create G4PrimaryParticle object
+		particle = new G4PrimaryParticle( IDHEP, PHEP1, PHEP2, PHEP3);
+		particle->SetMass( PHEP5 );
+		particle->SetPolarization(polX,polY,polZ);
+		
+		// create G4HEPEvtParticle object
+		hepParticle = new G4HEPEvtParticle( particle, ISTHEP, JDAHEP1, JDAHEP2 );
+		
+		// Store
+		HPlist.push_back( hepParticle );
+		PosList.push_back(VHEP);
+  	}
 
-    }
+	// check if there is at least one particle
+	if( HPlist.size() == 0 ) return; 
+	
+	// make connection between daughter particles decayed from 
+	// the same mother
+	for( size_t i=0; i<HPlist.size(); i++ )
+	{
+    	if( HPlist[i]->GetJDAHEP1() > 0 ) //  it has daughters
+    	{
+			G4int jda1 = HPlist[i]->GetJDAHEP1()-1; // FORTRAN index starts from 1
+			G4int jda2 = HPlist[i]->GetJDAHEP2()-1; // but C++ starts from 0.
+			mother = HPlist[i]->GetTheParticle();
+			for( G4int j=jda1; j<=jda2; j++ )
+			{
+				daughter = HPlist[j]->GetTheParticle();
+				if(HPlist[j]->GetISTHEP()>0)
+				{
+				  mother->SetDaughter( daughter );
+				  HPlist[j]->Done();
+				}
+			  
+      		}
 
-  }
+    	}
 
-  particle_position=*PosList[0];
-  particle_time=randGauss->shoot(0.0,6.0);
-  particle_time=particle_time*ns;
+  	}
 
-  // put initial particles to the vertex
-  for( size_t ii=0; ii<HPlist.size(); ii++ )
-  {
-    if( HPlist[ii]->GetISTHEP() > 0 ) // ISTHEP of daughters had been 
-                                       // set to negative
-    {
-      particle= HPlist[ii]->GetTheParticle();
-      vertex= new G4PrimaryVertex(particle_position,particle_time);
-	//create G4PrimaryVertex object
-      vertex->SetPrimary( particle);
-    // Put the vertex to G4Event object
-      evt->AddPrimaryVertex( vertex );
-    }
-
-  }
-
-  // clear G4HEPEvtParticles
-  //HPlist.clearAndDestroy();
-  for(size_t iii=0;iii<HPlist.size();iii++)
-  { 
-   delete HPlist[iii];
-   delete PosList[iii];
-  }
-  HPlist.clear();
-  PosList.clear();
-
+	particle_position=*PosList[0];
+	particle_time=randGauss->shoot(0.0,bunchLength);
+	
+	// put initial particles to the vertex
+	for( size_t ii=0; ii<HPlist.size(); ii++ )
+	{
+		if( HPlist[ii]->GetISTHEP() > 0 ) // ISTHEP of daughters had been 
+		                                   // set to negative
+		{
+			particle= HPlist[ii]->GetTheParticle();
+			vertex= new G4PrimaryVertex(particle_position,particle_time);
+			//create G4PrimaryVertex object
+			vertex->SetPrimary( particle);
+			// Put the vertex to G4Event object
+			evt->AddPrimaryVertex( vertex );
+		}
+		
+	}
+	
+	// clear G4HEPEvtParticles
+	//HPlist.clearAndDestroy();
+	for(size_t iii=0;iii<HPlist.size();iii++)
+	{ 
+	 	delete HPlist[iii];
+	 	delete PosList[iii];
+	}
+	HPlist.clear();
+	PosList.clear();
+	
 }
 
