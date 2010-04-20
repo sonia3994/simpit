@@ -244,6 +244,8 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
   }
 
   particle_position=*PosList[0];
+  particle_time=randGauss->shoot(0.0,6.0);
+  particle_time=particle_time*ns;
 
   // put initial particles to the vertex
   for( size_t ii=0; ii<HPlist.size(); ii++ )

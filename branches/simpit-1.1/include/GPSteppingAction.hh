@@ -58,8 +58,8 @@ public:
   void Init();
     
 private:
-  void WriteToFileDT(G4ThreeVector,G4ThreeVector,G4double);
-  void WriteToFileDC(G4ThreeVector,G4ThreeVector,G4double);
+  void WriteToFileDT(G4ThreeVector,G4ThreeVector,G4double,G4double);
+  void WriteToFileDC(G4ThreeVector,G4ThreeVector,G4double,G4double);
 
   G4String 		particle;
   std::ofstream 	  writeFile;
