@@ -60,7 +60,7 @@
 GPCaptureField::GPCaptureField()
 {
   	B0=6*tesla;
-  	B0=0.5*tesla;
+  	B1=0.5*tesla;
   	alpha=22/m;
 	fieldType=1;
 	highQL=8*cm;
@@ -105,12 +105,12 @@ void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield)
   	static G4double r2;
   	static G4double fz;
   	static G4double fz2;
-	r2=sqr(Point[0])+sqr(Point[1]);
+	r2=Point[0]*Point[0]+Point[1]*Point[1];
 
   	if(Point[2]>tarL/2&&Point[2]<=(tarL/2+capL)&&r2<capR*capR)
   	{
 		fz=B0/(1+alpha*(Point[2]-tarL/2));
-		fz2=sqr(fz);
+		fz2=fz*fz;
 		//
 		//Bz(z,r)=f(z);f(z)=B0/(1+alpha*z)
 		//Br(z,r)=-0.5*r*df(z)/dz;
@@ -133,39 +133,25 @@ void GPCaptureField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield)
   	static	G4double	feiMi;
   	static	G4double	feiMiOne;
 	static	G4double 	r2;
-	r2=sqr(Point[0])+sqr(Point[1]);
+	r2=Point[0]*Point[0]+Point[1]*Point[1];
 
-	//if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL))
 	if(Point[2]>tarL/2&&Point[2]<=(tarL/2+highQL+lowQL)&&r2<capR*capR)
 	{
 		///*
      	feiMi=exp((Point[2]-tarL/2-highQL)/mm);
 		feiMiOne=1/(1+feiMi);
-  		Bfield[0]=Point[0]*(B0-B1)*feiMi*sqr(feiMiOne)/2;
+  		Bfield[0]=Point[0]*(B0-B1)*feiMi*feiMiOne*feiMiOne/2;
   		Bfield[1]=Point[1]*Bfield[0]/Point[0];
 		Bfield[2]=(B0-B1)*feiMiOne+B1;
 		//*/
 		/*
-		feiMi=1/(1+1720*sqr(Point[2]-tarL/2)/m/m);
+		feiMi=1/(1+1720*(Point[2]-tarL/2)*(Point[2]-tarL/2)/m/m);
 		feiMiOne=1/(1+feiMi);
-  		Bfield[0]=Point[0]*B0*1720*Point[2]*sqr(feiMi);
+  		Bfield[0]=Point[0]*B0*1720*Point[2]*feiMi*feiMi;
   		Bfield[1]=Point[1]*Bfield[0]/Point[0];
 		Bfield[2]=B0*feiMi;
 		*/
-		/*
-  		Bfield[0]=0;
-  		Bfield[1]=0;
-		Bfield[2]=6*tesla;
-		*/
 	}
-	/*
-	else if(Point[2]>(tarL/2+highQL)&&Point[2]<=(tarL/2+highQL+lowQL))
-	{
-  		Bfield[0]=0;
-  		Bfield[1]=0;
-		Bfield[2]=0.5*tesla;
-	}
-	*/
 
   	else 
   	{ 
