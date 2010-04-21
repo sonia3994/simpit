@@ -151,20 +151,20 @@ void GPCaptureField::GetFieldValueQWT(const G4double Point[3], G4double *Bfield)
 	*/
 	if(Point[2]>halfTarL&&Point[2]<=(halfTarL+highQL+lowQL)&&r2<sqrCapR)
 	{
-		/*
+		///*
      	feiMi=exp((Point[2]-halfTarL-highQL)/cm);
 		feiMiOne=1/(1+feiMi);
   		Bfield[0]=0.5*Point[0]*(B0-B1)*feiMi*feiMiOne*feiMiOne/2/cm;
   		Bfield[1]=Point[1]*Bfield[0]/Point[0];
 		Bfield[2]=(B0-B1)*feiMiOne+B1;
-		*/
-		///*
+		//*/
+		/*
 		feiMi=1/(1+qwtAlpha*(Point[2]-halfTarL)*(Point[2]-halfTarL)/cm/cm);
 		//feiMiOne=feiMi*feiMi;
   		Bfield[0]=Point[0]*B0*qwtAlpha*Point[2]*feiMi*feiMi/cm/cm;
   		Bfield[1]=Point[1]*Bfield[0]/Point[0];
 		Bfield[2]=B0*feiMi;
-		//*/
+		*/
 	}
 
   	else 
