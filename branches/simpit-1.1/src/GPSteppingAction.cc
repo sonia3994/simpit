@@ -82,24 +82,46 @@ void GPSteppingAction::Init()
 
 void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-	static G4VPhysicalVolume* postPhys=NULL; 
-	static G4VPhysicalVolume* prevPhys;
-	static G4StepPoint* prevStepPoint;
-	static G4StepPoint* postStepPoint;
-	static G4String particleName;
-	static G4double stepE;
-	static G4ThreeVector prevPos;
-	static G4ThreeVector postPos;
-	static G4ThreeVector prevMom;
-	static G4ThreeVector postMom;
-	static G4double totalE; 
-	static G4double globalTime; 
-	static G4double stepL;
+	static G4VPhysicalVolume* 	postPhys=NULL; 
+	static G4VPhysicalVolume* 	prevPhys;
+	static G4StepPoint* 		prevStepPoint;
+	static G4StepPoint* 		postStepPoint;
+	static G4Track*				currentTrack;
+	static G4TrackStatus		currentTrackStatus;
+
+	static G4String 			particleName;
+	static G4ThreeVector		prevPos;
+	static G4ThreeVector		postPos;
+	static G4ThreeVector		prevMom;
+	static G4ThreeVector		postMom;
+	static G4double				globalTime; 
+	static G4double				totalE; 
+	static G4double				stepE;
+	static G4double				stepL;
+	static G4int   				stopFlag;
 	
 	stepE=aStep->GetTotalEnergyDeposit();
 	if(stepE<0)
-	  {return;}
+	  	{return;}
 	
+	stepL = aStep->GetStepLength();
+	if(stepL<=0.0)
+	{
+    	stopFlag++;
+		if(stopFlag>=10)
+		{
+        	currentTrack=aStep->GetTrack();
+			currentTrackStatus=fStopAndKill;
+			currentTrack->SetTrackStatus(currentTrackStatus);
+		}
+		
+	}
+	else 
+	{
+    	stopFlag=0;
+	}
+	//if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
+
 	particleName = aStep->GetTrack()->GetDefinition()->GetParticleName();
 
 	prevStepPoint=aStep->GetPreStepPoint();
@@ -114,9 +136,6 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	postPos=postStepPoint->GetPosition();
 	postMom=postStepPoint->GetMomentum();
 	
-	if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
-	  stepL = aStep->GetStepLength();
-	    
 	if (prevPhys==targetPhys) 
 	{
 	  eventaction->AddTargetED(stepE);
