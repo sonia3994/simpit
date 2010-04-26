@@ -52,14 +52,16 @@ public:
   	GPCaptureField();
   	~GPCaptureField();
 	void Init();
-  	void SetFieldValueB0(G4double      fieldValue){B0=fieldValue;} ;
-  	void SetFieldValueAlpha(G4double      fieldValue) {amdAlpha=fieldValue;};
+  	void SetFieldValueB0(G4double      fieldValue){B0=fieldValue;G4cout<<"Set field B0 value to: "<<B0<<G4endl;} ;
+  	void SetFieldValueAlpha(G4double      fieldValue) {amdAlpha=fieldValue;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;};
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  	void SetCaptureType(G4int t) {fieldType=t;};
+  	void SetCaptureType(G4int t) {fieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
 
 private:
   	void GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const;
-  	void GetFieldValueQWT(const G4double Point[3], G4double *Bfield) const;
+  	void GetFieldValueQWTFermi(const G4double Point[3], G4double *Bfield) const;
+  	void GetFieldValueQWTNegativeSqr(const G4double Point[3], G4double *Bfield) const;
+  	void GetFieldValueQWTAbrupt(const G4double Point[3], G4double *Bfield) const;
 
 private:
   	G4double 	B0;

@@ -101,8 +101,9 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	static G4int   				stopFlag;
 	
 	stepE=aStep->GetTotalEnergyDeposit();
-	if(stepE<0)
-	  	{return;}
+	particleName = aStep->GetTrack()->GetDefinition()->GetParticleName();
+
+	if(stepE<0) {return;}
 	
 	stepL = aStep->GetStepLength();
 	if(stepL<=0.0)
@@ -113,6 +114,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
         	currentTrack=aStep->GetTrack();
 			currentTrackStatus=fStopAndKill;
 			currentTrack->SetTrackStatus(currentTrackStatus);
+			G4cout<<"Kill a particle because it does not move more then 10 steps, particle type: "<<particleName<<G4endl;
 		}
 		
 	}
@@ -122,7 +124,6 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	}
 	//if (aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0.)
 
-	particleName = aStep->GetTrack()->GetDefinition()->GetParticleName();
 
 	prevStepPoint=aStep->GetPreStepPoint();
 	postStepPoint=aStep->GetPostStepPoint();
