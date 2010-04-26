@@ -196,7 +196,6 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
 
 void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *Bfield) const
 {
-  	static	G4double	feiMi;
 	static	G4double 	r2;
   	static 	G4double 	relativeZ;
 
@@ -239,6 +238,7 @@ GPFieldSetup::GPFieldSetup()
   	fCaptureField = new GPCaptureField();
   	
   	fFieldMessenger = new GPFieldMessenger(this) ;  
+  	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
   	
   	fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
   	fLocalEquation = new G4Mag_UsualEqRhs(fCaptureField); 
@@ -384,15 +384,6 @@ void GPFieldSetup::SetStepper()
 	}
 }
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Set the value of the Global Field to fieldValue along Z
-//
-
-void GPFieldSetup::SetCaptureType(G4int t) 
-{
-	fCaptureField->SetCaptureType(t);
-}
 
 
 void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
@@ -409,55 +400,7 @@ void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
 	    G4cout<<"Inative the capture field!"<<G4endl;
 	}
 }
-void GPFieldSetup::SetFieldValue(G4double fieldStrength)
-{
-//  fCaptureField->SetFieldValueB0(fieldStrength); 
-  //G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
-  //G4ThreeVector fieldSetVec(0.0, 0.0, fieldStrength);
-  //this->SetFieldValue( fieldSetVec ); 
-  //    *************
 
-}
-///////////////////////////////////////////////////////////////////////////////
-//
-// Set the value of the Global Field
-//
-
-void GPFieldSetup::SetFieldValueB0(G4double      fieldValue) 
-{
-	fCaptureField->SetFieldValueB0(fieldValue);
-}
-
-void GPFieldSetup::SetFieldValue(G4ThreeVector fieldVector)
-{
-	if(fMagneticField) delete fMagneticField;
-	
-	if(fieldVector != G4ThreeVector(0.,0.,0.))
-	{ 
-	  fMagneticField = new  G4UniformMagField(fieldVector);
-	}
-	else 
-	{
-	  // If the new field's value is Zero, then 
-	  //  setting the pointer to zero ensures 
-	  //  that it is not used for propagation.
-	  fMagneticField = 0; 
-	}
-	
-	// Either  
-	//   - UpdateField() to reset all (ChordFinder, Equation);
-	   // UpdateField();
-	//   or simply update the field manager & equation of motion 
-	//      with pointer to new field
-	//GetGlobalFieldManager()->SetDetectorField(fMagneticField);
-	GetGlobalFieldManager()->SetDetectorField(NULL);
-	fEquation->SetFieldObj( fMagneticField ); 
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Utility method
 
 G4FieldManager*  GPFieldSetup::GetGlobalFieldManager()
 {

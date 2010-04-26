@@ -52,8 +52,9 @@ public:
   	GPCaptureField();
   	~GPCaptureField();
 	void Init();
-  	void SetFieldValueB0(G4double      fieldValue){B0=fieldValue;G4cout<<"Set field B0 value to: "<<B0<<G4endl;} ;
-  	void SetFieldValueAlpha(G4double      fieldValue) {amdAlpha=fieldValue;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;};
+  	void SetFieldValueB0(G4double      t){B0=t;G4cout<<"Set field B0 value to: "<<B0<<G4endl;} ;
+  	void SetFieldValueAlpha(G4double      t) {amdAlpha=t;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;};
+  	void SetAMDFieldAlpha(G4double      t){amdAlpha=t;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;} ;
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
   	void SetCaptureType(G4int t) {fieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
 
@@ -93,47 +94,36 @@ public:
  ~GPFieldSetup() ;
       
   void SetStepperType( G4int i) { fStepperType = i ; }
-
   void SetStepper();
-
   void SetMinStep(G4double s) { fMinStep = s ; }
-
   void UpdateField();
-
   void SetCaptureFieldFlag(G4bool) ;
-  void SetCaptureType(G4int) ;
-  void SetFieldValue(G4ThreeVector fieldVector) ;
-  void SetFieldValue(G4double      fieldValue) ;
-  void SetFieldValueB0(G4double      fieldValue) ;
-  void SetFieldValueAlpha(G4double      fieldValue) ;
   G4ThreeVector GetConstantFieldValue();
   G4FieldManager*  GetLocalFieldManager() { return fLocalFieldManager ;}
 
 protected:
 
-  G4FieldManager*         GetGlobalFieldManager() ;
-    // Returns the global Field Manager
+  G4FieldManager*        	GetGlobalFieldManager() ;
+  G4FieldManager*        	fFieldManager ;
+  G4FieldManager*        	fLocalFieldManager ;
 
-  G4FieldManager*         fFieldManager ;
-  G4FieldManager*         fLocalFieldManager ;
+  G4ChordFinder*         	fChordFinder ;
+  G4ChordFinder*         	fLocalChordFinder ;
 
-  G4ChordFinder*          fChordFinder ;
-  G4ChordFinder*          fLocalChordFinder ;
+  G4Mag_UsualEqRhs*      	fEquation ; 
+  G4Mag_UsualEqRhs*      	fLocalEquation ; 
 
-  G4Mag_UsualEqRhs*       fEquation ; 
-  G4Mag_UsualEqRhs*       fLocalEquation ; 
+  G4MagneticField*       	fMagneticField ; 
+  GPCaptureField*          	fCaptureField ; 
 
-  G4MagneticField*        fMagneticField ; 
-  GPCaptureField*        		fCaptureField ; 
+  G4MagIntegratorStepper*	fStepper ;
+  G4MagIntegratorStepper*	fLocalStepper ;
+  G4int                  	fStepperType ;
+  G4double               	fMinStep ;
 
-  G4MagIntegratorStepper* fStepper ;
-  G4MagIntegratorStepper* fLocalStepper ;
-  G4int                   fStepperType ;
-  G4double                fMinStep ;
-
-  GPFieldMessenger*      fFieldMessenger;
-  G4bool		 globalFieldFlag;
-  G4bool		 captureFieldFlag;
+  GPFieldMessenger*      	fFieldMessenger;
+  G4bool					globalFieldFlag;
+  G4bool					captureFieldFlag;
 
 };
 
