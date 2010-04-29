@@ -115,6 +115,7 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
     G4double	UnitE;
     G4double	UnitP;
     G4double	UnitL;
+    G4double	timeUnit;
     G4double	particlePosZ;
     G4double	bunchLength;
     G4double	eRMSR;

@@ -67,11 +67,12 @@ void GPHEPEvtInterface::Init()
 	UnitP=MeV;
 	UnitL=cm;
 	eRMSR=2.5*mm;
-	bunchLength=6*ns;
+	bunchLength=10;
 	eRMSRflag=TRUE;
 	G4ThreeVector zero;
 	particle_position = zero;
 	particle_time = 0.0;
+	timeUnit=0.001*ns;
 	particlePosZ=-3.*mm;
 	CLHEP:: HepRandom::setTheSeed(time(0),time(0));
 	randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.5);
@@ -244,7 +245,7 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
   	}
 
 	particle_position=*PosList[0];
-	particle_time=randGauss->shoot(0.0,bunchLength);
+	particle_time=randGauss->shoot(0.0,bunchLength)*timeUnit;
 	
 	// put initial particles to the vertex
 	for( size_t ii=0; ii<HPlist.size(); ii++ )
