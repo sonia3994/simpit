@@ -84,7 +84,7 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
   MinStepCmd->SetDefaultUnit("mm");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
-  AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/setAMDB0",this);  
+  AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/setAMDAlpha",this);  
   AMDAlphaCmd->SetGuidance("Define AMD  magnetic field alpha, please transfer to the cm unit and don't input unit");
   AMDAlphaCmd->SetParameterName("AMDB0",false,false);
   AMDAlphaCmd->SetDefaultValue(0.22);
