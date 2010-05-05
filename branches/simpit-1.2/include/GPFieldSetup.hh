@@ -48,6 +48,7 @@ class G4Mag_UsualEqRhs;
 class G4EqMagElectricField;
 class G4MagIntegratorStepper;
 class GPFieldMessenger;
+class G4MagInt_Driver;
 
 class GPCaptureField : public G4MagneticField
 {
@@ -141,6 +142,8 @@ protected:
   G4MagIntegratorStepper*	fGlobalStepper ;
   G4MagIntegratorStepper*	fCaptureStepper ;
   G4MagIntegratorStepper*	fAcceleratorStepper ;
+
+  G4MagInt_Driver*			fAcceleratorIntegratorDriver;
 
   G4int                  	fStepperType ;
   G4double               	fMinStep ;

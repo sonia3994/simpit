@@ -42,6 +42,7 @@
 #include "G4Mag_UsualEqRhs.hh"
 #include "G4EqMagElectricField.hh"
 #include "G4MagIntegratorStepper.hh"
+#include "G4MagIntegratorDriver.hh"
 #include "G4ChordFinder.hh"
 
 #include "G4RunManager.hh"
@@ -314,7 +315,8 @@ GPFieldSetup::~GPFieldSetup()
   	if(fGlobalEquation)			delete fGlobalEquation; 
   	if(fCaptureEquation)		delete fCaptureEquation; 
   	if(fAcceleratorEquation)		delete fAcceleratorEquation; 
-
+  	if(fAcceleratorIntegratorDriver)		delete fAcceleratorIntegratorDriver; 
+     
   	if(fFieldMessenger)     delete fFieldMessenger;
 }
 
@@ -366,10 +368,13 @@ void GPFieldSetup::UpdateField()
 	if(fGlobalChordFinder) delete fGlobalChordFinder;
 	if(fCaptureChordFinder) delete fCaptureChordFinder;
 	if(fAcceleratorChordFinder) delete fAcceleratorChordFinder;
-	
+	if(fAcceleratorIntegratorDriver) delete fAcceleratorIntegratorDriver; 
+
 	fGlobalChordFinder = new G4ChordFinder( fGlobalMagnetic, fMinStep,fGlobalStepper);
 	fCaptureChordFinder = new G4ChordFinder( fCaptureField,fMinStep,fCaptureStepper);
-	fAcceleratorChordFinder = new G4ChordFinder( fAcceleratorField,fMinStep,fAcceleratorStepper);
+
+	fAcceleratorIntegratorDriver = new G4MagInt_Driver(fMinStep,fAcceleratorStepper,fAcceleratorStepper->GetNumberOfVariables());
+	fAcceleratorChordFinder = new G4ChordFinder(fAcceleratorIntegratorDriver);
 	
 	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
 	fCaptureFieldManager->SetChordFinder( fCaptureChordFinder );
@@ -422,20 +427,23 @@ void GPFieldSetup::SetStepper()
 		case 5:  
 		  fGlobalStepper = new G4HelixExplicitEuler( fGlobalEquation ); 
 		  fCaptureStepper = new G4HelixExplicitEuler( fCaptureEquation ); 
-		  fAcceleratorStepper = new G4HelixExplicitEuler( fAcceleratorEquation ); 
-		  G4cout<<"G4HelixExplicitEuler is called"<<G4endl;     
+		  G4cout<<"G4HelixExplicitEuler is called except G4EqMagElectricField"<<G4endl;     
+		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation ); 
+		  G4cout<<"G4HelixExplicitEuler is called for G4EqMagElectricField"<<G4endl;     
 		  break;
 		case 6:  
 		  fGlobalStepper = new G4HelixImplicitEuler( fGlobalEquation ); 
 		  fCaptureStepper = new G4HelixImplicitEuler( fCaptureEquation ); 
-		  fAcceleratorStepper = new G4HelixImplicitEuler( fAcceleratorEquation ); 
-		  G4cout<<"G4HelixImplicitEuler is called"<<G4endl;     
+		  G4cout<<"G4HelixImplicitEuler is called except G4EqMagElectricField"<<G4endl;     
+		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation ); 
+		  G4cout<<"G4ClassicalRK4 is called for G4EqMagElectricField"<<G4endl;     
 		  break;
 		case 7:  
 		  fGlobalStepper = new G4HelixSimpleRunge( fGlobalEquation );   
 		  fCaptureStepper = new G4HelixSimpleRunge( fCaptureEquation );   
-		  fAcceleratorStepper = new G4HelixSimpleRunge( fAcceleratorEquation );   
-		  G4cout<<"G4HelixSimpleRunge is called"<<G4endl;     
+		  G4cout<<"G4HelixSimpleRunge is called except G4EqMagElectricField"<<G4endl;     
+		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation );   
+		  G4cout<<"G4ClassicalRK4 is called for G4EqMagElectricField"<<G4endl;     
 		  break;
 		case 8:  
 		  fGlobalStepper = new G4CashKarpRKF45( fGlobalEquation );      
@@ -446,8 +454,9 @@ void GPFieldSetup::SetStepper()
 		case 9:  
 		  fGlobalStepper = new G4RKG3_Stepper( fGlobalEquation );       
 		  fCaptureStepper = new G4RKG3_Stepper( fCaptureEquation );       
-		  fAcceleratorStepper = new G4RKG3_Stepper( fAcceleratorEquation );       
-		  G4cout<<"G4RKG3_Stepper is called"<<G4endl;     
+		  G4cout<<"G4RKG3_Stepper is called except G4EqMagElectricField"<<G4endl;     
+		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation ); 
+		  G4cout<<"G4ClassicalRK4 is called for G4EqMagElectricField"<<G4endl;     
 		  break;
 		default: 
 		  fGlobalStepper = 0;
@@ -476,7 +485,7 @@ void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
 
 void GPFieldSetup::SetAcceleratorFieldFlag(G4bool t)
 {
-	AcceleratorFieldFlag=t; 
+	acceleratorFieldFlag=t; 
 	if(acceleratorFieldFlag)
 	{
 	    fAcceleratorFieldManager->SetDetectorField(fAcceleratorField );
