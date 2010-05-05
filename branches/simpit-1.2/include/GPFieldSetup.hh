@@ -38,11 +38,14 @@
 #define GPFieldSetup_H
 
 #include "G4MagneticField.hh"
+#include "G4ElectroMagneticField.hh"
 #include "G4UniformMagField.hh"
-//#include <fstream>
+#include <string>
+
 class G4FieldManager;
 class G4ChordFinder;
 class G4Mag_UsualEqRhs;
+class G4EqMagElectricField;
 class G4MagIntegratorStepper;
 class GPFieldMessenger;
 
@@ -83,6 +86,20 @@ private:
 	G4double 	relativeMagL;
 };
 
+class GPAcceleratorField : public G4ElectroMagneticField
+{
+public:
+  	GPAcceleratorField();
+  	~GPAcceleratorField();
+	void Init();
+  	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
+	G4bool	DoesFieldChangeEnergy() const {return false;};
+
+private:
+  	G4double 	B0;
+  	G4double 	E0;
+
+};
 
 class GPFieldSetup
 {
@@ -98,32 +115,40 @@ public:
   void SetMinStep(G4double s) { fMinStep = s ; }
   void UpdateField();
   void SetCaptureFieldFlag(G4bool) ;
+  void SetAcceleratorFieldFlag(G4bool) ;
   G4ThreeVector GetConstantFieldValue();
-  G4FieldManager*  GetLocalFieldManager() { return fLocalFieldManager ;}
+  G4FieldManager*  GetLocalFieldManager(std::string name);
 
 protected:
 
   G4FieldManager*        	GetGlobalFieldManager() ;
-  G4FieldManager*        	fFieldManager ;
-  G4FieldManager*        	fLocalFieldManager ;
+  G4FieldManager*        	fGlobalFieldManager ;
+  G4FieldManager*        	fCaptureFieldManager ;
+  G4FieldManager*        	fAcceleratorFieldManager ;
 
-  G4ChordFinder*         	fChordFinder ;
-  G4ChordFinder*         	fLocalChordFinder ;
-
-  G4Mag_UsualEqRhs*      	fEquation ; 
-  G4Mag_UsualEqRhs*      	fLocalEquation ; 
-
-  G4MagneticField*       	fMagneticField ; 
+  G4MagneticField*       	fGlobalMagnetic ; 
   GPCaptureField*          	fCaptureField ; 
+  GPAcceleratorField*       fAcceleratorField ; 
 
-  G4MagIntegratorStepper*	fStepper ;
-  G4MagIntegratorStepper*	fLocalStepper ;
+  G4ChordFinder*         	fGlobalChordFinder ;
+  G4ChordFinder*         	fCaptureChordFinder ;
+  G4ChordFinder*         	fAcceleratorChordFinder ;
+
+  G4Mag_UsualEqRhs*      	fGlobalEquation ; 
+  G4Mag_UsualEqRhs*      	fCaptureEquation ; 
+  G4EqMagElectricField*      	fAcceleratorEquation ; 
+
+  G4MagIntegratorStepper*	fGlobalStepper ;
+  G4MagIntegratorStepper*	fCaptureStepper ;
+  G4MagIntegratorStepper*	fAcceleratorStepper ;
+
   G4int                  	fStepperType ;
   G4double               	fMinStep ;
 
   GPFieldMessenger*      	fFieldMessenger;
   G4bool					globalFieldFlag;
   G4bool					captureFieldFlag;
+  G4bool					acceleratorFieldFlag;
 
 };
 

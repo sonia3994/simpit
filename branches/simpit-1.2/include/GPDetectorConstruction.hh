@@ -51,7 +51,12 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     GPDetectorConstruction();
     ~GPDetectorConstruction();
     G4VPhysicalVolume* Construct();
+  public:
+    const G4VPhysicalVolume* GetPhysicalVolume(std::string name) const;
+    G4double GetDetectorSize(std::string name) const;
+    void SetDetectorSize(std::string str);
 
+  public:
     inline const G4VPhysicalVolume* GetVacuumPhysical() const        {return worldPhys;};
     inline const G4VPhysicalVolume* GetTargetPhysical()  const       {return targetPhys;};
     inline const G4VPhysicalVolume* GetCapturePhysical()  const       {return capturePhys;};
@@ -82,6 +87,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     void SetTargetMaterial (G4String);
     void SetWorldMaterial (G4String);
     void SetCaptureMaterial (G4String);
+    void SetAcceleratorMaterial (G4String);
     void SetTranTubeMaterial (G4String);
 
     void UpdateGeometry();
@@ -95,18 +101,9 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     
     // target
     //
-    G4double TargetCellX;
-    G4double TargetCellY;
-    G4double TargetCellZ;
-    std::vector<G4int> eddDim;
     G4double targetBoxY;
     G4double targetBoxX;
     G4double targetBoxZ;
-
-    G4Material* Vacuum;
-    G4Material* W;
-    //G4double targetTubeStartAngle;
-    //G4double targetTubeSpanningAngle;
 
     G4Material* targetMaterial;
     G4Box* targetBox;
@@ -121,12 +118,12 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4double captureTubeStartAngle;
     G4double captureTubeSpanningAngle;
 
-    GPFieldSetup* captureFieldSetup;
     G4Material* captureMaterial;
     G4Tubs* captureTube;
     G4LogicalVolume* captureLog;
     G4VPhysicalVolume* capturePhys;
 
+    // transport
     G4double tranTubeInnerRadius;
     G4double tranTubeOuterRadius;
     G4double tranTubeLength;
@@ -137,8 +134,20 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4Tubs* tranTube;
     G4LogicalVolume* tranLog;
     G4VPhysicalVolume* tranPhys;
+
+    // accelerator
+    G4double acceleratorTubeInnerRadius;
+    G4double acceleratorTubeOuterRadius;
+    G4double acceleratorTubeLength;
+    G4double acceleratorTubeStartAngle;
+    G4double acceleratorTubeSpanningAngle;
+
+    G4Material* acceleratorMaterial;
+    G4Tubs* acceleratorTube;
+    G4LogicalVolume* acceleratorLog;
+    G4VPhysicalVolume* acceleratorPhys;
+
     // world
-    //
     G4double worldX;
     G4double worldY;
     G4double worldZ;
@@ -148,10 +157,22 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume* worldLog;
     G4VPhysicalVolume* worldPhys;
 
+
+    GPFieldSetup* fieldSetup;
+    GPDetectorMessenger* detectorMessenger;
+
+    //sensetive detector
     GPTargetSD* targetSD;
     GPTargetROGeometry* targetRO;
-    GPDetectorMessenger* detectorMessenger;
-    
+
+    G4double TargetCellX;
+    G4double TargetCellY;
+    G4double TargetCellZ;
+    std::vector<G4int> eddDim;
+
+    //material
+    G4Material* Vacuum;
+    G4Material* W;
 };
 
 #endif

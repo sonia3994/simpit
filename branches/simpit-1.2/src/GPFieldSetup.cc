@@ -40,6 +40,7 @@
 #include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
 #include "G4Mag_UsualEqRhs.hh"
+#include "G4EqMagElectricField.hh"
 #include "G4MagIntegratorStepper.hh"
 #include "G4ChordFinder.hh"
 
@@ -224,32 +225,59 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 
 
 //////////////////////////////////////////////////////////////////////////
+GPAcceleratorField::GPAcceleratorField()
+{
+  	B0=0.5*tesla;
+  	E0=15*MeV/m;
+}
+
+GPAcceleratorField::~GPAcceleratorField()
+{
+}
+
+void GPAcceleratorField::Init()
+{
+}
+
+
+void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
+{
+	Bfield[0]=0;
+	Bfield[1]=0;
+	Bfield[2]=B0;
+	Bfield[3]=0;
+	Bfield[4]=0;
+	Bfield[5]=E0;
+}
+
 //
 //  Constructors:
 
 GPFieldSetup::GPFieldSetup()
-  :  fChordFinder(0), fLocalChordFinder(0), fStepper(0),fLocalStepper(0)
+  :  fGlobalChordFinder(0), fCaptureChordFinder(0),fAcceleratorChordFinder(0),  fGlobalStepper(0),fCaptureStepper(0),fAcceleratorStepper(0)  
 {
 
-  	fMagneticField = new G4UniformMagField(
-  	  	       G4ThreeVector(3.3*tesla,
-  	                                   0.0,              // 0.5*tesla,
-  	                                   0.0       ));
+  	fGlobalMagnetic = new G4UniformMagField( G4ThreeVector(3.3*tesla, 0.0,  0.0));
   	fCaptureField = new GPCaptureField();
+  	fAcceleratorField = new GPAcceleratorField();
   	
+  	fGlobalEquation = new G4Mag_UsualEqRhs(fGlobalMagnetic); 
+  	fCaptureEquation = new G4Mag_UsualEqRhs(fCaptureField); 
+  	fAcceleratorEquation = new G4EqMagElectricField(fAcceleratorField); 
+  	
+  	fGlobalFieldManager = GetGlobalFieldManager();
+  	fCaptureFieldManager = new G4FieldManager();
+  	fAcceleratorFieldManager = new G4FieldManager();
+
   	fFieldMessenger = new GPFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
-  	
-  	fEquation = new G4Mag_UsualEqRhs(fMagneticField); 
-  	fLocalEquation = new G4Mag_UsualEqRhs(fCaptureField); 
-  	
+
   	fMinStep     = 1*mm ; // minimal step of 1 mm is default
   	fStepperType = 4 ;      // ClassicalRK4 is default stepper
   	
-  	fFieldManager = GetGlobalFieldManager();
-  	fLocalFieldManager = new G4FieldManager();
-  	captureFieldFlag=TRUE;
   	globalFieldFlag=FALSE;
+  	captureFieldFlag=TRUE;
+  	acceleratorFieldFlag=TRUE;
   	
   	UpdateField();
 }
@@ -258,8 +286,8 @@ GPFieldSetup::GPFieldSetup()
 
 GPFieldSetup::GPFieldSetup(G4ThreeVector fieldVector)
 {    
-  	fMagneticField = new G4UniformMagField(fieldVector);
-  	GetGlobalFieldManager()->CreateChordFinder(fMagneticField);
+  	fGlobalMagnetic = new G4UniformMagField(fieldVector);
+  	GetGlobalFieldManager()->CreateChordFinder(fGlobalMagnetic);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -267,16 +295,26 @@ GPFieldSetup::GPFieldSetup(G4ThreeVector fieldVector)
 GPFieldSetup::~GPFieldSetup()
 {
  
-  	//if(fMagneticField) 	delete fMagneticField;
-  	if(fLocalFieldManager) 	delete fLocalFieldManager ;
-  	if(fMagneticField) 		delete fMagneticField;
+  	//if(fGlobalMagnetic) 	delete fGlobalMagnetic;
+  	if(fCaptureFieldManager) 	delete fCaptureFieldManager ;
+  	if(fAcceleratorFieldManager) 	delete fAcceleratorFieldManager ;
+
+  	if(fGlobalMagnetic) 		delete fGlobalMagnetic;
   	if(fCaptureField) 		delete fCaptureField;
-  	if(fChordFinder)   		delete fChordFinder;
-  	if(fLocalChordFinder)	delete fLocalChordFinder;
-  	if(fStepper)       		delete fStepper;
-  	if(fLocalStepper)      	delete fLocalStepper;
-  	if(fEquation)			delete fEquation; 
-  	if(fLocalEquation)		delete fLocalEquation; 
+  	if(fAcceleratorField) 		delete fAcceleratorField;
+
+  	if(fGlobalChordFinder)   		delete fGlobalChordFinder;
+  	if(fCaptureChordFinder)	delete fCaptureChordFinder;
+  	if(fAcceleratorChordFinder)	delete fAcceleratorChordFinder;
+
+  	if(fGlobalStepper)       		delete fGlobalStepper;
+  	if(fCaptureStepper)      	delete fCaptureStepper;
+  	if(fAcceleratorStepper)      	delete fAcceleratorStepper;
+
+  	if(fGlobalEquation)			delete fGlobalEquation; 
+  	if(fCaptureEquation)		delete fCaptureEquation; 
+  	if(fAcceleratorEquation)		delete fAcceleratorEquation; 
+
   	if(fFieldMessenger)     delete fFieldMessenger;
 }
 
@@ -284,6 +322,14 @@ GPFieldSetup::~GPFieldSetup()
 //
 // Update field
 //
+G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name) 
+{ 
+	if(name=="capture")
+		{return fCaptureFieldManager ;}
+	else if(name=="accelerator")
+		{return fAcceleratorFieldManager ;}
+	else return NULL;
+}
 
 void GPFieldSetup::UpdateField()
 {
@@ -292,95 +338,121 @@ void GPFieldSetup::UpdateField()
 	
 	if(globalFieldFlag)
 	{
-		fFieldManager->SetDetectorField(fMagneticField );
+		fGlobalFieldManager->SetDetectorField(fGlobalMagnetic );
 	}
 	else
 	{
-		fFieldManager->SetDetectorField(NULL );
+		fGlobalFieldManager->SetDetectorField(NULL );
 	}
 	
 	if(captureFieldFlag)
 	{
-		fLocalFieldManager->SetDetectorField(fCaptureField );
+		fCaptureFieldManager->SetDetectorField(fCaptureField );
 	}
 	else
 	{
-		fLocalFieldManager->SetDetectorField(NULL );
+		fCaptureFieldManager->SetDetectorField(NULL );
 	}
 	
-	if(fChordFinder) delete fChordFinder;
-	if(fLocalChordFinder) delete fLocalChordFinder;
+	if(acceleratorFieldFlag)
+	{
+		fAcceleratorFieldManager->SetDetectorField(fAcceleratorField );
+	}
+	else
+	{
+		fAcceleratorFieldManager->SetDetectorField(NULL );
+	}
 	
-	fChordFinder = new G4ChordFinder( fMagneticField, fMinStep,fStepper);
-	fLocalChordFinder = new G4ChordFinder( fCaptureField,fMinStep,fLocalStepper);
+	if(fGlobalChordFinder) delete fGlobalChordFinder;
+	if(fCaptureChordFinder) delete fCaptureChordFinder;
+	if(fAcceleratorChordFinder) delete fAcceleratorChordFinder;
 	
-	fFieldManager->SetChordFinder( fChordFinder );
-	fLocalFieldManager->SetChordFinder( fLocalChordFinder );
+	fGlobalChordFinder = new G4ChordFinder( fGlobalMagnetic, fMinStep,fGlobalStepper);
+	fCaptureChordFinder = new G4ChordFinder( fCaptureField,fMinStep,fCaptureStepper);
+	fAcceleratorChordFinder = new G4ChordFinder( fAcceleratorField,fMinStep,fAcceleratorStepper);
+	
+	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
+	fCaptureFieldManager->SetChordFinder( fCaptureChordFinder );
+	fAcceleratorFieldManager->SetChordFinder( fAcceleratorChordFinder );
+
 }
 
-/////////////////////////////////////////////////////////////////////////////
 //
 // Set stepper according to the stepper type
 //
 
 void GPFieldSetup::SetStepper()
 {
-	if(fStepper) delete fStepper;
-	if(fLocalStepper) delete fLocalStepper;
+	if(fGlobalStepper) delete fGlobalStepper;
+	if(fCaptureStepper) delete fCaptureStepper;
+	if(fAcceleratorStepper) delete fAcceleratorStepper;
 	
 	switch ( fStepperType ) 
 	{
 		case 0:  
-		  fStepper = new G4ExplicitEuler( fEquation ); 
-		  fLocalStepper = new G4ExplicitEuler( fLocalEquation ); 
+		  fGlobalStepper = new G4ExplicitEuler( fGlobalEquation ); 
+		  fCaptureStepper = new G4ExplicitEuler( fCaptureEquation ); 
+		  fAcceleratorStepper = new G4ExplicitEuler( fAcceleratorEquation ); 
 		  G4cout<<"G4ExplicitEuler is calledS"<<G4endl;     
 		  break;
 		case 1:  
-		  fStepper = new G4ImplicitEuler( fEquation );      
-		  fLocalStepper = new G4ImplicitEuler( fLocalEquation );      
+		  fGlobalStepper = new G4ImplicitEuler( fGlobalEquation );      
+		  fCaptureStepper = new G4ImplicitEuler( fCaptureEquation );      
+		  fAcceleratorStepper = new G4ImplicitEuler( fAcceleratorEquation );      
 		  G4cout<<"G4ImplicitEuler is called"<<G4endl;     
 		  break;
 		case 2:  
-		  fStepper = new G4SimpleRunge( fEquation );        
-		  fLocalStepper = new G4SimpleRunge( fLocalEquation );        
+		  fGlobalStepper = new G4SimpleRunge( fGlobalEquation );        
+		  fCaptureStepper = new G4SimpleRunge( fCaptureEquation );        
+		  fAcceleratorStepper = new G4SimpleRunge( fAcceleratorEquation );        
 		  G4cout<<"G4SimpleRunge is called"<<G4endl;     
 		  break;
 		case 3:  
-		  fStepper = new G4SimpleHeum( fEquation );         
-		  fLocalStepper = new G4SimpleHeum( fLocalEquation );         
+		  fGlobalStepper = new G4SimpleHeum( fGlobalEquation );         
+		  fCaptureStepper = new G4SimpleHeum( fCaptureEquation );         
+		  fAcceleratorStepper = new G4SimpleHeum( fAcceleratorEquation );         
 		  G4cout<<"G4SimpleHeum is called"<<G4endl;     
 		  break;
 		case 4:  
-		  fStepper = new G4ClassicalRK4( fEquation );       
-		  fLocalStepper = new G4ClassicalRK4( fLocalEquation );       
+		  fGlobalStepper = new G4ClassicalRK4( fGlobalEquation );       
+		  fCaptureStepper = new G4ClassicalRK4( fCaptureEquation );       
+		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation );       
 		  G4cout<<"G4ClassicalRK4 (default) is called"<<G4endl;     
 		  break;
 		case 5:  
-		  fStepper = new G4HelixExplicitEuler( fEquation ); 
-		  fLocalStepper = new G4HelixExplicitEuler( fLocalEquation ); 
+		  fGlobalStepper = new G4HelixExplicitEuler( fGlobalEquation ); 
+		  fCaptureStepper = new G4HelixExplicitEuler( fCaptureEquation ); 
+		  fAcceleratorStepper = new G4HelixExplicitEuler( fAcceleratorEquation ); 
 		  G4cout<<"G4HelixExplicitEuler is called"<<G4endl;     
 		  break;
 		case 6:  
-		  fStepper = new G4HelixImplicitEuler( fEquation ); 
-		  fLocalStepper = new G4HelixImplicitEuler( fLocalEquation ); 
+		  fGlobalStepper = new G4HelixImplicitEuler( fGlobalEquation ); 
+		  fCaptureStepper = new G4HelixImplicitEuler( fCaptureEquation ); 
+		  fAcceleratorStepper = new G4HelixImplicitEuler( fAcceleratorEquation ); 
 		  G4cout<<"G4HelixImplicitEuler is called"<<G4endl;     
 		  break;
 		case 7:  
-		  fStepper = new G4HelixSimpleRunge( fEquation );   
-		  fLocalStepper = new G4HelixSimpleRunge( fLocalEquation );   
+		  fGlobalStepper = new G4HelixSimpleRunge( fGlobalEquation );   
+		  fCaptureStepper = new G4HelixSimpleRunge( fCaptureEquation );   
+		  fAcceleratorStepper = new G4HelixSimpleRunge( fAcceleratorEquation );   
 		  G4cout<<"G4HelixSimpleRunge is called"<<G4endl;     
 		  break;
 		case 8:  
-		  fStepper = new G4CashKarpRKF45( fEquation );      
-		  fLocalStepper = new G4CashKarpRKF45( fLocalEquation );      
+		  fGlobalStepper = new G4CashKarpRKF45( fGlobalEquation );      
+		  fCaptureStepper = new G4CashKarpRKF45( fCaptureEquation );      
+		  fAcceleratorStepper = new G4CashKarpRKF45( fAcceleratorEquation );      
 		  G4cout<<"G4CashKarpRKF45 is called"<<G4endl;     
 		  break;
 		case 9:  
-		  fStepper = new G4RKG3_Stepper( fEquation );       
-		  fLocalStepper = new G4RKG3_Stepper( fLocalEquation );       
+		  fGlobalStepper = new G4RKG3_Stepper( fGlobalEquation );       
+		  fCaptureStepper = new G4RKG3_Stepper( fCaptureEquation );       
+		  fAcceleratorStepper = new G4RKG3_Stepper( fAcceleratorEquation );       
 		  G4cout<<"G4RKG3_Stepper is called"<<G4endl;     
 		  break;
-		default: fStepper = 0;
+		default: 
+		  fGlobalStepper = 0;
+	   	  fCaptureStepper=0;
+	   	  fAcceleratorStepper=0;
 	}
 }
 
@@ -391,13 +463,29 @@ void GPFieldSetup::SetCaptureFieldFlag(G4bool t)
 	captureFieldFlag=t; 
 	if(captureFieldFlag)
 	{
-	    fLocalFieldManager->SetDetectorField(fCaptureField );
+	    fCaptureFieldManager->SetDetectorField(fCaptureField );
 	    G4cout<<"Active the capture field!"<<G4endl;
 	}
 	else
 	{
-	    fLocalFieldManager->SetDetectorField(NULL );
+	    fCaptureFieldManager->SetDetectorField(NULL );
 	    G4cout<<"Inative the capture field!"<<G4endl;
+	}
+}
+
+
+void GPFieldSetup::SetAcceleratorFieldFlag(G4bool t)
+{
+	AcceleratorFieldFlag=t; 
+	if(acceleratorFieldFlag)
+	{
+	    fAcceleratorFieldManager->SetDetectorField(fAcceleratorField );
+	    G4cout<<"Active the Accelerator field!"<<G4endl;
+	}
+	else
+	{
+	    fAcceleratorFieldManager->SetDetectorField(NULL );
+	    G4cout<<"Inative the Accelerator field!"<<G4endl;
 	}
 }
 
@@ -416,7 +504,7 @@ G4ThreeVector GPFieldSetup::GetConstantFieldValue()
   static G4double fieldValue[6],  position[4]; 
   position[0] = position[1] = position[2] = position[3] = 0.0; 
 
-  fMagneticField->GetFieldValue( position, fieldValue);
+  fGlobalMagnetic->GetFieldValue( position, fieldValue);
   G4ThreeVector fieldVec(fieldValue[0], fieldValue[1], fieldValue[2]); 
 
   return fieldVec;

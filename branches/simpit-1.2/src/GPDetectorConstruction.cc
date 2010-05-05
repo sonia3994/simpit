@@ -43,6 +43,7 @@
 #include "G4NistManager.hh"
 
 #include "G4ThreeVector.hh"
+#include "G4UIcommand.hh"
 #include "G4FieldManager.hh"
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -50,22 +51,23 @@
 #include "G4SolidStore.hh"
 
 #include <cmath>
+#include <sstream>
+
 GPDetectorConstruction::GPDetectorConstruction()
  :  targetBox(0),targetLog(0),targetPhys(0),
     captureTube(0),captureLog(0),capturePhys(0),
+    acceleratorTube(0),acceleratorLog(0),acceleratorPhys(0),
     tranTube(0),tranLog(0),tranPhys(0),
     worldBox(0),worldLog(0),worldPhys(0),
-    captureFieldSetup(0)
+    fieldSetup(0)
 {
     targetBoxY = 25*mm;
     targetBoxX = 25*mm;
     targetBoxZ = 6.0*mm;
+
     TargetCellX=0.5*mm;
-    //TargetCellX=0.185*mm;
     TargetCellY=0.5*mm;
-    //TargetCellY=0.185*mm;
     TargetCellZ=1*mm;
-    //TargetCellZ=0.875*mm;
     eddDim.push_back(ceil(targetBoxX/TargetCellX));
     eddDim.push_back(ceil(targetBoxY/TargetCellY));
     eddDim.push_back(ceil(targetBoxZ/TargetCellZ));
@@ -82,6 +84,12 @@ GPDetectorConstruction::GPDetectorConstruction()
     tranTubeSpanningAngle = 360.*deg;
     tranTubeLength =4500.0*mm;
 
+    acceleratorTubeInnerRadius = 0.*mm;
+    acceleratorTubeOuterRadius = 50*mm;
+    acceleratorTubeStartAngle = 0.*deg;
+    acceleratorTubeSpanningAngle = 360.*deg;
+    acceleratorTubeLength = 1000.0*mm;
+
     worldX = 500.0*mm;
     worldY = 500.0*mm;
     worldZ = 10000.0*mm;
@@ -93,9 +101,11 @@ GPDetectorConstruction::GPDetectorConstruction()
     SetWorldMaterial ("G4_Galactic");
     //SetCaptureMaterial ("Galactic");
     SetCaptureMaterial ("G4_Galactic");
+    //SetacceleratorMaterial ("Galactic");
+    SetAcceleratorMaterial ("G4_Galactic");
     //SetTranTubeMaterial ("Galactic");
     SetTranTubeMaterial ("G4_Galactic");
-    captureFieldSetup = new GPFieldSetup();
+    fieldSetup = new GPFieldSetup();
     detectorMessenger = new GPDetectorMessenger(this);
 
 }
@@ -103,7 +113,7 @@ GPDetectorConstruction::GPDetectorConstruction()
 GPDetectorConstruction::~GPDetectorConstruction()
 {
     if(detectorMessenger) delete detectorMessenger;
-    if(captureFieldSetup) delete captureFieldSetup;
+    if(fieldSetup) delete fieldSetup;
     if(targetRO) delete targetRO;
     if(Vacuum) delete Vacuum;
     if(W) delete W;
@@ -121,6 +131,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   G4LogicalVolumeStore::GetInstance()->Clean();
   G4SolidStore::GetInstance()->Clean();
 
+  //------------------------------ world
   worldBox = new G4Box("worldBox",worldX/2,worldY/2,worldZ/2);
   worldLog = new G4LogicalVolume(worldBox,worldMaterial,"worldLog");
   worldPhys = new G4PVPlacement(0,G4ThreeVector(),worldLog,"world",0,false,0);
@@ -149,7 +160,23 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
              G4ThreeVector(capturePos_x,capturePos_y,capturePos_z),
              captureLog,"capture",worldLog,false,0);
 
-  captureLog->SetFieldManager(captureFieldSetup->GetLocalFieldManager(),true);
+  captureLog->SetFieldManager(fieldSetup->GetLocalFieldManager("capture"),true);
+
+  //------------------------------ accelerator tube
+
+  acceleratorTube = new G4Tubs("acceleratorTube",acceleratorTubeInnerRadius,
+                                    acceleratorTubeOuterRadius,acceleratorTubeLength/2.0,
+                                    acceleratorTubeStartAngle,acceleratorTubeSpanningAngle);
+  acceleratorLog = new G4LogicalVolume(acceleratorTube,acceleratorMaterial,"acceleratorLog");
+  G4double acceleratorPos_x = 0.*mm;
+  G4double acceleratorPos_y = 0.*mm;
+  G4double acceleratorPos_z = captureTubeLength+(targetBoxZ+acceleratorTubeLength)/2;
+  acceleratorPhys = new G4PVPlacement(0,
+             G4ThreeVector(acceleratorPos_x,acceleratorPos_y,acceleratorPos_z),
+             acceleratorLog,"accelerator",worldLog,false,0);
+
+  acceleratorLog->SetFieldManager(fieldSetup->GetLocalFieldManager("accelerator"),true);
+
 //--------------------------------transportion tube
   tranTube = new G4Tubs("tranTube",tranTubeInnerRadius,
                                     tranTubeOuterRadius,tranTubeLength/2.0,
@@ -327,6 +354,15 @@ void GPDetectorConstruction::SetCaptureMaterial(G4String materialChoice)
   G4cout<<"The Capture material is set to "<<materialChoice<<G4endl;
 }
 
+void GPDetectorConstruction::SetAcceleratorMaterial(G4String materialChoice)
+{
+  // search the material by its name
+  //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
+  G4Material* pttoMaterial= G4NistManager::Instance()->FindOrBuildMaterial(materialChoice);
+  if (pttoMaterial) acceleratorMaterial = pttoMaterial;
+  G4cout<<"The Accelerator material is set to "<<materialChoice<<G4endl;
+}
+
 void GPDetectorConstruction::SetTranTubeMaterial(G4String materialChoice)
 {
   // search the material by its name
@@ -359,4 +395,135 @@ void GPDetectorConstruction::PrintDetectorParameters()
 	 <<"Cell number is: "<<eddDim[0]<<"*"<<eddDim[1]<<"*"<<eddDim[2]<<"\n"
          << "\n------------------------------------------------------------\n"
 	 << G4endl;
+}
+
+const G4VPhysicalVolume* GPDetectorConstruction::GetPhysicalVolume(std::string name) const
+{   
+   	if(name=="target")
+    	{return targetPhys;}
+
+   	else if(name=="capture")
+    	{return capturePhys;}
+
+   	else if(name=="accelerator")
+    	{return acceleratorPhys;}
+
+   	else if(name=="transport")
+    	{return tranPhys;}
+
+	else if(name=="world")
+    	{return worldPhys;}
+
+	else return NULL;
+}
+
+G4double GPDetectorConstruction::GetDetectorSize(std::string name) const
+{
+    if(name=="target_x")
+    return targetBoxY;
+    else if(name=="target_y")
+    return targetBoxX;
+    else if(name=="target_z")
+    return targetBoxZ;
+    
+    else if(name=="capture_ir")
+    return captureTubeInnerRadius;
+    else if(name=="capture_or")
+    return captureTubeOuterRadius;
+    else if(name=="capture_l")
+    return captureTubeLength;
+    else if(name=="capture_sa")
+    return captureTubeStartAngle;
+    else if(name=="capture_ea")
+    return captureTubeSpanningAngle;
+    
+    else if(name=="transport_ir")
+    return tranTubeInnerRadius;
+    else if(name=="transport_or")
+    return tranTubeOuterRadius;
+    else if(name=="transport_l")
+    return tranTubeLength;
+    else if(name=="transport_sa")
+    return tranTubeStartAngle;
+    else if(name=="transport_ea")
+    return tranTubeSpanningAngle;
+    
+    else if(name=="accelerator_ir")
+    return acceleratorTubeInnerRadius;
+    else if(name=="accelerator_or")
+    return acceleratorTubeOuterRadius;
+    else if(name=="accelerator_l")
+    return acceleratorTubeLength;
+    else if(name=="accelerator_sa")
+    return acceleratorTubeStartAngle;
+    else if(name=="accelerator_ea")
+    return acceleratorTubeSpanningAngle;
+    
+    else if(name=="world_x")
+    return worldX;
+    else if(name=="world_y")
+    return worldY;
+    else if(name=="world_z")
+    return worldZ;
+	
+	else return 0;
+}
+
+void GPDetectorConstruction::SetDetectorSize(std::string str)
+{
+	std::stringstream ss(str);
+	std::string		  unit;
+	std::string		  key;
+	G4double   		  value;
+	
+	ss>>key>>value>>unit;
+    value=value*G4UIcommand::ValueOf(unit.c_str());
+
+    if(key=="target_x")
+    targetBoxY = value;
+    else if(key=="target_y")
+    targetBoxX = value;
+    else if(key=="target_z")
+    targetBoxZ = value;
+    
+    else if(key=="capture_ir")
+    captureTubeInnerRadius = value;
+    else if(key=="capture_or")
+    captureTubeOuterRadius = value;
+    else if(key=="capture_l")
+    captureTubeLength = value;
+    else if(key=="capture_sa")
+    captureTubeStartAngle = value;
+    else if(key=="capture_ea")
+    captureTubeSpanningAngle = value;
+    
+    else if(key=="transport_ir")
+    tranTubeInnerRadius = value;
+    else if(key=="transport_or")
+    tranTubeOuterRadius = value;
+    else if(key=="transport_l")
+    tranTubeLength = value;
+    else if(key=="transport_sa")
+    tranTubeStartAngle = value;
+    else if(key=="transport_ea")
+    tranTubeSpanningAngle = value;
+    
+    else if(key=="accelerator_ir")
+    acceleratorTubeInnerRadius = value;
+    else if(key=="accelerator_or")
+    acceleratorTubeOuterRadius = value;
+    else if(key=="accelerator_l")
+    acceleratorTubeLength = value;
+    else if(key=="accelerator_sa")
+    acceleratorTubeStartAngle = value;
+    else if(key=="accelerator_ea")
+    acceleratorTubeSpanningAngle = value;
+    
+    else if(key=="world_x")
+    worldX = value;
+    else if(key=="world_y")
+    worldY = value;
+    else if(key=="world_z")
+    worldZ = value;
+
 }
