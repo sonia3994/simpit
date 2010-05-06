@@ -58,8 +58,8 @@ public:
   void Init();
     
 private:
-  void WriteToFileDT(G4ThreeVector,G4ThreeVector,G4double,G4double);
-  void WriteToFileDC(G4ThreeVector,G4ThreeVector,G4double,G4double);
+  //void WriteToFileDT(G4ThreeVector,G4ThreeVector,G4double,G4double);
+  //void WriteToFileDC(G4ThreeVector,G4ThreeVector,G4double,G4double);
 
   G4String 		particle;
   std::ofstream 	  writeFile;
@@ -70,11 +70,17 @@ private:
     const G4VPhysicalVolume* targetPhys;
     const G4VPhysicalVolume* transferPhys;
     const G4VPhysicalVolume* vacuumPhys;
+    const G4VPhysicalVolume* acceleratorPhys;
+
     G4double targetL;
     G4double targetX;
     G4double targetY;
     G4double captureL;
     G4double captureR;
+    G4double acceleratorL;
+    G4double acceleratorR;
+
+	G4int   verbose;
   
 };
 

@@ -117,15 +117,13 @@ void GPCaptureField::GetFieldValue(const G4double Point[3], G4double *Bfield) co
 }
 void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const
 {
-  	static G4double 	r2;
   	static G4double 	fz;
   	static G4double 	fz2;
   	static G4double 	relativeZ;
 
 	relativeZ=Point[2]-halfTarL;
-	r2=Point[0]*Point[0]+Point[1]*Point[1];
 
-  	if(relativeZ>0&&relativeZ<=capL&&r2<sqrCapR)
+  	if(relativeZ>0&&relativeZ<=capL)
   	{
 		fz=B0/(1+amdAlpha*relativeZ/cm);
 		fz2=fz*fz;
@@ -150,12 +148,10 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
 {
   	static	G4double	feiMi;
   	static	G4double	feiMiOne;
-	static	G4double 	r2;
   	static 	G4double 	relativeZ;
 
 	relativeZ=Point[2]-halfTarL;
-	r2=Point[0]*Point[0]+Point[1]*Point[1];
-  	if(relativeZ>0&&relativeZ<=capL&&r2<sqrCapR)
+  	if(relativeZ>0&&relativeZ<=capL)
 	{
      	feiMi=exp((relativeZ-highQL)/cm);
 		feiMiOne=1/(1+feiMi);
@@ -175,12 +171,11 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
 void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4double *Bfield) const
 {
   	static	G4double	feiMi;
-	static	G4double 	r2;
   	static 	G4double 	relativeZ;
+	//std::cout<<Point[0]<<" "<<Point[1]<<" "<<Point[2]<<std::endl;
 
 	relativeZ=Point[2]-halfTarL;
-	r2=Point[0]*Point[0]+Point[1]*Point[1];
-  	if(relativeZ>0&&relativeZ<=capL&&r2<sqrCapR)
+  	if(relativeZ>0&&relativeZ<=capL)
 	{
 		feiMi=1/(1+qwtAlpha*relativeZ*relativeZ/cm/cm);
   		Bfield[0]=Point[0]*B0*qwtAlpha*relativeZ*feiMi*feiMi/cm/cm;
@@ -198,18 +193,16 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
 
 void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *Bfield) const
 {
-	static	G4double 	r2;
   	static 	G4double 	relativeZ;
 
 	relativeZ=Point[2]-halfTarL;
-	r2=Point[0]*Point[0]+Point[1]*Point[1];
-  	if(relativeZ>0&&relativeZ<=highQL&&r2<sqrCapR)
+  	if(relativeZ>0&&relativeZ<=highQL)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
 		Bfield[2]=B0;
 	}
-  	else if(relativeZ>highQL&&relativeZ<=capL&&r2<sqrCapR)
+  	else if(relativeZ>highQL&&relativeZ<=capL)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
@@ -229,7 +222,7 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 GPAcceleratorField::GPAcceleratorField()
 {
   	B0=0.5*tesla;
-  	E0=15*MeV/m;
+  	E0=15000000*volt/m;
 }
 
 GPAcceleratorField::~GPAcceleratorField()
@@ -238,17 +231,28 @@ GPAcceleratorField::~GPAcceleratorField()
 
 void GPAcceleratorField::Init()
 {
+  	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
+  	tarL=detector->GetDetectorSize("target_x");
+  	capL=detector->GetDetectorSize("capture_or");
+  	accL=detector->GetDetectorSize("accelerator_or");
+
+	
 }
 
 
 void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
+	static G4double relativeZ=Point[2]-tarL/2-capL/2;
+
+	if(relativeZ>=0)
+	{
 	Bfield[0]=0;
 	Bfield[1]=0;
 	Bfield[2]=B0;
 	Bfield[3]=0;
 	Bfield[4]=0;
 	Bfield[5]=E0;
+	}
 }
 
 //
@@ -273,13 +277,28 @@ GPFieldSetup::GPFieldSetup()
   	fFieldMessenger = new GPFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
-  	fMinStep     = 1*mm ; // minimal step of 1 mm is default
+  	fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
+	G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
   	fStepperType = 4 ;      // ClassicalRK4 is default stepper
   	
-  	globalFieldFlag=FALSE;
-  	captureFieldFlag=TRUE;
-  	acceleratorFieldFlag=TRUE;
+  	globalFieldFlag=false;
+  	captureFieldFlag=true;
+  	acceleratorFieldFlag=true;
   	
+	SetStepper();
+	
+	fGlobalIntegratorDriver = new G4MagInt_Driver(fMinStep,fGlobalStepper,fGlobalStepper->GetNumberOfVariables());
+	fCaptureIntegratorDriver = new G4MagInt_Driver(fMinStep,fCaptureStepper,fCaptureStepper->GetNumberOfVariables());
+	fAcceleratorIntegratorDriver = new G4MagInt_Driver(fMinStep,fAcceleratorStepper,fAcceleratorStepper->GetNumberOfVariables());
+
+	fGlobalChordFinder = new G4ChordFinder(fGlobalIntegratorDriver);
+	fCaptureChordFinder = new G4ChordFinder(fCaptureIntegratorDriver);
+	fAcceleratorChordFinder = new G4ChordFinder(fAcceleratorIntegratorDriver);
+	
+	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
+	fCaptureFieldManager->SetChordFinder( fCaptureChordFinder );
+	fAcceleratorFieldManager->SetChordFinder( fAcceleratorChordFinder );
+
   	UpdateField();
 }
 
@@ -315,14 +334,23 @@ GPFieldSetup::~GPFieldSetup()
   	if(fGlobalEquation)			delete fGlobalEquation; 
   	if(fCaptureEquation)		delete fCaptureEquation; 
   	if(fAcceleratorEquation)		delete fAcceleratorEquation; 
-  	if(fAcceleratorIntegratorDriver)		delete fAcceleratorIntegratorDriver; 
+
+  	//if(fGlobalIntegratorDriver)		delete fGlobalIntegratorDriver; 
+  	//if(fCaptureIntegratorDriver)		delete fCaptureIntegratorDriver; 
+  	//if(fAcceleratorIntegratorDriver)		delete fAcceleratorIntegratorDriver; 
      
   	if(fFieldMessenger)     delete fFieldMessenger;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Update field
+void GPFieldSetup::Init()
+{
+	UpdateField();
+  	fCaptureField->Init();
+  	fAcceleratorField->Init();
+	
+}
 //
 G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name) 
 { 
@@ -333,11 +361,9 @@ G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name)
 	else return NULL;
 }
 
+// Update field
 void GPFieldSetup::UpdateField()
 {
-	SetStepper();
-	G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
-	
 	if(globalFieldFlag)
 	{
 		fGlobalFieldManager->SetDetectorField(fGlobalMagnetic );
@@ -365,21 +391,6 @@ void GPFieldSetup::UpdateField()
 		fAcceleratorFieldManager->SetDetectorField(NULL );
 	}
 	
-	if(fGlobalChordFinder) delete fGlobalChordFinder;
-	if(fCaptureChordFinder) delete fCaptureChordFinder;
-	if(fAcceleratorChordFinder) delete fAcceleratorChordFinder;
-	if(fAcceleratorIntegratorDriver) delete fAcceleratorIntegratorDriver; 
-
-	fGlobalChordFinder = new G4ChordFinder( fGlobalMagnetic, fMinStep,fGlobalStepper);
-	fCaptureChordFinder = new G4ChordFinder( fCaptureField,fMinStep,fCaptureStepper);
-
-	fAcceleratorIntegratorDriver = new G4MagInt_Driver(fMinStep,fAcceleratorStepper,fAcceleratorStepper->GetNumberOfVariables());
-	fAcceleratorChordFinder = new G4ChordFinder(fAcceleratorIntegratorDriver);
-	
-	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
-	fCaptureFieldManager->SetChordFinder( fCaptureChordFinder );
-	fAcceleratorFieldManager->SetChordFinder( fAcceleratorChordFinder );
-
 }
 
 //

@@ -80,14 +80,13 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 //inform the runManager to save random number seed
   G4RunManager::GetRunManager()->SetRandomNumberStore(true);
 
-  G4Field* g4Field=const_cast<G4Field *>(mydetector->GetCaptureLogical()->GetFieldManager()->GetDetectorField());
-  GPCaptureField* captureField=static_cast< GPCaptureField*>(g4Field);
-  if(captureField) captureField->Init();
-
-  G4UserSteppingAction* g4steppingAction=const_cast<G4UserSteppingAction *>(G4RunManager::GetRunManager()->GetUserSteppingAction());
-  GPSteppingAction* gpSteppingAction=static_cast<GPSteppingAction *>(g4steppingAction);
+  GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
   if(gpSteppingAction) gpSteppingAction->Init();
 
+  GPFieldSetup* gpFieldSetup=(GPFieldSetup*)mydetector->GetFieldSetup();
+  if(gpFieldSetup) gpFieldSetup->Init();
+
+  std::pair<std::string,std::ofstream* > pairHandle;
   G4String fileName;
   G4String chrunID;
   stringstream ss;
@@ -96,16 +95,30 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   targetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("mydet/target")->isActive();
   ss <<runID;
   ss >>chrunID;
-  
+
+  outputPairVectorHandle.clear();
 
   fileName=filePath +"SumAtExitOfTar.dat";
   paraFile.open(fileName,ios::ate|ios::app);
 
   fileName=filePath+chrunID+"ExitOfTar.dat";
-  dataFileDT.open(fileName);
+  dataFileDT = new std::ofstream(fileName);
+  pairHandle.first="target";
+  pairHandle.second=dataFileDT;
+  outputPairVectorHandle.push_back(pairHandle);
 
   fileName=filePath+chrunID+"ExitOfCap.dat";  
-  dataFileDC.open(fileName);
+  dataFileDC = new std::ofstream(fileName);
+  pairHandle.first="capture";
+  pairHandle.second=dataFileDC;
+  outputPairVectorHandle.push_back(pairHandle);
+
+  fileName=filePath+chrunID+"ExitOfAcc.dat";  
+  dataFileAC = new std::ofstream(fileName);
+  pairHandle.first="accelerator";
+  pairHandle.second=dataFileAC;
+  outputPairVectorHandle.push_back(pairHandle);
+
 
   if(targetSDFlag)
   {
@@ -222,9 +235,16 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 	<<sumLTrack<<" "
 	<<rmsLTrack
      	<< G4endl;
+
   paraFile.close();
-  dataFileDT.close();
-  dataFileDC.close();
+	size_t vecSize = outputPairVectorHandle.size();
+	for(size_t i=0;i!=vecSize;i++)
+		{(outputPairVectorHandle[i]).second->close();}
+	 outputPairVectorHandle.clear();
+	
+  //dataFileDT->close();
+  //dataFileDC->close();
+  //dataFileAC->close();
   //G4double x,y,z;
   //G4double dx=mydetector->GetTargetXY()/eddDim[0];
   //G4double dy=mydetector->GetTargetXY()/eddDim[1];
@@ -253,4 +273,27 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
   }
 }
 
+void GPRunAction::OutPutData(std::string name,std::vector<G4double> value) 
+{
+	size_t num=outputPairVectorHandle.size();
+	for(size_t i=0;i!=num;i++)
+	{
+		if(outputPairVectorHandle[i].first==name)
+		{
+		OutPut(i,value);
+		break;
+		}
+	}
+	
+
+}
+void GPRunAction::OutPut(size_t i,std::vector<G4double> value) 
+{
+
+   	for(size_t j=0;j!=value.size();j++)
+		{*(outputPairVectorHandle[i].second)<<value[j]<<" ";}
+
+		*(outputPairVectorHandle[i].second)<<G4endl;
+
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

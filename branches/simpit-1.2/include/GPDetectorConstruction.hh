@@ -62,6 +62,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     inline const G4VPhysicalVolume* GetCapturePhysical()  const       {return capturePhys;};
     inline const G4VPhysicalVolume* GetTransferPhysical()  const       {return tranPhys;};
     inline const G4LogicalVolume* 	GetCaptureLogical()		const		{return captureLog;};
+    inline GPFieldSetup* GetFieldSetup	()					const		{return fieldSetup;};
 
     void SetTargetThickness(G4double);
     void SetTargetXY(G4double);

@@ -38,6 +38,8 @@
 #include "G4UserRunAction.hh"
 #include "globals.hh"
 #include <fstream>
+#include <string>
+#include <utility>
 #include <vector>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -54,26 +56,35 @@ public:
   void  BeginOfRunAction(const G4Run*);
   void  EndOfRunAction(const G4Run*);
     
+  void OutPutData(std::string,std::vector<G4double>); 
   void FillPerEvent(G4double,G4double,G4int); 
   void AddEddHit(G4int, G4int, G4int, G4double);
   void AddActualG(G4int t){actualG+=t;};
-  std::ofstream dataFileDT;
-  std::ofstream dataFileDC;
-//  std::ofstream& GetDataFile(){return dataFile;};
+
+private:
+  void OutPut(size_t ,std::vector<G4double>); 
+
 private:
   G4double sumETar, sum2ETar;
   G4double sumLTrack, sum2LTrack;
   G4int  positronPerRun;
   G4int  actualG;
+
   GPPrimaryGeneratorAction* primaryGenerator;
   GPDetectorConstruction*   mydetector;
+
+  std::vector<std::pair<std::string,std::ofstream* > > outputPairVectorHandle;
+  std::ofstream* dataFileDT;
+  std::ofstream* dataFileDC;
+  std::ofstream* dataFileAC;
+
   std::ofstream paraFile;
   std::ofstream eddHandle;
+  G4String filePath;
+
   std::vector<G4double > edd;
   std::vector<G4int> eddDim;
   G4bool targetSDFlag; 
-
-  G4String filePath;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

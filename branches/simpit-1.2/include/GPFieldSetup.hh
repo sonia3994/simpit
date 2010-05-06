@@ -97,8 +97,11 @@ public:
 	G4bool	DoesFieldChangeEnergy() const {return false;};
 
 private:
-  	G4double 	B0;
-  	G4double 	E0;
+  	G4double 		B0;
+  	G4double 		E0;
+   	G4double 	 	tarL;
+   	G4double 	 	capL;
+   	G4double 	 	accL;
 
 };
 
@@ -111,14 +114,17 @@ public:
   GPFieldSetup(G4ThreeVector) ;  //  The value of the field
  ~GPFieldSetup() ;
       
+  void Init();
   void SetStepperType( G4int i) { fStepperType = i ; }
-  void SetStepper();
   void SetMinStep(G4double s) { fMinStep = s ; }
   void UpdateField();
   void SetCaptureFieldFlag(G4bool) ;
   void SetAcceleratorFieldFlag(G4bool) ;
   G4ThreeVector GetConstantFieldValue();
   G4FieldManager*  GetLocalFieldManager(std::string name);
+
+protected:
+  void SetStepper();
 
 protected:
 
@@ -143,6 +149,8 @@ protected:
   G4MagIntegratorStepper*	fCaptureStepper ;
   G4MagIntegratorStepper*	fAcceleratorStepper ;
 
+  G4MagInt_Driver*			fGlobalIntegratorDriver;
+  G4MagInt_Driver*			fCaptureIntegratorDriver;
   G4MagInt_Driver*			fAcceleratorIntegratorDriver;
 
   G4int                  	fStepperType ;
