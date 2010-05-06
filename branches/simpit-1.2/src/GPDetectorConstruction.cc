@@ -56,8 +56,8 @@
 GPDetectorConstruction::GPDetectorConstruction()
  :  targetBox(0),targetLog(0),targetPhys(0),
     captureTube(0),captureLog(0),capturePhys(0),
-    acceleratorTube(0),acceleratorLog(0),acceleratorPhys(0),
     tranTube(0),tranLog(0),tranPhys(0),
+    acceleratorTube(0),acceleratorLog(0),acceleratorPhys(0),
     worldBox(0),worldLog(0),worldPhys(0),
     fieldSetup(0)
 {

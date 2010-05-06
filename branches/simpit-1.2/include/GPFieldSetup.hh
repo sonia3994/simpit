@@ -47,15 +47,18 @@ class G4ChordFinder;
 class G4Mag_UsualEqRhs;
 class G4EqMagElectricField;
 class G4MagIntegratorStepper;
-class GPFieldMessenger;
 class G4MagInt_Driver;
+class G4PropagatorInField;
 
-class GPCaptureField : public G4MagneticField
+class GPFieldMessenger;
+
+class GPCaptureField : public G4ElectroMagneticField
 {
 public:
   	GPCaptureField();
   	~GPCaptureField();
 	void Init();
+	G4bool	DoesFieldChangeEnergy() const {return false;};
   	void SetFieldValueB0(G4double      t){B0=t;G4cout<<"Set field B0 value to: "<<B0<<G4endl;} ;
   	void SetFieldValueAlpha(G4double      t) {amdAlpha=t;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;};
   	void SetAMDFieldAlpha(G4double      t){amdAlpha=t;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;} ;
@@ -94,7 +97,7 @@ public:
   	~GPAcceleratorField();
 	void Init();
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-	G4bool	DoesFieldChangeEnergy() const {return false;};
+	G4bool	DoesFieldChangeEnergy() const {return true;};
 
 private:
   	G4double 		B0;
@@ -127,6 +130,7 @@ protected:
   void SetStepper();
 
 protected:
+  G4PropagatorInField*    	propInField;
 
   G4FieldManager*        	GetGlobalFieldManager() ;
   G4FieldManager*        	fGlobalFieldManager ;
@@ -141,8 +145,10 @@ protected:
   G4ChordFinder*         	fCaptureChordFinder ;
   G4ChordFinder*         	fAcceleratorChordFinder ;
 
-  G4Mag_UsualEqRhs*      	fGlobalEquation ; 
-  G4Mag_UsualEqRhs*      	fCaptureEquation ; 
+  //G4Mag_UsualEqRhs*      	fGlobalEquation ; 
+  //G4Mag_UsualEqRhs*      	fCaptureEquation ; 
+  G4EqMagElectricField*         fGlobalEquation; 
+  G4EqMagElectricField*         fCaptureEquation; 
   G4EqMagElectricField*      	fAcceleratorEquation ; 
 
   G4MagIntegratorStepper*	fGlobalStepper ;

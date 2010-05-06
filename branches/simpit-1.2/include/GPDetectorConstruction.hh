@@ -148,7 +148,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume* acceleratorLog;
     G4VPhysicalVolume* acceleratorPhys;
 
-    // world
+    // world  set
     G4double worldX;
     G4double worldY;
     G4double worldZ;

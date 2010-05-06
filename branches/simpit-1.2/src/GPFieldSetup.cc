@@ -38,12 +38,13 @@
 #include "G4UniformMagField.hh"
 #include "G4MagneticField.hh"
 #include "G4FieldManager.hh"
-#include "G4TransportationManager.hh"
 #include "G4Mag_UsualEqRhs.hh"
 #include "G4EqMagElectricField.hh"
 #include "G4MagIntegratorStepper.hh"
 #include "G4MagIntegratorDriver.hh"
 #include "G4ChordFinder.hh"
+#include "G4TransportationManager.hh"
+#include "G4PropagatorInField.hh"
 
 #include "G4RunManager.hh"
 #include "G4ExplicitEuler.hh"
@@ -222,7 +223,7 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 GPAcceleratorField::GPAcceleratorField()
 {
   	B0=0.5*tesla;
-  	E0=15000000*volt/m;
+  	E0=15e-6*volt/m;
 }
 
 GPAcceleratorField::~GPAcceleratorField()
@@ -250,8 +251,8 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 	Bfield[1]=0;
 	Bfield[2]=B0;
 	Bfield[3]=0;
-	Bfield[4]=0;
-	Bfield[5]=E0;
+	Bfield[4]=E0;
+	Bfield[5]=0;
 	}
 }
 
@@ -266,8 +267,10 @@ GPFieldSetup::GPFieldSetup()
   	fCaptureField = new GPCaptureField();
   	fAcceleratorField = new GPAcceleratorField();
   	
-  	fGlobalEquation = new G4Mag_UsualEqRhs(fGlobalMagnetic); 
-  	fCaptureEquation = new G4Mag_UsualEqRhs(fCaptureField); 
+  	//fGlobalEquation = new G4Mag_UsualEqRhs(fGlobalMagnetic); 
+  	//fCaptureEquation = new G4Mag_UsualEqRhs(fCaptureField); 
+  	fGlobalEquation = new G4EqMagElectricField(fGlobalMagnetic); 
+  	fCaptureEquation = new G4EqMagElectricField(fCaptureField); 
   	fAcceleratorEquation = new G4EqMagElectricField(fAcceleratorField); 
   	
   	fGlobalFieldManager = GetGlobalFieldManager();
@@ -364,6 +367,10 @@ G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name)
 // Update field
 void GPFieldSetup::UpdateField()
 {
+	propInField = G4TransportationManager::GetTransportationManager()->GetPropagatorInField();
+	propInField->SetMinimumEpsilonStep(1e-11);
+	propInField->SetMaximumEpsilonStep(1e-10);
+
 	if(globalFieldFlag)
 	{
 		fGlobalFieldManager->SetDetectorField(fGlobalMagnetic );
@@ -376,6 +383,10 @@ void GPFieldSetup::UpdateField()
 	if(captureFieldFlag)
 	{
 		fCaptureFieldManager->SetDetectorField(fCaptureField );
+		fCaptureFieldManager->SetDetectorField(fCaptureField );
+		fCaptureFieldManager->GetChordFinder()->SetDeltaChord(1e-9*m);
+		fCaptureFieldManager->SetDeltaIntersection(1e-9*m);
+		fCaptureFieldManager->SetDeltaOneStep(1e-9*m);
 	}
 	else
 	{
@@ -385,6 +396,10 @@ void GPFieldSetup::UpdateField()
 	if(acceleratorFieldFlag)
 	{
 		fAcceleratorFieldManager->SetDetectorField(fAcceleratorField );
+		fAcceleratorFieldManager->GetChordFinder()->SetDeltaChord(1e-9*m);
+		fAcceleratorFieldManager->SetDeltaIntersection(1e-9*m);
+		fAcceleratorFieldManager->SetDeltaOneStep(1e-9*m);
+		
 	}
 	else
 	{
@@ -403,77 +418,9 @@ void GPFieldSetup::SetStepper()
 	if(fCaptureStepper) delete fCaptureStepper;
 	if(fAcceleratorStepper) delete fAcceleratorStepper;
 	
-	switch ( fStepperType ) 
-	{
-		case 0:  
-		  fGlobalStepper = new G4ExplicitEuler( fGlobalEquation ); 
-		  fCaptureStepper = new G4ExplicitEuler( fCaptureEquation ); 
-		  fAcceleratorStepper = new G4ExplicitEuler( fAcceleratorEquation ); 
-		  G4cout<<"G4ExplicitEuler is calledS"<<G4endl;     
-		  break;
-		case 1:  
-		  fGlobalStepper = new G4ImplicitEuler( fGlobalEquation );      
-		  fCaptureStepper = new G4ImplicitEuler( fCaptureEquation );      
-		  fAcceleratorStepper = new G4ImplicitEuler( fAcceleratorEquation );      
-		  G4cout<<"G4ImplicitEuler is called"<<G4endl;     
-		  break;
-		case 2:  
-		  fGlobalStepper = new G4SimpleRunge( fGlobalEquation );        
-		  fCaptureStepper = new G4SimpleRunge( fCaptureEquation );        
-		  fAcceleratorStepper = new G4SimpleRunge( fAcceleratorEquation );        
-		  G4cout<<"G4SimpleRunge is called"<<G4endl;     
-		  break;
-		case 3:  
-		  fGlobalStepper = new G4SimpleHeum( fGlobalEquation );         
-		  fCaptureStepper = new G4SimpleHeum( fCaptureEquation );         
-		  fAcceleratorStepper = new G4SimpleHeum( fAcceleratorEquation );         
-		  G4cout<<"G4SimpleHeum is called"<<G4endl;     
-		  break;
-		case 4:  
-		  fGlobalStepper = new G4ClassicalRK4( fGlobalEquation );       
-		  fCaptureStepper = new G4ClassicalRK4( fCaptureEquation );       
-		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation );       
-		  G4cout<<"G4ClassicalRK4 (default) is called"<<G4endl;     
-		  break;
-		case 5:  
-		  fGlobalStepper = new G4HelixExplicitEuler( fGlobalEquation ); 
-		  fCaptureStepper = new G4HelixExplicitEuler( fCaptureEquation ); 
-		  G4cout<<"G4HelixExplicitEuler is called except G4EqMagElectricField"<<G4endl;     
-		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation ); 
-		  G4cout<<"G4HelixExplicitEuler is called for G4EqMagElectricField"<<G4endl;     
-		  break;
-		case 6:  
-		  fGlobalStepper = new G4HelixImplicitEuler( fGlobalEquation ); 
-		  fCaptureStepper = new G4HelixImplicitEuler( fCaptureEquation ); 
-		  G4cout<<"G4HelixImplicitEuler is called except G4EqMagElectricField"<<G4endl;     
-		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation ); 
-		  G4cout<<"G4ClassicalRK4 is called for G4EqMagElectricField"<<G4endl;     
-		  break;
-		case 7:  
-		  fGlobalStepper = new G4HelixSimpleRunge( fGlobalEquation );   
-		  fCaptureStepper = new G4HelixSimpleRunge( fCaptureEquation );   
-		  G4cout<<"G4HelixSimpleRunge is called except G4EqMagElectricField"<<G4endl;     
-		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation );   
-		  G4cout<<"G4ClassicalRK4 is called for G4EqMagElectricField"<<G4endl;     
-		  break;
-		case 8:  
-		  fGlobalStepper = new G4CashKarpRKF45( fGlobalEquation );      
-		  fCaptureStepper = new G4CashKarpRKF45( fCaptureEquation );      
-		  fAcceleratorStepper = new G4CashKarpRKF45( fAcceleratorEquation );      
-		  G4cout<<"G4CashKarpRKF45 is called"<<G4endl;     
-		  break;
-		case 9:  
-		  fGlobalStepper = new G4RKG3_Stepper( fGlobalEquation );       
-		  fCaptureStepper = new G4RKG3_Stepper( fCaptureEquation );       
-		  G4cout<<"G4RKG3_Stepper is called except G4EqMagElectricField"<<G4endl;     
-		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation ); 
-		  G4cout<<"G4ClassicalRK4 is called for G4EqMagElectricField"<<G4endl;     
-		  break;
-		default: 
-		  fGlobalStepper = 0;
-	   	  fCaptureStepper=0;
-	   	  fAcceleratorStepper=0;
-	}
+	fGlobalStepper = new G4ClassicalRK4( fGlobalEquation );       
+	fCaptureStepper = new G4ClassicalRK4( fCaptureEquation );       
+	fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation );       
 }
 
 
