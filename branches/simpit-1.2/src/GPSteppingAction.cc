@@ -205,6 +205,13 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 		if (verbose>=2)
 		G4cout<<"Kill a particle because it move out of tube "<<particleName<<G4endl;
 	}
+
+	if (prevPos.z()>targetL/2&&particleName!="e+") 
+	{
+		currentTrack->SetTrackStatus(currentTrackStatus);
+		if (verbose>=2)
+		G4cout<<"Kill a particle because it is not: "<<particleName<<G4endl;
+	}
 	
 }
 

@@ -222,8 +222,10 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 //////////////////////////////////////////////////////////////////////////
 GPAcceleratorField::GPAcceleratorField()
 {
+  	//B0=0;
   	B0=0.5*tesla;
-  	E0=15e-6*volt/m;
+  	E0=15e+6*volt/m;
+  	//E0=0;
 }
 
 GPAcceleratorField::~GPAcceleratorField()
@@ -243,7 +245,8 @@ void GPAcceleratorField::Init()
 
 void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
-	static G4double relativeZ=Point[2]-tarL/2-capL/2;
+	static G4double relativeZ;
+	relativeZ=Point[2]-tarL/2-capL/2;
 
 	if(relativeZ>=0)
 	{
@@ -251,8 +254,8 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 	Bfield[1]=0;
 	Bfield[2]=B0;
 	Bfield[3]=0;
-	Bfield[4]=E0;
-	Bfield[5]=0;
+	Bfield[4]=0;
+	Bfield[5]=E0;
 	}
 }
 
@@ -277,6 +280,7 @@ GPFieldSetup::GPFieldSetup()
   	fCaptureFieldManager = new G4FieldManager();
   	fAcceleratorFieldManager = new G4FieldManager();
 
+
   	fFieldMessenger = new GPFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
@@ -297,6 +301,7 @@ GPFieldSetup::GPFieldSetup()
 	fGlobalChordFinder = new G4ChordFinder(fGlobalIntegratorDriver);
 	fCaptureChordFinder = new G4ChordFinder(fCaptureIntegratorDriver);
 	fAcceleratorChordFinder = new G4ChordFinder(fAcceleratorIntegratorDriver);
+	//fAcceleratorChordFinder = new G4ChordFinder((G4MagneticField*)fAcceleratorField,fMinStep,fAcceleratorStepper);
 	
 	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
 	fCaptureFieldManager->SetChordFinder( fCaptureChordFinder );
@@ -370,6 +375,8 @@ void GPFieldSetup::UpdateField()
 	propInField = G4TransportationManager::GetTransportationManager()->GetPropagatorInField();
 	propInField->SetMinimumEpsilonStep(1e-11);
 	propInField->SetMaximumEpsilonStep(1e-10);
+	//propInField->SetVerboseLevel(1);
+	
 
 	if(globalFieldFlag)
 	{
@@ -395,6 +402,7 @@ void GPFieldSetup::UpdateField()
 	
 	if(acceleratorFieldFlag)
 	{
+		//fAcceleratorFieldManager->SetFieldChangesEnergy(true);
 		fAcceleratorFieldManager->SetDetectorField(fAcceleratorField );
 		fAcceleratorFieldManager->GetChordFinder()->SetDeltaChord(1e-9*m);
 		fAcceleratorFieldManager->SetDeltaIntersection(1e-9*m);
@@ -420,7 +428,7 @@ void GPFieldSetup::SetStepper()
 	
 	fGlobalStepper = new G4ClassicalRK4( fGlobalEquation );       
 	fCaptureStepper = new G4ClassicalRK4( fCaptureEquation );       
-	fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation );       
+	fAcceleratorStepper = new G4ClassicalRK4(fAcceleratorEquation, 8);       
 }
 
 
