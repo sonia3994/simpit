@@ -45,7 +45,7 @@
 class G4FieldManager;
 class G4ChordFinder;
 class G4Mag_UsualEqRhs;
-class G4EqMagElectricField;
+class G4EqEMFieldWithSpin;
 class G4MagIntegratorStepper;
 class G4MagInt_Driver;
 class G4PropagatorInField;
@@ -147,9 +147,9 @@ protected:
 
   //G4Mag_UsualEqRhs*      	fGlobalEquation ; 
   //G4Mag_UsualEqRhs*      	fCaptureEquation ; 
-  G4EqMagElectricField*         fGlobalEquation; 
-  G4EqMagElectricField*         fCaptureEquation; 
-  G4EqMagElectricField*      	fAcceleratorEquation ; 
+  G4EqEMFieldWithSpin*         fGlobalEquation; 
+  G4EqEMFieldWithSpin*         fCaptureEquation; 
+  G4EqEMFieldWithSpin*      	fAcceleratorEquation ; 
 
   G4MagIntegratorStepper*	fGlobalStepper ;
   G4MagIntegratorStepper*	fCaptureStepper ;

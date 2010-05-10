@@ -39,7 +39,7 @@
 #include "G4MagneticField.hh"
 #include "G4FieldManager.hh"
 #include "G4Mag_UsualEqRhs.hh"
-#include "G4EqMagElectricField.hh"
+#include "G4EqEMFieldWithSpin.hh"
 #include "G4MagIntegratorStepper.hh"
 #include "G4MagIntegratorDriver.hh"
 #include "G4ChordFinder.hh"
@@ -60,7 +60,7 @@
 #include <fstream>
 #include <sstream>
 //////////////////////////////////////////////////////////////////////////
-GPCaptureField::GPCaptureField()
+GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 {
   	B0=6*tesla;
   	B1=0.5*tesla;
@@ -220,7 +220,7 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 
 
 //////////////////////////////////////////////////////////////////////////
-GPAcceleratorField::GPAcceleratorField()
+GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()
 {
   	//B0=0;
   	B0=0.5*tesla;
@@ -272,9 +272,9 @@ GPFieldSetup::GPFieldSetup()
   	
   	//fGlobalEquation = new G4Mag_UsualEqRhs(fGlobalMagnetic); 
   	//fCaptureEquation = new G4Mag_UsualEqRhs(fCaptureField); 
-  	fGlobalEquation = new G4EqMagElectricField(fGlobalMagnetic); 
-  	fCaptureEquation = new G4EqMagElectricField(fCaptureField); 
-  	fAcceleratorEquation = new G4EqMagElectricField(fAcceleratorField); 
+  	fGlobalEquation = new G4EqEMFieldWithSpin(fGlobalMagnetic); 
+  	fCaptureEquation = new G4EqEMFieldWithSpin(fCaptureField); 
+  	fAcceleratorEquation = new G4EqEMFieldWithSpin(fAcceleratorField); 
   	
   	fGlobalFieldManager = GetGlobalFieldManager();
   	fCaptureFieldManager = new G4FieldManager();
@@ -373,9 +373,10 @@ G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name)
 void GPFieldSetup::UpdateField()
 {
 	propInField = G4TransportationManager::GetTransportationManager()->GetPropagatorInField();
-	propInField->SetMinimumEpsilonStep(1e-11);
-	propInField->SetMaximumEpsilonStep(1e-10);
+	//propInField->SetMinimumEpsilonStep(1e-11);
+	//propInField->SetMaximumEpsilonStep(1e-10);
 	//propInField->SetVerboseLevel(1);
+	propInField->SetMaxLoopCount(5000);
 	
 
 	if(globalFieldFlag)
@@ -390,10 +391,10 @@ void GPFieldSetup::UpdateField()
 	if(captureFieldFlag)
 	{
 		fCaptureFieldManager->SetDetectorField(fCaptureField );
-		fCaptureFieldManager->SetDetectorField(fCaptureField );
 		fCaptureFieldManager->GetChordFinder()->SetDeltaChord(1e-9*m);
 		fCaptureFieldManager->SetDeltaIntersection(1e-9*m);
 		fCaptureFieldManager->SetDeltaOneStep(1e-9*m);
+		//fCaptureFieldManager->SetFieldChangesEnergy(false);
 	}
 	else
 	{
@@ -402,11 +403,11 @@ void GPFieldSetup::UpdateField()
 	
 	if(acceleratorFieldFlag)
 	{
-		//fAcceleratorFieldManager->SetFieldChangesEnergy(true);
 		fAcceleratorFieldManager->SetDetectorField(fAcceleratorField );
 		fAcceleratorFieldManager->GetChordFinder()->SetDeltaChord(1e-9*m);
 		fAcceleratorFieldManager->SetDeltaIntersection(1e-9*m);
 		fAcceleratorFieldManager->SetDeltaOneStep(1e-9*m);
+		//fAcceleratorFieldManager->SetFieldChangesEnergy(true);
 		
 	}
 	else
@@ -426,9 +427,9 @@ void GPFieldSetup::SetStepper()
 	if(fCaptureStepper) delete fCaptureStepper;
 	if(fAcceleratorStepper) delete fAcceleratorStepper;
 	
-	fGlobalStepper = new G4ClassicalRK4( fGlobalEquation );       
-	fCaptureStepper = new G4ClassicalRK4( fCaptureEquation );       
-	fAcceleratorStepper = new G4ClassicalRK4(fAcceleratorEquation, 8);       
+	fGlobalStepper = new G4ClassicalRK4( fGlobalEquation,12);       
+	fCaptureStepper = new G4ClassicalRK4( fCaptureEquation,12);       
+	fAcceleratorStepper = new G4ClassicalRK4(fAcceleratorEquation, 12);       
 }
 
 
