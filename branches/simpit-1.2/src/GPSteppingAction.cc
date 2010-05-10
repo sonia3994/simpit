@@ -161,22 +161,19 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 		{  
 			eventaction->AddPositron(prevPos,prevMom,totalE);
 			eventaction->AddTargetStep(stepL);
-			//WriteToFileDT(prevPos,prevMom,totalE,globalTime);
  			userRunAction->OutPutData("target",outVector);
 		}
 
 		else if(prevPhys==acceleratorPhys&&postPhys==capturePhys)
 		{
-			//if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=4*cm*cm&&prevPos.z()>=(captureL+targetL/2))
-				//WriteToFileDC(prevPos,prevMom,totalE,globalTime);
+			//if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=4*cm*cm)
  			userRunAction->OutPutData("capture",outVector);
 		}
 
 		//*/	
 		else if(prevPhys==vacuumPhys&&postPhys==acceleratorPhys)
 		{
-			//if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=4*cm*cm&&prevPos.z()>=(captureL+targetL/2))
-				//WriteToFileDC(prevPos,prevMom,totalE,globalTime);
+			//if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=4*cm*cm)
  			userRunAction->OutPutData("accelerator",outVector);
 		}
 
