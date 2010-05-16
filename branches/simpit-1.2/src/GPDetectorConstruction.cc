@@ -59,7 +59,7 @@ GPDetectorConstruction::GPDetectorConstruction()
     tranTube(0),tranLog(0),tranPhys(0),
     acceleratorTube(0),acceleratorLog(0),acceleratorPhys(0),
     worldBox(0),worldLog(0),worldPhys(0),
-    fieldSetup(0)
+    fieldSetup(0),targetSD(0),targetRO(0)
 {
     targetBoxY = 25*mm;
     targetBoxX = 25*mm;
