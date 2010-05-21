@@ -70,6 +70,8 @@ GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 	highQL=8*cm;
 	lowQL=100*cm;
 	gapL=1*cm;
+	mu0=12.5664e-7;
+	currentI=150*1000;
 //  G4String file="test";
 //  fs.open(file,std::fstream::app);
 }
@@ -110,6 +112,9 @@ void GPCaptureField::GetFieldValue(const G4double Point[3], G4double *Bfield) co
 			break;
 		case 3:
 			GetFieldValueQWTAbrupt(Point, Bfield);
+			break;
+		case 4:
+			GetFieldValueLithium(Point, Bfield);
 			break;
 		default:
 			GetFieldValueAMD(Point, Bfield);
@@ -218,6 +223,28 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
   	Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
+
+void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfield) const
+{
+  	static 	G4double 	relativeZ;
+  	static 	G4double 	capR2;
+
+	relativeZ=Point[2]-halfTarL;
+	capR2=capR*capR/m/m;
+  	if(relativeZ>0&&relativeZ<=highQL)
+	{
+  		Bfield[0]=tesla*mu0*currentI/(6.2832*capR2)*Point[0]/m;
+  		Bfield[1]=tesla*mu0*currentI/(6.2832*capR2)*Point[1]/m;
+		Bfield[2]=0;
+	}
+
+  	else 
+  	{ 
+	  	Bfield[0]=Bfield[1]=Bfield[2]=0;
+  	}
+
+  	Bfield[3]=Bfield[4]=Bfield[5]=0;
+}
 
 //////////////////////////////////////////////////////////////////////////
 GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()

@@ -70,6 +70,7 @@ private:
   	void GetFieldValueQWTFermi(const G4double Point[3], G4double *Bfield) const;
   	void GetFieldValueQWTNegativeSqr(const G4double Point[3], G4double *Bfield) const;
   	void GetFieldValueQWTAbrupt(const G4double Point[3], G4double *Bfield) const;
+  	void GetFieldValueLithium(const G4double Point[3], G4double *Bfield) const;
 
 private:
   	G4double 	B0;
@@ -88,6 +89,10 @@ private:
 	G4double 	halfCapL;
 	G4double 	gapL;
 	G4double 	relativeMagL;
+
+private:
+  	G4double 	mu0;
+  	G4double 	currentI;
 };
 
 class GPAcceleratorField : public G4ElectroMagneticField
