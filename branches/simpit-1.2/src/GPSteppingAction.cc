@@ -166,14 +166,14 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 
 		else if(prevPhys==acceleratorPhys&&postPhys==capturePhys)
 		{
-			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=4*cm*cm)
+			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=captureR*captureR)
  			userRunAction->OutPutData("capture",outVector);
 		}
 
 		//*/	
 		else if(prevPhys==vacuumPhys&&postPhys==acceleratorPhys)
 		{
-			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=4*cm*cm)
+			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=acceleratorR*acceleratorR)
  			userRunAction->OutPutData("accelerator",outVector);
 		}
 
