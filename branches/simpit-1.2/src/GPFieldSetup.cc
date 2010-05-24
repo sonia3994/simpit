@@ -228,14 +228,25 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 {
   	static 	G4double 	relativeZ;
   	static 	G4double 	capR2;
-
+	static  G4ThreeVector vectorI;
+	static  G4ThreeVector vectorP;
+	static  G4ThreeVector vectorB;
+    vectorI=G4ThreeVector(0,0,currentI);;
+    //vectorI[0]=0;vectorI[1]=0;vectorI[2]=currentI;
+    vectorP=G4ThreeVector(Point[0]/m,Point[1]/m,0);
+    //vectorP[0]=Point[0]/m;vectorP[1]=Point[1]/m;vectorP[2]=0;
 	relativeZ=Point[2]-halfTarL;
 	capR2=capR*capR/m/m;
   	if(relativeZ>0&&relativeZ<=highQL)
 	{
-  		Bfield[0]=tesla*mu0*currentI/(6.2832*capR2)*Point[0]/m;
-  		Bfield[1]=tesla*mu0*currentI/(6.2832*capR2)*Point[1]/m;
-		Bfield[2]=0;
+		vectorB=vectorI.cross(vectorP)*tesla*mu0/(6.2832*capR2);
+  		//Bfield[0]=tesla*mu0*currentI/(6.2832*capR2)*Point[0]/m;
+  		//Bfield[1]=tesla*mu0*currentI/(6.2832*capR2)*Point[1]/m;
+
+		Bfield[0]=vectorB.x();
+		Bfield[1]=vectorB.y();
+		Bfield[2]=vectorB.z();
+		//Bfield[2]=0;
 	}
 
   	else 
