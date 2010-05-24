@@ -228,25 +228,38 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 {
   	static 	G4double 	relativeZ;
   	static 	G4double 	capR2;
+  	static 	G4double 	magTP2;
+  	static 	G4double 	magTP;
+  	static 	G4double 	magI;
+	
+///*
 	static  G4ThreeVector vectorI;
-	static  G4ThreeVector vectorP;
+	static  G4ThreeVector vectorTP;
 	static  G4ThreeVector vectorB;
-    vectorI=G4ThreeVector(0,0,currentI);;
-    //vectorI[0]=0;vectorI[1]=0;vectorI[2]=currentI;
-    vectorP=G4ThreeVector(Point[0]/m,Point[1]/m,0);
-    //vectorP[0]=Point[0]/m;vectorP[1]=Point[1]/m;vectorP[2]=0;
+
+    vectorI=G4ThreeVector(0,0,currentI);
+    vectorTP=G4ThreeVector(Point[0]/m,Point[1]/m,0);
+	magTP2=vectorTP.mag2();
+	magTP=vectorTP.mag();
+	magI=vectorI.mag();
+	
+//*/
 	relativeZ=Point[2]-halfTarL;
 	capR2=capR*capR/m/m;
-  	if(relativeZ>0&&relativeZ<=highQL)
+  	if(relativeZ>0&&relativeZ<=highQL&&magTP2<capR2)
 	{
-		vectorB=vectorI.cross(vectorP)*tesla*mu0/(6.2832*capR2);
-  		//Bfield[0]=tesla*mu0*currentI/(6.2832*capR2)*Point[0]/m;
-  		//Bfield[1]=tesla*mu0*currentI/(6.2832*capR2)*Point[1]/m;
+/*
+  		Bfield[0]=-tesla*mu0*currentI/(6.2832*capR2)*Point[1]/m;
+  		Bfield[1]=tesla*mu0*currentI/(6.2832*capR2)*Point[0]/m;
+		Bfield[2]=0;
+*/
+		//G4cout<<"x="<<Point[0]<<"y="<<Point[1]<<"z"<<Point[2]<<G4endl;
+		//G4cout<<"Bx="<<Bfield[0]<<"By="<<Bfield[1]<<"Bz"<<Bfield[2]<<G4endl;
 
+		vectorB=vectorI.cross(vectorTP)*tesla*mu0/(6.2832*capR2);
 		Bfield[0]=vectorB.x();
 		Bfield[1]=vectorB.y();
 		Bfield[2]=vectorB.z();
-		//Bfield[2]=0;
 	}
 
   	else 
