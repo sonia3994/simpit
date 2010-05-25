@@ -66,7 +66,7 @@ GPCaptureField::GPCaptureField():G4ElectroMagneticField()
   	B1=0.5*tesla;
   	amdAlpha=0.22; //unit cm^(-1)
   	qwtAlpha=0.172; //unit cm^(-2)
-	fieldType=1;
+	fieldType=0;
 	highQL=8*cm;
 	lowQL=100*cm;
 	gapL=1*cm;
@@ -84,11 +84,16 @@ GPCaptureField::~GPCaptureField()
 void GPCaptureField::Init()
 {
 
-  	const GPDetectorConstruction * detector =
-         static_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
-  	tarL=detector->GetTargetThickness();
-  	capL=detector->GetCaptureLength();
-  	capR=detector->GetCaptureRadius();
+  	//const GPDetectorConstruction * detector =
+         //static_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
+  	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
+  	//tarL=detector->GetTargetThickness();
+  	//capL=detector->GetCaptureLength();
+  	//capR=detector->GetCaptureRadius();
+  	tarL=detector->GetDetectorSize("target_z");
+  	capL=detector->GetDetectorSize("capture_l");
+  	capR=detector->GetDetectorSize("capture_or");
+
    	sqrCapR=capR*capR;
 	halfTarL=tarL/2;
 	halfCapL=capL/2;
@@ -244,7 +249,8 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 	static  G4ThreeVector local;
 	//static  G4ThreeVector vectorBUnit;
 
-	local[0]=Point[0];local[1]=Point[1];local[2]=Point[2]-tarL/2-capL/2;
+	//local[0]=Point[0];local[1]=Point[1];local[2]=Point[2]-tarL/2-capL/2;
+	local=TransformToLocal(G4ThreeVector(Point[0],Point[1],Point[2]));
 	relativeZ=Point[2]-halfTarL-halfCapL;
 	capR2=capR*capR/m/m;
 
@@ -285,9 +291,9 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
   	Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
-G4ThreeVector	GPCaptureField::TransformToLocal(G4ThreeVector global )
+G4ThreeVector	GPCaptureField::TransformToLocal(G4ThreeVector global ) const
 {
-	G4ThreeVector local=G4ThreeVector(global[0],global[1],global[2]-halfTarL); 
+	G4ThreeVector local=G4ThreeVector(global[0],global[1],global[2]-halfTarL-halfCapL); 
 	return local;
 }
 
@@ -323,7 +329,7 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 	relativeZ=Point[2]-tarL/2-capL;
 
 /*
-	if(relativeZ>=0&&relativeZ<accL/20)
+	if(relativeZ>0&&relativeZ<=accL/20)
 	{
 	Bfield[0]=0;
 	Bfield[1]=0;
@@ -333,7 +339,7 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 	Bfield[5]=E0*20*relativeZ/accL;
 	}
 */
-	//else if(relativeZ<accL&&relativeZ>=accL/20)
+	//else if(relativeZ<=accL&&relativeZ>accL/20)
 	if(relativeZ>=0&&relativeZ<accL)
 	{
 	Bfield[0]=0;
@@ -464,7 +470,7 @@ void GPFieldSetup::UpdateField()
 	//propInField->SetMinimumEpsilonStep(1e-11);
 	//propInField->SetMaximumEpsilonStep(1e-10);
 	//propInField->SetVerboseLevel(1);
-	propInField->SetMaxLoopCount(1000);
+	propInField->SetMaxLoopCount(5000);
 	
 
 	if(globalFieldFlag)
