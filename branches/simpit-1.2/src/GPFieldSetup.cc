@@ -139,6 +139,8 @@ void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield)
   		Bfield[0]=0.5*Point[0]*fz2*amdAlpha/B0/cm;
   		Bfield[1]=Point[1]*Bfield[0]/Point[0];
 		Bfield[2]=fz;
+		//G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
+		//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<G4endl;
 
   		//Bfield[2]=0.5*tesla;
   	}
@@ -231,35 +233,48 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
   	static 	G4double 	magTP2;
   	static 	G4double 	magTP;
   	static 	G4double 	magI;
+  	static 	G4double 	currentShape;
 	
 ///*
 	static  G4ThreeVector vectorI;
+	static  G4ThreeVector vectorIUnit;
 	static  G4ThreeVector vectorTP;
+	static  G4ThreeVector vectorTPUnit;
 	static  G4ThreeVector vectorB;
+	static  G4ThreeVector local;
+	//static  G4ThreeVector vectorBUnit;
 
+	local[0]=Point[0];local[1]=Point[1];local[2]=Point[2]-tarL/2-capL/2;
+	relativeZ=Point[2]-halfTarL-halfCapL;
+	capR2=capR*capR/m/m;
+
+	currentShape=currentI/(1+exp(10*abs(relativeZ-(capL-4)/2)));
     vectorI=G4ThreeVector(0,0,currentI);
+    vectorIUnit=vectorI.unit();
+
     vectorTP=G4ThreeVector(Point[0]/m,Point[1]/m,0);
+    vectorTPUnit=vectorTP.unit();
 	magTP2=vectorTP.mag2();
 	magTP=vectorTP.mag();
 	magI=vectorI.mag();
 	
 //*/
-	relativeZ=Point[2]-halfTarL;
-	capR2=capR*capR/m/m;
-  	if(relativeZ>0&&relativeZ<=highQL&&magTP2<capR2)
+  	if(relativeZ>-halfCapL&&relativeZ<=halfCapL&&magTP2<capR2)
 	{
 /*
   		Bfield[0]=-tesla*mu0*currentI/(6.2832*capR2)*Point[1]/m;
   		Bfield[1]=tesla*mu0*currentI/(6.2832*capR2)*Point[0]/m;
 		Bfield[2]=0;
 */
-		//G4cout<<"x="<<Point[0]<<"y="<<Point[1]<<"z"<<Point[2]<<G4endl;
-		//G4cout<<"Bx="<<Bfield[0]<<"By="<<Bfield[1]<<"Bz"<<Bfield[2]<<G4endl;
 
-		vectorB=vectorI.cross(vectorTP)*tesla*mu0/(6.2832*capR2);
+		vectorB=vectorIUnit.cross(vectorTPUnit)*magI*magTP*mu0*tesla/(6.2832*capR2);
 		Bfield[0]=vectorB.x();
 		Bfield[1]=vectorB.y();
 		Bfield[2]=vectorB.z();
+		//G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
+		//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<" B: "<<vectorB.mag()<<G4endl;
+		//G4cout<<"r: "<<magTP/m<<" m"<<" z: "<<Point[2]<<" mm"<<G4endl;
+		//G4cout<<"Bx="<<Bfield[0]<<"By="<<Bfield[1]<<"Bz"<<Bfield[2]<<G4endl;
 	}
 
   	else 
@@ -268,6 +283,12 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
   	}
 
   	Bfield[3]=Bfield[4]=Bfield[5]=0;
+}
+
+G4ThreeVector	GPCaptureField::TransformToLocal(G4ThreeVector global )
+{
+	G4ThreeVector local=G4ThreeVector(global[0],global[1],global[2]-halfTarL); 
+	return local;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -286,9 +307,9 @@ GPAcceleratorField::~GPAcceleratorField()
 void GPAcceleratorField::Init()
 {
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
-  	tarL=detector->GetDetectorSize("target_x");
-  	capL=detector->GetDetectorSize("capture_or");
-  	accL=detector->GetDetectorSize("accelerator_or");
+  	tarL=detector->GetDetectorSize("target_z");
+  	capL=detector->GetDetectorSize("capture_l");
+  	accL=detector->GetDetectorSize("accelerator_l");
 
 	
 }
@@ -297,9 +318,23 @@ void GPAcceleratorField::Init()
 void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
 	static G4double relativeZ;
-	relativeZ=Point[2]-tarL/2-capL/2;
+	static G4ThreeVector local;
+	local[0]=Point[0];local[1]=Point[1];local[2]=Point[2]-tarL/2-capL-accL/2;
+	relativeZ=Point[2]-tarL/2-capL;
 
-	if(relativeZ>=0)
+/*
+	if(relativeZ>=0&&relativeZ<accL/20)
+	{
+	Bfield[0]=0;
+	Bfield[1]=0;
+	Bfield[2]=B0*20*relativeZ/accL;
+	Bfield[3]=0;
+	Bfield[4]=0;
+	Bfield[5]=E0*20*relativeZ/accL;
+	}
+*/
+	//else if(relativeZ<accL&&relativeZ>=accL/20)
+	if(relativeZ>=0&&relativeZ<accL)
 	{
 	Bfield[0]=0;
 	Bfield[1]=0;
@@ -307,6 +342,8 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 	Bfield[3]=0;
 	Bfield[4]=0;
 	Bfield[5]=E0;
+	//G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
+	//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<G4endl;
 	}
 }
 
@@ -427,7 +464,7 @@ void GPFieldSetup::UpdateField()
 	//propInField->SetMinimumEpsilonStep(1e-11);
 	//propInField->SetMaximumEpsilonStep(1e-10);
 	//propInField->SetVerboseLevel(1);
-	propInField->SetMaxLoopCount(5000);
+	propInField->SetMaxLoopCount(1000);
 	
 
 	if(globalFieldFlag)

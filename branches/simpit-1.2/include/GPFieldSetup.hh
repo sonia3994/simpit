@@ -73,6 +73,8 @@ private:
   	void GetFieldValueLithium(const G4double Point[3], G4double *Bfield) const;
 
 private:
+	G4ThreeVector	TransformToLocal(G4ThreeVector );
+private:
   	G4double 	B0;
   	G4double 	B1;
   	G4double 	amdAlpha;
