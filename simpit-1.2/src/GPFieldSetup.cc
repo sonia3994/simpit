@@ -98,6 +98,8 @@ void GPCaptureField::Init()
 	halfTarL=tarL/2;
 	halfCapL=capL/2;
 	relativeMagL=halfTarL+gapL;
+  	qwtAlpha=(B0/B1-1)/(capL*capL/cm/cm);//unit cm^(-2)
+	G4cout<<"QWT alpha: "<<qwtAlpha<<" cm^(-2)"<<G4endl;
 
 }
 
