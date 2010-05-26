@@ -32,7 +32,7 @@
 //
 
 #include "GPCaptureFieldManager.hh"
-//#include "GPFieldMessenger.hh"   
+#include "GPCaptureFieldMessenger.hh"   
 #include "GPDetectorConstruction.hh"     
 
 //#include "G4UniformMagField.hh"
@@ -307,8 +307,8 @@ GPCaptureFieldManager::GPCaptureFieldManager()
   	fCaptureField = new GPCaptureField();
   	fCaptureEquation = new G4EqEMFieldWithSpin(fCaptureField); 
 
-  	//fFieldMessenger = new GPFieldMessenger(this) ;  
-  	//fFieldMessenger->SetFieldPoint(fCaptureField) ;  
+  	fFieldMessenger = new GPCaptureFieldMessenger(this) ;  
+  	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
   	fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
 	G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
@@ -337,7 +337,7 @@ GPCaptureFieldManager::~GPCaptureFieldManager()
 
   	//if(fCaptureIntegratorDriver)		delete fCaptureIntegratorDriver; 
      
-  	//if(fFieldMessenger)     delete fFieldMessenger;
+  	if(fFieldMessenger)     delete fFieldMessenger;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -380,7 +380,7 @@ void GPCaptureFieldManager::SetStepper()
 
 
 
-void GPCaptureFieldManager::SetCaptureFieldFlag(G4bool t)
+void GPCaptureFieldManager::SetFieldFlag(G4bool t)
 {
 	captureFieldFlag=t; 
 	if(captureFieldFlag)

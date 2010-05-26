@@ -68,13 +68,12 @@ class GPFieldMessenger: public G4UImessenger
     G4UIdirectory*            	 GPdetDir;
 
     G4UIcmdWithAnInteger*     	 StepperCmd;
-    G4UIcmdWithAnInteger*     	 CaptureType;
+    G4UIcmdWithAnInteger*     	 FieldType;
     G4UIcmdWithADoubleAndUnit*	 MagFieldB0Cmd;
     G4UIcmdWithADoubleAndUnit*	 MinStepCmd;
-    G4UIcmdWithADouble*	 		 AMDAlphaCmd;
     G4UIcmdWithoutParameter*  	 UpdateCmd;
 
-    G4UIcmdWithABool*         	 CaptureFieldFlag;
+    G4UIcmdWithABool*         	 FieldFlag;
 
 
 };

@@ -67,7 +67,7 @@ public:
   void SetStepperType( G4int i) { fStepperType = i ; }
   void SetMinStep(G4double s) { fMinStep = s ; }
   void UpdateField();
-  void SetGlobalFieldFlag(G4bool) ;
+  void SetFieldFlag(G4bool) ;
   G4FieldManager*  GetLocalFieldManager(std::string name);
 
 protected:

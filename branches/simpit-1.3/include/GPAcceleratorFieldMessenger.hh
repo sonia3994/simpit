@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GPFieldMessenger.hh,v 1.4 2006/06/29 17:18:49 gunter Exp $
+// $Id: GPAcceleratorFieldMessenger.hh,v 1.4 2006/06/29 17:18:49 gunter Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 // 
@@ -32,14 +32,14 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-#ifndef GPFieldMessenger_h
-#define GPFieldMessenger_h 1
+#ifndef GPAcceleratorFieldMessenger_h
+#define GPAcceleratorFieldMessenger_h 1
 
 #include "globals.hh"
 #include "G4UImessenger.hh"
 
-class GPFieldSetup;
-//class GPCaptureField;
+class GPAcceleratorFieldManager;
+class GPAcceleratorField;
 class G4UIdirectory;
 class G4UIcmdWithAString;
 class G4UIcmdWithAnInteger;
@@ -50,31 +50,31 @@ class G4UIcmdWithABool;
 
 
 
-class GPFieldMessenger: public G4UImessenger
+class GPAcceleratorFieldMessenger: public G4UImessenger
 {
   public:
-    GPFieldMessenger(GPFieldSetup* );
-   ~GPFieldMessenger();
+    GPAcceleratorFieldMessenger(GPAcceleratorFieldManager* );
+   ~GPAcceleratorFieldMessenger();
     
     void SetNewValue(G4UIcommand*, G4String);
     void SetNewValue(G4UIcommand*, G4int);
-    //void SetFieldPoint(GPCaptureField* t){fieldPoint=t;};
+    void SetFieldPoint(GPAcceleratorField* t){fieldPoint=t;};
     
   private:
 
-    GPFieldSetup*             	 fEMfieldSetup;
-    //GPCaptureField*           	 fieldPoint;
+    GPAcceleratorFieldManager*             	 fEMfieldManager;
+    GPAcceleratorField*           	 fieldPoint;
     
     G4UIdirectory*            	 GPdetDir;
 
     G4UIcmdWithAnInteger*     	 StepperCmd;
-    G4UIcmdWithAnInteger*     	 CaptureType;
+    G4UIcmdWithAnInteger*     	 FieldType;
     G4UIcmdWithADoubleAndUnit*	 MagFieldB0Cmd;
+    G4UIcmdWithADoubleAndUnit*	 EleFieldE0Cmd;
     G4UIcmdWithADoubleAndUnit*	 MinStepCmd;
-    G4UIcmdWithADouble*	 		 AMDAlphaCmd;
     G4UIcmdWithoutParameter*  	 UpdateCmd;
 
-    G4UIcmdWithABool*         	 CaptureFieldFlag;
+    G4UIcmdWithABool*         	 FieldFlag;
 
 
 };

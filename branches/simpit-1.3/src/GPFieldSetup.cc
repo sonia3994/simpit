@@ -65,7 +65,17 @@
 //////////////////////////////////////////////////////////////////////////
 //  Constructors:
 
-GPFieldSetup::GPFieldSetup()
+GPFieldSetup::GPFieldSetup():
+propInField(0),
+fGlobalFieldManager(0),
+fCaptureFieldManager(0),
+fAcceleratorFieldManager(0),
+fGlobalMagnetic(0), 
+fGlobalChordFinder(0),
+fGlobalEquation(0), 
+fGlobalStepper(0),
+fGlobalIntegratorDriver(0),
+fFieldMessenger(0)
 {
 
   	fGlobalMagnetic = new G4UniformMagField( G4ThreeVector(3.3*tesla, 0.0,  0.0));
@@ -89,6 +99,7 @@ GPFieldSetup::GPFieldSetup()
 	fGlobalIntegratorDriver = new G4MagInt_Driver(fMinStep,fGlobalStepper,fGlobalStepper->GetNumberOfVariables());
 	fGlobalChordFinder = new G4ChordFinder(fGlobalIntegratorDriver);
 	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
+	G4cout<<"This is ok: mark 1 "<<G4endl ;
 
   	UpdateField();
 }
@@ -158,7 +169,7 @@ void GPFieldSetup::SetStepper()
 
 
 
-void GPFieldSetup::SetGlobalFieldFlag(G4bool t)
+void GPFieldSetup::SetFieldFlag(G4bool t)
 {
 	globalFieldFlag=t; 
 	if(globalFieldFlag)

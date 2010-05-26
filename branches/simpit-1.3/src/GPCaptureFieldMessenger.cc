@@ -24,14 +24,14 @@
 // ********************************************************************
 //
 //
-// $Id: GPFieldMessenger.cc,v 1.7 2006/06/29 17:19:32 gunter Exp $
+// $Id: GPCaptureFieldMessenger.cc,v 1.7 2006/06/29 17:19:32 gunter Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 // 
 
-#include "GPFieldMessenger.hh"
+#include "GPCaptureFieldMessenger.hh"
 
-#include "GPFieldSetup.hh"
+#include "GPCaptureFieldManager.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithAString.hh"
@@ -42,19 +42,19 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
-  : fEMfieldSetup(pEMfield)
+GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield)
+  : fEMfieldManager(pEMfield)
 { 
-  GPdetDir = new G4UIdirectory("/GP/field/");
+  GPdetDir = new G4UIdirectory("/GP/field/capture/");
   GPdetDir->SetGuidance("Field tracking control.");
 
-  StepperCmd = new G4UIcmdWithAnInteger("/GP/field/setStepperType",this);
+  StepperCmd = new G4UIcmdWithAnInteger("/GP/field/capture/setStepperType",this);
   StepperCmd->SetGuidance("Select stepper type for magnetic field");
   StepperCmd->SetParameterName("StepperType",true);
   StepperCmd->SetDefaultValue(4);
   StepperCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  CaptureType = new G4UIcmdWithAnInteger("/GP/field/setCaptureType",this);
+  CaptureType = new G4UIcmdWithAnInteger("/GP/field/capture/setFieldType",this);
   CaptureType->SetGuidance("Select capture type for magnetic field:");
   CaptureType->SetGuidance("0 AMD");
   CaptureType->SetGuidance("1 Feimi distribution QWT");
@@ -64,45 +64,45 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
   CaptureType->SetDefaultValue(0);
   CaptureType->AvailableForStates(G4State_PreInit,G4State_Idle);
  
-  UpdateCmd = new G4UIcmdWithoutParameter("/GP/field/update",this);
+  UpdateCmd = new G4UIcmdWithoutParameter("/GP/field/capture/update",this);
   UpdateCmd->SetGuidance("Update field.");
   UpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
   UpdateCmd->SetGuidance("if you changed geometrical value(s).");
   UpdateCmd->AvailableForStates(G4State_Idle);
       
-  MagFieldB0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/setFieldB0",this);  
+  MagFieldB0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setFieldB0",this);  
   MagFieldB0Cmd->SetGuidance("Define magnetic field B0.");
   MagFieldB0Cmd->SetGuidance("Magnetic field will be in Z direction.");
   MagFieldB0Cmd->SetParameterName("Bz",false,false);
   MagFieldB0Cmd->SetDefaultUnit("tesla");
   MagFieldB0Cmd->AvailableForStates(G4State_Idle); 
  
-  MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/setMinStep",this);  
+  MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setMinStep",this);  
   MinStepCmd->SetGuidance("Define minimal step");
   MinStepCmd->SetGuidance("Magnetic field will be in Z direction.");
   MinStepCmd->SetParameterName("MinStep",false,false);
   MinStepCmd->SetDefaultUnit("mm");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
-  AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/setAMDAlpha",this);  
+  AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/setAMDAlpha",this);  
   AMDAlphaCmd->SetGuidance("Define AMD  magnetic field alpha, please transfer to the cm unit and don't input unit");
   AMDAlphaCmd->SetParameterName("AMDB0",false,false);
   AMDAlphaCmd->SetDefaultValue(0.22);
   AMDAlphaCmd->AvailableForStates(G4State_Idle); 
  
-  CaptureFieldFlag = new G4UIcmdWithABool("/GP/field/setCaptureFieldFlag",this);
-  CaptureFieldFlag->SetGuidance("Switch capture field.");
-  CaptureFieldFlag->SetGuidance("This command MUST be applied before \"beamOn\" ");
-  CaptureFieldFlag->SetParameterName("CaptureFieldFlag",true);
-  CaptureFieldFlag->SetDefaultValue("1");
-  CaptureFieldFlag->AvailableForStates(G4State_Idle);
+  FieldFlag = new G4UIcmdWithABool("/GP/field/capture/setFieldFlag",this);
+  FieldFlag->SetGuidance("Switch capture field.");
+  FieldFlag->SetGuidance("This command MUST be applied before \"beamOn\" ");
+  FieldFlag->SetParameterName("FieldFlag",true);
+  FieldFlag->SetDefaultValue("1");
+  FieldFlag->AvailableForStates(G4State_Idle);
 
 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-GPFieldMessenger::~GPFieldMessenger()
+GPCaptureFieldMessenger::~GPCaptureFieldMessenger()
 {
   delete StepperCmd;
   delete CaptureType;
@@ -111,53 +111,48 @@ GPFieldMessenger::~GPFieldMessenger()
   delete MinStepCmd;
   delete GPdetDir;
   delete UpdateCmd;
-  delete CaptureFieldFlag; 
+  delete FieldFlag; 
 }
 
 ////////////////////////////////////////////////////////////////////////////
 //
 //
 
-void GPFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
+void GPCaptureFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
 { 
   if( command == StepperCmd )
   { 
-    fEMfieldSetup->SetStepperType(StepperCmd->GetNewIntValue(newValue));
+    fEMfieldManager->SetStepperType(StepperCmd->GetNewIntValue(newValue));
   }  
 
   if( command == CaptureType )
   { 
-    //fieldPoint->SetCaptureType(CaptureType->GetNewIntValue(newValue));
-    //wait for writing
+    fieldPoint->SetCaptureType(CaptureType->GetNewIntValue(newValue));
   }  
 
   if( command == UpdateCmd )
   { 
-    fEMfieldSetup->UpdateField(); 
+    fEMfieldManager->UpdateField(); 
   }
 
   if( command == MagFieldB0Cmd )
   { 
-    //fieldPoint->SetFieldValueB0(MagFieldB0Cmd->GetNewDoubleValue(newValue));
-    //wait for writing
+    fieldPoint->SetFieldValueB0(MagFieldB0Cmd->GetNewDoubleValue(newValue));
   }
 
   if( command == AMDAlphaCmd )
   { 
-    //fieldPoint->SetAMDFieldAlpha(AMDAlphaCmd->GetNewDoubleValue(newValue));
-    //wait for writing
+    fieldPoint->SetAMDFieldAlpha(AMDAlphaCmd->GetNewDoubleValue(newValue));
   }
 
   if( command == MinStepCmd )
   { 
-    fEMfieldSetup->SetMinStep(MinStepCmd->GetNewDoubleValue(newValue));
+    fEMfieldManager->SetMinStep(MinStepCmd->GetNewDoubleValue(newValue));
   }
 
-  if( command == CaptureFieldFlag )
+  if( command == FieldFlag )
   { 
-    //fEMfieldSetup->SetCaptureFieldFlag(CaptureFieldFlag->GetNewBoolValue(newValue));
-    fEMfieldSetup->SetGlobalFieldFlag(CaptureFieldFlag->GetNewBoolValue(newValue));
-    //wait for writing
+    fEMfieldManager->SetFieldFlag(FieldFlag->GetNewBoolValue(newValue));
   }
 
 }

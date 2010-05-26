@@ -52,7 +52,7 @@ class G4MagIntegratorStepper;
 class G4MagInt_Driver;
 //class G4PropagatorInField;
 
-//class GPFieldMessenger;
+class GPCaptureFieldMessenger;
 class GPCaptureField : public G4ElectroMagneticField
 {
 public:
@@ -111,7 +111,7 @@ public:
   void SetStepperType( G4int i) { fStepperType = i ; }
   void SetMinStep(G4double s) { fMinStep = s ; }
   void UpdateField();
-  void SetCaptureFieldFlag(G4bool) ;
+  void SetFieldFlag(G4bool) ;
 
 protected:
   void SetStepper();
@@ -127,7 +127,7 @@ protected:
   G4int                  	fStepperType ;
   G4double               	fMinStep ;
 
-  //GPFieldMessenger*      	fFieldMessenger;
+  GPCaptureFieldMessenger*      	fFieldMessenger;
   G4bool					captureFieldFlag;
 
 };

@@ -32,7 +32,7 @@
 //
 
 #include "GPAcceleratorFieldManager.hh"
-//#include "GPFieldMessenger.hh"   
+#include "GPAcceleratorFieldMessenger.hh"   
 #include "GPDetectorConstruction.hh"     
 
 //#include "G4UniformMagField.hh"
@@ -135,8 +135,8 @@ GPAcceleratorFieldManager::GPAcceleratorFieldManager()
   	fAcceleratorEquation = new G4EqEMFieldWithSpin(fAcceleratorField); 
   	
 
-  	//fFieldMessenger = new GPFieldMessenger(this) ;  
-  	//fFieldMessenger->SetFieldPoint(fCaptureField) ;  
+  	fFieldMessenger = new GPAcceleratorFieldMessenger(this) ;  
+  	fFieldMessenger->SetFieldPoint(fAcceleratorField) ;  
 
   	fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
 	G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
@@ -165,7 +165,7 @@ GPAcceleratorFieldManager::~GPAcceleratorFieldManager()
 
   	//if(fAcceleratorIntegratorDriver)		delete fAcceleratorIntegratorDriver; 
      
-  	//if(fFieldMessenger)     delete fFieldMessenger;
+  	if(fFieldMessenger)     delete fFieldMessenger;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -208,7 +208,7 @@ void GPAcceleratorFieldManager::SetStepper()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void GPAcceleratorFieldManager::SetAcceleratorFieldFlag(G4bool t)
+void GPAcceleratorFieldManager::SetFieldFlag(G4bool t)
 {
 	acceleratorFieldFlag=t; 
 	if(acceleratorFieldFlag)

@@ -51,7 +51,7 @@ class G4MagIntegratorStepper;
 class G4MagInt_Driver;
 //class G4PropagatorInField;
 
-//class GPFieldMessenger;
+class GPAcceleratorFieldMessenger;
 
 class GPAcceleratorField : public G4ElectroMagneticField
 {
@@ -60,6 +60,9 @@ public:
   	~GPAcceleratorField();
 	void Init();
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
+  	void SetFieldValueB0(G4double t){B0=t;};
+  	void SetFieldValueE0(G4double t){E0=t;};
+  	void SetFieldType(G4int t){fieldType=t;};
 	G4bool	DoesFieldChangeEnergy() const {return true;};
 
 private:
@@ -68,6 +71,7 @@ private:
    	G4double 	 	tarL;
    	G4double 	 	capL;
    	G4double 	 	accL;
+	G4int			fieldType;
 
 };
 
@@ -83,7 +87,7 @@ public:
   void SetStepperType( G4int i) { fStepperType = i ; }
   void SetMinStep(G4double s) { fMinStep = s ; }
   void UpdateField();
-  void SetAcceleratorFieldFlag(G4bool) ;
+  void SetFieldFlag(G4bool) ;
 
 protected:
   void SetStepper();
@@ -100,7 +104,7 @@ protected:
   G4int                  	fStepperType ;
   G4double               	fMinStep ;
 
-  //GPFieldMessenger*      	fFieldMessenger;
+  GPAcceleratorFieldMessenger*      	fFieldMessenger;
   G4bool					acceleratorFieldFlag;
 
 };
