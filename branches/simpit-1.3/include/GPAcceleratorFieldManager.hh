@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GPFieldSetup.hh,v 1.2 2006/06/29 17:18:51 gunter Exp $
+// $Id: GPAcceleratorFieldManager.hh,v 1.2 2006/06/29 17:18:51 gunter Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 //  A class for setting up the Magnetic Field of the setup, and 
@@ -34,24 +34,25 @@
 //    - A local  field overides it for some volume(s) and it assumed to be uniform.
 // 
 
-#ifndef GPFieldSetup_H
-#define GPFieldSetup_H
+#ifndef GPAcceleratorFieldManager_H
+#define GPAcceleratorFieldManager_H
 
 #include "G4MagneticField.hh"
+#include "G4FieldManager.hh"
 #include "G4ElectroMagneticField.hh"
 #include "G4UniformMagField.hh"
 #include <string>
 
-class G4FieldManager;
+//class G4FieldManager;
 class G4ChordFinder;
 class G4Mag_UsualEqRhs;
 class G4EqEMFieldWithSpin;
 class G4MagIntegratorStepper;
 class G4MagInt_Driver;
-class G4PropagatorInField;
+//class G4PropagatorInField;
 
-class GPFieldMessenger;
-
+//class GPFieldMessenger;
+/*
 class GPCaptureField : public G4ElectroMagneticField
 {
 public:
@@ -114,64 +115,64 @@ private:
    	G4double 	 	accL;
 
 };
-
-class GPFieldSetup
+*/
+class GPAcceleratorFieldManager public : G4FieldManager
 {
 
 public:
 
-  GPFieldSetup() ;               //  A zero field
-  GPFieldSetup(G4ThreeVector) ;  //  The value of the field
- ~GPFieldSetup() ;
+  GPAcceleratorFieldManager() ;               //  A zero field
+  //GPAcceleratorFieldManager(G4ThreeVector) ;  //  The value of the field
+ ~GPAcceleratorFieldManager() ;
       
   void Init();
   void SetStepperType( G4int i) { fStepperType = i ; }
   void SetMinStep(G4double s) { fMinStep = s ; }
   void UpdateField();
-  void SetCaptureFieldFlag(G4bool) ;
+  //void SetCaptureFieldFlag(G4bool) ;
   void SetAcceleratorFieldFlag(G4bool) ;
-  G4ThreeVector GetConstantFieldValue();
+  //G4ThreeVector GetConstantFieldValue();
   G4FieldManager*  GetLocalFieldManager(std::string name);
 
 protected:
   void SetStepper();
 
 protected:
-  G4PropagatorInField*    	propInField;
+  //G4PropagatorInField*    	propInField;
 
-  G4FieldManager*        	GetGlobalFieldManager() ;
-  G4FieldManager*        	fGlobalFieldManager ;
-  G4FieldManager*        	fCaptureFieldManager ;
-  G4FieldManager*        	fAcceleratorFieldManager ;
+  //G4FieldManager*        	GetGlobalFieldManager() ;
+  //G4FieldManager*        	fGlobalFieldManager ;
+  //G4FieldManager*        	fCaptureFieldManager ;
+  //G4FieldManager*        	fAcceleratorFieldManager ;
 
-  G4MagneticField*       	fGlobalMagnetic ; 
-  GPCaptureField*          	fCaptureField ; 
+  //G4MagneticField*       	fGlobalMagnetic ; 
+  //GPCaptureField*          	fCaptureField ; 
   GPAcceleratorField*       fAcceleratorField ; 
 
-  G4ChordFinder*         	fGlobalChordFinder ;
-  G4ChordFinder*         	fCaptureChordFinder ;
+  //G4ChordFinder*         	fGlobalChordFinder ;
+  //G4ChordFinder*         	fCaptureChordFinder ;
   G4ChordFinder*         	fAcceleratorChordFinder ;
 
   //G4Mag_UsualEqRhs*      	fGlobalEquation ; 
   //G4Mag_UsualEqRhs*      	fCaptureEquation ; 
-  G4EqEMFieldWithSpin*         fGlobalEquation; 
-  G4EqEMFieldWithSpin*         fCaptureEquation; 
+  //G4EqEMFieldWithSpin*         fGlobalEquation; 
+  //G4EqEMFieldWithSpin*         fCaptureEquation; 
   G4EqEMFieldWithSpin*      	fAcceleratorEquation ; 
 
-  G4MagIntegratorStepper*	fGlobalStepper ;
-  G4MagIntegratorStepper*	fCaptureStepper ;
+  //G4MagIntegratorStepper*	fGlobalStepper ;
+  //G4MagIntegratorStepper*	fCaptureStepper ;
   G4MagIntegratorStepper*	fAcceleratorStepper ;
 
-  G4MagInt_Driver*			fGlobalIntegratorDriver;
-  G4MagInt_Driver*			fCaptureIntegratorDriver;
+  //G4MagInt_Driver*			fGlobalIntegratorDriver;
+  //G4MagInt_Driver*			fCaptureIntegratorDriver;
   G4MagInt_Driver*			fAcceleratorIntegratorDriver;
 
   G4int                  	fStepperType ;
   G4double               	fMinStep ;
 
-  GPFieldMessenger*      	fFieldMessenger;
-  G4bool					globalFieldFlag;
-  G4bool					captureFieldFlag;
+  //GPFieldMessenger*      	fFieldMessenger;
+  //G4bool					globalFieldFlag;
+  //G4bool					captureFieldFlag;
   G4bool					acceleratorFieldFlag;
 
 };

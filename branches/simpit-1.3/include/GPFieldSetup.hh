@@ -43,6 +43,8 @@
 #include <string>
 
 class G4FieldManager;
+class GPCaptureFieldManager;
+class GPAcceleratorFieldManager;
 class G4ChordFinder;
 class G4Mag_UsualEqRhs;
 class G4EqEMFieldWithSpin;
@@ -51,7 +53,7 @@ class G4MagInt_Driver;
 class G4PropagatorInField;
 
 class GPFieldMessenger;
-
+/*
 class GPCaptureField : public G4ElectroMagneticField
 {
 public:
@@ -114,14 +116,13 @@ private:
    	G4double 	 	accL;
 
 };
-
+*/
 class GPFieldSetup
 {
 
 public:
 
   GPFieldSetup() ;               //  A zero field
-  GPFieldSetup(G4ThreeVector) ;  //  The value of the field
  ~GPFieldSetup() ;
       
   void Init();
