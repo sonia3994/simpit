@@ -351,6 +351,15 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 	//G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
 	//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<G4endl;
 	}
+	else
+	{
+	Bfield[0]=0;
+	Bfield[1]=0;
+	Bfield[2]=0;
+	Bfield[3]=0;
+	Bfield[4]=0;
+	Bfield[5]=0;
+	}
 }
 
 //
