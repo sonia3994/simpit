@@ -33,7 +33,9 @@
 
 #include "GPFieldSetup.hh"
 #include "GPFieldMessenger.hh"   
-#include "GPDetectorConstruction.hh"     
+#include "GPAcceleratorFieldManager.hh"
+#include "GPCaptureFieldManager.hh"
+//#include "GPDetectorConstruction.hh"     
 
 #include "G4UniformMagField.hh"
 #include "G4MagneticField.hh"
@@ -161,7 +163,7 @@ void GPFieldSetup::SetGlobalFieldFlag(G4bool t)
 	globalFieldFlag=t; 
 	if(globalFieldFlag)
 	{
-	    fGlobalFieldManager->SetDetectorField(fGlobalField );
+	    fGlobalFieldManager->SetDetectorField(fGlobalMagnetic);
 	    G4cout<<"Active the global field!"<<G4endl;
 	}
 	else

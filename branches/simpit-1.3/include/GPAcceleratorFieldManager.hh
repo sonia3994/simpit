@@ -70,7 +70,8 @@ private:
    	G4double 	 	accL;
 
 };
-class GPAcceleratorFieldManager public : G4FieldManager
+
+class GPAcceleratorFieldManager : public G4FieldManager
 {
 
 public:

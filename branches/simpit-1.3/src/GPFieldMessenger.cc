@@ -127,7 +127,8 @@ void GPFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
 
   if( command == CaptureType )
   { 
-    fieldPoint->SetCaptureType(CaptureType->GetNewIntValue(newValue));
+    //fieldPoint->SetCaptureType(CaptureType->GetNewIntValue(newValue));
+    //wait for writing
   }  
 
   if( command == UpdateCmd )
@@ -137,12 +138,14 @@ void GPFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
 
   if( command == MagFieldB0Cmd )
   { 
-    fieldPoint->SetFieldValueB0(MagFieldB0Cmd->GetNewDoubleValue(newValue));
+    //fieldPoint->SetFieldValueB0(MagFieldB0Cmd->GetNewDoubleValue(newValue));
+    //wait for writing
   }
 
   if( command == AMDAlphaCmd )
   { 
-    fieldPoint->SetAMDFieldAlpha(AMDAlphaCmd->GetNewDoubleValue(newValue));
+    //fieldPoint->SetAMDFieldAlpha(AMDAlphaCmd->GetNewDoubleValue(newValue));
+    //wait for writing
   }
 
   if( command == MinStepCmd )
@@ -152,7 +155,9 @@ void GPFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
 
   if( command == CaptureFieldFlag )
   { 
-    fEMfieldSetup->SetCaptureFieldFlag(CaptureFieldFlag->GetNewBoolValue(newValue));
+    //fEMfieldSetup->SetCaptureFieldFlag(CaptureFieldFlag->GetNewBoolValue(newValue));
+    fEMfieldSetup->SetGlobalFieldFlag(CaptureFieldFlag->GetNewBoolValue(newValue));
+    //wait for writing
   }
 
 }

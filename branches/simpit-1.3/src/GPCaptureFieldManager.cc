@@ -301,7 +301,7 @@ G4ThreeVector	GPCaptureField::TransformToLocal(G4ThreeVector global ) const
 //  Constructors:
 
 GPCaptureFieldManager::GPCaptureFieldManager()
-:G4FieldManager(), fCaptureChordFinder(0),fGlobalStepper(0),fCaptureStepper(0),  
+:G4FieldManager(), fCaptureChordFinder(0),fCaptureStepper(0)  
 {
 
   	fCaptureField = new GPCaptureField();

@@ -39,7 +39,7 @@
 #include "G4UImessenger.hh"
 
 class GPFieldSetup;
-class GPCaptureField;
+//class GPCaptureField;
 class G4UIdirectory;
 class G4UIcmdWithAString;
 class G4UIcmdWithAnInteger;
@@ -58,12 +58,12 @@ class GPFieldMessenger: public G4UImessenger
     
     void SetNewValue(G4UIcommand*, G4String);
     void SetNewValue(G4UIcommand*, G4int);
-    void SetFieldPoint(GPCaptureField* t){fieldPoint=t;};
+    //void SetFieldPoint(GPCaptureField* t){fieldPoint=t;};
     
   private:
 
     GPFieldSetup*             	 fEMfieldSetup;
-    GPCaptureField*           	 fieldPoint;
+    //GPCaptureField*           	 fieldPoint;
     
     G4UIdirectory*            	 GPdetDir;
 
@@ -71,7 +71,7 @@ class GPFieldMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*     	 CaptureType;
     G4UIcmdWithADoubleAndUnit*	 MagFieldB0Cmd;
     G4UIcmdWithADoubleAndUnit*	 MinStepCmd;
-    G4UIcmdWithADouble*	 		AMDAlphaCmd;
+    G4UIcmdWithADouble*	 		 AMDAlphaCmd;
     G4UIcmdWithoutParameter*  	 UpdateCmd;
 
     G4UIcmdWithABool*         	 CaptureFieldFlag;

@@ -39,6 +39,7 @@
 
 //#include "G4MagneticField.hh"
 #include "G4FieldManager.hh"
+#include "G4ThreeVector.hh"
 #include "G4ElectroMagneticField.hh"
 //#include "G4UniformMagField.hh"
 //#include <string>
@@ -98,13 +99,13 @@ private:
 };
 
 //Field manager
-class GPCaptureManagerField public:G4FieldManager
+class GPCaptureFieldManager : public G4FieldManager
 {
 
 public:
 
-  GPCaptureManagerField() ;               //  A zero field
- ~GPCaptureManagerField() ;
+  GPCaptureFieldManager() ;               //  A zero field
+ ~GPCaptureFieldManager() ;
       
   void Init();
   void SetStepperType( G4int i) { fStepperType = i ; }
