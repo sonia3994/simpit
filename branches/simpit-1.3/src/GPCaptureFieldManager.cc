@@ -98,6 +98,8 @@ void GPCaptureField::Init()
 	halfTarL=tarL/2;
 	halfCapL=capL/2;
 	relativeMagL=halfTarL+gapL;
+	qwtAlpha=(B0/B1-1)/(capL*capL/cm/cm);//unit cm^(-2)
+	G4cout<<"QWT alpha: "<<qwtAlpha<<" cm^(-2)"<<G4endl;
 
 }
 
@@ -131,10 +133,12 @@ void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield)
   	static G4double 	fz;
   	static G4double 	fz2;
   	static G4double 	relativeZ;
-
+  	static G4double 	localR2;
+	
+    localR2=Point[0]*Point[0]+Point[1]*Point[1];
 	relativeZ=Point[2]-halfTarL;
 
-  	if(relativeZ>0&&relativeZ<=capL)
+  	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
   	{
 		fz=B0/(1+amdAlpha*relativeZ/cm);
 		fz2=fz*fz;
@@ -162,9 +166,12 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
   	static	G4double	feiMi;
   	static	G4double	feiMiOne;
   	static 	G4double 	relativeZ;
+  	static 	G4double 	localR2;
 
 	relativeZ=Point[2]-halfTarL;
-  	if(relativeZ>0&&relativeZ<=capL)
+    localR2=Point[0]*Point[0]+Point[1]*Point[1];
+
+  	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
 	{
      	feiMi=exp((relativeZ-highQL)/cm);
 		feiMiOne=1/(1+feiMi);
@@ -186,9 +193,12 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
   	static	G4double	feiMi;
   	static 	G4double 	relativeZ;
 	//std::cout<<Point[0]<<" "<<Point[1]<<" "<<Point[2]<<std::endl;
+  	static G4double 	localR2;
 
 	relativeZ=Point[2]-halfTarL;
-  	if(relativeZ>0&&relativeZ<=capL)
+    localR2=Point[0]*Point[0]+Point[1]*Point[1];
+
+  	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
 	{
 		feiMi=1/(1+qwtAlpha*relativeZ*relativeZ/cm/cm);
   		Bfield[0]=Point[0]*B0*qwtAlpha*relativeZ*feiMi*feiMi/cm/cm;
@@ -207,15 +217,17 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
 void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *Bfield) const
 {
   	static 	G4double 	relativeZ;
+  	static 	G4double 	localR2;
 
 	relativeZ=Point[2]-halfTarL;
-  	if(relativeZ>0&&relativeZ<=highQL)
+    localR2=Point[0]*Point[0]+Point[1]*Point[1];
+  	if(relativeZ>0&&relativeZ<=highQL&&localR2<=sqrCapR)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
 		Bfield[2]=B0;
 	}
-  	else if(relativeZ>highQL&&relativeZ<=capL)
+  	else if(relativeZ>highQL&&relativeZ<=capL&&localR2<=sqrCapR)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
@@ -265,7 +277,7 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 	magI=vectorI.mag();
 	
 //*/
-  	if(relativeZ>-halfCapL&&relativeZ<=halfCapL&&magTP2<capR2)
+  	if(relativeZ>-halfCapL&&relativeZ<=halfCapL&&magTP2<=capR2)
 	{
 /*
   		Bfield[0]=-tesla*mu0*currentI/(6.2832*capR2)*Point[1]/m;

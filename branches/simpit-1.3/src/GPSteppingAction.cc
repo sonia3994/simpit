@@ -152,7 +152,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	outVector.push_back(prevMom.y());
 	outVector.push_back(prevMom.z());
 	outVector.push_back(totalE);
-	outVector.push_back(globalTime);
+	outVector.push_back(globalTime/picosecond);
 
 	if (particleName==particle)
 	{

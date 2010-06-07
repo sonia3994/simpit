@@ -62,10 +62,12 @@
 //////////////////////////////////////////////////////////////////////////
 GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()
 {
-  	//B0=0;
-  	B0=0.5*tesla;
-  	E0=15e+6*volt/m;
-  	//E0=0;
+  	B0=0;
+  	B1=0.5;
+  	//B0=0.5*tesla;
+  	E0=0;
+  	E1=15e+6;
+  	//E0=15e+6*volt/m;
 }
 
 GPAcceleratorField::~GPAcceleratorField()
@@ -75,41 +77,59 @@ GPAcceleratorField::~GPAcceleratorField()
 void GPAcceleratorField::Init()
 {
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
-  	tarL=detector->GetDetectorSize("target_z");
-  	capL=detector->GetDetectorSize("capture_l");
-  	accL=detector->GetDetectorSize("accelerator_l");
+  	G4double tarLTmp=detector->GetDetectorSize("target_z");
+  	G4double capLTmp=detector->GetDetectorSize("capture_l");
+  	G4double accLTmp=detector->GetDetectorSize("accelerator_l");
+  	G4double accRTmp=detector->GetDetectorSize("accelerator_or");
+    //transform to my units.
+    tarL=tarLTmp/m;
+    capL=capLTmp/m;
+    accL=accLTmp/m;
+    accR=accRTmp/m;
 
+	delta=accL/20;
 	
 }
 
 
 void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
-	static G4double relativeZ;
 	static G4ThreeVector local;
-	local[0]=Point[0];local[1]=Point[1];local[2]=Point[2]-tarL/2-capL-accL/2;
-	relativeZ=Point[2]-tarL/2-capL;
+	static G4ThreeVector global;
+	static G4double		 localR2;
+	//unit transform
+	global[0]=Point[0]/m;global[1]=Point[1]/m;global[2]=Point[2]/m;
+
+    //global to local transform
+	local[0]=global[0];
+	local[1]=global[1];
+	local[2]=global[2]-tarL/2-capL-accL/2;
+    localR2=local[0]*local[0]+local[1]*local[1];
 
 /*
-	if(relativeZ>0&&relativeZ<=accL/20)
+	if(localR2<accR*accR&&local[2]>-accL/2&&local[2]<=(-accL/2+delta))
 	{
+	static G4double		 B;
+	static G4double		 E;
+	B=(local[2]+accL/2)*(B1-B0)/delta+B0;
+	E=(local[2]+accL/2)*(E1-E0)/delta+E0;
 	Bfield[0]=0;
 	Bfield[1]=0;
-	Bfield[2]=B0*20*relativeZ/accL;
+	Bfield[2]=B*tesla;
 	Bfield[3]=0;
 	Bfield[4]=0;
-	Bfield[5]=E0*20*relativeZ/accL;
+	Bfield[5]=E*volt/m;
 	}
 */
-	//else if(relativeZ<=accL&&relativeZ>accL/20)
-	if(relativeZ>=0&&relativeZ<accL)
+	//else if(localR2<accR*accR&&local[2]<accL/2&&local[2]>=(-accL/2+delta))
+	if(localR2<accR*accR&&local[2]>-accL/2&&local[2]<=accL/2)
 	{
 	Bfield[0]=0;
 	Bfield[1]=0;
-	Bfield[2]=B0;
+	Bfield[2]=B1*tesla;
 	Bfield[3]=0;
 	Bfield[4]=0;
-	Bfield[5]=E0;
+	Bfield[5]=E1*volt/m;
 	//G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
 	//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<G4endl;
 	}

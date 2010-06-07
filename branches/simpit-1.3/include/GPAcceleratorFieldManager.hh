@@ -65,12 +65,16 @@ public:
   	void SetFieldType(G4int t){fieldType=t;};
 	G4bool	DoesFieldChangeEnergy() const {return true;};
 
-private:
+protected:
   	G4double 		B0;
+  	G4double 		B1;
   	G4double 		E0;
+  	G4double 		E1;
    	G4double 	 	tarL;
    	G4double 	 	capL;
    	G4double 	 	accL;
+   	G4double 	 	accR;
+  	G4double 		delta;
 	G4int			fieldType;
 
 };

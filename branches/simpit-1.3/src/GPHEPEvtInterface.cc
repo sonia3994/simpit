@@ -72,7 +72,7 @@ void GPHEPEvtInterface::Init()
 	G4ThreeVector zero;
 	particle_position = zero;
 	particle_time = 0.0;
-	timeUnit=0.001*ns;
+	timeUnit=picosecond;
 	particlePosZ=-3.*mm;
 	CLHEP:: HepRandom::setTheSeed(time(0),time(0));
 	randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.5);
