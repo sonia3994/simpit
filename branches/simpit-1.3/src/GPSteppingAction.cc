@@ -125,7 +125,10 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 		{
 			currentTrack->SetTrackStatus(currentTrackStatus);
 			if (verbose>=1)
-			G4cout<<"Kill a particle because it does not move more then 10 steps, particle type: "<<particleName<<G4endl;
+			{
+				G4cout<<"Kill a particle because it does not move more then 10 steps, particle type: "<<particleName<<G4endl;
+				return;
+			}
 		}
 	}
 
@@ -159,8 +162,8 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 		///*	
 		if (prevPhys == capturePhys&&postPhys==targetPhys)
 		{  
-			eventaction->AddPositron(prevPos,prevMom,totalE);
-			eventaction->AddTargetStep(stepL);
+			//eventaction->AddPositron(prevPos,prevMom,totalE);
+	  		//eventaction->AddTargetStep(stepL);
  			userRunAction->OutPutData("target",outVector);
 		}
 
@@ -173,7 +176,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 		//*/	
 		else if(prevPhys==vacuumPhys&&postPhys==acceleratorPhys)
 		{
-			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=acceleratorR*acceleratorR)
+			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=acceleratorR*acceleratorR&&prevPos.z()>=(targetL/2+captureL+acceleratorL))
  			userRunAction->OutPutData("accelerator",outVector);
 		}
 
@@ -195,7 +198,8 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	{
 	  eventaction->AddTargetED(stepE);
 	}
-	
+
+	/*
 	else if (prevPhys==vacuumPhys) 
 	{
 		currentTrack->SetTrackStatus(currentTrackStatus);
@@ -207,9 +211,12 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	{
 		currentTrack->SetTrackStatus(currentTrackStatus);
 		if (verbose>=2)
-		G4cout<<"Kill a particle because it is not: "<<particleName<<G4endl;
+		{ 
+			G4cout<<"Kill a particle because it is not a e+ after target: "<<particleName<<G4endl;
+        	return;
+		}
 	}
-	
+    */
 }
 
 /*
