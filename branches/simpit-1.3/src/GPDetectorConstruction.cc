@@ -526,4 +526,12 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
     else if(key=="world_z")
     worldZ = value;
 
+	else 
+	{
+     	std::cout<<"the key is not exist."<<std::endl;
+		return;
+	}
+
+	std::cout<<"Set "<<key<<" to "<< value/mm<<" mm."<<std::endl;
+
 }

@@ -60,6 +60,13 @@ GPDetectorMessenger::GPDetectorMessenger(
   TarMaterCmd->SetGuidance("Set Material of the Target.");
   TarMaterCmd->SetParameterName("choice",false);
   TarMaterCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  DetectorSizeCmd = new G4UIcmdWithAString("/GP/detector/setDetectorSize",this);
+  DetectorSizeCmd->SetGuidance("Set detector size.");
+  DetectorSizeCmd->SetGuidance("Format: {name} {value} {unit}");
+  DetectorSizeCmd->SetGuidance("For example: setDetectorSize target_l 8 mm");
+  DetectorSizeCmd->SetParameterName("choice",false);
+  DetectorSizeCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
   TarThickCmd = new G4UIcmdWithADoubleAndUnit("/GP/detector/targetThickness",this);
   TarThickCmd->SetGuidance("Set Thickness of the Target");
@@ -179,6 +186,7 @@ GPDetectorMessenger::~GPDetectorMessenger()
 {
 //  delete NbLayersCmd;
   delete TarMaterCmd; 
+  delete DetectorSizeCmd; 
   delete TarThickCmd;
   delete TarBoxXYCmd; 
   delete CapLengthCmd; 
@@ -201,6 +209,9 @@ void GPDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 { 
   if( command == TarMaterCmd )
    { GPDetector->SetTargetMaterial(newValue);}
+   
+  if( command == DetectorSizeCmd )
+   { GPDetector->SetDetectorSize(newValue);}
    
   if( command == TarThickCmd )
    { GPDetector->SetTargetThickness(TarThickCmd->GetNewDoubleValue(newValue));}
