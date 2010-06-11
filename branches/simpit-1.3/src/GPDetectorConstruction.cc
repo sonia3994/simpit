@@ -85,7 +85,7 @@ GPDetectorConstruction::GPDetectorConstruction()
     tranTubeLength =4500.0*mm;
 
     acceleratorTubeInnerRadius = 0.*mm;
-    acceleratorTubeOuterRadius = 50*mm;
+    acceleratorTubeOuterRadius = 20*mm;
     acceleratorTubeStartAngle = 0.*deg;
     acceleratorTubeSpanningAngle = 360.*deg;
     acceleratorTubeLength = 1000.0*mm;
