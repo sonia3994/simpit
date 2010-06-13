@@ -90,9 +90,9 @@ void GPCaptureField::Init()
   	//tarL=detector->GetTargetThickness();
   	//capL=detector->GetCaptureLength();
   	//capR=detector->GetCaptureRadius();
-  	tarL=detector->GetDetectorSize("target_z");
-  	capL=detector->GetDetectorSize("capture_l");
-  	capR=detector->GetDetectorSize("capture_or");
+  	tarL=detector->GetDetectorSize("target.z");
+  	capL=detector->GetDetectorSize("capture.l");
+  	capR=detector->GetDetectorSize("capture.or");
 
    	sqrCapR=capR*capR;
 	halfTarL=tarL/2;

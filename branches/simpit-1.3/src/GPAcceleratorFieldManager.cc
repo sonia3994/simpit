@@ -77,10 +77,10 @@ GPAcceleratorField::~GPAcceleratorField()
 void GPAcceleratorField::Init()
 {
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
-  	G4double tarLTmp=detector->GetDetectorSize("target_z");
-  	G4double capLTmp=detector->GetDetectorSize("capture_l");
-  	G4double accLTmp=detector->GetDetectorSize("accelerator_l");
-  	G4double accRTmp=detector->GetDetectorSize("accelerator_or");
+  	G4double tarLTmp=detector->GetDetectorSize("target.z");
+  	G4double capLTmp=detector->GetDetectorSize("capture.l");
+  	G4double accLTmp=detector->GetDetectorSize("accelerator.l");
+  	G4double accRTmp=detector->GetDetectorSize("accelerator.or");
     //transform to my units.
     tarL=tarLTmp/m;
     capL=capLTmp/m;

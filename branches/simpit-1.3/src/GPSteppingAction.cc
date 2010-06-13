@@ -80,8 +80,8 @@ void GPSteppingAction::Init()
     targetY = detector->GetTargetY();
     captureL = detector->GetCaptureLength();
     captureR = detector->GetCaptureRadius();
-    acceleratorL = detector->GetDetectorSize("accelerator_l");
-    acceleratorR = detector->GetDetectorSize("accelerator_or");
+    acceleratorL = detector->GetDetectorSize("accelerator.l");
+    acceleratorR = detector->GetDetectorSize("accelerator.or");
 
 }
 

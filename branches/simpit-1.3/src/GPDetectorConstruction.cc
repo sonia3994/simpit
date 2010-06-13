@@ -419,51 +419,51 @@ const G4VPhysicalVolume* GPDetectorConstruction::GetPhysicalVolume(std::string n
 
 G4double GPDetectorConstruction::GetDetectorSize(std::string name) const
 {
-    if(name=="target_x")
+    if(name=="target.x")
     return targetBoxY;
-    else if(name=="target_y")
+    else if(name=="target.y")
     return targetBoxX;
-    else if(name=="target_z")
+    else if(name=="target.z")
     return targetBoxZ;
     
-    else if(name=="capture_ir")
+    else if(name=="capture.ir")
     return captureTubeInnerRadius;
-    else if(name=="capture_or")
+    else if(name=="capture.or")
     return captureTubeOuterRadius;
-    else if(name=="capture_l")
+    else if(name=="capture.l")
     return captureTubeLength;
-    else if(name=="capture_sa")
+    else if(name=="capture.sa")
     return captureTubeStartAngle;
-    else if(name=="capture_ea")
+    else if(name=="capture.ea")
     return captureTubeSpanningAngle;
     
-    else if(name=="transport_ir")
+    else if(name=="transport.ir")
     return tranTubeInnerRadius;
-    else if(name=="transport_or")
+    else if(name=="transport.or")
     return tranTubeOuterRadius;
-    else if(name=="transport_l")
+    else if(name=="transport.l")
     return tranTubeLength;
-    else if(name=="transport_sa")
+    else if(name=="transport.sa")
     return tranTubeStartAngle;
-    else if(name=="transport_ea")
+    else if(name=="transport.ea")
     return tranTubeSpanningAngle;
     
-    else if(name=="accelerator_ir")
+    else if(name=="accelerator.ir")
     return acceleratorTubeInnerRadius;
-    else if(name=="accelerator_or")
+    else if(name=="accelerator.or")
     return acceleratorTubeOuterRadius;
-    else if(name=="accelerator_l")
+    else if(name=="accelerator.l")
     return acceleratorTubeLength;
-    else if(name=="accelerator_sa")
+    else if(name=="accelerator.sa")
     return acceleratorTubeStartAngle;
-    else if(name=="accelerator_ea")
+    else if(name=="accelerator.ea")
     return acceleratorTubeSpanningAngle;
     
-    else if(name=="world_x")
+    else if(name=="world.x")
     return worldX;
-    else if(name=="world_y")
+    else if(name=="world.y")
     return worldY;
-    else if(name=="world_z")
+    else if(name=="world.z")
     return worldZ;
 	
 	else return 0;
@@ -479,51 +479,51 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
 	ss>>key>>value>>unit;
     value=value*G4UIcommand::ValueOf(unit.c_str());
 
-    if(key=="target_x")
+    if(key=="target.x")
     targetBoxY = value;
-    else if(key=="target_y")
+    else if(key=="target.y")
     targetBoxX = value;
-    else if(key=="target_z")
+    else if(key=="target.z")
     targetBoxZ = value;
     
-    else if(key=="capture_ir")
+    else if(key=="capture.ir")
     captureTubeInnerRadius = value;
-    else if(key=="capture_or")
+    else if(key=="capture.or")
     captureTubeOuterRadius = value;
-    else if(key=="capture_l")
+    else if(key=="capture.l")
     captureTubeLength = value;
-    else if(key=="capture_sa")
+    else if(key=="capture.sa")
     captureTubeStartAngle = value;
-    else if(key=="capture_ea")
+    else if(key=="capture.ea")
     captureTubeSpanningAngle = value;
     
-    else if(key=="transport_ir")
+    else if(key=="transport.ir")
     tranTubeInnerRadius = value;
-    else if(key=="transport_or")
+    else if(key=="transport.or")
     tranTubeOuterRadius = value;
-    else if(key=="transport_l")
+    else if(key=="transport.l")
     tranTubeLength = value;
-    else if(key=="transport_sa")
+    else if(key=="transport.sa")
     tranTubeStartAngle = value;
-    else if(key=="transport_ea")
+    else if(key=="transport.ea")
     tranTubeSpanningAngle = value;
     
-    else if(key=="accelerator_ir")
+    else if(key=="accelerator.ir")
     acceleratorTubeInnerRadius = value;
-    else if(key=="accelerator_or")
+    else if(key=="accelerator.or")
     acceleratorTubeOuterRadius = value;
-    else if(key=="accelerator_l")
+    else if(key=="accelerator.l")
     acceleratorTubeLength = value;
-    else if(key=="accelerator_sa")
+    else if(key=="accelerator.sa")
     acceleratorTubeStartAngle = value;
-    else if(key=="accelerator_ea")
+    else if(key=="accelerator.ea")
     acceleratorTubeSpanningAngle = value;
     
-    else if(key=="world_x")
+    else if(key=="world.x")
     worldX = value;
-    else if(key=="world_y")
+    else if(key=="world.y")
     worldY = value;
-    else if(key=="world_z")
+    else if(key=="world.z")
     worldZ = value;
 
 	else 
