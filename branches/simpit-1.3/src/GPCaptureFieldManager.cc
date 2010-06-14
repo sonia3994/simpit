@@ -223,19 +223,20 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 
 	relativeZ=Point[2]-halfTarL;
     localR2=Point[0]*Point[0]+Point[1]*Point[1];
-  	if(relativeZ>0&&relativeZ<=highQL&&localR2<=sqrCapR)
+  	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
 		Bfield[2]=B0;
 	}
+/*
   	else if(relativeZ>highQL&&relativeZ<=capL&&localR2<=sqrCapR)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
 		Bfield[2]=B1;
 	}
-
+*/
   	else 
   	{ 
 	  	Bfield[0]=Bfield[1]=Bfield[2]=0;

@@ -99,7 +99,7 @@ fFieldMessenger(0)
 	fGlobalIntegratorDriver = new G4MagInt_Driver(fMinStep,fGlobalStepper,fGlobalStepper->GetNumberOfVariables());
 	fGlobalChordFinder = new G4ChordFinder(fGlobalIntegratorDriver);
 	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
-	G4cout<<"This is ok: mark 1 "<<G4endl ;
+	//G4cout<<"This is ok: mark 1 "<<G4endl ;
 
   	UpdateField();
 }
