@@ -203,17 +203,18 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
   	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
 	{
 		feiMi=1/(1+qwtAlpha*relativeZ*relativeZ/cm/cm);
-  		Bfield[0]=Point[0]*B0*qwtAlpha*relativeZ*feiMi*feiMi/cm/cm;
-  		Bfield[1]=Point[1]*Bfield[0]/Point[0];
+  		//Bfield[0]=Point[0]*B0*qwtAlpha*relativeZ*feiMi*feiMi/cm/cm;
+  		//Bfield[1]=Point[1]*Bfield[0]/Point[0];
 		Bfield[2]=B0*feiMi;
 	}
 
   	else 
   	{ 
-	  	Bfield[0]=Bfield[1]=Bfield[2]=0;
+	  	//Bfield[0]=Bfield[1]=Bfield[2]=0;
+	  	Bfield[2]=0;
   	}
 
-  	Bfield[3]=Bfield[4]=Bfield[5]=0;
+    Bfield[0]=Bfield[1]=Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
 void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *Bfield) const
@@ -326,7 +327,7 @@ GPCaptureFieldManager::GPCaptureFieldManager()
   	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
   	fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
-	G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
+	G4cout<<"The capture field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
   	fStepperType = 4 ;      // ClassicalRK4 is default stepper
   	captureFieldFlag=true;
   	

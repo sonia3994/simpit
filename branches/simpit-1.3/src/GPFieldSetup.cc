@@ -90,7 +90,7 @@ fFieldMessenger(0)
   	//fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
   	fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
-	G4cout<<"The minimal step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
+	G4cout<<"The global field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
   	fStepperType = 4 ;      // ClassicalRK4 is default stepper
   	
   	globalFieldFlag=false;
