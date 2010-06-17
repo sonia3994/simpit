@@ -96,7 +96,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   ss <<runID;
   ss >>chrunID;
 
-  outputPairVectorHandle.clear();
+  outputHandlerMap.clear();
 
   fileName=filePath +"SumAtExitOfTar.dat";
   paraFile.open(fileName,ios::ate|ios::app);
@@ -105,19 +105,19 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   dataFileDT = new std::ofstream(fileName);
   pairHandle.first="target";
   pairHandle.second=dataFileDT;
-  outputPairVectorHandle.push_back(pairHandle);
+  outputHandlerMap.insert(pairHandle);
 
   fileName=filePath+chrunID+"ExitOfCap.dat";  
   dataFileDC = new std::ofstream(fileName);
   pairHandle.first="capture";
   pairHandle.second=dataFileDC;
-  outputPairVectorHandle.push_back(pairHandle);
+  outputHandlerMap.insert(pairHandle);
 
   fileName=filePath+chrunID+"ExitOfAcc.dat";  
   dataFileAC = new std::ofstream(fileName);
   pairHandle.first="accelerator";
   pairHandle.second=dataFileAC;
-  outputPairVectorHandle.push_back(pairHandle);
+  outputHandlerMap.insert(pairHandle);
 
 
   if(targetSDFlag)
@@ -236,15 +236,13 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 	<<rmsLTrack
      	<< G4endl;
 
-  paraFile.close();
-	size_t vecSize = outputPairVectorHandle.size();
-	for(size_t i=0;i!=vecSize;i++)
-		{(outputPairVectorHandle[i]).second->close();}
-	 outputPairVectorHandle.clear();
+  	paraFile.close();
+	for(std::map<std::string, std::ofstream* >::iterator iter=outputHandlerMap.begin();iter!=outputHandlerMap.end();iter++)
+	{
+		(iter->second)->close();
+	}
+	 outputHandlerMap.clear();
 	
-  //dataFileDT->close();
-  //dataFileDC->close();
-  //dataFileAC->close();
   //G4double x,y,z;
   //G4double dx=mydetector->GetTargetXY()/eddDim[0];
   //G4double dy=mydetector->GetTargetXY()/eddDim[1];
@@ -252,48 +250,50 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
   long int index;
   if(targetSDFlag)
   {
-  for(G4int i=0;i!=eddDim[0];i++)
-  {
-	//x=i*dx-(eddDim[0]-1)*dx*0.5;
-     for(G4int j=0;j!=eddDim[1];j++)
-     {
-	//y=j*dy-(eddDim[1]-1)*dy*0.5;
-
-        for(G4int k=0;k!=eddDim[2];k++)
-	{
-	//z=k*dz-(eddDim[2]-1)*dz*0.5;
-	index=k*eddDim[0]*eddDim[1]+j*eddDim[0]+i;
-	eddHandle<<i<<" "<<j<<" "<<k<<" "<<edd[index]<<"\n";
-	//eddHandle<<x<<" "<<y<<" "<<z<<" "<<edd[k*eddDim[0]*eddDim[1]+j*eddDim[0]+i]<<"\n";
-	}
-     }
-  } 
-  eddHandle<<G4endl;
-  eddHandle.close();
+	  for(G4int i=0;i!=eddDim[0];i++)
+	  {
+		//x=i*dx-(eddDim[0]-1)*dx*0.5;
+	     for(G4int j=0;j!=eddDim[1];j++)
+	     {
+		//y=j*dy-(eddDim[1]-1)*dy*0.5;
+	
+	        for(G4int k=0;k!=eddDim[2];k++)
+			{
+				//z=k*dz-(eddDim[2]-1)*dz*0.5;
+				index=k*eddDim[0]*eddDim[1]+j*eddDim[0]+i;
+				eddHandle<<i<<" "<<j<<" "<<k<<" "<<edd[index]<<"\n";
+				//eddHandle<<x<<" "<<y<<" "<<z<<" "<<edd[k*eddDim[0]*eddDim[1]+j*eddDim[0]+i]<<"\n";
+			}
+	     }
+	  } 
+	  eddHandle<<G4endl;
+	  eddHandle.close();
   }
 }
 
 void GPRunAction::OutPutData(std::string name,std::vector<G4double> value) 
 {
-	size_t num=outputPairVectorHandle.size();
-	for(size_t i=0;i!=num;i++)
+	std::map<std::string, std::ofstream* >::iterator iter=outputHandlerMap.find(name);
+	if(iter!=outputHandlerMap.end())
 	{
-		if(outputPairVectorHandle[i].first==name)
-		{
-		OutPut(i,value);
-		break;
-		}
+		OutPut(iter,value);
+	}
+	else
+	{
+    	G4cout<<"Wrong output key!"<<G4endl;
 	}
 	
 
 }
-void GPRunAction::OutPut(size_t i,std::vector<G4double> value) 
+void GPRunAction::OutPut(std::map<std::string, std::ofstream* >::iterator iter,std::vector<G4double> value) 
 {
 
    	for(size_t j=0;j!=value.size();j++)
-		{*(outputPairVectorHandle[i].second)<<value[j]<<" ";}
+	{
+		*(iter->second)<<value[j]<<" ";
+	}
 
-		*(outputPairVectorHandle[i].second)<<G4endl;
+	*(iter->second)<<G4endl;
 
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

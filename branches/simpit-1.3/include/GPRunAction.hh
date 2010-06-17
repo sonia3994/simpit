@@ -41,6 +41,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <map>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
@@ -62,7 +63,7 @@ public:
   void AddActualG(G4int t){actualG+=t;};
 
 private:
-  void OutPut(size_t ,std::vector<G4double>); 
+  void OutPut(std::map<std::string, std::ofstream* >::iterator,std::vector<G4double>); 
 
 private:
   G4double sumETar, sum2ETar;
@@ -73,7 +74,7 @@ private:
   GPPrimaryGeneratorAction* primaryGenerator;
   GPDetectorConstruction*   mydetector;
 
-  std::vector<std::pair<std::string,std::ofstream* > > outputPairVectorHandle;
+  std::map<std::string, std::ofstream* > outputHandlerMap;
   std::ofstream* dataFileDT;
   std::ofstream* dataFileDC;
   std::ofstream* dataFileAC;
