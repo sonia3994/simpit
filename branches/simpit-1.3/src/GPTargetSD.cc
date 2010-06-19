@@ -46,7 +46,7 @@ GPTargetSD::GPTargetSD(G4String name,std::vector<G4int> hitDim)
 GPTargetSD::~GPTargetSD()
 {;}
 
-void GPTargetSD::Initialize(G4HCofThisEvent*)
+void GPTargetSD::Initialize(G4HCofThisEvent* HCE)
 {
   CellID.clear();
   CellID.resize(numberOfCellsInX*numberOfCellsInY*numberOfCellsInZ); 
@@ -58,7 +58,7 @@ void GPTargetSD::Initialize(G4HCofThisEvent*)
   verboseLevel = 0;
 }
 
-G4bool GPTargetSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
+G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
 {
   if(!ROhist) return false;
   G4double edep = aStep->GetTotalEnergyDeposit();
@@ -97,7 +97,7 @@ G4bool GPTargetSD::ProcessHits(G4Step*aStep,G4TouchableHistory*ROhist)
   return true;
 }
 
-void GPTargetSD::EndOfEvent(G4HCofThisEvent*HCE)
+void GPTargetSD::EndOfEvent(G4HCofThisEvent* HCE)
 {
   static G4int HCID = -1;
   if(HCID<0)
