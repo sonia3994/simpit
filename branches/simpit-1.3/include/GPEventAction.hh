@@ -56,6 +56,7 @@ public:
 
   void  BeginOfEventAction(const G4Event*);
   void  EndOfEventAction(const G4Event*);
+  inline  G4int GetEventID() const {return eventID;};
     
 //  void AddAbs(G4double de, G4double dl) {EnergyAbs += de; TrackLAbs += dl;};
 //  void AddGap(G4double de, G4double dl) {EnergyGap += de; TrackLGap += dl;};
@@ -72,6 +73,7 @@ private:
 //   G4double  de;                  
    G4int     printModulo;
    G4int     positronPerEvt;
+   G4int     eventID;
 //   fstream  positronfilename;
                              
 //   GPEventActionMessenger*  eventMessenger;

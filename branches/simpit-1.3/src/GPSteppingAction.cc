@@ -50,7 +50,7 @@ using namespace std;
 
 GPSteppingAction::GPSteppingAction(GPDetectorConstruction* det,
                                          GPEventAction* evt)
-:detector(det), eventaction(evt)					 
+:detector(det), eventAction(evt)					 
 { 
   	particle="e+";
   	steppingMessenger = new GPSteppingMessenger(this);
@@ -105,10 +105,20 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	static G4double				stepE;
 	static G4double				stepL;
 	static G4int   				stopFlag;
+	static G4int   				trackID;
+	static G4int   				eventID;
+	static G4int				targetFilteredTrackID=-1;
+	static G4int				targetFilteredEventID=-1;
+	static G4int				captureFilteredTrackID=-1;
+	static G4int				captureFilteredEventID=-1;
+	static G4int				acceleratorFilteredTrackID=-1;
+	static G4int				acceleratorFilteredEventID=-1;
 	
 	outVector.clear();
 	static GPRunAction* userRunAction = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
 
+    eventID=eventAction->GetEventID();
+    trackID=aStep->GetTrack()->GetTrackID();
     currentTrack=aStep->GetTrack();
 	currentTrackStatus=fStopAndKill;
 
@@ -118,7 +128,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	if(stepE<0) {return;}
 	
 	stepL = aStep->GetStepLength();
-	if(stepL<=0.0)
+	if(stepL<=0)
 	{
     	stopFlag++;
 		if(stopFlag>=10)
@@ -148,6 +158,8 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	postPos=postStepPoint->GetPosition();
 	postMom=postStepPoint->GetMomentum();
 	
+	outVector.push_back(eventID);
+	outVector.push_back(trackID);
 	outVector.push_back(prevPos.x());
 	outVector.push_back(prevPos.y());
 	//outVector.push_back(prevPos.z());
@@ -160,24 +172,39 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	if (particleName==particle)
 	{
 		///*	
+		//if (prevPos.z()>=targetL/2)
 		if (prevPhys == capturePhys&&postPhys==targetPhys)
 		{  
-			//eventaction->AddPositron(prevPos,prevMom,totalE);
-	  		//eventaction->AddTargetStep(stepL);
- 			userRunAction->OutPutData("target",outVector);
+			//if(trackID!=targetFilteredTrackID&&eventID!=targetFilteredEventID)
+			//{
+				userRunAction->OutPutData("target",outVector);
+				//G4cout<<"Track ID: "<<eventID<<":"<<trackID<<G4endl;
+				//G4cout<<"Step length: "<<stepL<<G4endl;
+				targetFilteredTrackID=trackID;
+				targetFilteredEventID=eventID;
+			//}
+			
 		}
 
 		else if(prevPhys==acceleratorPhys&&postPhys==capturePhys)
 		{
 			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=captureR*captureR&&prevPos.z()>=(targetL/2+captureL))
- 			userRunAction->OutPutData("capture",outVector);
+			{
+ 				userRunAction->OutPutData("capture",outVector);
+				captureFilteredTrackID=trackID;
+				captureFilteredEventID=eventID;
+			}
 		}
 
 		//*/	
 		else if(prevPhys==vacuumPhys&&postPhys==acceleratorPhys)
 		{
 			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=acceleratorR*acceleratorR&&prevPos.z()>=(targetL/2+captureL+acceleratorL))
- 			userRunAction->OutPutData("accelerator",outVector);
+			{
+ 				userRunAction->OutPutData("accelerator",outVector);
+				acceleratorFilteredTrackID=trackID;
+				acceleratorFilteredEventID=eventID;
+			}
 		}
 
   	postPhys=prevPhys;
@@ -196,7 +223,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 
 	if (prevPhys==targetPhys) 
 	{
-	  eventaction->AddTargetED(stepE);
+	  eventAction->AddTargetED(stepE);
 	}
 
 	/*

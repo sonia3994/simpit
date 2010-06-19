@@ -66,6 +66,7 @@ GPEventAction::~GPEventAction()
 void GPEventAction::BeginOfEventAction(const G4Event* evt)
 {  
   G4int evtNb = evt->GetEventID();
+	eventID=evtNb;
 //  if (evtNb%printModulo == 0) 
     if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
     { 

@@ -64,7 +64,7 @@ private:
   G4String 		particle;
   std::ofstream 	  writeFile;
   GPDetectorConstruction* detector;
-  GPEventAction*          eventaction;
+  GPEventAction*          eventAction;
   GPSteppingMessenger*	steppingMessenger;
     const G4VPhysicalVolume* capturePhys;
     const G4VPhysicalVolume* targetPhys;
