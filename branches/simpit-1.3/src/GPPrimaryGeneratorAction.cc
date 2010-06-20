@@ -200,13 +200,20 @@ void GPPrimaryGeneratorAction::SetParticleInitNumber(G4int tmp)
 void GPPrimaryGeneratorAction::PrintPrimaryMessage()
 { 
   if(HEPEvtFlag == true)
-    {G4cout<<"Primary Generator is implemented from file: \n"<<inputFile<<G4endl;
-     return;
+    {
+  		G4cout
+		<<"\n------------------Print primary status---------------------------\n"
+		<<"Primary Generator is implemented from file: "<<inputFile<<"\n"
+		<<"-----------------------------------------------------------------\n"
+        <<G4endl;	
+		return;
 	}
 
-  G4cout<<"\nSelected distribution is: CLHEP::RandGauss\n	"
-    	<<"\nprimary particle \n"
-    	<<"\nparticle style: "<<particleStyle<<"\n"
+  		G4cout
+		<<"\n------------------Print primary status---------------------------\n"
+  		<<"Selected distribution is: CLHEP::RandGauss\n	"
+    	<<"primary particle \n"
+    	<<"particle style: "<<particleStyle<<"\n"
     	<<"number per event: "<<n_particle<<"\n"
     	<<"energy mean: "<<eEnergyMean<<"*MeV\n"
     	<<"energy rms: "<<eEnergyRMS<<"*MeV\n"
@@ -215,6 +222,7 @@ void GPPrimaryGeneratorAction::PrintPrimaryMessage()
     	<<"position Z : "<<particlePosZ<<"*mm\n"
     	<<"momentum mean(Transverse): "<<eMomentumMean<<"\n"
     	<<"momentum rms(Transverse): "<<eMomentumRMS<<"\n"
+		<<"-----------------------------------------------------------------\n"
     	<<G4endl;
 
 }

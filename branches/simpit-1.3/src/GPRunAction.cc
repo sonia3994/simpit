@@ -78,26 +78,31 @@ GPRunAction::~GPRunAction()
 void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 { 
 //inform the runManager to save random number seed
-  G4RunManager::GetRunManager()->SetRandomNumberStore(true);
-
-  GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
-  if(gpSteppingAction) gpSteppingAction->Init();
-
-  GPFieldSetup* gpFieldSetup=(GPFieldSetup*)mydetector->GetFieldSetup();
-  if(gpFieldSetup) gpFieldSetup->Init();
-
   std::pair<std::string,std::ofstream* > pairHandle;
   G4String fileName;
   G4String chrunID;
   stringstream ss;
   G4int runID=aRun->GetRunID();
   G4int numEvt=aRun->GetNumberOfEventToBeProcessed();
-  targetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("mydet/target")->isActive();
   ss <<runID;
   ss >>chrunID;
 
-  outputHandlerMap.clear();
+  G4RunManager::GetRunManager()->SetRandomNumberStore(true);
 
+  G4cout<<"\n========================Begin of Run: "<<runID<<"==================================\n"
+  <<"Prepare run: "<<G4endl;
+  GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
+  if(gpSteppingAction) gpSteppingAction->Init();
+  G4cout<<"Init SteppingActionn."<<G4endl;
+
+  GPFieldSetup* gpFieldSetup=(GPFieldSetup*)mydetector->GetFieldSetup();
+  if(gpFieldSetup) gpFieldSetup->Init();
+  G4cout<<"Init Field."<<G4endl;
+
+  targetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("mydet/target")->isActive();
+  G4cout<<"Target sensitive detector status: "<<targetSDFlag<<G4endl;
+
+  outputHandlerMap.clear();
   fileName=filePath +"SumAtExitOfTar.dat";
   paraFile.open(fileName,ios::ate|ios::app);
 
@@ -126,10 +131,11 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   eddHandle.open(fileName);
   }
 
-  G4cout << "### Run " << runID<< " start." <<"\n"
-  <<"target sensitive detector status "<<targetSDFlag<<G4endl;
+  G4cout<<"Created output files handlers"<<G4endl;
   mydetector->PrintDetectorParameters();
   primaryGenerator->PrintPrimaryMessage();
+
+  G4cout << "Start run: " << runID<<G4endl;
 
   paraFile 
 	<<runID<<" "
@@ -215,18 +221,16 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
   //print
   //
   G4cout
-     << "\n--------------------Results------------------------------\n"
-     << "\n The actual gamma impinged the target: "<<actualG <<"\n"
-     << "\n Total number of this Run:"<<positronPerRun<<"\n"
-     << "\n Total energy deposited in Target of this run : " << G4BestUnit(sumETar,"Energy")
-     << "\n Mean energy deposited in Target per event of this run : " << G4BestUnit(sumETar/NbOfEvents,"Energy")
-     << " +- "                          << G4BestUnit(rmsETar,"Energy")  
-     << G4endl;
-     
-  G4cout
-     << "\n mean trackLength in Target : " << G4BestUnit(sumLTrack,"Length")
-     << " +- "                               << G4BestUnit(rmsLTrack,"Length")  
-     << "\n--------------------End of Run------------------------------\n"
+     <<"\n--------------------Results------------------------------\n"
+     <<"The actual gamma impinged the target: "<<actualG <<"\n"
+     <<"Total number of this Run:"<<positronPerRun<<"\n"
+     <<"Total energy deposited in Target of this run : " << G4BestUnit(sumETar,"Energy")<<"\n"
+     <<"Mean energy deposited in Target per event of this run : " << G4BestUnit(sumETar/NbOfEvents,"Energy")
+     <<" +- "<< G4BestUnit(rmsETar,"Energy")<<"\n"  
+     <<"mean trackLength in Target : " << G4BestUnit(sumLTrack,"Length")
+     <<" +- "                               << G4BestUnit(rmsLTrack,"Length")<<"\n"  
+     <<"---------------------End of results-------------------------\n"
+     <<"==================================End of Run ===================================\n"
      << G4endl;
   paraFile
 	<<positronPerRun<<" "

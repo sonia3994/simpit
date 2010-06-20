@@ -70,7 +70,7 @@ void GPEventAction::BeginOfEventAction(const G4Event* evt)
 //  if (evtNb%printModulo == 0) 
     if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
     { 
-    G4cout << "\n---> Begin of event: " << evtNb << G4endl;
+    G4cout << "\n------------------> Begin of event: " << evtNb<<" <--------------------" << G4endl;
     CLHEP::HepRandom::showEngineStatus();
     }
  
@@ -111,20 +111,17 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 //  if (evtNb%printModulo == 0) 
     if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
     {
-    G4cout << "\n --------> End of event: " << evtNb << "  <--------"<<G4endl;	
-    G4cout << "\n number of positron in this Event:"<<positronPerEvt<<"\n"
-           << "\n Target: total energy: " << std::setw(7)<< G4BestUnit(EnergyTar,"Energy")<<"\n"
-           << "\n total track length: " << std::setw(7)<< G4BestUnit(TrackL,"Length")
+    G4cout << "number of positron in this Event:"<<positronPerEvt<<"\n"
+           << "Target: total energy: " << std::setw(7)<< G4BestUnit(EnergyTar,"Energy")<<"\n"
+           << "total track length: " << std::setw(7)<< G4BestUnit(TrackL,"Length")
            << G4endl;
+    G4cout << "---------------> End of event: " << evtNb << " <--------------"<<G4endl;	
 
 	  
     }
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-  void GPEventAction::AddTargetED(G4double de) {EnergyTar+=de;}
-  void GPEventAction::AddTargetStep(G4double TargetStep) {TrackL+=TargetStep;} 
   void GPEventAction::AddPositron(G4ThreeVector Position,G4ThreeVector MomentumDirection,G4double TotalEnergy)
   {
    positronPerEvt++;

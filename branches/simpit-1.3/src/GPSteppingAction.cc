@@ -178,8 +178,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 			//if(trackID!=targetFilteredTrackID&&eventID!=targetFilteredEventID)
 			//{
 				userRunAction->OutPutData("target",outVector);
-				//G4cout<<"Track ID: "<<eventID<<":"<<trackID<<G4endl;
-				//G4cout<<"Step length: "<<stepL<<G4endl;
+	  			eventAction->AddPositron(prevPos,prevMom,totalE);
 				targetFilteredTrackID=trackID;
 				targetFilteredEventID=eventID;
 			//}
@@ -224,6 +223,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	if (prevPhys==targetPhys) 
 	{
 	  eventAction->AddTargetED(stepE);
+	  eventAction->AddTargetStep(stepL);
 	}
 
 	/*

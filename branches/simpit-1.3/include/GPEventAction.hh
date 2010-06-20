@@ -57,13 +57,10 @@ public:
   void  BeginOfEventAction(const G4Event*);
   void  EndOfEventAction(const G4Event*);
   inline  G4int GetEventID() const {return eventID;};
-    
-//  void AddAbs(G4double de, G4double dl) {EnergyAbs += de; TrackLAbs += dl;};
-//  void AddGap(G4double de, G4double dl) {EnergyGap += de; TrackLGap += dl;};
-  void  AddTargetED(G4double);
-  void  AddTargetStep(G4double);   
+  inline void  SetPrintModulo(G4int    val)  {printModulo = val;};
+  inline void AddTargetED(G4double de) {EnergyTar+=de;};
+  inline void AddTargetStep(G4double TargetStep) {TrackL+=TargetStep;}; 
   void  AddPositron(G4ThreeVector,G4ThreeVector,G4double);                  
-  void  SetPrintModulo(G4int    val)  {printModulo = val;};
     
 private:
    GPRunAction*  runAct;

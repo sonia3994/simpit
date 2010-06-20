@@ -217,7 +217,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   SDman->AddNewDetector(targetSD);
   targetLog->SetSensitiveDetector(targetSD); 
 
-  PrintDetectorParameters();
+  //PrintDetectorParameters();
   // Visualization attributes
   //
 /*  worldLog->SetVisAttributes (G4VisAttributes::Invisible);
@@ -376,25 +376,33 @@ void GPDetectorConstruction::SetTranTubeMaterial(G4String materialChoice)
 
 void GPDetectorConstruction::UpdateGeometry()
 {
-  G4RunManager::GetRunManager()->DefineWorldVolume(ConstructPositronResource());
-  G4cout<<"Updated the construction!"<<G4endl;
-  return ;
+    eddDim[0]=ceil(targetBoxX/TargetCellX);
+    eddDim[1]=ceil(targetBoxY/TargetCellY);
+    eddDim[2]=ceil(targetBoxZ/TargetCellZ);
+    
+  	G4RunManager::GetRunManager()->DefineWorldVolume(ConstructPositronResource());
+  	G4cout<<"Updated the detector!"<<G4endl;
+    //PrintDetectorParameters();
+
+  	return ;
 }
 
 
 
 void GPDetectorConstruction::PrintDetectorParameters()
 {
-  G4cout << "\n------------------------------------------------------------"
-         << "\nThe box is: " << worldX <<"*"<<worldY <<"*"
-         <<worldZ<<"*mm^3\n" 
-         << "Target thickness is:"<<targetBoxZ/mm << "mm\n" 
-         << "Target material is :"<< targetMaterial->GetName()<<"\n" 
-	 <<"Target EDD Cell delta is: "<<TargetCellX<<"*"
-	 <<TargetCellY<<"*"<<TargetCellZ<<"mm^3\n"
-	 <<"Cell number is: "<<eddDim[0]<<"*"<<eddDim[1]<<"*"<<eddDim[2]<<"\n"
-         << "\n------------------------------------------------------------\n"
-	 << G4endl;
+  G4cout 
+		<<"\n--------------------Print detector status-------------------\n"
+        <<"The world box: " << worldX <<"*"<<worldY <<"*" <<worldZ<<" mm^3\n" 
+        <<"Target box: "<<targetBoxX/mm <<"*"<<targetBoxY/mm <<"*"<<targetBoxZ/mm<< " mm^3\n" 
+        <<"Target EDD Cell: "<<TargetCellX<<"*" <<TargetCellY<<"*"<<TargetCellZ<<" mm^3\n"
+        <<"Target Cell number: "<<eddDim[0]<<"*"<<eddDim[1]<<"*"<<eddDim[2]<<"\n"
+        <<"Target material: "<< targetMaterial->GetName()<<"\n" 
+        <<"Capture tube: radius "<<captureTubeOuterRadius/mm <<" mm, length "<<captureTubeLength/mm <<" mm.\n" 
+        <<"Accelerator tube: radius "<<acceleratorTubeOuterRadius/mm <<" mm, length "<<acceleratorTubeLength/mm <<" mm.\n" 
+        << "------------------------------------------------------------\n"
+        << G4endl;
+
 }
 
 const G4VPhysicalVolume* GPDetectorConstruction::GetPhysicalVolume(std::string name) const
