@@ -80,8 +80,6 @@ private:
   	G4double 	B1;
   	G4double 	amdAlpha;
   	G4double 	qwtAlpha;
-	G4double	highQL;
-	G4double	lowQL;
   	G4int		fieldType;
 private:
   	G4double 	tarL;
@@ -90,8 +88,6 @@ private:
    	G4double 	sqrCapR;
 	G4double 	halfTarL;
 	G4double 	halfCapL;
-	G4double 	gapL;
-	G4double 	relativeMagL;
 
 private:
   	G4double 	mu0;

@@ -62,46 +62,36 @@
 //////////////////////////////////////////////////////////////////////////
 GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 {
-  	B0=6*tesla;
-  	B1=0.5*tesla;
-  	amdAlpha=0.22; //unit cm^(-1)
-  	qwtAlpha=0.172; //unit cm^(-2)
+	//Change to kg, m, s units now.
+  	//B0=6*tesla;
+  	B0=6;
+  	//B1=0.5*tesla;
+  	B1=0.5;
 	fieldType=0;
-	highQL=8*cm;
-	lowQL=100*cm;
-	gapL=1*cm;
 	mu0=12.5664e-7;
 	currentI=150*1000;
-//  G4String file="test";
-//  fs.open(file,std::fstream::app);
 }
 
 GPCaptureField::~GPCaptureField()
 {
-//fs.close();
 }
 
 void GPCaptureField::Init()
 {
-
-  	//const GPDetectorConstruction * detector =
-         //static_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
-  	//tarL=detector->GetTargetThickness();
-  	//capL=detector->GetCaptureLength();
-  	//capR=detector->GetCaptureRadius();
-  	tarL=detector->GetDetectorSize("target.z");
-  	capL=detector->GetDetectorSize("capture.l");
-  	capR=detector->GetDetectorSize("capture.or");
+
+	//transfer to international units
+  	tarL=detector->GetDetectorSize("target.z")/m;
+  	capL=detector->GetDetectorSize("capture.l")/m;
+  	capR=detector->GetDetectorSize("capture.or")/m;
 
    	sqrCapR=capR*capR;
 	halfTarL=tarL/2;
 	halfCapL=capL/2;
-	relativeMagL=halfTarL+gapL;
-  	amdAlpha=(B0/B1-1)/(capL/cm); //unit cm^(-1)
-	G4cout<<"AMD alpha: "<<amdAlpha<<" cm^(-1)"<<G4endl;
-	qwtAlpha=(B0/B1-1)/(capL*capL/cm/cm);//unit cm^(-2)
-	G4cout<<"QWT alpha: "<<qwtAlpha<<" cm^(-2)"<<G4endl;
+  	amdAlpha=(B0/B1-1)/(capL); //unit m^(-1)
+	G4cout<<"AMD alpha: "<<amdAlpha<<" m^(-1)"<<G4endl;
+	qwtAlpha=(B0/B1-1)/(capL*capL);//unit m^(-2)
+	G4cout<<"QWT alpha: "<<qwtAlpha<<" m^(-2)"<<G4endl;
 
 }
 
@@ -132,28 +122,34 @@ void GPCaptureField::GetFieldValue(const G4double Point[3], G4double *Bfield) co
 }
 void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const
 {
-  	static G4double 	fz;
-  	static G4double 	fz2;
-  	static G4double 	relativeZ;
-  	static G4double 	localR2;
+  	static 	G4double 	localX;
+  	static 	G4double 	localY;
+  	static 	G4double 	localZ;
+  	static 	G4double 	localR2;
+  	static 	G4double 	fz;
+  	static 	G4double 	fz2;
 	
-    localR2=Point[0]*Point[0]+Point[1]*Point[1];
-	relativeZ=Point[2]-halfTarL;
+	//transfer to international units
+	localX=Point[0]/m;
+	localY=Point[1]/m;
+	localZ=Point[2]/m-halfTarL;
 
-  	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
+    localR2=localX*localX+localY*localY;
+
+  	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
   	{
-		fz=B0/(1+amdAlpha*relativeZ/cm);
+		fz=1/(1+amdAlpha*localZ);
 		fz2=fz*fz;
 		//
 		//Bz(z,r)=f(z);f(z)=B0/(1+amdAlpha*z)
 		//Br(z,r)=-0.5*r*df(z)/dz;
-  		Bfield[0]=0.5*Point[0]*fz2*amdAlpha/B0/cm;
-  		Bfield[1]=Point[1]*Bfield[0]/Point[0];
-		Bfield[2]=fz;
-		//G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
+		//Add the magnetic unit "tesla" when transfer to kernel.
+  		Bfield[0]=0.5*localX*fz2*amdAlpha*B0*tesla;
+  		Bfield[1]=Bfield[0]*localY/localX;
+		Bfield[2]=fz*B0*tesla;
+		//G4cout<<"x: "<<localX<<" y: "<<localY<<" z: "<<Point[2]<<G4endl;
 		//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<G4endl;
 
-  		//Bfield[2]=0.5*tesla;
   	}
   	else 
   	{ 
@@ -165,20 +161,25 @@ void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield)
 
 void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bfield) const
 {
+  	static 	G4double 	localX;
+  	static 	G4double 	localY;
+  	static 	G4double 	localZ;
+  	static 	G4double 	localR2;
   	static	G4double	feiMi;
   	static	G4double	feiMiOne;
-  	static 	G4double 	relativeZ;
-  	static 	G4double 	localR2;
 
-	relativeZ=Point[2]-halfTarL;
-    localR2=Point[0]*Point[0]+Point[1]*Point[1];
+	localX=Point[0]/m;
+	localY=Point[1]/m;
+	localZ=Point[2]/m-halfTarL;
+    localR2=localX*localX+localY*localY;
 
-  	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
+  	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
 	{
-     	feiMi=exp((relativeZ-highQL)/cm);
+     	feiMi=exp((localZ-capL));
 		feiMiOne=1/(1+feiMi);
-  		Bfield[0]=0.5*Point[0]*(B0-B1)*feiMi*feiMiOne*feiMiOne/2/cm;
-  		Bfield[1]=Point[1]*Bfield[0]/Point[0];
+		//Add the magnetic unit "tesla" when transfer to kernel.
+  		Bfield[0]=0.5*localX*(B0-B1)*feiMi*feiMiOne*feiMiOne/2;
+  		Bfield[1]=Bfield[0]*localY/localX;
 		Bfield[2]=(B0-B1)*feiMiOne+B1;
 	}
 
@@ -192,22 +193,28 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
 
 void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4double *Bfield) const
 {
-  	static	G4double	feiMi;
-  	static 	G4double 	relativeZ;
-	//std::cout<<Point[0]<<" "<<Point[1]<<" "<<Point[2]<<std::endl;
-  	static G4double 	localR2;
+  	static 	G4double 	localX;
+  	static 	G4double 	localY;
+  	static 	G4double 	localZ;
+  	static 	G4double	feiMi;
+  	static 	G4double 	localR2;
 
-	relativeZ=Point[2]-halfTarL;
-    localR2=Point[0]*Point[0]+Point[1]*Point[1];
+	//transfer to international units
+	localX=Point[0]/m;
+	localY=Point[1]/m;
+	localZ=Point[2]/m-halfTarL;
 
-  	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
+    localR2=localX*localX+localY*localY;
+
+
+  	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
 	{
-		feiMi=1/(1+qwtAlpha*relativeZ*relativeZ/cm/cm);
+		feiMi=1/(1+qwtAlpha*localZ*localZ);
   		//Bfield[0]=0;
-  		Bfield[0]=Point[0]*B0*qwtAlpha*relativeZ*feiMi*feiMi/cm/cm;
+  		Bfield[0]=localX*qwtAlpha*localZ*feiMi*feiMi*B0*tesla;
   		//Bfield[1]=0;
-  		Bfield[1]=Point[1]*Bfield[0]/Point[0];
-		Bfield[2]=B0*feiMi;
+  		Bfield[1]=Bfield[0]*localY/localX;
+		Bfield[2]=feiMi*B0*tesla;
 	}
 
   	else 
@@ -220,25 +227,23 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
 
 void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *Bfield) const
 {
-  	static 	G4double 	relativeZ;
+  	static 	G4double 	localX;
+  	static 	G4double 	localY;
+  	static 	G4double 	localZ;
   	static 	G4double 	localR2;
 
-	relativeZ=Point[2]-halfTarL;
-    localR2=Point[0]*Point[0]+Point[1]*Point[1];
-  	if(relativeZ>0&&relativeZ<=capL&&localR2<=sqrCapR)
+	//transfer to international units
+	localX=Point[0]/m;
+	localY=Point[1]/m;
+	localZ=Point[2]/m-halfTarL;
+
+    localR2=localX*localX+localY*localY;
+  	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
-		Bfield[2]=B0;
+		Bfield[2]=B0*tesla;
 	}
-/*
-  	else if(relativeZ>highQL&&relativeZ<=capL&&localR2<=sqrCapR)
-	{
-  		Bfield[0]=0;
-  		Bfield[1]=0;
-		Bfield[2]=B1;
-	}
-*/
   	else 
   	{ 
 	  	Bfield[0]=Bfield[1]=Bfield[2]=0;
@@ -250,53 +255,50 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 
 void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfield) const
 {
-  	static 	G4double 	relativeZ;
-  	static 	G4double 	capR2;
+  	static 	G4double 	localX;
+  	static 	G4double 	localY;
+  	static 	G4double 	localZ;
+  	static 	G4double 	localR2;
   	static 	G4double 	magTP2;
   	static 	G4double 	magTP;
   	static 	G4double 	magI;
   	static 	G4double 	currentShape;
 	
 ///*
-	static  G4ThreeVector vectorI;
-	static  G4ThreeVector vectorIUnit;
-	static  G4ThreeVector vectorTP;
-	static  G4ThreeVector vectorTPUnit;
+	static  G4ThreeVector vectCurrent;
+	static  G4ThreeVector vectCurrentUnit;
+	static  G4ThreeVector vectHorizonPos;
+	static  G4ThreeVector vectHorizonPosUnit;
 	static  G4ThreeVector vectorB;
-	static  G4ThreeVector local;
-	//static  G4ThreeVector vectorBUnit;
 
-	//local[0]=Point[0];local[1]=Point[1];local[2]=Point[2]-tarL/2-capL/2;
-	local=TransformToLocal(G4ThreeVector(Point[0],Point[1],Point[2]));
-	relativeZ=Point[2]-halfTarL-halfCapL;
-	capR2=capR*capR/m/m;
+	//transfer to international units
+	localX=Point[0]/m;
+	localY=Point[1]/m;
+	localZ=Point[2]/m-halfTarL-halfCapL;
 
-	currentShape=currentI/(1+exp(10*abs(relativeZ-(capL-4)/2)));
-    vectorI=G4ThreeVector(0,0,currentI);
-    vectorIUnit=vectorI.unit();
+    localR2=localX*localX+localY*localY;
 
-    vectorTP=G4ThreeVector(Point[0]/m,Point[1]/m,0);
-    vectorTPUnit=vectorTP.unit();
-	magTP2=vectorTP.mag2();
-	magTP=vectorTP.mag();
-	magI=vectorI.mag();
+	//currentShape=currentI/(1+exp(10*abs(localZ-(capL-4)/2)));
+    vectCurrent=G4ThreeVector(0,0,currentI);
+    vectCurrentUnit=vectCurrent.unit();
+
+    vectHorizonPos=G4ThreeVector(localX,localY,0);
+    vectHorizonPosUnit=vectHorizonPos.unit();
+	magTP2=vectHorizonPos.mag2();
+	magTP=vectHorizonPos.mag();
+	magI=vectCurrent.mag();
 	
 //*/
-  	if(relativeZ>-halfCapL&&relativeZ<=halfCapL&&magTP2<=capR2)
+  	if(localZ>-halfCapL&&localZ<=halfCapL&&magTP2<=sqrCapR)
 	{
-/*
-  		Bfield[0]=-tesla*mu0*currentI/(6.2832*capR2)*Point[1]/m;
-  		Bfield[1]=tesla*mu0*currentI/(6.2832*capR2)*Point[0]/m;
-		Bfield[2]=0;
-*/
 
-		vectorB=vectorIUnit.cross(vectorTPUnit)*magI*magTP*mu0*tesla/(6.2832*capR2);
+		vectorB=vectCurrentUnit.cross(vectHorizonPosUnit)*magI*magTP*mu0*tesla/(6.2832*sqrCapR);
 		Bfield[0]=vectorB.x();
 		Bfield[1]=vectorB.y();
 		Bfield[2]=vectorB.z();
-		//G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
+		//G4cout<<"x: "<<localX<<" y: "<<localY<<" z: "<<localZ<<G4endl;
 		//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<" B: "<<vectorB.mag()<<G4endl;
-		//G4cout<<"r: "<<magTP/m<<" m"<<" z: "<<Point[2]<<" mm"<<G4endl;
+		//G4cout<<"r: "<<magTP/m<<" m"<<" z: "<<localZ<<" mm"<<G4endl;
 		//G4cout<<"Bx="<<Bfield[0]<<"By="<<Bfield[1]<<"Bz"<<Bfield[2]<<G4endl;
 	}
 
