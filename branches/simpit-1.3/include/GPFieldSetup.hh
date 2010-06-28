@@ -39,7 +39,7 @@
 
 #include "G4MagneticField.hh"
 //#include "G4ElectroMagneticField.hh"
-//#include "G4UniformMagField.hh"
+#include "globals.hh"
 #include <string>
 
 class G4FieldManager;
@@ -64,10 +64,10 @@ public:
  ~GPFieldSetup() ;
       
   void Init();
-  void SetStepperType( G4int i) { fStepperType = i ; }
-  void SetMinStep(G4double s) { fMinStep = s ; }
-  void UpdateField();
+  inline void SetStepperType( G4int i) { fStepperType = i ;G4cout<<"Set global field stepper: "<<i<<G4endl; };  
+  inline void SetMinStep(G4double s) { fMinStep = s ;G4cout<<"Set global field  minmum step: "<<s/mm<<" mm"<<G4endl; };
   void SetFieldFlag(G4bool) ;
+  void UpdateField();
   G4FieldManager*  GetLocalFieldManager(std::string name);
 
 protected:

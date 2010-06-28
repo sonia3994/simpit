@@ -60,11 +60,11 @@ public:
   	~GPCaptureField();
 	void Init();
 	G4bool	DoesFieldChangeEnergy() const {return false;};
-  	void SetFieldValueB0(G4double      t){B0=t;G4cout<<"Set field B0 value to: "<<B0<<G4endl;} ;
-  	void SetFieldValueAlpha(G4double      t) {amdAlpha=t;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;};
-  	void SetAMDFieldAlpha(G4double      t){amdAlpha=t;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;} ;
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  	void SetCaptureType(G4int t) {fieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
+  	inline void SetFieldValueB0(G4double      t){B0=t/tesla;G4cout<<"Set capture field B0 value to: "<<B0<<" tesla."<<G4endl;};
+  	inline void SetFieldValueAlpha(G4double   t){amdAlpha=t;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;};
+  	inline void SetAMDFieldAlpha(G4double     t){amdAlpha=t;G4cout<<"Set field AMD alpha value to: "<<amdAlpha<<G4endl;} ;
+  	inline void SetCaptureType(G4int t) {fieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
 
 private:
   	void GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const;
@@ -116,7 +116,7 @@ protected:
   //G4PropagatorInField*    	propInField;
   GPCaptureField*          	fCaptureField ; 
   G4ChordFinder*         	fCaptureChordFinder ;
-  G4EqEMFieldWithSpin*         fCaptureEquation; 
+  G4EqEMFieldWithSpin*      fCaptureEquation; 
   G4MagIntegratorStepper*	fCaptureStepper ;
   G4MagInt_Driver*			fCaptureIntegratorDriver;
 

@@ -54,32 +54,6 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
   StepperCmd->SetDefaultValue(4);
   StepperCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  FieldType = new G4UIcmdWithAnInteger("/GP/field/setFieldType",this);
-  FieldType->SetGuidance("Unvarible now.");
-  FieldType->SetGuidance("Select global magnetic field type:");
-/*
-  FieldType->SetGuidance("0 AMD");
-  FieldType->SetGuidance("1 Feimi distribution QWT");
-  FieldType->SetGuidance("2 Negative sqr QWT");
-  FieldType->SetGuidance("3 Abrutp QWT");
-*/
-  FieldType->SetParameterName("FieldType",true);
-  FieldType->SetDefaultValue(0);
-  FieldType->AvailableForStates(G4State_PreInit,G4State_Idle);
- 
-  UpdateCmd = new G4UIcmdWithoutParameter("/GP/field/update",this);
-  UpdateCmd->SetGuidance("Update field.");
-  UpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
-  UpdateCmd->SetGuidance("if you changed geometrical value(s).");
-  UpdateCmd->AvailableForStates(G4State_Idle);
-      
-  MagFieldB0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/setFieldB0",this);  
-  MagFieldB0Cmd->SetGuidance("Define magnetic field B0.");
-  MagFieldB0Cmd->SetGuidance("Magnetic field will be in Z direction.");
-  MagFieldB0Cmd->SetParameterName("Bz",false,false);
-  MagFieldB0Cmd->SetDefaultUnit("tesla");
-  MagFieldB0Cmd->AvailableForStates(G4State_Idle); 
- 
   MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/setMinStep",this);  
   MinStepCmd->SetGuidance("Define minimal step");
   MinStepCmd->SetGuidance("Magnetic field will be in Z direction.");
@@ -94,6 +68,11 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
   FieldFlag->SetDefaultValue("1");
   FieldFlag->AvailableForStates(G4State_Idle);
 
+  UpdateCmd = new G4UIcmdWithoutParameter("/GP/field/update",this);
+  UpdateCmd->SetGuidance("Update field.");
+  UpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
+  UpdateCmd->SetGuidance("if you changed geometrical value(s).");
+  UpdateCmd->AvailableForStates(G4State_Idle);
 
 }
 
@@ -102,8 +81,6 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
 GPFieldMessenger::~GPFieldMessenger()
 {
   delete StepperCmd;
-  delete FieldType;
-  delete MagFieldB0Cmd;
   delete MinStepCmd;
   delete GPdetDir;
   delete UpdateCmd;
@@ -121,21 +98,10 @@ void GPFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
     fEMfieldSetup->SetStepperType(StepperCmd->GetNewIntValue(newValue));
   }  
 
-  if( command == FieldType )
-  { 
-    //fieldPoint->SetCaptureType(FieldType->GetNewIntValue(newValue));
-    //wait for writing
-  }  
 
   if( command == UpdateCmd )
   { 
     fEMfieldSetup->UpdateField(); 
-  }
-
-  if( command == MagFieldB0Cmd )
-  { 
-    //fieldPoint->SetFieldValueB0(MagFieldB0Cmd->GetNewDoubleValue(newValue));
-    //wait for writing
   }
 
 
