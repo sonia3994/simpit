@@ -4,23 +4,13 @@
 #include "G4UIdirectory.hh"
 #include "G4UIcommand.hh"
 #include "G4UIcmdWithAString.hh"
-//#include "G4UIcmdWithAnInteger.hh"
-//#include "G4UIcmdWithADouble.hh"
-//#include "G4UIcmdWithADoubleAndUnit.hh"
-//#include "G4UnitsTable.hh"
 
 
-//#include <strstream>
-//#include <sstream>
-//#include <cctype>
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPSteppingMessenger::GPSteppingMessenger(
                                           GPSteppingAction* GPGun)
 :GPAction(GPGun)
 {
-//  G4bool omitable;
-//  G4UIparameter* parameter;
   generatorDir = new G4UIdirectory("/GP/stepping/");
   generatorDir->SetGuidance("Stepping control");
    
