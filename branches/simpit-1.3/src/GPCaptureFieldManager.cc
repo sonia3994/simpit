@@ -21,16 +21,16 @@
 //#include "G4PropagatorInField.hh"
 
 #include "G4RunManager.hh"
-#include "G4ExplicitEuler.hh"
-#include "G4ImplicitEuler.hh"
+//#include "G4ExplicitEuler.hh"
+//#include "G4ImplicitEuler.hh"
 #include "G4SimpleRunge.hh"
 #include "G4SimpleHeum.hh"
 #include "G4ClassicalRK4.hh"
-#include "G4HelixExplicitEuler.hh"
-#include "G4HelixImplicitEuler.hh"
-#include "G4HelixSimpleRunge.hh"
+//#include "G4HelixExplicitEuler.hh"
+//#include "G4HelixImplicitEuler.hh"
+//#include "G4HelixSimpleRunge.hh"
 #include "G4CashKarpRKF45.hh"
-#include "G4RKG3_Stepper.hh"
+//#include "G4RKG3_Stepper.hh"
 #include <fstream>
 #include <sstream>
 //////////////////////////////////////////////////////////////////////////
@@ -44,6 +44,7 @@ GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 	fieldType=0;
 	mu0=12.5664e-7;
 	currentI=150*1000;
+	qwtFermiAlpha=300;
 }
 
 GPCaptureField::~GPCaptureField()
@@ -63,9 +64,30 @@ void GPCaptureField::Init()
 	halfTarL=tarL/2;
 	halfCapL=capL/2;
   	amdAlpha=(B0/B1-1)/(capL); //unit m^(-1)
-	G4cout<<"AMD alpha: "<<amdAlpha<<" m^(-1)"<<G4endl;
-	qwtAlpha=(B0/B1-1)/(capL*capL);//unit m^(-2)
-	G4cout<<"QWT alpha: "<<qwtAlpha<<" m^(-2)"<<G4endl;
+	qwtNegaSqrAlpha=(B0/B1-1)/(capL*capL);//unit m^(-2)
+  	qwtFermiCoef1=(B0-B1)/(-0.5+1/(1+exp(-qwtFermiAlpha*capL)));
+  	qwtFermiCoef0=B1-0.5*qwtFermiCoef1;
+
+	if(fieldType==0)
+	{
+		G4cout<<"Active AMD, AMDAlpha: "<<amdAlpha<<" m^(-1)"<<G4endl;
+	}
+	else if(fieldType==1)
+	{
+	G4cout<<"Active QWT, qwtFermiAlpha: "<<qwtFermiAlpha<<" qwtFermiCoef0: "<<qwtFermiCoef0<<" qwtFermiCoef1: "<<qwtFermiCoef1<<G4endl;
+	}
+	else if(fieldType==2)
+	{
+	G4cout<<"Active QWT, QWTNegaSqrAlpha: "<<qwtNegaSqrAlpha<<" m^(-2)"<<G4endl;
+	}
+	else if(fieldType==3)
+	{
+	G4cout<<"Active QWT,Abrupt field. "<<G4endl;
+	}
+	else if(fieldType==4)
+	{
+	G4cout<<"Active Lithium. "<<G4endl;
+	}
 
 }
 
@@ -139,8 +161,8 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
   	static 	G4double 	localY;
   	static 	G4double 	localZ;
   	static 	G4double 	localR2;
-  	static	G4double	feiMi;
-  	static	G4double	feiMiOne;
+  	static	G4double	dPublic0;
+  	static	G4double	dPublic1;
 
 	localX=Point[0]/m;
 	localY=Point[1]/m;
@@ -149,12 +171,13 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
 
   	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
 	{
-     	feiMi=exp((localZ-capL));
-		feiMiOne=1/(1+feiMi);
+		dPublic0=exp(qwtFermiAlpha*(localZ-capL));
+		dPublic1=qwtFermiCoef0+qwtFermiCoef1/(1+dPublic0);
+
 		//Add the magnetic unit "tesla" when transfer to kernel.
-  		Bfield[0]=0.5*localX*(B0-B1)*feiMi*feiMiOne*feiMiOne/2;
+  		Bfield[0]=tesla*0.5*localX*qwtFermiCoef1*qwtFermiAlpha*dPublic0/((1+dPublic0)*(1+dPublic0));
   		Bfield[1]=Bfield[0]*localY/localX;
-		Bfield[2]=(B0-B1)*feiMiOne+B1;
+		Bfield[2]=tesla*dPublic1;
 	}
 
   	else 
@@ -183,10 +206,8 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
 
   	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
 	{
-		feiMi=1/(1+qwtAlpha*localZ*localZ);
-  		//Bfield[0]=0;
-  		Bfield[0]=localX*qwtAlpha*localZ*feiMi*feiMi*B0*tesla;
-  		//Bfield[1]=0;
+		feiMi=1/(1+qwtNegaSqrAlpha*localZ*localZ);
+  		Bfield[0]=localX*qwtNegaSqrAlpha*localZ*feiMi*feiMi*B0*tesla;
   		Bfield[1]=Bfield[0]*localY/localX;
 		Bfield[2]=feiMi*B0*tesla;
 	}
@@ -303,9 +324,9 @@ GPCaptureFieldManager::GPCaptureFieldManager()
   	fFieldMessenger = new GPCaptureFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
-  	fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
+  	fMinStep     = 1*mm ; // minimal step of 1 mm is default
 	G4cout<<"The capture field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
-  	fStepperType = 4 ;      // ClassicalRK4 is default stepper
+  	fStepperType = 2 ;      // ClassicalRK4 is default stepper
   	captureFieldFlag=true;
   	
 	SetStepper();
@@ -348,9 +369,10 @@ void GPCaptureFieldManager::UpdateField()
 	if(captureFieldFlag)
 	{
 		SetDetectorField(fCaptureField );
-		GetChordFinder()->SetDeltaChord(1e-9*m);
-		SetDeltaIntersection(1e-9*m);
-		SetDeltaOneStep(1e-9*m);
+		//It seems hard to simulate when setting following parameters too small.
+		GetChordFinder()->SetDeltaChord(1e-6*m);
+		SetDeltaIntersection(1e-6*m);
+		SetDeltaOneStep(1e-6*m);
 	}
 	else
 	{
@@ -366,10 +388,34 @@ void GPCaptureFieldManager::UpdateField()
 
 void GPCaptureFieldManager::SetStepper()
 {
+	G4int nvar=12;
 	if(fCaptureStepper) delete fCaptureStepper;
-	
-	fCaptureStepper = new G4ClassicalRK4( fCaptureEquation,12);       
+	switch ( fStepperType )
+	{
+		case 0:  
+		  //  2nd  order, for less smooth fields
+		  fCaptureStepper = new G4SimpleRunge( fCaptureEquation, nvar );    
+		  G4cout<<"G4SimpleRunge is called"<<G4endl;    
+		  break;
+		case 1:  
+		  //3rd  order, a good alternative to ClassicalRK
+		  fCaptureStepper = new G4SimpleHeum( fCaptureEquation, nvar );    
+		  G4cout<<"G4SimpleHeum is called"<<G4endl;    
+		  break;
+		case 2:  
+		  //4th order, classical  Runge-Kutta stepper, which is general purpose and robust.
+		  fCaptureStepper = new G4ClassicalRK4( fCaptureEquation, nvar );    
+		  G4cout<<"G4ClassicalRK4 (default,nvar ) is called"<<G4endl;    
+		  break;
+		case 3:
+		  //4/5th order for very smooth fields 
+		  fCaptureStepper = new G4CashKarpRKF45( fCaptureEquation, nvar );
+		  G4cout<<"G4CashKarpRKF45 is called"<<G4endl;
+		  break;
+		default: fCaptureStepper = new G4ClassicalRK4( fCaptureEquation, nvar );
+	}
 }
+
 
 
 

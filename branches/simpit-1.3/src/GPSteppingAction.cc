@@ -28,7 +28,7 @@ GPSteppingAction::GPSteppingAction(GPDetectorConstruction* det,
 { 
   	particle="e+";
   	steppingMessenger = new GPSteppingMessenger(this);
-	verbose=1;
+	verbose=0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -105,12 +105,12 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	if(stepL<=0)
 	{
     	stopFlag++;
-		if(stopFlag>=10)
+		if(stopFlag>=8)
 		{
 			currentTrack->SetTrackStatus(currentTrackStatus);
 			if (verbose>=1)
 			{
-				G4cout<<"Kill a particle because it does not move more then 10 steps, particle type: "<<particleName<<G4endl;
+				G4cout<<"Kill a particle because it does not move more then 8 steps: "<<particleName<<G4endl;
 				return;
 			}
 		}
@@ -198,6 +198,14 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	{
 	  eventAction->AddTargetED(stepE);
 	  eventAction->AddTargetStep(stepL);
+	}
+	if (prevPhys!=targetPhys&&particleName=="e-") 
+	{
+		currentTrack->SetTrackStatus(currentTrackStatus);
+		if(verbose>=1)
+		{
+			G4cout<<"Kill a particle because it isn't in target: "<<particleName<<G4endl;
+		}
 	}
 
 	/*

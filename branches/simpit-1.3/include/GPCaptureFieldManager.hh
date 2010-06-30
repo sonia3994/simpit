@@ -53,7 +53,10 @@ private:
   	G4double 	B0;
   	G4double 	B1;
   	G4double 	amdAlpha;
-  	G4double 	qwtAlpha;
+  	G4double 	qwtNegaSqrAlpha;
+  	G4double 	qwtFermiCoef0;
+  	G4double 	qwtFermiCoef1;
+  	G4double 	qwtFermiAlpha;
   	G4int		fieldType;
 private:
   	G4double 	tarL;
@@ -78,8 +81,8 @@ public:
  ~GPCaptureFieldManager() ;
       
   void Init();
-  void SetStepperType( G4int i) { fStepperType = i ; }
-  void SetMinStep(G4double s) { fMinStep = s ; }
+  inline void SetStepperType( G4int i) { fStepperType = i ;G4cout<<"Set capture field stepper type: "<<i<<G4endl; };
+  inline void SetMinStep(G4double s) { fMinStep = s ;G4cout<<"Set  capture field minmum step: "<<s/mm<<" mm"<<G4endl; };
   void UpdateField();
   void SetFieldFlag(G4bool) ;
 

@@ -21,16 +21,16 @@
 //#include "G4PropagatorInField.hh"
 
 #include "G4RunManager.hh"
-#include "G4ExplicitEuler.hh"
-#include "G4ImplicitEuler.hh"
+//#include "G4ExplicitEuler.hh"
+//#include "G4ImplicitEuler.hh"
 #include "G4SimpleRunge.hh"
 #include "G4SimpleHeum.hh"
 #include "G4ClassicalRK4.hh"
-#include "G4HelixExplicitEuler.hh"
-#include "G4HelixImplicitEuler.hh"
-#include "G4HelixSimpleRunge.hh"
+//#include "G4HelixExplicitEuler.hh"
+//#include "G4HelixImplicitEuler.hh"
+//#include "G4HelixSimpleRunge.hh"
 #include "G4CashKarpRKF45.hh"
-#include "G4RKG3_Stepper.hh"
+//#include "G4RKG3_Stepper.hh"
 #include <fstream>
 #include <sstream>
 //////////////////////////////////////////////////////////////////////////
@@ -132,9 +132,9 @@ GPAcceleratorFieldManager::GPAcceleratorFieldManager()
   	fFieldMessenger = new GPAcceleratorFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fAcceleratorField) ;  
 
-  	fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
+  	fMinStep     = 1*mm ; // minimal step of 1 mm is default
 	G4cout<<"The Accelerator field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
-  	fStepperType = 4 ;      // ClassicalRK4 is default stepper
+  	fStepperType = 2 ;      // ClassicalRK4 is default stepper
   	acceleratorFieldFlag=true;
   	
 	SetStepper();
@@ -178,10 +178,9 @@ void GPAcceleratorFieldManager::UpdateField()
 	if(acceleratorFieldFlag)
 	{
 		SetDetectorField(fAcceleratorField );
-		GetChordFinder()->SetDeltaChord(1e-9*m);
-		SetDeltaIntersection(1e-9*m);
-		SetDeltaOneStep(1e-9*m);
-		//SetFieldChangesEnergy(true);
+		GetChordFinder()->SetDeltaChord(1e-6*m);
+		SetDeltaIntersection(1e-6*m);
+		SetDeltaOneStep(1e-6*m);
 		
 	}
 	else
@@ -197,8 +196,32 @@ void GPAcceleratorFieldManager::UpdateField()
 
 void GPAcceleratorFieldManager::SetStepper()
 {
+	G4int nvar=12;
 	if(fAcceleratorStepper) delete fAcceleratorStepper;
-	fAcceleratorStepper = new G4ClassicalRK4(fAcceleratorEquation, 12);       
+	switch ( fStepperType )
+	{
+		case 0:  
+		  //  2nd  order, for less smooth fields
+		  fAcceleratorStepper = new G4SimpleRunge( fAcceleratorEquation, nvar );    
+		  G4cout<<"G4SimpleRunge is called"<<G4endl;    
+		  break;
+		case 1:  
+		  //3rd  order, a good alternative to ClassicalRK
+		  fAcceleratorStepper = new G4SimpleHeum( fAcceleratorEquation, nvar );    
+		  G4cout<<"G4SimpleHeum is called"<<G4endl;    
+		  break;
+		case 2:  
+		  //4th order, classical  Runge-Kutta stepper, which is general purpose and robust.
+		  fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation, nvar );    
+		  G4cout<<"G4ClassicalRK4 (default,nvar ) is called"<<G4endl;    
+		  break;
+		case 3:
+		  //4/5th order for very smooth fields 
+		  fAcceleratorStepper = new G4CashKarpRKF45( fAcceleratorEquation, nvar );
+		  G4cout<<"G4CashKarpRKF45 is called"<<G4endl;
+		  break;
+		default: fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation, nvar );
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////

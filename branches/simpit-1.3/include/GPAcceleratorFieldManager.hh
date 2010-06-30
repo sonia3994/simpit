@@ -62,8 +62,8 @@ public:
  ~GPAcceleratorFieldManager() ;
       
   void Init();
-  void SetStepperType( G4int i) { fStepperType = i ; }
-  void SetMinStep(G4double s) { fMinStep = s ; }
+  inline void SetStepperType( G4int i) { fStepperType = i ;G4cout<<"Set accelerator field stepper type: "<<i<<G4endl; };
+  inline void SetMinStep(G4double s) { fMinStep = s ;G4cout<<"Set accelerator field  minmum step: "<<s/mm<<" mm"<<G4endl; };
   void UpdateField();
   void SetFieldFlag(G4bool) ;
 

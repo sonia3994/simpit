@@ -23,16 +23,16 @@
 #include "G4PropagatorInField.hh"
 
 #include "G4RunManager.hh"
-#include "G4ExplicitEuler.hh"
-#include "G4ImplicitEuler.hh"
+//#include "G4ExplicitEuler.hh"
+//#include "G4ImplicitEuler.hh"
 #include "G4SimpleRunge.hh"
 #include "G4SimpleHeum.hh"
 #include "G4ClassicalRK4.hh"
-#include "G4HelixExplicitEuler.hh"
-#include "G4HelixImplicitEuler.hh"
-#include "G4HelixSimpleRunge.hh"
+//#include "G4HelixExplicitEuler.hh"
+//#include "G4HelixImplicitEuler.hh"
+//#include "G4HelixSimpleRunge.hh"
 #include "G4CashKarpRKF45.hh"
-#include "G4RKG3_Stepper.hh"
+//#include "G4RKG3_Stepper.hh"
 
 #include <fstream>
 #include <sstream>
@@ -63,9 +63,9 @@ fFieldMessenger(0)
   	fFieldMessenger = new GPFieldMessenger(this) ;  
   	//fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
-  	fMinStep     = 0.01*mm ; // minimal step of 1 mm is default
+  	fMinStep     = 1*mm ; // minimal step of 1 mm is default
 	G4cout<<"The global field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
-  	fStepperType = 4 ;      // ClassicalRK4 is default stepper
+  	fStepperType = 2 ;      // ClassicalRK4 is default stepper
   	
   	globalFieldFlag=false;
 	SetStepper();
@@ -115,11 +115,11 @@ G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name)
 void GPFieldSetup::UpdateField()
 {
 	propInField = G4TransportationManager::GetTransportationManager()->GetPropagatorInField();
+	propInField->SetVerboseLevel(1);
+	propInField->SetMaxLoopCount(10);
+	//obsolescent, new function are in G4FieldManager
 	//propInField->SetMinimumEpsilonStep(1e-11);
 	//propInField->SetMaximumEpsilonStep(1e-10);
-	//propInField->SetVerboseLevel(1);
-	propInField->SetMaxLoopCount(5000);
-	
 
 	if(globalFieldFlag)
 	{
@@ -137,8 +137,32 @@ void GPFieldSetup::UpdateField()
 
 void GPFieldSetup::SetStepper()
 {
+	G4int nvar=12;
 	if(fGlobalStepper) delete fGlobalStepper;
-	fGlobalStepper = new G4ClassicalRK4( fGlobalEquation,12);       
+	switch ( fStepperType )
+	{
+		case 0:  
+		  //  2nd  order, for less smooth fields
+		  fGlobalStepper = new G4SimpleRunge( fGlobalEquation, nvar );    
+		  G4cout<<"G4SimpleRunge is called"<<G4endl;    
+		  break;
+		case 1:  
+		  //3rd  order, a good alternative to ClassicalRK
+		  fGlobalStepper = new G4SimpleHeum( fGlobalEquation, nvar );    
+		  G4cout<<"G4SimpleHeum is called"<<G4endl;    
+		  break;
+		case 2:  
+		  //4th order, classical  Runge-Kutta stepper, which is general purpose and robust.
+		  fGlobalStepper = new G4ClassicalRK4( fGlobalEquation, nvar );    
+		  G4cout<<"G4ClassicalRK4 (default,nvar ) is called"<<G4endl;    
+		  break;
+		case 3:
+		  //4/5th order for very smooth fields 
+		  fGlobalStepper = new G4CashKarpRKF45( fGlobalEquation, nvar );
+		  G4cout<<"G4CashKarpRKF45 is called"<<G4endl;
+		  break;
+		default: fGlobalStepper = new G4ClassicalRK4( fGlobalEquation, nvar );
+	}
 }
 
 
