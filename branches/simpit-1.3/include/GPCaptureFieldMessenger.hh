@@ -46,6 +46,7 @@ class GPCaptureFieldMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit*	 MagFieldB0Cmd;
     G4UIcmdWithADoubleAndUnit*	 MinStepCmd;
     G4UIcmdWithADouble*	 		 AMDAlphaCmd;
+    G4UIcmdWithADouble*	 		 QWTFermiApproxAlphaCmd;
     G4UIcmdWithoutParameter*  	 UpdateCmd;
 
     G4UIcmdWithABool*         	 FieldFlag;

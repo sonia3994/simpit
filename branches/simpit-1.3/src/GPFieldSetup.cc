@@ -115,11 +115,8 @@ G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name)
 void GPFieldSetup::UpdateField()
 {
 	propInField = G4TransportationManager::GetTransportationManager()->GetPropagatorInField();
-	propInField->SetVerboseLevel(1);
-	propInField->SetMaxLoopCount(10);
-	//obsolescent, new function are in G4FieldManager
-	//propInField->SetMinimumEpsilonStep(1e-11);
-	//propInField->SetMaximumEpsilonStep(1e-10);
+	propInField->SetVerboseLevel(0);
+	propInField->SetMaxLoopCount(50);
 
 	if(globalFieldFlag)
 	{

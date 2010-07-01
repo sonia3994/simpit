@@ -38,12 +38,6 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   CaptureType->SetDefaultValue(0);
   CaptureType->AvailableForStates(G4State_PreInit,G4State_Idle);
  
-  UpdateCmd = new G4UIcmdWithoutParameter("/GP/field/capture/update",this);
-  UpdateCmd->SetGuidance("Update field.");
-  UpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
-  UpdateCmd->SetGuidance("if you changed geometrical value(s).");
-  UpdateCmd->AvailableForStates(G4State_Idle);
-      
   MagFieldB0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setFieldB0",this);  
   MagFieldB0Cmd->SetGuidance("Define magnetic field B0.");
   MagFieldB0Cmd->SetGuidance("Magnetic field will be in Z direction.");
@@ -59,10 +53,16 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
   AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/setAMDAlpha",this);  
-  AMDAlphaCmd->SetGuidance("Define AMD  magnetic field alpha, please transfer to the cm unit and don't input unit");
+  AMDAlphaCmd->SetGuidance("Define AMD  magnetic field alpha, please transfer to the m unit and don't input unit");
   AMDAlphaCmd->SetParameterName("AMDB0",false,false);
   AMDAlphaCmd->SetDefaultValue(0.22);
   AMDAlphaCmd->AvailableForStates(G4State_Idle); 
+ 
+  QWTFermiApproxAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/setQWTFermiApproxAlpha",this);  
+  QWTFermiApproxAlphaCmd->SetGuidance("Set QWT Fermi Approximate alpha");
+  QWTFermiApproxAlphaCmd->SetParameterName("QWTFermiApproxAlphaCmd",false,false);
+  QWTFermiApproxAlphaCmd->SetDefaultValue(300);
+  QWTFermiApproxAlphaCmd->AvailableForStates(G4State_Idle); 
  
   FieldFlag = new G4UIcmdWithABool("/GP/field/capture/setFieldFlag",this);
   FieldFlag->SetGuidance("Switch capture field.");
@@ -71,6 +71,12 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   FieldFlag->SetDefaultValue("1");
   FieldFlag->AvailableForStates(G4State_Idle);
 
+  UpdateCmd = new G4UIcmdWithoutParameter("/GP/field/capture/update",this);
+  UpdateCmd->SetGuidance("Update field.");
+  UpdateCmd->SetGuidance("This command MUST be applied before \"beamOn\" ");
+  UpdateCmd->SetGuidance("if you changed geometrical value(s).");
+  UpdateCmd->AvailableForStates(G4State_Idle);
+      
 
 }
 
@@ -86,6 +92,7 @@ GPCaptureFieldMessenger::~GPCaptureFieldMessenger()
   delete GPdetDir;
   delete UpdateCmd;
   delete FieldFlag; 
+  delete QWTFermiApproxAlphaCmd;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -117,6 +124,11 @@ void GPCaptureFieldMessenger::SetNewValue( G4UIcommand* command, G4String newVal
   if( command == AMDAlphaCmd )
   { 
     fieldPoint->SetAMDFieldAlpha(AMDAlphaCmd->GetNewDoubleValue(newValue));
+  }
+
+  if( command == QWTFermiApproxAlphaCmd )
+  { 
+    fieldPoint->SetFermiApproximateAlpha(QWTFermiApproxAlphaCmd->GetNewDoubleValue(newValue));
   }
 
   if( command == MinStepCmd )

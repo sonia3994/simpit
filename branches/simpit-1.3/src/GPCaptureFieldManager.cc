@@ -370,9 +370,11 @@ void GPCaptureFieldManager::UpdateField()
 	{
 		SetDetectorField(fCaptureField );
 		//It seems hard to simulate when setting following parameters too small.
-		GetChordFinder()->SetDeltaChord(1e-6*m);
-		SetDeltaIntersection(1e-6*m);
-		SetDeltaOneStep(1e-6*m);
+		GetChordFinder()->SetDeltaChord(1e-10*m);
+		SetDeltaIntersection(1e-10*m);
+		SetDeltaOneStep(1e-10*m);
+	    SetMaximumEpsilonStep(1e-6*m); 
+		SetMinimumEpsilonStep(1e-9*m);
 	}
 	else
 	{
