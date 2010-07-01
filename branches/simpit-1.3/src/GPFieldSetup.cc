@@ -116,7 +116,7 @@ void GPFieldSetup::UpdateField()
 {
 	propInField = G4TransportationManager::GetTransportationManager()->GetPropagatorInField();
 	propInField->SetVerboseLevel(0);
-	propInField->SetMaxLoopCount(50);
+	propInField->SetMaxLoopCount(100);
 
 	if(globalFieldFlag)
 	{
