@@ -132,7 +132,7 @@ GPAcceleratorFieldManager::GPAcceleratorFieldManager()
   	fFieldMessenger = new GPAcceleratorFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fAcceleratorField) ;  
 
-  	fMinStep     = 1*mm ; // minimal step of 1 mm is default
+  	fMinStep     = 1e-3*m ; // minimal step of 1 mm is default
 	G4cout<<"The Accelerator field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
   	fStepperType = 2 ;      // ClassicalRK4 is default stepper
   	acceleratorFieldFlag=true;

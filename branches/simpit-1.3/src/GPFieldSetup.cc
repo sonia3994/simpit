@@ -63,7 +63,7 @@ fFieldMessenger(0)
   	fFieldMessenger = new GPFieldMessenger(this) ;  
   	//fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
-  	fMinStep     = 1*mm ; // minimal step of 1 mm is default
+  	fMinStep     = 1e-3*m ; // minimal step of 1 mm is default
 	G4cout<<"The global field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
   	fStepperType = 2 ;      // ClassicalRK4 is default stepper
   	
@@ -116,7 +116,7 @@ void GPFieldSetup::UpdateField()
 {
 	propInField = G4TransportationManager::GetTransportationManager()->GetPropagatorInField();
 	propInField->SetVerboseLevel(0);
-	propInField->SetMaxLoopCount(100);
+	propInField->SetMaxLoopCount(20);
 
 	if(globalFieldFlag)
 	{
