@@ -15,6 +15,7 @@
 #include "G4PVPlacement.hh"
 #include "G4SDManager.hh"
 #include "G4NistManager.hh"
+#include "G4VisAttributes.hh"
 
 #include "G4ThreeVector.hh"
 #include "G4UIcommand.hh"
@@ -47,13 +48,13 @@ GPDetectorConstruction::GPDetectorConstruction()
     eddDim.push_back(ceil(targetBoxZ/TargetCellZ));
 
     captureTubeInnerRadius = 0.*mm;
-    captureTubeOuterRadius = 50*mm;
+    captureTubeOuterRadius = 20*mm;
     captureTubeStartAngle = 0.*deg;
     captureTubeSpanningAngle = 360.*deg;
     captureTubeLength = 500.0*mm;
 
     tranTubeInnerRadius = 0.*mm;
-    tranTubeOuterRadius = 50*mm;
+    tranTubeOuterRadius = 20*mm;
     tranTubeStartAngle = 0.*deg;
     tranTubeSpanningAngle = 360.*deg;
     tranTubeLength =4500.0*mm;
@@ -86,11 +87,11 @@ GPDetectorConstruction::GPDetectorConstruction()
 
 GPDetectorConstruction::~GPDetectorConstruction()
 {
-    if(detectorMessenger) delete detectorMessenger;
-    if(fieldSetup) delete fieldSetup;
-    if(targetRO) delete targetRO;
-    if(Vacuum) delete Vacuum;
-    if(W) delete W;
+    if(detectorMessenger) 	delete detectorMessenger;
+    if(fieldSetup) 			delete fieldSetup;
+    if(targetRO) 			delete targetRO;
+    if(Vacuum) 				delete Vacuum;
+    if(W) 					delete W;
 }
 
 G4VPhysicalVolume* GPDetectorConstruction::Construct()
@@ -191,16 +192,28 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   SDman->AddNewDetector(targetSD);
   targetLog->SetSensitiveDetector(targetSD); 
 
-  //PrintDetectorParameters();
   // Visualization attributes
   //
-/*  worldLog->SetVisAttributes (G4VisAttributes::Invisible);
+  //worldLog->SetVisAttributes (G4VisAttributes::Invisible);
+  G4VisAttributes* tranLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0,0.3));
+  tranLogVisAtt->SetVisibility(true);
+  tranLogVisAtt->SetForceSolid(true);
+  tranLog->SetVisAttributes(tranLogVisAtt);
 
-  G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
-  simpleBoxVisAtt->SetVisibility(true);
-  targetLog->SetVisAttributes(simpleBoxVisAtt);
-*/
+  G4VisAttributes* targetLogVisAtt= new G4VisAttributes(G4Colour(1.0,0,0,0.3));
+  targetLogVisAtt->SetVisibility(true);
+  targetLogVisAtt->SetForceSolid(true);
+  targetLog->SetVisAttributes(targetLogVisAtt);
 
+  G4VisAttributes* captureLogVisAtt= new G4VisAttributes(G4Colour(0,1.0,0,0.3));
+  captureLogVisAtt->SetVisibility(true);
+  captureLogVisAtt->SetForceSolid(true);
+  captureLog->SetVisAttributes(captureLogVisAtt);
+
+  G4VisAttributes* acceleratorLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0,0.3));
+  acceleratorLogVisAtt->SetVisibility(true);
+  acceleratorLogVisAtt->SetForceSolid(true);
+  acceleratorLog->SetVisAttributes(acceleratorLogVisAtt);
  /*
   // Below are vis attributes that permits someone to test / play 
   // with the interactive expansion / contraction geometry system of the
