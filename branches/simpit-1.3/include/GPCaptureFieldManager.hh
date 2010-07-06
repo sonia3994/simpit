@@ -9,7 +9,7 @@
 // 
 
 #ifndef GPCaptureManagerField_H
-#define GPCaptureManagerField_H
+#define GPCaptureManagerField_H 1
 
 //#include "G4MagneticField.hh"
 #include "G4FieldManager.hh"

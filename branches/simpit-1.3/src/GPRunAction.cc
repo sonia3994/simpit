@@ -151,6 +151,9 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   for(size_t i=0;i!=edd.size();i++)
   {edd[i]=0;}
   }
+#ifdef GP_DEBUG
+  G4cout<<"Open new output file handls and begin to run."<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

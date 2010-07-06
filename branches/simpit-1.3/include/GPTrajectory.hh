@@ -63,7 +63,7 @@ class GPTrajectory : public G4VTrajectory
 
    G4ParticleDefinition* GetParticleDefinition();
 
-   inline const G4int GetTrackStatus() const
+   inline G4int GetTrackStatus() const
    { return fTrackStatus; }
    inline const G4ThreeVector& GetVertexPosition() const
    { return vertexPosition; }

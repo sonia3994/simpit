@@ -11,6 +11,10 @@ ifndef G4INSTALL
   G4INSTALL = ../../..
 endif
 
+ifndef GP_DEBUG
+ 	GP_DEBUG := 1
+endif
+
 .PHONY: all
 all: lib bin
 

@@ -257,7 +257,7 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
   	static 	G4double 	magTP2;
   	static 	G4double 	magTP;
   	static 	G4double 	magI;
-  	static 	G4double 	currentShape;
+  	//static 	G4double 	currentShape;
 	
 ///*
 	static  G4ThreeVector vectCurrent;
