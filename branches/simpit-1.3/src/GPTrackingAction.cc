@@ -13,15 +13,16 @@
 
 void GPTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 {
-  // Create trajectory only for track in tracking region
   GPTrackInformation* trackInfo = (GPTrackInformation*)(aTrack->GetUserInformation());
   if(!trackInfo)
   {
     trackInfo = new GPTrackInformation(aTrack);
 	fpTrackingManager->SetUserTrackInformation(trackInfo);
   }
+  G4String particleName=aTrack->GetDefinition()->GetParticleName();
 
-  if(trackInfo->GetTrackingStatus() > 0)
+  // Create trajectory only for track in tracking region
+  if((particleName=="e+"||particleName=="e-")&&trackInfo->GetTrackingStatus() > 0)
   {
     fpTrackingManager->SetStoreTrajectory(true);
     GPTrajectory* trajectory = new GPTrajectory(aTrack);

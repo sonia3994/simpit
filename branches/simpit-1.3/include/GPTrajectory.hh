@@ -37,6 +37,8 @@ class GPTrajectory : public G4VTrajectory
    inline int operator == (const GPTrajectory& right) const
    {return (this==&right);} 
 
+   void ProcessTrajectory(G4int code=-1);
+
    virtual G4int GetTrackID() const
    { return fTrackID; }
    virtual G4int GetParentID() const

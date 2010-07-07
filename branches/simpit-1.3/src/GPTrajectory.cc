@@ -109,6 +109,17 @@ GPTrajectory::~GPTrajectory()
   delete positionRecord;
 }
 
+void GPTrajectory::ProcessTrajectory(G4int code)
+{
+  if(code==-1)
+    return;
+  else if(code==0)
+	ShowTrajectory();
+  else if(code==1)
+	DrawTrajectory();
+  else if(code==2)
+	return;          //TO DO: Save to disk
+}
 void GPTrajectory::ShowTrajectory(std::ostream& os) const
 {
    os << G4endl << "TrackID =" << fTrackID 
@@ -133,6 +144,7 @@ void GPTrajectory::DrawTrajectory(G4int) const
 {
 
    G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
+   //if(pVVisManager) G4cout<<"G4VVisManager exists"<<G4endl;
    G4ThreeVector pos;
 
    G4Polyline pPolyline;
@@ -144,10 +156,11 @@ void GPTrajectory::DrawTrajectory(G4int) const
 
    G4Colour colour(0.2,0.2,0.2);
    if(fpParticleDefinition==G4Gamma::GammaDefinition())
+      colour = G4Colour(0.,1.,0.);
+   else if(fpParticleDefinition==G4Electron::ElectronDefinition())
+      colour = G4Colour(1.,0.,0.);
+   else if(fpParticleDefinition==G4Positron::PositronDefinition())
       colour = G4Colour(0.,0.,1.);
-   else if(fpParticleDefinition==G4Electron::ElectronDefinition()
-         ||fpParticleDefinition==G4Positron::PositronDefinition())
-      colour = G4Colour(1.,1.,0.);
    else if(fpParticleDefinition==G4MuonMinus::MuonMinusDefinition()
          ||fpParticleDefinition==G4MuonPlus::MuonPlusDefinition())
       colour = G4Colour(0.,1.,0.);

@@ -10,6 +10,8 @@
 #include "GPTargetHit.hh"
 
 #include "GPRunAction.hh"
+#include "GPTrajectory.hh"
+
 //#include "GPEventActionMessenger.hh"
 
 #include "G4Event.hh"
@@ -93,6 +95,21 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 
 	  
     }
+
+  //get number of stored trajectories
+  G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
+  G4int n_trajectories = 0;
+  if (trajectoryContainer) n_trajectories = trajectoryContainer->entries();
+  //extract the trajectories and print them out
+  //G4cout << G4endl;
+  //G4cout << "Trajectories in tracker --------------------------------------------------------------" << G4endl;
+  for(G4int i=0; i<n_trajectories; i++) 
+  {
+  GPTrajectory* trj = (GPTrajectory*)((*trajectoryContainer)[i]);
+  //trj->ShowTrajectory();
+  //trj->DrawTrajectory();
+  trj->ProcessTrajectory(1);
+  }
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -22,6 +22,7 @@
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
+#include "G4UIQt.hh"
 #endif
 
 //#include <fstream>
@@ -84,16 +85,21 @@ int main(int argc,char** argv)
     {
 #ifdef G4VIS_USE
 	G4VisManager * visManager = new G4VisExecutive;
+	//visManager->RegisterGraphicsSystem(new G4OpenGLStoredQt);
 	visManager->Initialize();
 	visManager->SetVerboseLevel (1);
+	//visManager->PrintAvailableGraphicsSystems();
+	
 #endif
+
 	G4UIsession * session=0;
-#ifdef G4UI_USE_TCSH
-	session = new G4UIterminal(new G4UItcsh);
+#ifdef G4UI_USE_QT
+	session = new G4UIQt(argc,argv);
 #else
+	//session = new G4UIterminal(new G4UItcsh);
 	session = new G4UIterminal();
 #endif
-//#ifdef G4VIS_USE
+
 	session->SessionStart();
 	delete session;
 #ifdef G4VIS_USE

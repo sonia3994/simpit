@@ -56,22 +56,22 @@ class GPTrackInformation : public G4VUserTrackInformation
     G4double              sourceTime;
 
   public:
+    inline void SetTrackingStatus(G4int i) {trackingStatus = i;}
+    inline G4int GetTrackingStatus() const {return trackingStatus;}
+
     inline G4int GetOriginalTrackID() const {return originalTrackID;}
-    inline G4ParticleDefinition* GetOriginalParticle() const {return particleDefinition;}
-    inline G4ThreeVector GetOriginalPosition() const {return originalPosition;}
-    inline G4ThreeVector GetOriginalMomentum() const {return originalMomentum;}
     inline G4double GetOriginalEnergy() const {return originalEnergy;}
     inline G4double GetOriginalTime() const {return originalTime;}
-
-    inline G4int GetTrackingStatus() const {return trackingStatus;}
-    inline void SetTrackingStatus(G4int i) {trackingStatus = i;}
+    inline G4ThreeVector GetOriginalPosition() const {return originalPosition;}
+    inline G4ThreeVector GetOriginalMomentum() const {return originalMomentum;}
+    inline G4ParticleDefinition* GetOriginalParticle() const {return particleDefinition;}
 
     inline G4int GetSourceTrackID() const {return sourceTrackID;}
-    inline G4ParticleDefinition* GetSourceParticle() const {return sourceDefinition;}
-    inline G4ThreeVector GetSourcePosition() const {return sourcePosition;}
-    inline G4ThreeVector GetSourceMomentum() const {return sourceMomentum;}
     inline G4double GetSourceEnergy() const {return sourceEnergy;}
     inline G4double GetSourceTime() const {return sourceTime;}
+    inline G4ThreeVector GetSourcePosition() const {return sourcePosition;}
+    inline G4ThreeVector GetSourceMomentum() const {return sourceMomentum;}
+    inline G4ParticleDefinition* GetSourceParticle() const {return sourceDefinition;}
 };
 
 extern G4Allocator<GPTrackInformation> GPTrackInformationAllocator;
