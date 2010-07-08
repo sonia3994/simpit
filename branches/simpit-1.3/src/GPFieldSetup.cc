@@ -63,14 +63,14 @@ fFieldMessenger(0)
   	fFieldMessenger = new GPFieldMessenger(this) ;  
   	//fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
-  	fMinStep     = 1e-3*m ; // minimal step of 1 mm is default
-	G4cout<<"The global field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
-  	fStepperType = 2 ;      // ClassicalRK4 is default stepper
+  	dMinStep     = 1e-3*m ; // minimal step of 1 mm is default
+	G4cout<<"The global field minimal step: "<<dMinStep/mm<<" mm"<<G4endl ;
+  	iStepperType = 2 ;      // ClassicalRK4 is default stepper
   	
-  	globalFieldFlag=false;
+  	bGlobalFieldFlag=false;
 	SetStepper();
 	
-	fGlobalIntegratorDriver = new G4MagInt_Driver(fMinStep,fGlobalStepper,fGlobalStepper->GetNumberOfVariables());
+	fGlobalIntegratorDriver = new G4MagInt_Driver(dMinStep,fGlobalStepper,fGlobalStepper->GetNumberOfVariables());
 	fGlobalChordFinder = new G4ChordFinder(fGlobalIntegratorDriver);
 	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
 	//G4cout<<"This is ok: mark 1 "<<G4endl ;
@@ -118,7 +118,7 @@ void GPFieldSetup::UpdateField()
 	propInField->SetVerboseLevel(0);
 	propInField->SetMaxLoopCount(1000);
 
-	if(globalFieldFlag)
+	if(bGlobalFieldFlag)
 	{
 		fGlobalFieldManager->SetDetectorField(fGlobalMagnetic );
 	}
@@ -136,7 +136,7 @@ void GPFieldSetup::SetStepper()
 {
 	G4int nvar=12;
 	if(fGlobalStepper) delete fGlobalStepper;
-	switch ( fStepperType )
+	switch ( iStepperType )
 	{
 		case 0:  
 		  //  2nd  order, for less smooth fields
@@ -166,8 +166,8 @@ void GPFieldSetup::SetStepper()
 
 void GPFieldSetup::SetFieldFlag(G4bool t)
 {
-	globalFieldFlag=t; 
-	if(globalFieldFlag)
+	bGlobalFieldFlag=t; 
+	if(bGlobalFieldFlag)
 	{
 	    fGlobalFieldManager->SetDetectorField(fGlobalMagnetic);
 	    G4cout<<"Active the global field!"<<G4endl;

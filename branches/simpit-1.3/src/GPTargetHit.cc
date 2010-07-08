@@ -17,7 +17,7 @@ GPTargetHit::GPTargetHit()
 {pLogV=0;}
 
 GPTargetHit::GPTargetHit(G4LogicalVolume* logVol,G4int x,G4int y,G4int z)
-:XCellID(x),YCellID(y), ZCellID(z), pLogV(logVol)
+:iXCellID(x),iYCellID(y), iZCellID(z), pLogV(logVol)
 {;}
 
 GPTargetHit::~GPTargetHit()
@@ -26,22 +26,22 @@ GPTargetHit::~GPTargetHit()
 GPTargetHit::GPTargetHit(const GPTargetHit &right)
   : G4VHit()
 {
-  XCellID = right.XCellID;
-  YCellID = right.YCellID;
-  ZCellID = right.ZCellID;
-  edep = right.edep;
-  pos = right.pos;
+  iXCellID = right.iXCellID;
+  iYCellID = right.iYCellID;
+  iZCellID = right.iZCellID;
+  dEnergyDep = right.dEnergyDep;
+  vecPos = right.vecPos;
   rot = right.rot;
   pLogV = right.pLogV;
 }
 
 const GPTargetHit& GPTargetHit::operator=(const GPTargetHit &right)
 {
-  XCellID = right.XCellID;
-  YCellID = right.YCellID;
-  ZCellID = right.ZCellID;
-  edep = right.edep;
-  pos = right.pos;
+  iXCellID = right.iXCellID;
+  iYCellID = right.iYCellID;
+  iZCellID = right.iZCellID;
+  dEnergyDep = right.dEnergyDep;
+  vecPos = right.vecPos;
   rot = right.rot;
   pLogV = right.pLogV;
   return *this;
@@ -49,17 +49,17 @@ const GPTargetHit& GPTargetHit::operator=(const GPTargetHit &right)
 
 G4int GPTargetHit::operator==(const GPTargetHit &right) const
 {
-  return ((XCellID==right.XCellID)&&(YCellID==right.YCellID)&&(ZCellID==right.ZCellID));
+  return ((iXCellID==right.iXCellID)&&(iYCellID==right.iYCellID)&&(iZCellID==right.iZCellID));
 }
 
-std::map<G4String,G4AttDef> GPTargetHit::fAttDefs;
+std::map<G4String,G4AttDef> GPTargetHit::mapStrAttDef;
 
 void GPTargetHit::Draw()
 {
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
   if(pVVisManager)
   {
-    G4Transform3D trans(rot,pos);
+    G4Transform3D trans(rot,vecPos);
     G4VisAttributes attribs;
     const G4VisAttributes* pVA = pLogV->GetVisAttributes();
     if(pVA) attribs = *pVA;
@@ -73,14 +73,14 @@ void GPTargetHit::Draw()
 const std::map<G4String,G4AttDef>* GPTargetHit::GetAttDefs() const
 {
   // G4AttDefs have to have long life.  Use static member...
-  if (fAttDefs.empty()) {
-    fAttDefs["HitType"] = G4AttDef("HitType","Type of hit","Physics","","G4String");
-    fAttDefs["XID"] = G4AttDef("XID","X Cell ID","Physics","","G4int");
-    fAttDefs["YID"] = G4AttDef("YID","Y Cell ID","Physics","","G4int");
-    fAttDefs["ZID"] = G4AttDef("ZID","Z Cell ID","Physics","","G4int");
-    fAttDefs["EDep"] = G4AttDef("EDep","Energy deposited","Physics","G4BestUnit","G4double");
+  if (mapStrAttDef.empty()) {
+    mapStrAttDef["HitType"] = G4AttDef("HitType","Type of hit","Physics","","G4String");
+    mapStrAttDef["XID"] = G4AttDef("XID","X Cell ID","Physics","","G4int");
+    mapStrAttDef["YID"] = G4AttDef("YID","Y Cell ID","Physics","","G4int");
+    mapStrAttDef["ZID"] = G4AttDef("ZID","Z Cell ID","Physics","","G4int");
+    mapStrAttDef["dEnergyDep"] = G4AttDef("dEnergyDep","Energy deposited","Physics","G4BestUnit","G4double");
   }
-  return &fAttDefs;
+  return &mapStrAttDef;
 }
 
 std::vector<G4AttValue>* GPTargetHit::CreateAttValues() const
@@ -88,10 +88,10 @@ std::vector<G4AttValue>* GPTargetHit::CreateAttValues() const
   // Create expendable G4AttsValues for picking...
   std::vector<G4AttValue>* attValues = new std::vector<G4AttValue>;
   attValues->push_back (G4AttValue("HitType","GPTargetHit",""));
-  attValues->push_back (G4AttValue("XID",G4UIcommand::ConvertToString(XCellID),""));
-  attValues->push_back (G4AttValue("YID",G4UIcommand::ConvertToString(YCellID),""));
-  attValues->push_back (G4AttValue("ZID",G4UIcommand::ConvertToString(ZCellID),""));
-  attValues->push_back (G4AttValue("EDep",G4BestUnit(edep,"Energy"),""));
+  attValues->push_back (G4AttValue("XID",G4UIcommand::ConvertToString(iXCellID),""));
+  attValues->push_back (G4AttValue("YID",G4UIcommand::ConvertToString(iYCellID),""));
+  attValues->push_back (G4AttValue("ZID",G4UIcommand::ConvertToString(iZCellID),""));
+  attValues->push_back (G4AttValue("dEnergyDep",G4BestUnit(dEnergyDep,"Energy"),""));
   //G4cout << "Checking...\n" << G4AttCheck(attValues, GetAttDefs());
   return attValues;
 }

@@ -34,22 +34,22 @@ public:
   	~GPAcceleratorField();
 	void Init();
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  	void SetFieldValueB0(G4double t){B0=t;};
-  	void SetFieldValueE0(G4double t){E0=t;};
-  	void SetFieldType(G4int t){fieldType=t;};
+  	void SetFieldValueB0(G4double t){dB0=t;};
+  	void SetFieldValueE0(G4double t){dE0=t;};
+  	void SetFieldType(G4int t){iFieldType=t;};
 	G4bool	DoesFieldChangeEnergy() const {return true;};
 
 protected:
-  	G4double 		B0;
-  	G4double 		B1;
-  	G4double 		E0;
-  	G4double 		E1;
-   	G4double 	 	tarL;
-   	G4double 	 	capL;
-   	G4double 	 	accL;
-   	G4double 	 	accR;
-  	G4double 		delta;
-	G4int			fieldType;
+  	G4double 		dB0;
+  	G4double 		dB1;
+  	G4double 		dE0;
+  	G4double 		dE1;
+   	G4double 	 	dTarL;
+   	G4double 	 	dCapL;
+   	G4double 	 	dAccL;
+   	G4double 	 	dAccR;
+  	G4double 		dDelta;
+	G4int			iFieldType;
 
 };
 
@@ -62,8 +62,8 @@ public:
  ~GPAcceleratorFieldManager() ;
       
   void Init();
-  inline void SetStepperType( G4int i) { fStepperType = i ;G4cout<<"Set accelerator field stepper type: "<<i<<G4endl; };
-  inline void SetMinStep(G4double s) { fMinStep = s ;G4cout<<"Set accelerator field  minmum step: "<<s/mm<<" mm"<<G4endl; };
+  inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set accelerator field stepper type: "<<i<<G4endl; };
+  inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set accelerator field  minmum step: "<<s/mm<<" mm"<<G4endl; };
   void UpdateField();
   void SetFieldFlag(G4bool) ;
 
@@ -79,11 +79,11 @@ protected:
   G4MagIntegratorStepper*	fAcceleratorStepper ;
   G4MagInt_Driver*			fAcceleratorIntegratorDriver;
 
-  G4int                  	fStepperType ;
-  G4double               	fMinStep ;
+  G4int                  	iStepperType ;
+  G4double               	dMinStep ;
 
   GPAcceleratorFieldMessenger*      	fFieldMessenger;
-  G4bool					acceleratorFieldFlag;
+  G4bool					bAcceleratorFieldFlag;
 
 };
 

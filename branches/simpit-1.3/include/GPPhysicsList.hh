@@ -46,9 +46,9 @@ class GPPhysicsList: public G4VUserPhysicsList
     void AddParameterisation();
 
   protected:
-	G4double	cutGamma;
-	G4double 	cutElectron;
-	G4double	cutPositron;
+	G4double	dCutGamma;
+	G4double 	dCutElectron;
+	G4double	dCutPositron;
 };
 
 #endif

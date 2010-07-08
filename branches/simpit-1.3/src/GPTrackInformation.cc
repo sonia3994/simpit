@@ -10,54 +10,54 @@ G4Allocator<GPTrackInformation> GPTrackInformationAllocator;
 
 GPTrackInformation::GPTrackInformation()
 {
-    originalTrackID = 0;
+    iOriginalTrackID = 0;
     particleDefinition = 0;
-    originalPosition = G4ThreeVector(0.,0.,0.);
-    originalMomentum = G4ThreeVector(0.,0.,0.);
-    originalEnergy = 0.;
-    originalTime = 0.;
-    trackingStatus = 1;
-    sourceTrackID = -1;
-    sourceTrackID = -1;
+    vecOriginalPosition = G4ThreeVector(0.,0.,0.);
+    vecOriginalMomentum = G4ThreeVector(0.,0.,0.);
+    dOriginalEnergy = 0.;
+    dOriginalTime = 0.;
+    iTrackingStatus = 1;
+    iSourceTrackID = -1;
+    iSourceTrackID = -1;
     sourceDefinition = 0;
-    sourcePosition = G4ThreeVector(0.,0.,0.);
-    sourceMomentum = G4ThreeVector(0.,0.,0.);
-    sourceEnergy = 0.;
-    sourceTime = 0.;
+    vecSourcePosition = G4ThreeVector(0.,0.,0.);
+    vecSourceMomentum = G4ThreeVector(0.,0.,0.);
+    dSourceEnergy = 0.;
+    dSourceTime = 0.;
 }
 
 GPTrackInformation::GPTrackInformation(const G4Track* aTrack)
 {
-    originalTrackID = aTrack->GetTrackID();
+    iOriginalTrackID = aTrack->GetTrackID();
     particleDefinition = aTrack->GetDefinition();
-    originalPosition = aTrack->GetPosition();
-    originalMomentum = aTrack->GetMomentum();
-    originalEnergy = aTrack->GetTotalEnergy();
-    originalTime = aTrack->GetGlobalTime();
-    trackingStatus = 1;
-    sourceTrackID = -1;
+    vecOriginalPosition = aTrack->GetPosition();
+    vecOriginalMomentum = aTrack->GetMomentum();
+    dOriginalEnergy = aTrack->GetTotalEnergy();
+    dOriginalTime = aTrack->GetGlobalTime();
+    iTrackingStatus = 1;
+    iSourceTrackID = -1;
     sourceDefinition = 0;
-    sourcePosition = G4ThreeVector(0.,0.,0.);
-    sourceMomentum = G4ThreeVector(0.,0.,0.);
-    sourceEnergy = 0.;
-    sourceTime = 0.;
+    vecSourcePosition = G4ThreeVector(0.,0.,0.);
+    vecSourceMomentum = G4ThreeVector(0.,0.,0.);
+    dSourceEnergy = 0.;
+    dSourceTime = 0.;
 }
 
 GPTrackInformation::GPTrackInformation(const GPTrackInformation* aTrackInfo)
 {
-    originalTrackID = aTrackInfo->originalTrackID;
+    iOriginalTrackID = aTrackInfo->iOriginalTrackID;
     particleDefinition = aTrackInfo->particleDefinition;
-    originalPosition = aTrackInfo->originalPosition;
-    originalMomentum = aTrackInfo->originalMomentum;
-    originalEnergy = aTrackInfo->originalEnergy;
-    originalTime = aTrackInfo->originalTime;
-    trackingStatus = aTrackInfo->trackingStatus;
-    sourceTrackID = aTrackInfo->sourceTrackID;
+    vecOriginalPosition = aTrackInfo->vecOriginalPosition;
+    vecOriginalMomentum = aTrackInfo->vecOriginalMomentum;
+    dOriginalEnergy = aTrackInfo->dOriginalEnergy;
+    dOriginalTime = aTrackInfo->dOriginalTime;
+    iTrackingStatus = aTrackInfo->iTrackingStatus;
+    iSourceTrackID = aTrackInfo->iSourceTrackID;
     sourceDefinition = aTrackInfo->sourceDefinition;
-    sourcePosition = aTrackInfo->sourcePosition;
-    sourceMomentum = aTrackInfo->sourceMomentum;
-    sourceEnergy = aTrackInfo->sourceEnergy;
-    sourceTime = aTrackInfo->sourceTime;
+    vecSourcePosition = aTrackInfo->vecSourcePosition;
+    vecSourceMomentum = aTrackInfo->vecSourceMomentum;
+    dSourceEnergy = aTrackInfo->dSourceEnergy;
+    dSourceTime = aTrackInfo->dSourceTime;
 }
 
 GPTrackInformation::~GPTrackInformation()
@@ -65,40 +65,40 @@ GPTrackInformation::~GPTrackInformation()
 
 GPTrackInformation& GPTrackInformation::operator =(const GPTrackInformation& aTrackInfo)
 {
-    originalTrackID = aTrackInfo.originalTrackID;
+    iOriginalTrackID = aTrackInfo.iOriginalTrackID;
     particleDefinition = aTrackInfo.particleDefinition;
-    originalPosition = aTrackInfo.originalPosition;
-    originalMomentum = aTrackInfo.originalMomentum;
-    originalEnergy = aTrackInfo.originalEnergy;
-    originalTime = aTrackInfo.originalTime;
-    trackingStatus = aTrackInfo.trackingStatus;
-    sourceTrackID = aTrackInfo.sourceTrackID;
+    vecOriginalPosition = aTrackInfo.vecOriginalPosition;
+    vecOriginalMomentum = aTrackInfo.vecOriginalMomentum;
+    dOriginalEnergy = aTrackInfo.dOriginalEnergy;
+    dOriginalTime = aTrackInfo.dOriginalTime;
+    iTrackingStatus = aTrackInfo.iTrackingStatus;
+    iSourceTrackID = aTrackInfo.iSourceTrackID;
     sourceDefinition = aTrackInfo.sourceDefinition;
-    sourcePosition = aTrackInfo.sourcePosition;
-    sourceMomentum = aTrackInfo.sourceMomentum;
-    sourceEnergy = aTrackInfo.sourceEnergy;
-    sourceTime = aTrackInfo.sourceTime;
+    vecSourcePosition = aTrackInfo.vecSourcePosition;
+    vecSourceMomentum = aTrackInfo.vecSourceMomentum;
+    dSourceEnergy = aTrackInfo.dSourceEnergy;
+    dSourceTime = aTrackInfo.dSourceTime;
 
     return *this;
 }
 
 void GPTrackInformation::SetSourceTrackInformation(const G4Track* aTrack)
 {
-    sourceTrackID = aTrack->GetTrackID();
+    iSourceTrackID = aTrack->GetTrackID();
     sourceDefinition = aTrack->GetDefinition();
-    sourcePosition = aTrack->GetPosition();
-    sourceMomentum = aTrack->GetMomentum();
-    sourceEnergy = aTrack->GetTotalEnergy();
-    sourceTime = aTrack->GetGlobalTime();
+    vecSourcePosition = aTrack->GetPosition();
+    vecSourceMomentum = aTrack->GetMomentum();
+    dSourceEnergy = aTrack->GetTotalEnergy();
+    dSourceTime = aTrack->GetGlobalTime();
 }
 
 void GPTrackInformation::Print() const
 {
     G4cout 
-     << "Source track ID " << sourceTrackID << " (" << sourceDefinition->GetParticleName() << ","
-     << sourceEnergy/GeV << "[GeV]) at " << sourcePosition << G4endl;
+     << "Source track ID " << iSourceTrackID << " (" << sourceDefinition->GetParticleName() << ","
+     << dSourceEnergy/GeV << "[GeV]) at " << vecSourcePosition << G4endl;
     G4cout
-     << "Original primary track ID " << originalTrackID << " (" << particleDefinition->GetParticleName() << ","
-     << originalEnergy/GeV << "[GeV])" << G4endl;
+     << "Original primary track ID " << iOriginalTrackID << " (" << particleDefinition->GetParticleName() << ","
+     << dOriginalEnergy/GeV << "[GeV])" << G4endl;
 }
 

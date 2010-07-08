@@ -12,9 +12,9 @@
 
 GPPhysicsList::GPPhysicsList()
 {	
-cutGamma=1*um;
-cutElectron=1*um;
-cutPositron=1*um;
+dCutGamma=1*um;
+dCutElectron=1*um;
+dCutPositron=1*um;
 }
 
 GPPhysicsList::~GPPhysicsList()
@@ -305,17 +305,17 @@ void GPPhysicsList::SetCuts()
   //This method may not work!!!???
   //SetCutsWithDefault();   
   
-  SetCutValue(cutGamma,"gamma");
-  SetCutValue(cutElectron,"e+");
-  SetCutValue(cutPositron,"e-");
+  SetCutValue(dCutGamma,"gamma");
+  SetCutValue(dCutElectron,"e+");
+  SetCutValue(dCutPositron,"e-");
 
   if (verboseLevel >0)
   {
     G4cout 
 		<< "GPhysicsList::SetCuts:\n"
-    	<< "gamma CutLength : " << G4BestUnit(cutGamma,"Length") 
-    	<< "electron CutLength : " << G4BestUnit(cutElectron,"Length") 
-    	<< "positron CutLength : " << G4BestUnit(cutPositron,"Length") 
+    	<< "gamma CutLength : " << G4BestUnit(dCutGamma,"Length") 
+    	<< "electron CutLength : " << G4BestUnit(dCutElectron,"Length") 
+    	<< "positron CutLength : " << G4BestUnit(dCutPositron,"Length") 
 		<< G4endl;
   }
 

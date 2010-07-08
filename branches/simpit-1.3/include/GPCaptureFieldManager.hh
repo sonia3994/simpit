@@ -35,11 +35,11 @@ public:
 	void Init();
 	G4bool	DoesFieldChangeEnergy() const {return false;};
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  	inline void SetFieldValueB0(G4double      t){B0=t/tesla;G4cout<<"Set capture field B0 value: "<<B0<<" tesla."<<G4endl;};
-  	inline void SetFieldValueAlpha(G4double   t){amdAlpha=t;G4cout<<"Set AMD field alpha value: "<<amdAlpha<<G4endl;};
-  	inline void SetAMDFieldAlpha(G4double     t){amdAlpha=t;G4cout<<"Set AMD field alpha value: "<<amdAlpha<<G4endl;} ;
-  	inline void SetFermiApproximateAlpha(G4double     t){qwtFermiAlpha=t;G4cout<<"Set QWT fermi approximate field alpha: "<<qwtFermiAlpha<<G4endl;} ;
-  	inline void SetCaptureType(G4int t) {fieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
+  	inline void SetFieldValueB0(G4double      t){dB0=t/tesla;G4cout<<"Set capture field dB0 value: "<<dB0<<" tesla."<<G4endl;};
+  	inline void SetFieldValueAlpha(G4double   t){dAmdAlpha=t;G4cout<<"Set AMD field alpha value: "<<dAmdAlpha<<G4endl;};
+  	inline void SetAMDFieldAlpha(G4double     t){dAmdAlpha=t;G4cout<<"Set AMD field alpha value: "<<dAmdAlpha<<G4endl;} ;
+  	inline void SetFermiApproximateAlpha(G4double     t){dQwtFermiAlpha=t;G4cout<<"Set QWT fermi approximate field alpha: "<<dQwtFermiAlpha<<G4endl;} ;
+  	inline void SetCaptureType(G4int t) {iFieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
 
 private:
   	void GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const;
@@ -51,25 +51,25 @@ private:
 private:
 	G4ThreeVector	TransformToLocal(G4ThreeVector ) const;
 private:
-  	G4double 	B0;
-  	G4double 	B1;
-  	G4double 	amdAlpha;
-  	G4double 	qwtNegaSqrAlpha;
-  	G4double 	qwtFermiCoef0;
-  	G4double 	qwtFermiCoef1;
-  	G4double 	qwtFermiAlpha;
-  	G4int		fieldType;
+  	G4double 	dB0;
+  	G4double 	dB1;
+  	G4double 	dAmdAlpha;
+  	G4double 	dQwtNegaSqrAlpha;
+  	G4double 	dQwtFermiCoef0;
+  	G4double 	dQwtFermiCoef1;
+  	G4double 	dQwtFermiAlpha;
+  	G4int		iFieldType;
 private:
-  	G4double 	tarL;
-  	G4double 	capL;
-  	G4double 	capR;
-   	G4double 	sqrCapR;
-	G4double 	halfTarL;
-	G4double 	halfCapL;
+  	G4double 	dTarL;
+  	G4double 	dCapL;
+  	G4double 	dCapR;
+   	G4double 	dSqrCapR;
+	G4double 	dHalfTarL;
+	G4double 	dHalfCapL;
 
 private:
-  	G4double 	mu0;
-  	G4double 	currentI;
+  	G4double 	dMu0;
+  	G4double 	dCurrentI;
 };
 
 //Field manager
@@ -82,8 +82,8 @@ public:
  ~GPCaptureFieldManager() ;
       
   void Init();
-  inline void SetStepperType( G4int i) { fStepperType = i ;G4cout<<"Set capture field stepper type: "<<i<<G4endl; };
-  inline void SetMinStep(G4double s) { fMinStep = s ;G4cout<<"Set  capture field minmum step: "<<s/mm<<" mm"<<G4endl; };
+  inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set capture field stepper type: "<<i<<G4endl; };
+  inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set  capture field minmum step: "<<s/mm<<" mm"<<G4endl; };
   void UpdateField();
   void SetFieldFlag(G4bool) ;
 
@@ -98,11 +98,11 @@ protected:
   G4MagIntegratorStepper*	fCaptureStepper ;
   G4MagInt_Driver*			fCaptureIntegratorDriver;
 
-  G4int                  	fStepperType ;
-  G4double               	fMinStep ;
+  G4int                  	iStepperType ;
+  G4double               	dMinStep ;
 
   GPCaptureFieldMessenger*      	fFieldMessenger;
-  G4bool					captureFieldFlag;
+  G4bool					bCaptureFieldFlag;
 
 };
 

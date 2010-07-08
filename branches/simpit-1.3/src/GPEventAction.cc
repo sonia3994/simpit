@@ -27,7 +27,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPEventAction::GPEventAction(GPRunAction* run)
-:runAct(run),printModulo(1)//,eventMessenger(0)
+:runAct(run),iPrintModel(1)//,eventMessenger(0)
 {
 }
 
@@ -42,8 +42,8 @@ GPEventAction::~GPEventAction()
 void GPEventAction::BeginOfEventAction(const G4Event* evt)
 {  
   G4int evtNb = evt->GetEventID();
-	eventID=evtNb;
-//  if (evtNb%printModulo == 0) 
+	iEventID=evtNb;
+//  if (evtNb%iPrintModel == 0) 
     if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
     { 
     G4cout << "\n------------------> Begin of event: " << evtNb<<" <--------------------" << G4endl;
@@ -51,9 +51,9 @@ void GPEventAction::BeginOfEventAction(const G4Event* evt)
     }
  
 // initialisation per event
- EnergyTar = 0.;
- TrackL = 0.;
- positronPerEvt=0;
+ dEnergyTar = 0.;
+ dTrackL = 0.;
+ iNPositronPerEvt=0;
 // de=0.;
 }
 
@@ -63,7 +63,7 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 {
   //accumulates statistic
   //
-  runAct->FillPerEvent(EnergyTar, TrackL,positronPerEvt);
+  runAct->FillPerEvent(dEnergyTar, dTrackL,iNPositronPerEvt);
  // PEDD
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
   G4SDManager* SDM=G4SDManager::GetSDMpointer();
@@ -84,12 +84,12 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
   //print per event (modulo n)
   //
   G4int evtNb = evt->GetEventID();
-//  if (evtNb%printModulo == 0) 
+//  if (evtNb%iPrintModel == 0) 
     if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
     {
-    G4cout << "number of positron in this Event:"<<positronPerEvt<<"\n"
-           << "Target: total energy: " << std::setw(7)<< G4BestUnit(EnergyTar,"Energy")<<"\n"
-           << "total track length: " << std::setw(7)<< G4BestUnit(TrackL,"Length")
+    G4cout << "number of positron in this Event:"<<iNPositronPerEvt<<"\n"
+           << "Target: total energy: " << std::setw(7)<< G4BestUnit(dEnergyTar,"Energy")<<"\n"
+           << "total track length: " << std::setw(7)<< G4BestUnit(dTrackL,"Length")
            << G4endl;
     G4cout << "---------------> End of event: " << evtNb << " <--------------"<<G4endl;	
 
@@ -115,7 +115,7 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   void GPEventAction::AddPositron(G4ThreeVector Position,G4ThreeVector MomentumDirection,G4double TotalEnergy)
   {
-   positronPerEvt++;
-if (G4EventManager::GetEventManager()->GetVerboseLevel()>=2)   G4cout << "positron" << positronPerEvt<<Position << MomentumDirection<<TotalEnergy<<G4endl;
+   iNPositronPerEvt++;
+if (G4EventManager::GetEventManager()->GetVerboseLevel()>=2)   G4cout << "positron" << iNPositronPerEvt<<Position << MomentumDirection<<TotalEnergy<<G4endl;
    
   }

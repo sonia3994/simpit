@@ -32,8 +32,8 @@ class G4Event;
 //***********************************************************
 //      PARAMETER (NMXHEP=2000)
 //      COMMON/HEPEVT/NEVHEP,NHEP,ISTHEP(NMXHEP),IDHEP(NMXHEP),
-//     >JMOHEP(2,NMXHEP),JDAHEP(2,NMXHEP),PHEP(5,NMXHEP),VHEP(4,NMXHEP)
-//      DOUBLE PRECISION PHEP,VHEP
+//     >JMOHEP(2,NMXHEP),JDAHEP(2,NMXHEP),PHEP(5,NMXHEP),vectVHEP(4,NMXHEP)
+//      DOUBLE PRECISION PHEP,vectVHEP
 //*
 //      WRITE(6,*) NHEP
 //      DO IHEP=1,NHEP
@@ -61,22 +61,22 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
     void SetInputFile(G4String );
 
     inline void SetParticlePosZ(G4double t)
-    {particlePosZ=t;G4cout<<"The particle Z axis is set to: "<<t/mm<<" mm"<<G4endl;};
+    {dParticlePosZ=t;G4cout<<"The particle Z axis is set to: "<<t/mm<<" mm"<<G4endl;};
 
     inline void SetEnergyUnit(G4String t)
-    {UnitE=G4UIcommand::ValueOf(t);G4cout<<"The energy unit of input file is set to: "<<t<<G4endl;};
+    {dUnitE=G4UIcommand::ValueOf(t);G4cout<<"The energy unit of input file is set to: "<<t<<G4endl;};
 
     inline void SetMomentumUnit(G4String t)
-    {UnitP=G4UIcommand::ValueOf(t);G4cout<<"The momentum unit of input file is set to: "<<t<<G4endl;};
+    {dUnitP=G4UIcommand::ValueOf(t);G4cout<<"The momentum unit of input file is set to: "<<t<<G4endl;};
 	
     inline void SetLengthUnit(G4String t)
-    {UnitL=G4UIcommand::ValueOf(t);G4cout<<"The length unit of input file is set to: "<<t<<G4endl;};
+    {dUnitL=G4UIcommand::ValueOf(t);G4cout<<"The length unit of input file is set to: "<<t<<G4endl;};
 
     inline void SetInputFileRMSFactor(G4double t)
-    {eRMSR=t;G4cout<<"The input file's dimension rms factor is set to: "<<t/mm<<"mm"<<G4endl;};
+    {dRadiusRMSFactor=t;G4cout<<"The input file's dimension rms factor is set to: "<<t/mm<<"mm"<<G4endl;};
 
     inline void SetBunchLength(G4double t)
-    {bunchLength=t;G4cout<<"The bunch length is set to: "<<t/ns<<"ns"<<G4endl;};
+    {dBunchLength=t;G4cout<<"The bunch length is set to: "<<t/ns<<"ns"<<G4endl;};
   
   public:
     void GeneratePrimaryVertex(G4Event* evt);
@@ -85,22 +85,22 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
     void Init();
 
   private:
-    G4String	fileName;
-    G4double	UnitE;
-    G4double	UnitP;
-    G4double	UnitL;
-    G4double	timeUnit;
-    G4double	particlePosZ;
-    G4double	bunchLength;
-    G4double	eRMSR;
-    G4bool		eRMSRflag;
-    G4ThreeVector* 	VHEP;
+    G4String	sFileName;
+    G4double	dUnitE;
+    G4double	dUnitP;
+    G4double	dUnitL;
+    G4double	dTimeUnit;
+    G4double	dParticlePosZ;
+    G4double	dBunchLength;
+    G4double	dRadiusRMSFactor;
+    G4bool		bRadiusRMSFactorFlag;
+    G4ThreeVector* 	vectVHEP;
 
-    std::fstream 	inputFile;
-    std::fstream 	outputFile;
+    std::fstream 	fsInputFile;
+    std::fstream 	fsOutputFile;
 	
-    std::vector<G4HEPEvtParticle*> 	HPlist;
-    std::vector<G4ThreeVector* >    PosList;
+    std::vector<G4HEPEvtParticle*> 	vectHPlist;
+    std::vector<G4ThreeVector* >    vectPosList;
     CLHEP::RandGauss* 				randGauss;
 
 };

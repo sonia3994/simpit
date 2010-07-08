@@ -40,17 +40,17 @@ class GPTrajectory : public G4VTrajectory
    void ProcessTrajectory(G4int code=-1);
 
    virtual G4int GetTrackID() const
-   { return fTrackID; }
+   { return iTrackID; }
    virtual G4int GetParentID() const
-   { return fParentID; }
+   { return iParentID; }
    virtual G4String GetParticleName() const
-   { return ParticleName; }
+   { return sParticleName; }
    virtual G4double GetCharge() const
-   { return PDGCharge; }
+   { return dPDGCharge; }
    virtual G4int GetPDGEncoding() const
-   { return PDGEncoding; }
+   { return iPDGEncoding; }
    virtual G4ThreeVector GetInitialMomentum() const
-   { return momentum; }
+   { return vecMomentum; }
    virtual int GetPointEntries() const
    { return positionRecord->size(); }
    virtual G4VTrajectoryPoint* GetPoint(G4int i) const 
@@ -66,23 +66,23 @@ class GPTrajectory : public G4VTrajectory
    G4ParticleDefinition* GetParticleDefinition();
 
    inline G4int GetTrackStatus() const
-   { return fTrackStatus; }
+   { return iTrackStatus; }
    inline const G4ThreeVector& GetVertexPosition() const
-   { return vertexPosition; }
+   { return vecVertexPosition; }
    inline G4double GetGlobalTime() const
-   { return globalTime; }
+   { return dGlobalTime; }
  private:
    GPTrajectoryPointContainer* positionRecord;
-   G4int                        fTrackID;
-   G4int                        fParentID;
-   G4int                        fTrackStatus;
+   G4int                        iTrackID;
+   G4int                        iParentID;
+   G4int                        iTrackStatus;
    G4ParticleDefinition*        fpParticleDefinition;
-   G4String                     ParticleName;
-   G4double                     PDGCharge;
-   G4int                        PDGEncoding;
-   G4ThreeVector                momentum;
-   G4ThreeVector                vertexPosition;
-   G4double                     globalTime;
+   G4String                     sParticleName;
+   G4double                     dPDGCharge;
+   G4int                        iPDGEncoding;
+   G4ThreeVector                vecMomentum;
+   G4ThreeVector                vecVertexPosition;
+   G4double                     dGlobalTime;
 
 };
 

@@ -38,8 +38,8 @@ public:
  ~GPFieldSetup() ;
       
   void Init();
-  inline void SetStepperType( G4int i) { fStepperType = i ;G4cout<<"Set global field stepper: "<<i<<G4endl; };  
-  inline void SetMinStep(G4double s) { fMinStep = s ;G4cout<<"Set global field  minmum step: "<<s/mm<<" mm"<<G4endl; };
+  inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set global field stepper: "<<i<<G4endl; };  
+  inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set global field  minmum step: "<<s/mm<<" mm"<<G4endl; };
   void SetFieldFlag(G4bool) ;
   void UpdateField();
   G4FieldManager*  GetLocalFieldManager(std::string name);
@@ -60,11 +60,11 @@ protected:
   G4EqEMFieldWithSpin*      fGlobalEquation; 
   G4MagIntegratorStepper*	fGlobalStepper ;
   G4MagInt_Driver*			fGlobalIntegratorDriver;
-  G4int                  	fStepperType ;
-  G4double               	fMinStep ;
+  G4int                  	iStepperType ;
+  G4double               	dMinStep ;
  
   GPFieldMessenger*      	fFieldMessenger;
-  G4bool					globalFieldFlag;
+  G4bool					bGlobalFieldFlag;
 };
 
 #endif

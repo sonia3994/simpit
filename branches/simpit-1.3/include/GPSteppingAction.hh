@@ -35,8 +35,6 @@ private:
   //void WriteToFileDT(G4ThreeVector,G4ThreeVector,G4double,G4double);
   //void WriteToFileDC(G4ThreeVector,G4ThreeVector,G4double,G4double);
 
-  G4String 		particle;
-  std::ofstream 	  writeFile;
   GPDetectorConstruction* detector;
   GPEventAction*          eventAction;
   GPSteppingMessenger*	steppingMessenger;
@@ -46,13 +44,15 @@ private:
     const G4VPhysicalVolume* vacuumPhys;
     const G4VPhysicalVolume* acceleratorPhys;
 
-    G4double targetL;
-    G4double targetX;
-    G4double targetY;
-    G4double captureL;
-    G4double captureR;
-    G4double acceleratorL;
-    G4double acceleratorR;
+  	G4String 		dParticle;
+  	std::ofstream 	  ofsWriteFile;
+    G4double dTargetL;
+    G4double dTargetX;
+    G4double dTargetY;
+    G4double dCaptureL;
+    G4double dCaptureR;
+    G4double dAcceleratorL;
+    G4double dAcceleratorR;
 
 	G4int   verbose;
   

@@ -26,7 +26,7 @@ GPSteppingAction::GPSteppingAction(GPDetectorConstruction* det,
                                          GPEventAction* evt)
 :detector(det), eventAction(evt)					 
 { 
-  	particle="e+";
+  	dParticle="e+";
   	steppingMessenger = new GPSteppingMessenger(this);
 	verbose=0;
 }
@@ -49,13 +49,13 @@ void GPSteppingAction::Init()
 	vacuumPhys = detector->GetVacuumPhysical();
 	acceleratorPhys = detector->GetPhysicalVolume("accelerator");
 
-    targetL = detector->GetTargetLength();
-    targetX = detector->GetTargetX();
-    targetY = detector->GetTargetY();
-    captureL = detector->GetCaptureLength();
-    captureR = detector->GetCaptureRadius();
-    acceleratorL = detector->GetDetectorSize("accelerator.l");
-    acceleratorR = detector->GetDetectorSize("accelerator.or");
+    dTargetL = detector->GetTargetLength();
+    dTargetX = detector->GetTargetX();
+    dTargetY = detector->GetTargetY();
+    dCaptureL = detector->GetCaptureLength();
+    dCaptureR = detector->GetCaptureRadius();
+    dAcceleratorL = detector->GetDetectorSize("accelerator.l");
+    dAcceleratorR = detector->GetDetectorSize("accelerator.or");
 
 }
 
@@ -110,7 +110,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 			currentTrack->SetTrackStatus(currentTrackStatus);
 			if (verbose>=1)
 			{
-				G4cout<<"Kill a particle because it does not move more then 8 steps: "<<particleName<<G4endl;
+				G4cout<<"Kill a dParticle because it does not move more then 8 steps: "<<particleName<<G4endl;
 				return;
 			}
 		}
@@ -143,10 +143,10 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	outVector.push_back(totalE);
 	outVector.push_back(globalTime/picosecond);
 
-	if (particleName==particle)
+	if (particleName==dParticle)
 	{
 		///*	
-		//if (prevPos.z()>=targetL/2)
+		//if (prevPos.z()>=dTargetL/2)
 		if (prevPhys == capturePhys&&postPhys==targetPhys)
 		{  
 			//if(trackID!=targetFilteredTrackID&&eventID!=targetFilteredEventID)
@@ -161,7 +161,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 
 		else if(prevPhys==acceleratorPhys&&postPhys==capturePhys)
 		{
-			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=captureR*captureR&&prevPos.z()>=(targetL/2+captureL))
+			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=dCaptureR*dCaptureR&&prevPos.z()>=(dTargetL/2+dCaptureL))
 			{
  				userRunAction->OutPutData("capture",outVector);
 				captureFilteredTrackID=trackID;
@@ -172,7 +172,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 		//*/	
 		else if(prevPhys==vacuumPhys&&postPhys==acceleratorPhys)
 		{
-			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=acceleratorR*acceleratorR&&prevPos.z()>=(targetL/2+captureL+acceleratorL))
+			if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=dAcceleratorR*dAcceleratorR&&prevPos.z()>=(dTargetL/2+dCaptureL+dAcceleratorL))
 			{
  				userRunAction->OutPutData("accelerator",outVector);
 				acceleratorFilteredTrackID=trackID;
@@ -204,7 +204,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 		currentTrack->SetTrackStatus(currentTrackStatus);
 		if(verbose>=1)
 		{
-			G4cout<<"Kill a particle because it isn't in target: "<<particleName<<G4endl;
+			G4cout<<"Kill a dParticle because it isn't in target: "<<particleName<<G4endl;
 		}
 	}
 
@@ -213,15 +213,15 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 	{
 		currentTrack->SetTrackStatus(currentTrackStatus);
 		if (verbose>=2)
-		G4cout<<"Kill a particle because it move out of tube "<<particleName<<G4endl;
+		G4cout<<"Kill a dParticle because it move out of tube "<<particleName<<G4endl;
 	}
 
-	if (prevPos.z()>targetL/2&&particleName!="e+") 
+	if (prevPos.z()>dTargetL/2&&particleName!="e+") 
 	{
 		currentTrack->SetTrackStatus(currentTrackStatus);
 		if (verbose>=2)
 		{ 
-			G4cout<<"Kill a particle because it is not a e+ after target: "<<particleName<<G4endl;
+			G4cout<<"Kill a dParticle because it is not a e+ after target: "<<particleName<<G4endl;
         	return;
 		}
 	}
@@ -253,7 +253,7 @@ void GPSteppingAction::WriteToFileDC(G4ThreeVector P,G4ThreeVector M,G4double T,
 
 void GPSteppingAction::SetSelectedParticle(G4String tmpParticle)
 {
-	particle=tmpParticle;
-        G4cout<<"The filter particle is:"<<particle<<G4endl;
+	dParticle=tmpParticle;
+        G4cout<<"The filter dParticle is:"<<dParticle<<G4endl;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -25,9 +25,6 @@
 #include "G4UIQt.hh"
 #endif
 
-//#include <fstream>
-//using namespace std;
-//ofstream positronfilename("/home/G4WorkShop/GammaPair1/positron.data");
   //CLHEP::HepRandomEngine* ranecuEngine=new CLHEP::RanecuEngine;
   CLHEP::RanecuEngine ranecuEngine;
 
@@ -85,18 +82,17 @@ int main(int argc,char** argv)
     {
 #ifdef G4VIS_USE
 	G4VisManager * visManager = new G4VisExecutive;
-	//visManager->RegisterGraphicsSystem(new G4OpenGLStoredQt);
 	visManager->Initialize();
 	visManager->SetVerboseLevel (1);
-	//visManager->PrintAvailableGraphicsSystems();
 	
 #endif
 
 	G4UIsession * session=0;
 #ifdef G4UI_USE_QT
 	session = new G4UIQt(argc,argv);
+#elif G4UI_USE_TCSH
+	session = new G4UIterminal(new G4UItcsh);
 #else
-	//session = new G4UIterminal(new G4UItcsh);
 	session = new G4UIterminal();
 #endif
 
@@ -114,5 +110,4 @@ int main(int argc,char** argv)
 
   return 0;
 }
-
 

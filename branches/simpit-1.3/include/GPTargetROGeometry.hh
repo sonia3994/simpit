@@ -19,34 +19,33 @@ private:
   void	Init();
 
 
+     G4int iTargetBox_RepX;
+     G4int iTargetBox_RepY;
+     G4int iTargetBox_RepZ;
 
-     G4double expHall_x;
-     G4double expHall_y;
-     G4double expHall_z;
+     G4double dExpHall_x;
+     G4double dExpHall_y;
+     G4double dExpHall_z;
 
-     G4double targetBox_x;
-     G4double targetBox_y;
-     G4double targetBox_z;
+     G4double dTargetBox_x;
+     G4double dTargetBox_y;
+     G4double dTargetBox_z;
 
-     G4double targetBox_dx;
-     G4double targetBox_dy;
-     G4double targetBox_dz;
+     G4double dTargetBox_dx;
+     G4double dTargetBox_dy;
+     G4double dTargetBox_dz;
 
-     G4int targetBox_RepX;
-     G4int targetBox_RepY;
-     G4int targetBox_RepZ;
+     G4double dTargetBoxXCell_x;
+     G4double dTargetBoxXCell_y;
+     G4double dTargetBoxXCell_z;
 
-     G4double targetBoxXCell_x;
-     G4double targetBoxXCell_y;
-     G4double targetBoxXCell_z;
+     G4double dTargetBoxYCell_x;
+     G4double dTargetBoxYCell_y;
+     G4double dTargetBoxYCell_z;
 
-     G4double targetBoxYCell_x;
-     G4double targetBoxYCell_y;
-     G4double targetBoxYCell_z;
-
-     G4double targetBoxZCell_x;
-     G4double targetBoxZCell_y;
-     G4double targetBoxZCell_z;
+     G4double dTargetBoxZCell_x;
+     G4double dTargetBoxZCell_y;
+     G4double dTargetBoxZCell_z;
 };
 
 #endif

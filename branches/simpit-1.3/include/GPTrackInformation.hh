@@ -33,44 +33,44 @@ class GPTrackInformation : public G4VUserTrackInformation
 
   private:
     // Information of the primary track at the primary vertex
-    G4int                 originalTrackID;  // Track ID of primary particle
+    G4int                 iOriginalTrackID;  // Track ID of primary particle
     G4ParticleDefinition* particleDefinition;
-    G4ThreeVector         originalPosition;
-    G4ThreeVector         originalMomentum;
-    G4double              originalEnergy;
-    G4double              originalTime;
+    G4ThreeVector         vecOriginalPosition;
+    G4ThreeVector         vecOriginalMomentum;
+    G4double              dOriginalEnergy;
+    G4double              dOriginalTime;
 
-    G4int                 trackingStatus;
-    // trackingStatus = 1 : primary or secondary track which has not yet reached to calorimeter
+    G4int                 iTrackingStatus;
+    // iTrackingStatus = 1 : primary or secondary track which has not yet reached to calorimeter
     //                = 0 : track which or ancester of which has reached to calorimeter
 
     //                = 2 : track or its ancester had once reached to calorimeter and
     //                      then escaped from it
     // Information of the track which reached to the calorimeter boundary at the boundary surface
-    // This information is valid only for trackingStatus = 0 or 2
-    G4int                 sourceTrackID;
+    // This information is valid only for iTrackingStatus = 0 or 2
+    G4int                 iSourceTrackID;
     G4ParticleDefinition* sourceDefinition;
-    G4ThreeVector         sourcePosition;
-    G4ThreeVector         sourceMomentum;
-    G4double              sourceEnergy;
-    G4double              sourceTime;
+    G4ThreeVector         vecSourcePosition;
+    G4ThreeVector         vecSourceMomentum;
+    G4double              dSourceEnergy;
+    G4double              dSourceTime;
 
   public:
-    inline void SetTrackingStatus(G4int i) {trackingStatus = i;}
-    inline G4int GetTrackingStatus() const {return trackingStatus;}
+    inline void SetTrackingStatus(G4int i) {iTrackingStatus = i;}
+    inline G4int GetTrackingStatus() const {return iTrackingStatus;}
 
-    inline G4int GetOriginalTrackID() const {return originalTrackID;}
-    inline G4double GetOriginalEnergy() const {return originalEnergy;}
-    inline G4double GetOriginalTime() const {return originalTime;}
-    inline G4ThreeVector GetOriginalPosition() const {return originalPosition;}
-    inline G4ThreeVector GetOriginalMomentum() const {return originalMomentum;}
+    inline G4int GetOriginalTrackID() const {return iOriginalTrackID;}
+    inline G4double GetOriginalEnergy() const {return dOriginalEnergy;}
+    inline G4double GetOriginalTime() const {return dOriginalTime;}
+    inline G4ThreeVector GetOriginalPosition() const {return vecOriginalPosition;}
+    inline G4ThreeVector GetOriginalMomentum() const {return vecOriginalMomentum;}
     inline G4ParticleDefinition* GetOriginalParticle() const {return particleDefinition;}
 
-    inline G4int GetSourceTrackID() const {return sourceTrackID;}
-    inline G4double GetSourceEnergy() const {return sourceEnergy;}
-    inline G4double GetSourceTime() const {return sourceTime;}
-    inline G4ThreeVector GetSourcePosition() const {return sourcePosition;}
-    inline G4ThreeVector GetSourceMomentum() const {return sourceMomentum;}
+    inline G4int GetSourceTrackID() const {return iSourceTrackID;}
+    inline G4double GetSourceEnergy() const {return dSourceEnergy;}
+    inline G4double GetSourceTime() const {return dSourceTime;}
+    inline G4ThreeVector GetSourcePosition() const {return vecSourcePosition;}
+    inline G4ThreeVector GetSourceMomentum() const {return vecSourceMomentum;}
     inline G4ParticleDefinition* GetSourceParticle() const {return sourceDefinition;}
 };
 

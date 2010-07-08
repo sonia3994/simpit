@@ -32,35 +32,35 @@ class GPTargetHit : public G4VHit
       void Print();
 
   private:
-      G4int XCellID;
-      G4int YCellID;
-      G4int ZCellID;
-      G4double edep;
-      G4ThreeVector pos;
+      G4int iXCellID;
+      G4int iYCellID;
+      G4int iZCellID;
+      G4double dEnergyDep;
+      G4ThreeVector vecPos;
       G4RotationMatrix rot;
       const G4LogicalVolume* pLogV;
-      static std::map<G4String,G4AttDef> fAttDefs;
+      static std::map<G4String,G4AttDef> mapStrAttDef;
 
   public:
       inline void SetCellID(G4int x,G4int y, G4int z)
       {
-        XCellID = x;
-        YCellID = y;
-        ZCellID = z;
+        iXCellID = x;
+        iYCellID = y;
+        iZCellID = z;
       }
-      inline G4int GetZ() { return ZCellID; }
-      inline G4int GetX() { return XCellID; }
-      inline G4int GetY() { return YCellID; }
+      inline G4int GetZ() { return iZCellID; }
+      inline G4int GetX() { return iXCellID; }
+      inline G4int GetY() { return iYCellID; }
       inline void SetEdep(G4double de)
-      { edep = de; }
+      { dEnergyDep = de; }
       inline void AddEdep(G4double de)
-      { edep += de; }
+      { dEnergyDep += de; }
       inline G4double GetEdep()
-      { return edep; }
+      { return dEnergyDep; }
       inline void SetPos(G4ThreeVector xyz)
-      { pos = xyz; }
+      { vecPos = xyz; }
       inline G4ThreeVector GetPos()
-      { return pos; }
+      { return vecPos; }
       inline void SetRot(G4RotationMatrix rmat)
       { rot = rmat; }
       inline G4RotationMatrix GetRot()

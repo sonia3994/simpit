@@ -10,6 +10,7 @@
 #include "CLHEP/Random/RandFlat.h"
 #include "Randomize.hh"
 #include "globals.hh"
+#include "G4ThreeVector.hh"
 
 #include <iostream>
 //using namespace std;
@@ -22,7 +23,6 @@ class GPDetectorConstruction;
 class GPHEPEvtInterface;
 class G4ParticleGun;
 class G4Event;
-
 class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
@@ -37,20 +37,8 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetParticleEnergyDistr(G4double,G4double);
     void SetParticlePositionDistr(G4double,G4double);
     void SetParticlePositionZ(G4double);
+    void SetParticleMomentumDirection(G4ThreeVector);
     void SetParticleMomentumDistr(G4double,G4double);
-//    G4String GetParticleStyle()	{return n_particle;};
-    inline G4int GetParticleInitNumber()	{return n_particle;}
-    inline G4String GetInputFileName()		{return	inputFile;}
-    inline G4double GetParticleEnergyMean()	{return eEnergyMean;}
-    inline G4double GetParticleEnergyRMS()	{return eEnergyRMS;}
-    inline G4double GetParticlePositionMean()	{return ePositionMean;}
-    inline G4double GetParticlePositionRMS()	{return ePositionRMS;}
-    inline G4double GetParticleMomentumMean()	{return eMomentumMean;}
-    inline G4double GetParticleMomentumRMS()	{return eMomentumRMS;}
-
-    inline void SetHEPEvtGenerator(G4bool f)
-    { HEPEvtFlag = f; G4cout<<"The HEPEvt flag is set to: "<<f<<G4endl;}
-    inline G4bool GetHEPEvtGenerator() { return HEPEvtFlag; }
     void SetInputFile(G4String );
     void SetEnergyUnit(G4String);
     void SetMomentumUnit(G4String);
@@ -58,22 +46,41 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetInputFileRMSFactor(G4double);    
     void SetBunchLength(G4double);    
     void PrintPrimaryMessage();
+    inline void SetHEPEvtGenerator(G4bool f)
+    { bHEPEvtFlag = f; G4cout<<"The HEPEvt flag is set to: "<<f<<G4endl;}
+
+//    G4String GetParticleStyle()	{return iNParticles;};
+    inline G4int GetParticleInitNumber()	{return iNParticles;}
+    inline G4String GetInputFileName()		{return	sInputFile;}
+    inline G4double GetParticleEnergyMean()	{return dEnergyMean;}
+    inline G4double GetParticleEnergyRMS()	{return dEnergyRMS;}
+    inline G4double GetParticlePositionMean()	{return dPositionMean;}
+    inline G4double GetParticlePositionRMS()	{return dPositionRMS;}
+    inline G4double GetParticleMomentumMean()	{return dMommentumMean;}
+    inline G4double GetParticleMomentumRMS()	{return dMommentumRMS;}
+
+    inline G4bool GetHEPEvtGenerator() { return bHEPEvtFlag; }
+
+	protected:
+	  void GeneratePrimariesFixedParticleGun(G4Event* );
 
   private:
     G4int 		verbose;
-    G4int 		n_particle;
-    G4String 	particleStyle;
-    G4String 	inputFile;
-    G4double 	ePositionMean;
-    G4double 	ePositionRMS;
-    G4double 	eEnergyMean;
-    G4double 	eEnergyRMS;
-    G4double 	eMomentumMean;
-    G4double 	eMomentumRMS;
-    G4double 	particlePosZ;
-    G4double 	bunchLength;
+    G4int 		iNParticles;
+    G4String 	sParticleStyle;
+    G4String 	sInputFile;
+    G4double 	dPositionMean;
+    G4double 	dPositionRMS;
+    G4double 	dEnergyMean;
+    G4double 	dEnergyRMS;
+    G4double 	dMommentumMean;
+    G4double 	dMommentumRMS;
+    G4double 	dParticlePosZ;
+    G4double 	dBunchLength;
+    G4ThreeVector vectMommentumDirection;
     
-    G4bool 						HEPEvtFlag;
+    G4bool 						bHEPEvtFlag;
+    G4bool 						bFixedParticleGun;
     G4ParticleGun* 				particleGun;
     GPHEPEvtInterface* 			HEPEvt;
     GPDetectorConstruction* 	myDetector;

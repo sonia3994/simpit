@@ -40,6 +40,7 @@ private:
   G4UIcmdWithAString*				EnergyUnitCmd;
   G4UIcmdWithAString*				LengthUnitCmd;
   G4UIcmdWithAString*				MomentumUnitCmd;
+  G4UIcmdWithAString*				MomentumDirectionCmd;
   G4UIcmdWithABool*				UseHEPEvtCmd;
   G4UIcmdWithAnInteger*				InitNumbCmd;
   G4UIcmdWithAnInteger*				VerboseCmd;

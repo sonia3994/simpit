@@ -19,7 +19,7 @@ GPTargetROGeometry::GPTargetROGeometry()
 
 
 GPTargetROGeometry:: GPTargetROGeometry(G4String name, G4double x, G4double y, G4double z,std::vector<G4int> n)
-  : G4VReadOutGeometry(name), dummyMat(0),targetBox_x(x),targetBox_y(y),targetBox_z(z),targetBox_RepX(n[0]),targetBox_RepY(n[1]),targetBox_RepZ(n[2])
+  : G4VReadOutGeometry(name), dummyMat(0),dTargetBox_x(x),dTargetBox_y(y),dTargetBox_z(z),iTargetBox_RepX(n[0]),iTargetBox_RepY(n[1]),iTargetBox_RepZ(n[2])
 {
 }
 
@@ -31,33 +31,33 @@ GPTargetROGeometry::~GPTargetROGeometry()
 void GPTargetROGeometry::Init()
 {
 
-  expHall_x = 120.*mm;
-  expHall_y = 120.*mm;
-  expHall_z = 120.*mm;
+  dExpHall_x = 120.*mm;
+  dExpHall_y = 120.*mm;
+  dExpHall_z = 120.*mm;
 
-  //targetBox_x=25*mm;
-  //targetBox_y=25*mm;
-  //targetBox_z=6*mm;
+  //dTargetBox_x=25*mm;
+  //dTargetBox_y=25*mm;
+  //dTargetBox_z=6*mm;
 
-  //targetBox_dx=1*mm;
-  //targetBox_dy=1*mm;
-  //targetBox_dz=1*mm;
+  //dTargetBox_dx=1*mm;
+  //dTargetBox_dy=1*mm;
+  //dTargetBox_dz=1*mm;
 
-  targetBox_dx=targetBox_x/targetBox_RepX;
-  targetBox_dy=targetBox_y/targetBox_RepY;
-  targetBox_dz=targetBox_z/targetBox_RepZ;
+  dTargetBox_dx=dTargetBox_x/iTargetBox_RepX;
+  dTargetBox_dy=dTargetBox_y/iTargetBox_RepY;
+  dTargetBox_dz=dTargetBox_z/iTargetBox_RepZ;
 
-  targetBoxXCell_x=targetBox_dx;
-  targetBoxXCell_y=targetBox_y;
-  targetBoxXCell_z=targetBox_z;
+  dTargetBoxXCell_x=dTargetBox_dx;
+  dTargetBoxXCell_y=dTargetBox_y;
+  dTargetBoxXCell_z=dTargetBox_z;
 
-  targetBoxYCell_x=targetBox_dx;
-  targetBoxYCell_y=targetBox_dy;
-  targetBoxYCell_z=targetBox_z;
+  dTargetBoxYCell_x=dTargetBox_dx;
+  dTargetBoxYCell_y=dTargetBox_dy;
+  dTargetBoxYCell_z=dTargetBox_z;
 
-  targetBoxZCell_x=targetBox_dx;
-  targetBoxZCell_y=targetBox_dy;
-  targetBoxZCell_z=targetBox_dz;
+  dTargetBoxZCell_x=dTargetBox_dx;
+  dTargetBoxZCell_y=dTargetBox_dy;
+  dTargetBoxZCell_z=dTargetBox_dz;
 
 }
 
@@ -71,9 +71,9 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 
   //Builds the ReadOut World:
   G4Box *ROWorldBox = new G4Box("ROWorldBox",
-		  expHall_x/2,
-		  expHall_y/2,
-		  expHall_z/2);
+		  dExpHall_x/2,
+		  dExpHall_y/2,
+		  dExpHall_z/2);
 
   G4LogicalVolume *ROWorldLog = new G4LogicalVolume(ROWorldBox,
 		  dummyMat,
@@ -90,9 +90,9 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
   // Target volume:
 
   G4Box *targetROBox = new G4Box("TargetROBox",
-		  targetBox_x/2,
-		  targetBox_y/2,
-		  targetBox_z/2);
+		  dTargetBox_x/2,
+		  dTargetBox_y/2,
+		  dTargetBox_z/2);
 
   G4LogicalVolume *targetROLog = new G4LogicalVolume(targetROBox,
 		  dummyMat,
@@ -110,9 +110,9 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
   // -------------------------------
   // x division first: 48 sectors
   G4Box *targetROXDivBox = new G4Box("TargetROXDivBox",
-		  targetBoxXCell_x/2,
-		  targetBoxXCell_y/2,
-		  targetBoxXCell_z/2);
+		  dTargetBoxXCell_x/2,
+		  dTargetBoxXCell_y/2,
+		  dTargetBoxXCell_z/2);
 
   G4LogicalVolume *targetROXDivLog = new G4LogicalVolume(targetROXDivBox,
 		  dummyMat,
@@ -123,14 +123,14 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 		  targetROXDivLog,
 		  targetROPhys,
 		  kXAxis,
-		  targetBox_RepX,
-		  targetBox_dx);
+		  iTargetBox_RepX,
+		  dTargetBox_dx);
 
   // y division first: 48 sectors
   G4Box *targetROYDivBox = new G4Box("TargetROYDivBox",
-		  targetBoxYCell_x/2,
-		  targetBoxYCell_y/2,
-		  targetBoxYCell_z/2);
+		  dTargetBoxYCell_x/2,
+		  dTargetBoxYCell_y/2,
+		  dTargetBoxYCell_z/2);
 
   G4LogicalVolume *targetROYDivLog = new G4LogicalVolume(targetROYDivBox,
 		  dummyMat,
@@ -141,14 +141,14 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 		  targetROYDivLog,
 		  targetROXDivPhys,
 		  kYAxis,
-		  targetBox_RepY,
-		  targetBox_dy);
+		  iTargetBox_RepY,
+		  dTargetBox_dy);
 
   // z division first: 20 sectors
   G4Box *targetROZDivBox = new G4Box("TargetROZBox",
-		  targetBoxZCell_x/2,
-		  targetBoxZCell_y/2,
-		  targetBoxZCell_z/2);
+		  dTargetBoxZCell_x/2,
+		  dTargetBoxZCell_y/2,
+		  dTargetBoxZCell_z/2);
 
   G4LogicalVolume *targetROZDivLog = new G4LogicalVolume(targetROZDivBox, 
 		  dummyMat,
@@ -159,8 +159,8 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 		  targetROZDivLog,
 		  targetROYDivPhys,
 		  kZAxis,
-		  targetBox_RepZ,
-		  targetBox_dz);
+		  iTargetBox_RepZ,
+		  dTargetBox_dz);
 
 
   //Flags the cells as sensitive .The pointer here serves

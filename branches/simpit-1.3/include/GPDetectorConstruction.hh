@@ -40,24 +40,24 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
 
     void SetTargetThickness(G4double);
     void SetTargetXY(G4double);
-    void SetTargetCellXYZ(G4double x,G4double y,G4double z){ TargetCellX=x; TargetCellY=y; TargetCellZ=z;};
-    void SetCaptureLength(G4double t)	{captureTubeLength=t;};
-    void SetCaptureRadius(G4double t)	{captureTubeOuterRadius=t;};
+    void SetTargetCellXYZ(G4double x,G4double y,G4double z){ dTargetCellX=x; dTargetCellY=y; dTargetCellZ=z;};
+    void SetCaptureLength(G4double t)	{dCaptureTubeLength=t;};
+    void SetCaptureRadius(G4double t)	{dCaptureTubeOuterRadius=t;};
     void SetWorldSizeXYZ(G4double ,G4double , G4double );
     void SetWorldSizeX(G4double);
     void SetWorldSizeY(G4double);
     void SetWorldSizeZ(G4double);
-    inline G4double GetTargetThickness()	const	{return targetBoxZ;};
-    inline G4double GetTargetXY()		const	{return targetBoxX;};
-    inline G4double GetTargetX()		const	{return targetBoxX;};
-    inline G4double GetTargetY()		const	{return targetBoxY;};
-    inline G4double GetTargetLength()	const	{return targetBoxZ;};
-    inline G4double GetCaptureLength()		const	{return captureTubeLength;};
-    inline G4double GetCaptureRadius()		const	{return captureTubeOuterRadius;};
-    inline G4double GetWorldSizeX() 		const	{return worldX;}; 
-    inline G4double GetWorldSizeY()          	const	{return worldY;};
-    inline G4double GetWorldSizeZ()           	const	{return worldZ;};
-    inline std::vector<G4int> GetEddDim()           	const	{return eddDim;};
+    inline G4double GetTargetThickness()	const	{return dTargetBoxZ;};
+    inline G4double GetTargetXY()		const	{return dTargetBoxX;};
+    inline G4double GetTargetX()		const	{return dTargetBoxX;};
+    inline G4double GetTargetY()		const	{return dTargetBoxY;};
+    inline G4double GetTargetLength()	const	{return dTargetBoxZ;};
+    inline G4double GetCaptureLength()		const	{return dCaptureTubeLength;};
+    inline G4double GetCaptureRadius()		const	{return dCaptureTubeOuterRadius;};
+    inline G4double GetWorldSizeX() 		const	{return dWorldX;}; 
+    inline G4double GetWorldSizeY()          	const	{return dWorldY;};
+    inline G4double GetWorldSizeZ()           	const	{return dWorldZ;};
+    inline std::vector<G4int> GetEddDim()           	const	{return vectEddDim;};
 
     void SetTargetMaterial (G4String);
     void SetWorldMaterial (G4String);
@@ -76,9 +76,9 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     
     // target
     //
-    G4double targetBoxY;
-    G4double targetBoxX;
-    G4double targetBoxZ;
+    G4double dTargetBoxY;
+    G4double dTargetBoxX;
+    G4double dTargetBoxZ;
 
     G4Material* targetMaterial;
     G4Box* targetBox;
@@ -87,11 +87,11 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
 
     //Capture
     //
-    G4double captureTubeInnerRadius;
-    G4double captureTubeOuterRadius;
-    G4double captureTubeLength;
-    G4double captureTubeStartAngle;
-    G4double captureTubeSpanningAngle;
+    G4double dCaptureTubeInnerRadius;
+    G4double dCaptureTubeOuterRadius;
+    G4double dCaptureTubeLength;
+    G4double dCaptureTubeStartAngle;
+    G4double dCaptureTubeSpanningAngle;
 
     G4Material* captureMaterial;
     G4Tubs* captureTube;
@@ -99,11 +99,11 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* capturePhys;
 
     // transport
-    G4double tranTubeInnerRadius;
-    G4double tranTubeOuterRadius;
-    G4double tranTubeLength;
-    G4double tranTubeStartAngle;
-    G4double tranTubeSpanningAngle;
+    G4double dTranTubeInnerRadius;
+    G4double dTranTubeOuterRadius;
+    G4double dTranTubeLength;
+    G4double dTranTubeStartAngle;
+    G4double dTranTubeSpanningAngle;
 
     G4Material* tranMaterial;
     G4Tubs* tranTube;
@@ -111,11 +111,11 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* tranPhys;
 
     // accelerator
-    G4double acceleratorTubeInnerRadius;
-    G4double acceleratorTubeOuterRadius;
-    G4double acceleratorTubeLength;
-    G4double acceleratorTubeStartAngle;
-    G4double acceleratorTubeSpanningAngle;
+    G4double dAcceleratorTubeInnerRadius;
+    G4double dAcceleratorTubeOuterRadius;
+    G4double dAcceleratorTubeLength;
+    G4double dAcceleratorTubeStartAngle;
+    G4double dAcceleratorTubeSpanningAngle;
 
     G4Material* acceleratorMaterial;
     G4Tubs* acceleratorTube;
@@ -123,9 +123,9 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* acceleratorPhys;
 
     // world  set
-    G4double worldX;
-    G4double worldY;
-    G4double worldZ;
+    G4double dWorldX;
+    G4double dWorldY;
+    G4double dWorldZ;
 
     G4Material* worldMaterial;
     G4Box* worldBox;
@@ -140,10 +140,10 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     GPTargetSD* targetSD;
     GPTargetROGeometry* targetRO;
 
-    G4double TargetCellX;
-    G4double TargetCellY;
-    G4double TargetCellZ;
-    std::vector<G4int> eddDim;
+    G4double dTargetCellX;
+    G4double dTargetCellY;
+    G4double dTargetCellZ;
+    std::vector<G4int> vectEddDim;
 
     //material
     G4Material* Vacuum;

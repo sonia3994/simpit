@@ -37,14 +37,14 @@
 GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 {
 	//Change to kg, m, s units now.
-  	//B0=6*tesla;
-  	B0=6;
-  	//B1=0.5*tesla;
-  	B1=0.5;
-	fieldType=0;
-	mu0=12.5664e-7;
-	currentI=150*1000;
-	qwtFermiAlpha=300;
+  	//dB0=6*tesla;
+  	dB0=6;
+  	//dB1=0.5*tesla;
+  	dB1=0.5;
+	iFieldType=0;
+	dMu0=12.5664e-7;
+	dCurrentI=150*1000;
+	dQwtFermiAlpha=300;
 }
 
 GPCaptureField::~GPCaptureField()
@@ -56,35 +56,35 @@ void GPCaptureField::Init()
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
 
 	//transfer to international units
-  	tarL=detector->GetDetectorSize("target.z")/m;
-  	capL=detector->GetDetectorSize("capture.l")/m;
-  	capR=detector->GetDetectorSize("capture.or")/m;
+  	dTarL=detector->GetDetectorSize("target.z")/m;
+  	dCapL=detector->GetDetectorSize("capture.l")/m;
+  	dCapR=detector->GetDetectorSize("capture.or")/m;
 
-   	sqrCapR=capR*capR;
-	halfTarL=tarL/2;
-	halfCapL=capL/2;
-  	amdAlpha=(B0/B1-1)/(capL); //unit m^(-1)
-	qwtNegaSqrAlpha=(B0/B1-1)/(capL*capL);//unit m^(-2)
-  	qwtFermiCoef1=(B0-B1)/(-0.5+1/(1+exp(-qwtFermiAlpha*capL)));
-  	qwtFermiCoef0=B1-0.5*qwtFermiCoef1;
+   	dSqrCapR=dCapR*dCapR;
+	dHalfTarL=dTarL/2;
+	dHalfCapL=dCapL/2;
+  	dAmdAlpha=(dB0/dB1-1)/(dCapL); //unit m^(-1)
+	dQwtNegaSqrAlpha=(dB0/dB1-1)/(dCapL*dCapL);//unit m^(-2)
+  	dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*dCapL)));
+  	dQwtFermiCoef0=dB1-0.5*dQwtFermiCoef1;
 
-	if(fieldType==0)
+	if(iFieldType==0)
 	{
-		G4cout<<"Active AMD, AMDAlpha: "<<amdAlpha<<" m^(-1)"<<G4endl;
+		G4cout<<"Active AMD, dAmdAlpha: "<<dAmdAlpha<<" m^(-1)"<<G4endl;
 	}
-	else if(fieldType==1)
+	else if(iFieldType==1)
 	{
-	G4cout<<"Active QWT, qwtFermiAlpha: "<<qwtFermiAlpha<<" qwtFermiCoef0: "<<qwtFermiCoef0<<" qwtFermiCoef1: "<<qwtFermiCoef1<<G4endl;
+	G4cout<<"Active QWT, dQwtFermiAlpha: "<<dQwtFermiAlpha<<" dQwtFermiCoef0: "<<dQwtFermiCoef0<<" dQwtFermiCoef1: "<<dQwtFermiCoef1<<G4endl;
 	}
-	else if(fieldType==2)
+	else if(iFieldType==2)
 	{
-	G4cout<<"Active QWT, QWTNegaSqrAlpha: "<<qwtNegaSqrAlpha<<" m^(-2)"<<G4endl;
+	G4cout<<"Active QWT, dQwtNegaSqrAlpha: "<<dQwtNegaSqrAlpha<<" m^(-2)"<<G4endl;
 	}
-	else if(fieldType==3)
+	else if(iFieldType==3)
 	{
 	G4cout<<"Active QWT,Abrupt field. "<<G4endl;
 	}
-	else if(fieldType==4)
+	else if(iFieldType==4)
 	{
 	G4cout<<"Active Lithium. "<<G4endl;
 	}
@@ -94,7 +94,7 @@ void GPCaptureField::Init()
 
 void GPCaptureField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
-	switch(fieldType)
+	switch(iFieldType)
 	{
 		case 0:
 			GetFieldValueAMD(Point, Bfield);
@@ -128,21 +128,21 @@ void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield)
 	//transfer to international units
 	localX=Point[0]/m;
 	localY=Point[1]/m;
-	localZ=Point[2]/m-halfTarL;
+	localZ=Point[2]/m-dHalfTarL;
 
     localR2=localX*localX+localY*localY;
 
-  	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
+  	if(localZ>0&&localZ<=dCapL&&localR2<=dSqrCapR)
   	{
-		fz=1/(1+amdAlpha*localZ);
+		fz=1/(1+dAmdAlpha*localZ);
 		fz2=fz*fz;
 		//
-		//Bz(z,r)=f(z);f(z)=B0/(1+amdAlpha*z)
+		//Bz(z,r)=f(z);f(z)=dB0/(1+dAmdAlpha*z)
 		//Br(z,r)=-0.5*r*df(z)/dz;
 		//Add the magnetic unit "tesla" when transfer to kernel.
-  		Bfield[0]=0.5*localX*fz2*amdAlpha*B0*tesla;
+  		Bfield[0]=0.5*localX*fz2*dAmdAlpha*dB0*tesla;
   		Bfield[1]=Bfield[0]*localY/localX;
-		Bfield[2]=fz*B0*tesla;
+		Bfield[2]=fz*dB0*tesla;
 		//G4cout<<"x: "<<localX<<" y: "<<localY<<" z: "<<Point[2]<<G4endl;
 		//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<G4endl;
 
@@ -166,16 +166,16 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
 
 	localX=Point[0]/m;
 	localY=Point[1]/m;
-	localZ=Point[2]/m-halfTarL;
+	localZ=Point[2]/m-dHalfTarL;
     localR2=localX*localX+localY*localY;
 
-  	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
+  	if(localZ>0&&localZ<=dCapL&&localR2<=dSqrCapR)
 	{
-		dPublic0=exp(qwtFermiAlpha*(localZ-capL));
-		dPublic1=qwtFermiCoef0+qwtFermiCoef1/(1+dPublic0);
+		dPublic0=exp(dQwtFermiAlpha*(localZ-dCapL));
+		dPublic1=dQwtFermiCoef0+dQwtFermiCoef1/(1+dPublic0);
 
 		//Add the magnetic unit "tesla" when transfer to kernel.
-  		Bfield[0]=tesla*0.5*localX*qwtFermiCoef1*qwtFermiAlpha*dPublic0/((1+dPublic0)*(1+dPublic0));
+  		Bfield[0]=tesla*0.5*localX*dQwtFermiCoef1*dQwtFermiAlpha*dPublic0/((1+dPublic0)*(1+dPublic0));
   		Bfield[1]=Bfield[0]*localY/localX;
 		Bfield[2]=tesla*dPublic1;
 	}
@@ -199,17 +199,17 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
 	//transfer to international units
 	localX=Point[0]/m;
 	localY=Point[1]/m;
-	localZ=Point[2]/m-halfTarL;
+	localZ=Point[2]/m-dHalfTarL;
 
     localR2=localX*localX+localY*localY;
 
 
-  	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
+  	if(localZ>0&&localZ<=dCapL&&localR2<=dSqrCapR)
 	{
-		feiMi=1/(1+qwtNegaSqrAlpha*localZ*localZ);
-  		Bfield[0]=localX*qwtNegaSqrAlpha*localZ*feiMi*feiMi*B0*tesla;
+		feiMi=1/(1+dQwtNegaSqrAlpha*localZ*localZ);
+  		Bfield[0]=localX*dQwtNegaSqrAlpha*localZ*feiMi*feiMi*dB0*tesla;
   		Bfield[1]=Bfield[0]*localY/localX;
-		Bfield[2]=feiMi*B0*tesla;
+		Bfield[2]=feiMi*dB0*tesla;
 	}
 
   	else 
@@ -230,14 +230,14 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 	//transfer to international units
 	localX=Point[0]/m;
 	localY=Point[1]/m;
-	localZ=Point[2]/m-halfTarL;
+	localZ=Point[2]/m-dHalfTarL;
 
     localR2=localX*localX+localY*localY;
-  	if(localZ>0&&localZ<=capL&&localR2<=sqrCapR)
+  	if(localZ>0&&localZ<=dCapL&&localR2<=dSqrCapR)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
-		Bfield[2]=B0*tesla;
+		Bfield[2]=dB0*tesla;
 	}
   	else 
   	{ 
@@ -269,12 +269,12 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 	//transfer to international units
 	localX=Point[0]/m;
 	localY=Point[1]/m;
-	localZ=Point[2]/m-halfTarL-halfCapL;
+	localZ=Point[2]/m-dHalfTarL-dHalfCapL;
 
     localR2=localX*localX+localY*localY;
 
-	//currentShape=currentI/(1+exp(10*abs(localZ-(capL-4)/2)));
-    vectCurrent=G4ThreeVector(0,0,currentI);
+	//currentShape=dCurrentI/(1+exp(10*abs(localZ-(dCapL-4)/2)));
+    vectCurrent=G4ThreeVector(0,0,dCurrentI);
     vectCurrentUnit=vectCurrent.unit();
 
     vectHorizonPos=G4ThreeVector(localX,localY,0);
@@ -284,10 +284,10 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 	magI=vectCurrent.mag();
 	
 //*/
-  	if(localZ>-halfCapL&&localZ<=halfCapL&&magTP2<=sqrCapR)
+  	if(localZ>-dHalfCapL&&localZ<=dHalfCapL&&magTP2<=dSqrCapR)
 	{
 
-		vectorB=vectCurrentUnit.cross(vectHorizonPosUnit)*magI*magTP*mu0*tesla/(6.2832*sqrCapR);
+		vectorB=vectCurrentUnit.cross(vectHorizonPosUnit)*magI*magTP*dMu0*tesla/(6.2832*dSqrCapR);
 		Bfield[0]=vectorB.x();
 		Bfield[1]=vectorB.y();
 		Bfield[2]=vectorB.z();
@@ -307,7 +307,7 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 
 G4ThreeVector	GPCaptureField::TransformToLocal(G4ThreeVector global ) const
 {
-	G4ThreeVector local=G4ThreeVector(global[0],global[1],global[2]-halfTarL-halfCapL); 
+	G4ThreeVector local=G4ThreeVector(global[0],global[1],global[2]-dHalfTarL-dHalfCapL); 
 	return local;
 }
 
@@ -324,14 +324,14 @@ GPCaptureFieldManager::GPCaptureFieldManager()
   	fFieldMessenger = new GPCaptureFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
-  	fMinStep     = 1e-3*m ; // minimal step of 1 mm is default
-	G4cout<<"The capture field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
-  	fStepperType = 2 ;      // ClassicalRK4 is default stepper
-  	captureFieldFlag=true;
+  	dMinStep     = 1e-3*m ; // minimal step of 1 mm is default
+	G4cout<<"The capture field minimal step: "<<dMinStep/mm<<" mm"<<G4endl ;
+  	iStepperType = 2 ;      // ClassicalRK4 is default stepper
+  	bCaptureFieldFlag=true;
   	
 	SetStepper();
 
-	fCaptureIntegratorDriver = new G4MagInt_Driver(fMinStep,fCaptureStepper,fCaptureStepper->GetNumberOfVariables());
+	fCaptureIntegratorDriver = new G4MagInt_Driver(dMinStep,fCaptureStepper,fCaptureStepper->GetNumberOfVariables());
 	fCaptureChordFinder = new G4ChordFinder(fCaptureIntegratorDriver);
 	SetChordFinder( fCaptureChordFinder );
 
@@ -366,7 +366,7 @@ void GPCaptureFieldManager::Init()
 void GPCaptureFieldManager::UpdateField()
 {
 	
-	if(captureFieldFlag)
+	if(bCaptureFieldFlag)
 	{
 		SetDetectorField(fCaptureField );
 		//It seems hard to simulate when setting following parameters too small.
@@ -394,7 +394,7 @@ void GPCaptureFieldManager::SetStepper()
 {
 	G4int nvar=12;
 	if(fCaptureStepper) delete fCaptureStepper;
-	switch ( fStepperType )
+	switch ( iStepperType )
 	{
 		case 0:  
 		  //  2nd  order, for less smooth fields
@@ -425,8 +425,8 @@ void GPCaptureFieldManager::SetStepper()
 
 void GPCaptureFieldManager::SetFieldFlag(G4bool t)
 {
-	captureFieldFlag=t; 
-	if(captureFieldFlag)
+	bCaptureFieldFlag=t; 
+	if(bCaptureFieldFlag)
 	{
 	    SetDetectorField(fCaptureField );
 	    G4cout<<"Active the capture field!"<<G4endl;

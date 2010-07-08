@@ -36,32 +36,37 @@ GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(
    
   ParStyleCmd = new G4UIcmdWithAString("/GP/primary/initialParticle",this);
   ParStyleCmd->SetGuidance("Select type of the Particle.");
-  ParStyleCmd->SetParameterName("choice",false);
+  ParStyleCmd->SetParameterName("ParStyleCmd",false);
   ParStyleCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   InitFileCmd = new G4UIcmdWithAString("/GP/primary/inputFile",this);
   InitFileCmd->SetGuidance("Select input file which cantains events.");
-  InitFileCmd->SetParameterName("choice",false);
+  InitFileCmd->SetParameterName("InitFileCmd",false);
   InitFileCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   EnergyUnitCmd = new G4UIcmdWithAString("/GP/primary/setEnergyUnitForInputFile",this);
   EnergyUnitCmd->SetGuidance("Set the energy unit for the input file's data.");
-  EnergyUnitCmd->SetParameterName("choice",false);
+  EnergyUnitCmd->SetParameterName("EnergyUnitCmd",false);
   EnergyUnitCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
  
   MomentumUnitCmd = new G4UIcmdWithAString("/GP/primary/setMomentumUnitForInputFile",this);
   MomentumUnitCmd->SetGuidance("Set the momentum unit for the input file's data.");
-  MomentumUnitCmd->SetParameterName("choice",false);
+  MomentumUnitCmd->SetParameterName("MomentumUnitCmd",false);
   MomentumUnitCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+ 
+  MomentumDirectionCmd = new G4UIcmdWithAString("/GP/primary/setMomentumDirection",this);
+  MomentumDirectionCmd->SetGuidance("Set the momentum direction for the paticle gun, the direction form (0,0,0) to (x,y,z). ");
+  MomentumDirectionCmd->SetParameterName("MomentumDirectionCmd",false);
+  MomentumDirectionCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
  
   LengthUnitCmd = new G4UIcmdWithAString("/GP/primary/setLengthUnitForInputFile",this);
   LengthUnitCmd->SetGuidance("Set the length unit for the input file's data.");
-  LengthUnitCmd->SetParameterName("choice",false);
+  LengthUnitCmd->SetParameterName("LengthUnitCmd",false);
   LengthUnitCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
   UseHEPEvtCmd = new G4UIcmdWithABool("/GP/primary/flagHEPEvt",this);
   UseHEPEvtCmd->SetGuidance("Switch HEPEvt state, \"true\" or flase\".");
-  UseHEPEvtCmd->SetParameterName("choice",false);
+  UseHEPEvtCmd->SetParameterName("UseHEPEvtCmd",false);
   UseHEPEvtCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   InitNumbCmd = new G4UIcmdWithAnInteger("/GP/primary/numberPerEvent",this);
@@ -150,6 +155,7 @@ GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()
   delete						PrintParaCmd;
   delete						EnergyUnitCmd;
   delete						MomentumUnitCmd;
+  delete						MomentumDirectionCmd;
   delete						LengthUnitCmd;
   delete						InputFileRMSFactorCmd;
 }
@@ -170,6 +176,14 @@ void GPPrimaryGeneratorMessenger::SetNewValue(
   
   if( command == MomentumUnitCmd )
    { GPPrimary->SetMomentumUnit(newValue);}
+  
+  if( command == MomentumDirectionCmd )
+   { 
+	 std::stringstream ss(newValue);
+	 G4double x,y,z;
+     ss>>x>>y>>z;
+     GPPrimary->SetParticleMomentumDirection(G4ThreeVector(x,y,z));
+   }
   
   if( command == LengthUnitCmd )
    { GPPrimary->SetLengthUnit(newValue);}

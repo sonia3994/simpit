@@ -36,12 +36,12 @@
 //////////////////////////////////////////////////////////////////////////
 GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()
 {
-  	B0=0;
-  	B1=0.5;
-  	//B0=0.5*tesla;
-  	E0=0;
-  	E1=15e+6;
-  	//E0=15e+6*volt/m;
+  	dB0=0;
+  	dB1=0.5;
+  	//dB0=0.5*tesla;
+  	dE0=0;
+  	dE1=15e+6;
+  	//dE0=15e+6*volt/m;
 }
 
 GPAcceleratorField::~GPAcceleratorField()
@@ -56,12 +56,12 @@ void GPAcceleratorField::Init()
   	G4double accLTmp=detector->GetDetectorSize("accelerator.l");
   	G4double accRTmp=detector->GetDetectorSize("accelerator.or");
     //transform to my units.
-    tarL=tarLTmp/m;
-    capL=capLTmp/m;
-    accL=accLTmp/m;
-    accR=accRTmp/m;
+    dTarL=tarLTmp/m;
+    dCapL=capLTmp/m;
+    dAccL=accLTmp/m;
+    dAccR=accRTmp/m;
 
-	delta=accL/20;
+	dDelta=dAccL/20;
 	
 }
 
@@ -77,16 +77,16 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
     //global to local transform
 	local[0]=global[0];
 	local[1]=global[1];
-	local[2]=global[2]-tarL/2-capL-accL/2;
+	local[2]=global[2]-dTarL/2-dCapL-dAccL/2;
     localR2=local[0]*local[0]+local[1]*local[1];
 
 /*
-	if(localR2<accR*accR&&local[2]>-accL/2&&local[2]<=(-accL/2+delta))
+	if(localR2<dAccR*dAccR&&local[2]>-dAccL/2&&local[2]<=(-dAccL/2+dDelta))
 	{
 	static G4double		 B;
 	static G4double		 E;
-	B=(local[2]+accL/2)*(B1-B0)/delta+B0;
-	E=(local[2]+accL/2)*(E1-E0)/delta+E0;
+	B=(local[2]+dAccL/2)*(dB1-dB0)/dDelta+dB0;
+	E=(local[2]+dAccL/2)*(dE1-dE0)/dDelta+dE0;
 	Bfield[0]=0;
 	Bfield[1]=0;
 	Bfield[2]=B*tesla;
@@ -95,15 +95,15 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 	Bfield[5]=E*volt/m;
 	}
 */
-	//else if(localR2<accR*accR&&local[2]<accL/2&&local[2]>=(-accL/2+delta))
-	if(localR2<accR*accR&&local[2]>-accL/2&&local[2]<=accL/2)
+	//else if(localR2<dAccR*dAccR&&local[2]<dAccL/2&&local[2]>=(-dAccL/2+dDelta))
+	if(localR2<dAccR*dAccR&&local[2]>-dAccL/2&&local[2]<=dAccL/2)
 	{
 	Bfield[0]=0;
 	Bfield[1]=0;
-	Bfield[2]=B1*tesla;
+	Bfield[2]=dB1*tesla;
 	Bfield[3]=0;
 	Bfield[4]=0;
-	Bfield[5]=E1*volt/m;
+	Bfield[5]=dE1*volt/m;
 	//G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
 	//G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<G4endl;
 	}
@@ -132,16 +132,16 @@ GPAcceleratorFieldManager::GPAcceleratorFieldManager()
   	fFieldMessenger = new GPAcceleratorFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fAcceleratorField) ;  
 
-  	fMinStep     = 1e-3*m ; // minimal step of 1 mm is default
-	G4cout<<"The Accelerator field minimal step: "<<fMinStep/mm<<" mm"<<G4endl ;
-  	fStepperType = 2 ;      // ClassicalRK4 is default stepper
-  	acceleratorFieldFlag=true;
+  	dMinStep     = 1e-3*m ; // minimal step of 1 mm is default
+	G4cout<<"The Accelerator field minimal step: "<<dMinStep/mm<<" mm"<<G4endl ;
+  	iStepperType = 2 ;      // ClassicalRK4 is default stepper
+  	bAcceleratorFieldFlag=true;
   	
 	SetStepper();
 	
-	fAcceleratorIntegratorDriver = new G4MagInt_Driver(fMinStep,fAcceleratorStepper,fAcceleratorStepper->GetNumberOfVariables());
+	fAcceleratorIntegratorDriver = new G4MagInt_Driver(dMinStep,fAcceleratorStepper,fAcceleratorStepper->GetNumberOfVariables());
 	fAcceleratorChordFinder = new G4ChordFinder(fAcceleratorIntegratorDriver);
-	//fAcceleratorChordFinder = new G4ChordFinder((G4MagneticField*)fAcceleratorField,fMinStep,fAcceleratorStepper);
+	//fAcceleratorChordFinder = new G4ChordFinder((G4MagneticField*)fAcceleratorField,dMinStep,fAcceleratorStepper);
 	
 	SetChordFinder( fAcceleratorChordFinder );
 
@@ -175,7 +175,7 @@ void GPAcceleratorFieldManager::Init()
 void GPAcceleratorFieldManager::UpdateField()
 {
 	
-	if(acceleratorFieldFlag)
+	if(bAcceleratorFieldFlag)
 	{
 		SetDetectorField(fAcceleratorField );
 		///*
@@ -202,7 +202,7 @@ void GPAcceleratorFieldManager::SetStepper()
 {
 	G4int nvar=12;
 	if(fAcceleratorStepper) delete fAcceleratorStepper;
-	switch ( fStepperType )
+	switch ( iStepperType )
 	{
 		case 0:  
 		  //  2nd  order, for less smooth fields
@@ -231,8 +231,8 @@ void GPAcceleratorFieldManager::SetStepper()
 /////////////////////////////////////////////////////////////////////////////
 void GPAcceleratorFieldManager::SetFieldFlag(G4bool t)
 {
-	acceleratorFieldFlag=t; 
-	if(acceleratorFieldFlag)
+	bAcceleratorFieldFlag=t; 
+	if(bAcceleratorFieldFlag)
 	{
 	    SetDetectorField(fAcceleratorField );
 	    G4cout<<"Active the Accelerator field!"<<G4endl;

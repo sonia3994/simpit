@@ -14,9 +14,7 @@
 #include "G4ThreeVector.hh"
 #include <fstream>
 using namespace std;
-//ofstream positronfilename("/home/G4WorkShop/GammaPair/positron.data");
 
-extern ofstream positronfilename;
 class GPRunAction;
 //class GPEventActionMessenger;
 
@@ -30,22 +28,21 @@ public:
 
   void  BeginOfEventAction(const G4Event*);
   void  EndOfEventAction(const G4Event*);
-  inline  G4int GetEventID() const {return eventID;};
-  inline void  SetPrintModulo(G4int    val)  {printModulo = val;};
-  inline void AddTargetED(G4double de) {EnergyTar+=de;};
-  inline void AddTargetStep(G4double TargetStep) {TrackL+=TargetStep;}; 
+  inline  G4int GetEventID() const {return iEventID;};
+  inline void  SetPrintModulo(G4int    val)  {iPrintModel = val;};
+  inline void AddTargetED(G4double de) {dEnergyTar+=de;};
+  inline void AddTargetStep(G4double TargetStep) {dTrackL+=TargetStep;}; 
   void  AddPositron(G4ThreeVector,G4ThreeVector,G4double);                  
     
 private:
    GPRunAction*  runAct;
 
-   G4double  EnergyTar;
-   G4double  TrackL;
+   G4double  dEnergyTar;
+   G4double  dTrackL;
 //   G4double  de;                  
-   G4int     printModulo;
-   G4int     positronPerEvt;
-   G4int     eventID;
-//   fstream  positronfilename;
+   G4int     iPrintModel;
+   G4int     iNPositronPerEvt;
+   G4int     iEventID;
                              
 //   GPEventActionMessenger*  eventMessenger;
 };

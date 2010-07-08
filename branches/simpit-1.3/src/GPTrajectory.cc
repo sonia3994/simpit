@@ -27,75 +27,75 @@ GPTrajectory::GPTrajectory()
 :G4VTrajectory()
 {
    fpParticleDefinition = 0;
-   ParticleName = "";
-   PDGCharge = 0;
-   PDGEncoding = 0;
-   fTrackID = 0;
-   fParentID = 0;
-   fTrackStatus = 0;
+   sParticleName = "";
+   dPDGCharge = 0;
+   iPDGEncoding = 0;
+   iTrackID = 0;
+   iParentID = 0;
+   iTrackStatus = 0;
    positionRecord = 0;
-   momentum = G4ThreeVector(0.,0.,0.);
-   vertexPosition = G4ThreeVector(0.,0.,0.);
-   globalTime = 0.;
+   vecMomentum = G4ThreeVector(0.,0.,0.);
+   vecVertexPosition = G4ThreeVector(0.,0.,0.);
+   dGlobalTime = 0.;
 }
 
 GPTrajectory::GPTrajectory(const G4Track* aTrack)
 :G4VTrajectory()
 {
    fpParticleDefinition = aTrack->GetDefinition();
-   ParticleName = fpParticleDefinition->GetParticleName();
-   PDGCharge = fpParticleDefinition->GetPDGCharge();
-   PDGEncoding = fpParticleDefinition->GetPDGEncoding();
-   if(ParticleName=="unknown")
+   sParticleName = fpParticleDefinition->GetParticleName();
+   dPDGCharge = fpParticleDefinition->GetPDGCharge();
+   iPDGEncoding = fpParticleDefinition->GetPDGEncoding();
+   if(sParticleName=="unknown")
    {
      G4PrimaryParticle*pp = aTrack->GetDynamicParticle()->GetPrimaryParticle();
      if(pp)
      {
-       if(pp->GetCharge()<DBL_MAX) PDGCharge = pp->GetCharge();
-       PDGEncoding = pp->GetPDGcode();
+       if(pp->GetCharge()<DBL_MAX) dPDGCharge = pp->GetCharge();
+       iPDGEncoding = pp->GetPDGcode();
        if(pp->GetG4code()!=0)
        {
-         ParticleName += " : ";
-         ParticleName += pp->GetG4code()->GetParticleName();
+         sParticleName += " : ";
+         sParticleName += pp->GetG4code()->GetParticleName();
        }
      }
    }
-   fTrackID = aTrack->GetTrackID();
+   iTrackID = aTrack->GetTrackID();
    GPTrackInformation* trackInfo
     = (GPTrackInformation*)(aTrack->GetUserInformation());
-   fTrackStatus = trackInfo->GetTrackingStatus();
-   if(fTrackStatus == 1)
-   { fParentID = aTrack->GetParentID(); }
-   else if(fTrackStatus == 2)
-   { fParentID = trackInfo->GetSourceTrackID(); }
+   iTrackStatus = trackInfo->GetTrackingStatus();
+   if(iTrackStatus == 1)
+   { iParentID = aTrack->GetParentID(); }
+   else if(iTrackStatus == 2)
+   { iParentID = trackInfo->GetSourceTrackID(); }
    else
-   { fParentID = -1; }
+   { iParentID = -1; }
    positionRecord = new GPTrajectoryPointContainer();
    positionRecord->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
-   momentum = aTrack->GetMomentum();
-   vertexPosition = aTrack->GetPosition();
-   globalTime = aTrack->GetGlobalTime();
+   vecMomentum = aTrack->GetMomentum();
+   vecVertexPosition = aTrack->GetPosition();
+   dGlobalTime = aTrack->GetGlobalTime();
 }
 
 GPTrajectory::GPTrajectory(GPTrajectory & right)
 :G4VTrajectory()
 {
-  ParticleName = right.ParticleName;
+  sParticleName = right.sParticleName;
   fpParticleDefinition = right.fpParticleDefinition;
-  PDGCharge = right.PDGCharge;
-  PDGEncoding = right.PDGEncoding;
-  fTrackID = right.fTrackID;
-  fParentID = right.fParentID;
-  fTrackStatus = right.fTrackStatus;
+  dPDGCharge = right.dPDGCharge;
+  iPDGEncoding = right.iPDGEncoding;
+  iTrackID = right.iTrackID;
+  iParentID = right.iParentID;
+  iTrackStatus = right.iTrackStatus;
   positionRecord = new GPTrajectoryPointContainer();
   for(size_t i=0;i<right.positionRecord->size();i++)
   {
     G4TrajectoryPoint* rightPoint = (G4TrajectoryPoint*)((*(right.positionRecord))[i]);
     positionRecord->push_back(new G4TrajectoryPoint(*rightPoint));
   }
-   momentum = right.momentum;
-   vertexPosition = right.vertexPosition;
-   globalTime = right.globalTime;
+   vecMomentum = right.vecMomentum;
+   vecVertexPosition = right.vecVertexPosition;
+   dGlobalTime = right.dGlobalTime;
 }
 
 GPTrajectory::~GPTrajectory()
@@ -122,14 +122,14 @@ void GPTrajectory::ProcessTrajectory(G4int code)
 }
 void GPTrajectory::ShowTrajectory(std::ostream& os) const
 {
-   os << G4endl << "TrackID =" << fTrackID 
-        << " : ParentID=" << fParentID << " : TrackStatus=" << fTrackStatus << G4endl;
-   os << "Particle name : " << ParticleName << "  PDG code : " << PDGEncoding
-        << "  Charge : " << PDGCharge << G4endl;
-   os << "Original momentum : " <<
-        G4BestUnit(momentum,"Energy") << G4endl;
-   os << "Vertex : " << G4BestUnit(vertexPosition,"Length")
-        << "  Global time : " << G4BestUnit(globalTime,"Time") << G4endl;
+   os << G4endl << "TrackID =" << iTrackID 
+        << " : ParentID=" << iParentID << " : TrackStatus=" << iTrackStatus << G4endl;
+   os << "Particle name : " << sParticleName << "  PDG code : " << iPDGEncoding
+        << "  Charge : " << dPDGCharge << G4endl;
+   os << "Original vecMomentum : " <<
+        G4BestUnit(vecMomentum,"Energy") << G4endl;
+   os << "Vertex : " << G4BestUnit(vecVertexPosition,"Length")
+        << "  Global time : " << G4BestUnit(dGlobalTime,"Time") << G4endl;
    os << "  Current trajectory has " << positionRecord->size() 
         << " points." << G4endl;
 
@@ -166,14 +166,14 @@ void GPTrajectory::DrawTrajectory(G4int) const
       colour = G4Colour(0.,1.,0.);
    else if(fpParticleDefinition->GetParticleType()=="meson")
    {
-      if(PDGCharge!=0.)
+      if(dPDGCharge!=0.)
          colour = G4Colour(1.,0.,0.);
       else
          colour = G4Colour(0.5,0.,0.);
    }
    else if(fpParticleDefinition->GetParticleType()=="baryon")
    {
-      if(PDGCharge!=0.)
+      if(dPDGCharge!=0.)
          colour = G4Colour(0.,1.,1.);
       else
          colour = G4Colour(0.,0.5,0.5);
@@ -210,12 +210,12 @@ const std::map<G4String,G4AttDef>* GPTrajectory::GetAttDefs() const
     (*store)[PDG] = G4AttDef(PDG,"PDG Encoding","Bookkeeping","","G4int");
 
     G4String IMom("IMom");
-    (*store)[IMom] = G4AttDef(IMom, "Momentum of track at start of trajectory",
+    (*store)[IMom] = G4AttDef(IMom, "vecMomentum of track at start of trajectory",
 			      "Physics","G4BestUnit","G4ThreeVector");
 
     G4String IMag("IMag");
     (*store)[IMag] = 
-      G4AttDef(IMag, "Magnitude of momentum of track at start of trajectory",
+      G4AttDef(IMag, "Magnitude of vecMomentum of track at start of trajectory",
 	       "Physics","G4BestUnit","G4double");
 
     G4String VtxPos("VtxPos");
@@ -234,30 +234,30 @@ std::vector<G4AttValue>* GPTrajectory::CreateAttValues() const
   std::vector<G4AttValue>* values = new std::vector<G4AttValue>;
 
   values->push_back
-    (G4AttValue("ID",G4UIcommand::ConvertToString(fTrackID),""));
+    (G4AttValue("ID",G4UIcommand::ConvertToString(iTrackID),""));
 
   values->push_back
-    (G4AttValue("PID",G4UIcommand::ConvertToString(fParentID),""));
+    (G4AttValue("PID",G4UIcommand::ConvertToString(iParentID),""));
 
   values->push_back
-    (G4AttValue("Status",G4UIcommand::ConvertToString(fTrackStatus),""));
+    (G4AttValue("Status",G4UIcommand::ConvertToString(iTrackStatus),""));
 
-  values->push_back(G4AttValue("PN",ParticleName,""));
-
-  values->push_back
-    (G4AttValue("Ch",G4UIcommand::ConvertToString(PDGCharge),""));
+  values->push_back(G4AttValue("PN",sParticleName,""));
 
   values->push_back
-    (G4AttValue("PDG",G4UIcommand::ConvertToString(PDGEncoding),""));
+    (G4AttValue("Ch",G4UIcommand::ConvertToString(dPDGCharge),""));
 
   values->push_back
-    (G4AttValue("IMom",G4BestUnit(momentum,"Energy"),""));
+    (G4AttValue("PDG",G4UIcommand::ConvertToString(iPDGEncoding),""));
 
   values->push_back
-    (G4AttValue("IMag",G4BestUnit(momentum.mag(),"Energy"),""));
+    (G4AttValue("IMom",G4BestUnit(vecMomentum,"Energy"),""));
 
   values->push_back
-    (G4AttValue("VtxPos",G4BestUnit(vertexPosition,"Length"),""));
+    (G4AttValue("IMag",G4BestUnit(vecMomentum.mag(),"Energy"),""));
+
+  values->push_back
+    (G4AttValue("VtxPos",G4BestUnit(vecVertexPosition,"Length"),""));
 
   values->push_back
     (G4AttValue("NTP",G4UIcommand::ConvertToString(GetPointEntries()),""));
@@ -273,7 +273,7 @@ void GPTrajectory::AppendStep(const G4Step* aStep)
   
 G4ParticleDefinition* GPTrajectory::GetParticleDefinition()
 {
-   return (G4ParticleTable::GetParticleTable()->FindParticle(ParticleName));
+   return (G4ParticleTable::GetParticleTable()->FindParticle(sParticleName));
 }
 
 void GPTrajectory::MergeTrajectory(G4VTrajectory* secondTrajectory)

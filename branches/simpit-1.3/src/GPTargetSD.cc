@@ -11,7 +11,7 @@
 
 GPTargetSD::GPTargetSD(G4String name,std::vector<G4int> hitDim)
 :G4VSensitiveDetector(name),
- numberOfCellsInX(hitDim[0]),numberOfCellsInY(hitDim[1]),numberOfCellsInZ(hitDim[2])
+ iNumberOfCellsInX(hitDim[0]),iNumberOfCellsInY(hitDim[1]),iNumberOfCellsInZ(hitDim[2])
 {
   G4String HCname;
   collectionName.insert(HCname="EddCollection");
@@ -22,13 +22,13 @@ GPTargetSD::~GPTargetSD()
 
 void GPTargetSD::Initialize(G4HCofThisEvent* HCE)
 {
-  CellID.clear();
-  CellID.resize(numberOfCellsInX*numberOfCellsInY*numberOfCellsInZ); 
+  vecIntCellID.clear();
+  vecIntCellID.resize(iNumberOfCellsInX*iNumberOfCellsInY*iNumberOfCellsInZ); 
   EddCollection = new GPTargetHitsCollection
                       (SensitiveDetectorName,collectionName[0]); 
-  G4int size_cell=numberOfCellsInX*numberOfCellsInY*numberOfCellsInZ;
+  G4int size_cell=iNumberOfCellsInX*iNumberOfCellsInY*iNumberOfCellsInZ;
   for(G4int i=0;i<size_cell;i++)
-     {CellID[i] = -1;}
+     {vecIntCellID[i] = -1;}
   verboseLevel = 0;
 }
 
@@ -46,9 +46,9 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
   G4int copyIDinX = ROhist->GetReplicaNumber(2);
   G4int copyIDinY = ROhist->GetReplicaNumber(1);
   G4int copyIDinZ = ROhist->GetReplicaNumber(0);
-  G4int cellIndex=copyIDinZ*numberOfCellsInX*numberOfCellsInY+copyIDinY*numberOfCellsInX+copyIDinX;
+  G4int cellIndex=copyIDinZ*iNumberOfCellsInX*iNumberOfCellsInY+copyIDinY*iNumberOfCellsInX+copyIDinX;
 
-  if (CellID[cellIndex]==-1)
+  if (vecIntCellID[cellIndex]==-1)
   {
     GPTargetHit* calHit = new GPTargetHit (physVol->GetLogicalVolume(),copyIDinX,copyIDinY,copyIDinZ);
     calHit->SetEdep( edep );
@@ -57,15 +57,15 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
     //calHit->SetPos(aTrans.NetTranslation());
     //calHit->SetRot(aTrans.NetRotation());
     G4int icell = EddCollection->insert( calHit );
-    CellID[cellIndex]= icell - 1;
+    vecIntCellID[cellIndex]= icell - 1;
     if(verboseLevel>1)
-    { G4cout << " New Calorimeter Hit on CellID " << copyIDinX << " " << copyIDinY <<" "<<copyIDinZ<< G4endl; }
+    { G4cout << " New Calorimeter Hit on vecIntCellID " << copyIDinX << " " << copyIDinY <<" "<<copyIDinZ<< G4endl; }
   }
   else
   { 
-    (*EddCollection)[CellID[cellIndex]]->AddEdep(edep);
+    (*EddCollection)[vecIntCellID[cellIndex]]->AddEdep(edep);
     if(verboseLevel>1)
-    { G4cout << " Energy added to CellID " << copyIDinX << " " << copyIDinY <<" "<<copyIDinZ<< G4endl; }
+    { G4cout << " Energy added to vecIntCellID " << copyIDinX << " " << copyIDinY <<" "<<copyIDinZ<< G4endl; }
   }
 
   return true;
