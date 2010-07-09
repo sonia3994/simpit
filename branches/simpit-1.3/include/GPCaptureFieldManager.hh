@@ -35,11 +35,13 @@ public:
 	void Init();
 	G4bool	DoesFieldChangeEnergy() const {return false;};
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  	inline void SetFieldValueB0(G4double      t){dB0=t/tesla;G4cout<<"Set capture field dB0 value: "<<dB0<<" tesla."<<G4endl;};
+  	inline void SetFieldValueB0(G4double      t){dB0=t;G4cout<<"Set capture field dB0 value: "<<dB0<<" tesla."<<G4endl;};
   	inline void SetFieldValueAlpha(G4double   t){dAmdAlpha=t;G4cout<<"Set AMD field alpha value: "<<dAmdAlpha<<G4endl;};
   	inline void SetAMDFieldAlpha(G4double     t){dAmdAlpha=t;G4cout<<"Set AMD field alpha value: "<<dAmdAlpha<<G4endl;} ;
   	inline void SetFermiApproximateAlpha(G4double     t){dQwtFermiAlpha=t;G4cout<<"Set QWT fermi approximate field alpha: "<<dQwtFermiAlpha<<G4endl;} ;
   	inline void SetCaptureType(G4int t) {iFieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
+  	inline void SetLithumFocalLength(G4double t) {dFocalLength=t;G4cout<<"Set lithum focal length to: "<<t<<" m"<<G4endl;};
+  	inline void SetMagneticRigidity(G4double t) {dMagneticRigidity=t;G4cout<<"Set Magnetic Rigidity to: "<<t<<" T*m"<<G4endl;};
 
 private:
   	void GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const;
@@ -48,8 +50,6 @@ private:
   	void GetFieldValueQWTAbrupt(const G4double Point[3], G4double *Bfield) const;
   	void GetFieldValueLithium(const G4double Point[3], G4double *Bfield) const;
 
-private:
-	G4ThreeVector	TransformToLocal(G4ThreeVector ) const;
 private:
   	G4double 	dB0;
   	G4double 	dB1;
@@ -70,6 +70,8 @@ private:
 private:
   	G4double 	dMu0;
   	G4double 	dCurrentI;
+  	G4double 	dMagneticRigidity;
+  	G4double 	dFocalLength;
 };
 
 //Field manager
@@ -83,7 +85,7 @@ public:
       
   void Init();
   inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set capture field stepper type: "<<i<<G4endl; };
-  inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set  capture field minmum step: "<<s/mm<<" mm"<<G4endl; };
+  inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set  capture field minmum step: "<<s<<" m"<<G4endl; };
   void UpdateField();
   void SetFieldFlag(G4bool) ;
 

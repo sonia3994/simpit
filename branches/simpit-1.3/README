@@ -8,3 +8,4 @@ $Id: README,v 1.3 2002/07/02 18:35:01 asaim Exp $
                             Simpit
                             ----------
  	Simpit based on Geant4, a simple program simulates positron source for ILC
+	In Simpit 1.4 all units will use standardize to kg, m, s, include implemented classes and methods.

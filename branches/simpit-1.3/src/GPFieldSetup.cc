@@ -115,8 +115,9 @@ G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name)
 void GPFieldSetup::UpdateField()
 {
 	propInField = G4TransportationManager::GetTransportationManager()->GetPropagatorInField();
-	propInField->SetVerboseLevel(0);
+	propInField->SetVerboseLevel(2);
 	propInField->SetMaxLoopCount(1000);
+        G4cout<<"Set G4PropagatorInField"<<G4endl;    
 
 	if(bGlobalFieldFlag)
 	{

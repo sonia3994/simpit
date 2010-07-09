@@ -34,9 +34,9 @@ public:
   	~GPAcceleratorField();
 	void Init();
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  	void SetFieldValueB0(G4double t){dB0=t;};
-  	void SetFieldValueE0(G4double t){dE0=t;};
-  	void SetFieldType(G4int t){iFieldType=t;};
+  	inline void SetFieldValueB0(G4double t){dB0=t;G4cout<<"Set accelerator field  B0: "<<t<<" tesla"<<G4endl;};
+  	inline void SetFieldValueE0(G4double t){dE0=t;G4cout<<"Set accelerator field  E0: "<<t<<" volt/m"<<G4endl;};
+  	inline void SetFieldType(G4int t){iFieldType=t;G4cout<<"Set accelerator field  type: "<<t<<G4endl;};
 	G4bool	DoesFieldChangeEnergy() const {return true;};
 
 protected:
@@ -63,7 +63,7 @@ public:
       
   void Init();
   inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set accelerator field stepper type: "<<i<<G4endl; };
-  inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set accelerator field  minmum step: "<<s/mm<<" mm"<<G4endl; };
+  inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set accelerator field  minmum step: "<<s<<" m"<<G4endl; };
   void UpdateField();
   void SetFieldFlag(G4bool) ;
 

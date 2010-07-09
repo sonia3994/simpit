@@ -13,6 +13,8 @@
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithoutParameter.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4UnitsTable.hh"
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -52,6 +54,21 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   MinStepCmd->SetDefaultUnit("mm");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
+  LithumFocalLengthCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setLithumFocalLength",this);  
+  LithumFocalLengthCmd->SetGuidance("Define lithum focal length step");
+  LithumFocalLengthCmd->SetParameterName("LithumFocalLengthCmd",false,false);
+  LithumFocalLengthCmd->SetDefaultUnit("cm");
+  LithumFocalLengthCmd->AvailableForStates(G4State_Idle);  
+       
+  new G4UnitDefinition("tesla*m","tesla*m","MagneticRigidity",tesla*m);
+  new G4UnitDefinition("gauss*cm","gauss*cm","MagneticRigidity",gauss*cm);
+  MagneticRigidityCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setMagneticRigidity",this);  
+  MagneticRigidityCmd->SetGuidance("Set Magnetic Rigidity.");
+  MagneticRigidityCmd->SetParameterName("MagneticRigidityCmd",false,false);
+  MagneticRigidityCmd->SetDefaultValue(3.3e-2);
+  MagneticRigidityCmd->SetDefaultUnit("tesla*m");
+  MagneticRigidityCmd->AvailableForStates(G4State_Idle); 
+
   AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/setAMDAlpha",this);  
   AMDAlphaCmd->SetGuidance("Define AMD  magnetic field alpha, please transfer to the m unit and don't input unit");
   AMDAlphaCmd->SetParameterName("AMDB0",false,false);
@@ -63,7 +80,7 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   QWTFermiApproxAlphaCmd->SetParameterName("QWTFermiApproxAlphaCmd",false,false);
   QWTFermiApproxAlphaCmd->SetDefaultValue(300);
   QWTFermiApproxAlphaCmd->AvailableForStates(G4State_Idle); 
- 
+
   FieldFlag = new G4UIcmdWithABool("/GP/field/capture/setFieldFlag",this);
   FieldFlag->SetGuidance("Switch capture field.");
   FieldFlag->SetGuidance("This command MUST be applied before \"beamOn\" ");
@@ -89,10 +106,12 @@ GPCaptureFieldMessenger::~GPCaptureFieldMessenger()
   delete MagFieldB0Cmd;
   delete AMDAlphaCmd;
   delete MinStepCmd;
+  delete LithumFocalLengthCmd;
   delete GPdetDir;
   delete UpdateCmd;
   delete FieldFlag; 
   delete QWTFermiApproxAlphaCmd;
+  delete MagneticRigidityCmd;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -118,7 +137,7 @@ void GPCaptureFieldMessenger::SetNewValue( G4UIcommand* command, G4String newVal
 
   if( command == MagFieldB0Cmd )
   { 
-    fieldPoint->SetFieldValueB0(MagFieldB0Cmd->GetNewDoubleValue(newValue));
+    fieldPoint->SetFieldValueB0((MagFieldB0Cmd->GetNewDoubleValue(newValue))/tesla);
   }
 
   if( command == AMDAlphaCmd )
@@ -131,10 +150,21 @@ void GPCaptureFieldMessenger::SetNewValue( G4UIcommand* command, G4String newVal
     fieldPoint->SetFermiApproximateAlpha(QWTFermiApproxAlphaCmd->GetNewDoubleValue(newValue));
   }
 
+  if( command == MagneticRigidityCmd )
+  { 
+    fieldPoint->SetMagneticRigidity((MagneticRigidityCmd->GetNewDoubleValue(newValue))/(tesla*m));
+  }
+
   if( command == MinStepCmd )
   { 
-    fEMfieldManager->SetMinStep(MinStepCmd->GetNewDoubleValue(newValue));
+    fEMfieldManager->SetMinStep((MinStepCmd->GetNewDoubleValue(newValue))/m);
   }
+
+  if( command == LithumFocalLengthCmd )
+  { 
+    fieldPoint->SetLithumFocalLength((LithumFocalLengthCmd->GetNewDoubleValue(newValue))/m);
+  }
+
 
   if( command == FieldFlag )
   { 

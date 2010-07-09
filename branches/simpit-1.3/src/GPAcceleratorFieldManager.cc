@@ -38,10 +38,8 @@ GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()
 {
   	dB0=0;
   	dB1=0.5;
-  	//dB0=0.5*tesla;
   	dE0=0;
   	dE1=15e+6;
-  	//dE0=15e+6*volt/m;
 }
 
 GPAcceleratorField::~GPAcceleratorField()
@@ -132,14 +130,14 @@ GPAcceleratorFieldManager::GPAcceleratorFieldManager()
   	fFieldMessenger = new GPAcceleratorFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fAcceleratorField) ;  
 
-  	dMinStep     = 1e-3*m ; // minimal step of 1 mm is default
-	G4cout<<"The Accelerator field minimal step: "<<dMinStep/mm<<" mm"<<G4endl ;
+  	dMinStep     = 1e-3 ; // minimal step of 1 m is default
+	G4cout<<"The Accelerator field minimal step: "<<dMinStep<<" m"<<G4endl ;
   	iStepperType = 2 ;      // ClassicalRK4 is default stepper
   	bAcceleratorFieldFlag=true;
   	
 	SetStepper();
 	
-	fAcceleratorIntegratorDriver = new G4MagInt_Driver(dMinStep,fAcceleratorStepper,fAcceleratorStepper->GetNumberOfVariables());
+	fAcceleratorIntegratorDriver = new G4MagInt_Driver(dMinStep*m,fAcceleratorStepper,fAcceleratorStepper->GetNumberOfVariables());
 	fAcceleratorChordFinder = new G4ChordFinder(fAcceleratorIntegratorDriver);
 	//fAcceleratorChordFinder = new G4ChordFinder((G4MagneticField*)fAcceleratorField,dMinStep,fAcceleratorStepper);
 	

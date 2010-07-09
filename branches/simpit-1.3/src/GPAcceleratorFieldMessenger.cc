@@ -64,7 +64,7 @@ GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManag
   MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/accelerator/setMinStep",this);  
   MinStepCmd->SetGuidance("Define minimal step");
   MinStepCmd->SetParameterName("MinStep",false,false);
-  MinStepCmd->SetDefaultUnit("mm");
+  MinStepCmd->SetDefaultUnit("m");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
   FieldFlag = new G4UIcmdWithABool("/GP/field/accelerator/setFieldFlag",this);
@@ -114,18 +114,18 @@ void GPAcceleratorFieldMessenger::SetNewValue( G4UIcommand* command, G4String ne
 
   if( command == MagFieldB0Cmd )
   { 
-    fieldPoint->SetFieldValueB0(MagFieldB0Cmd->GetNewDoubleValue(newValue));
+    fieldPoint->SetFieldValueB0((MagFieldB0Cmd->GetNewDoubleValue(newValue))/tesla);
   }
 
   if( command == EleFieldE0Cmd )
   { 
-    fieldPoint->SetFieldValueE0(EleFieldE0Cmd->GetNewDoubleValue(newValue));
+    fieldPoint->SetFieldValueE0((EleFieldE0Cmd->GetNewDoubleValue(newValue))/(volt/m));
   }
 
 
   if( command == MinStepCmd )
   { 
-    fEMfieldManager->SetMinStep(MinStepCmd->GetNewDoubleValue(newValue));
+    fEMfieldManager->SetMinStep((MinStepCmd->GetNewDoubleValue(newValue))/m);
   }
 
   if( command == FieldFlag )

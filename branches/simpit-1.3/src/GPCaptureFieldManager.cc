@@ -34,17 +34,19 @@
 #include <fstream>
 #include <sstream>
 //////////////////////////////////////////////////////////////////////////
+#define MacRightAlign  std::setiosflags(std::ios_base::right)
+#define MacLeftAlign  std::setiosflags(std::ios_base::left)
 GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 {
-	//Change to kg, m, s units now.
-  	//dB0=6*tesla;
+	//Change to kg, m, s, tesla units now.
   	dB0=6;
-  	//dB1=0.5*tesla;
   	dB1=0.5;
 	iFieldType=0;
 	dMu0=12.5664e-7;
 	dCurrentI=150*1000;
 	dQwtFermiAlpha=300;
+  	dMagneticRigidity=3.3e-2;
+  	dFocalLength=0.01;
 }
 
 GPCaptureField::~GPCaptureField()
@@ -67,26 +69,51 @@ void GPCaptureField::Init()
 	dQwtNegaSqrAlpha=(dB0/dB1-1)/(dCapL*dCapL);//unit m^(-2)
   	dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*dCapL)));
   	dQwtFermiCoef0=dB1-0.5*dQwtFermiCoef1;
+  	dCurrentI=1e+6*dCapR*dCapR*dMagneticRigidity/(0.2*dFocalLength*(dCapL-dFocalLength));
 
 	if(iFieldType==0)
 	{
-		G4cout<<"Active AMD, dAmdAlpha: "<<dAmdAlpha<<" m^(-1)"<<G4endl;
+		G4cout<<"\nCapture field Active AMD\n"
+		      <<MacRightAlign<<std::setw(16)<<"Alpha: "<<dAmdAlpha<<" m^(-1)\n"
+	      	      <<MacRightAlign<<std::setw(16)<<"B0: "<<dB0<<" tesla\n"
+	      	      <<MacRightAlign<<std::setw(16)<<"B1: "<<dB1<<" tesla"
+		      <<G4endl;
 	}
 	else if(iFieldType==1)
 	{
-	G4cout<<"Active QWT, dQwtFermiAlpha: "<<dQwtFermiAlpha<<" dQwtFermiCoef0: "<<dQwtFermiCoef0<<" dQwtFermiCoef1: "<<dQwtFermiCoef1<<G4endl;
+		G4cout<<"\nCapture field Active QWT, Fermi Distribution approximation:\n"
+		      <<MacRightAlign<<std::setw(16)<<"Formula: "<<"B=A1+A2/(1+exp(A3*(Z-Z1)))\n"
+		      <<MacRightAlign<<std::setw(16)<<"A1: "<<dQwtFermiCoef0<<" \n"
+		      <<MacRightAlign<<std::setw(16)<<"A2: "<<dQwtFermiCoef1<<" \n"
+		      <<MacRightAlign<<std::setw(16)<<"A3: "<<dQwtFermiAlpha<<" \n"
+		      <<MacRightAlign<<std::setw(16)<<"B0: "<<dB0<<" tesla\n"
+		      <<MacRightAlign<<std::setw(16)<<"B1: "<<dB1<<" tesla"
+		      <<G4endl;
 	}
 	else if(iFieldType==2)
 	{
-	G4cout<<"Active QWT, dQwtNegaSqrAlpha: "<<dQwtNegaSqrAlpha<<" m^(-2)"<<G4endl;
+		G4cout<<"\nCapture field Active QWT, Negative Quadratic approximation:\n"
+		      <<MacRightAlign<<std::setw(16)<<"Alpha: "<<dQwtNegaSqrAlpha<<" m^(-2)\n"
+		      <<MacRightAlign<<std::setw(16)<<"B0: "<<dB0<<" tesla\n"
+		      <<MacRightAlign<<std::setw(16)<<"B1: "<<dB1<<" tesla"
+		      <<G4endl;
 	}
 	else if(iFieldType==3)
 	{
-	G4cout<<"Active QWT,Abrupt field. "<<G4endl;
+		G4cout<<"\nCapture field Active QWT,Abrupt field.\n"
+		      <<MacRightAlign<<std::setw(16)<<"B0: "<<dB0<<" tesla\n"
+		      <<MacRightAlign<<std::setw(16)<<"B1: "<<dB1<<" tesla"
+		      <<G4endl;
 	}
 	else if(iFieldType==4)
 	{
-	G4cout<<"Active Lithium. "<<G4endl;
+		G4cout<<"\nCapture field Active Lithium.\n"
+		      <<MacRightAlign<<std::setw(20)<<"Magnetic Rigidity: "<<dMagneticRigidity<<" tesla*m\n"
+		      <<MacRightAlign<<std::setw(20)<<"Li Lens Length: "<<(dCapL-dFocalLength)<<" m\n"
+		      <<MacRightAlign<<std::setw(20)<<"Capture Radius: "<<dCapR<<" m\n"
+		      <<MacRightAlign<<std::setw(20)<<"Focal Length: "<<dFocalLength<<" m\n"
+		      <<MacRightAlign<<std::setw(20)<<"Current: "<<dCurrentI<<" A\n"
+		      <<G4endl;
 	}
 
 }
@@ -269,11 +296,10 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 	//transfer to international units
 	localX=Point[0]/m;
 	localY=Point[1]/m;
-	localZ=Point[2]/m-dHalfTarL-dHalfCapL;
+	localZ=Point[2]/m-dHalfTarL;
 
     localR2=localX*localX+localY*localY;
 
-	//currentShape=dCurrentI/(1+exp(10*abs(localZ-(dCapL-4)/2)));
     vectCurrent=G4ThreeVector(0,0,dCurrentI);
     vectCurrentUnit=vectCurrent.unit();
 
@@ -284,7 +310,7 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 	magI=vectCurrent.mag();
 	
 //*/
-  	if(localZ>-dHalfCapL&&localZ<=dHalfCapL&&magTP2<=dSqrCapR)
+  	if(localZ>dFocalLength&&localZ<=dCapL&&magTP2<=dSqrCapR)
 	{
 
 		vectorB=vectCurrentUnit.cross(vectHorizonPosUnit)*magI*magTP*dMu0*tesla/(6.2832*dSqrCapR);
@@ -305,12 +331,6 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
   	Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
-G4ThreeVector	GPCaptureField::TransformToLocal(G4ThreeVector global ) const
-{
-	G4ThreeVector local=G4ThreeVector(global[0],global[1],global[2]-dHalfTarL-dHalfCapL); 
-	return local;
-}
-
 //////////////////////////////////////////////////////////////////////////
 //  Constructors:
 
@@ -324,14 +344,14 @@ GPCaptureFieldManager::GPCaptureFieldManager()
   	fFieldMessenger = new GPCaptureFieldMessenger(this) ;  
   	fFieldMessenger->SetFieldPoint(fCaptureField) ;  
 
-  	dMinStep     = 1e-3*m ; // minimal step of 1 mm is default
-	G4cout<<"The capture field minimal step: "<<dMinStep/mm<<" mm"<<G4endl ;
+  	dMinStep     = 1e-3 ; // minimal step of 1 mm is default
+	G4cout<<"The capture field minimal step: "<<dMinStep<<" m"<<G4endl ;
   	iStepperType = 2 ;      // ClassicalRK4 is default stepper
   	bCaptureFieldFlag=true;
   	
 	SetStepper();
 
-	fCaptureIntegratorDriver = new G4MagInt_Driver(dMinStep,fCaptureStepper,fCaptureStepper->GetNumberOfVariables());
+	fCaptureIntegratorDriver = new G4MagInt_Driver(dMinStep*m,fCaptureStepper,fCaptureStepper->GetNumberOfVariables());
 	fCaptureChordFinder = new G4ChordFinder(fCaptureIntegratorDriver);
 	SetChordFinder( fCaptureChordFinder );
 
