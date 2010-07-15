@@ -44,7 +44,7 @@ private:
     const G4VPhysicalVolume* vacuumPhys;
     const G4VPhysicalVolume* acceleratorPhys;
 
-  	G4String 		dParticle;
+  	G4String 		sParticle;
   	std::ofstream 	  ofsWriteFile;
     G4double dTargetL;
     G4double dTargetX;

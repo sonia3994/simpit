@@ -17,6 +17,7 @@
 #include "G4NistManager.hh"
 #include "G4VisAttributes.hh"
 
+#include "G4UserLimits.hh"
 #include "G4ThreeVector.hh"
 #include "G4UIcommand.hh"
 #include "G4FieldManager.hh"
@@ -169,6 +170,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
              captureLog,"capture",worldLog,false,0);
 
   captureLog->SetFieldManager(fieldSetup->GetLocalFieldManager("capture"),true);
+  captureLog->SetUserLimits(new G4UserLimits(1*mm));
 
   //------------------------------ accelerator tube
 
@@ -184,6 +186,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
              acceleratorLog,"accelerator",worldLog,false,0);
 
   acceleratorLog->SetFieldManager(fieldSetup->GetLocalFieldManager("accelerator"),true);
+  acceleratorLog->SetUserLimits(new G4UserLimits(1*mm));
 
 //--------------------------------transportion tube
   tranTube = new G4Tubs("tranTube",m*dTranTubeInnerRadius,
@@ -238,7 +241,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   targetLogVisAtt->SetForceSolid(true);
   targetLog->SetVisAttributes(targetLogVisAtt);
 
-  G4VisAttributes* captureLogVisAtt= new G4VisAttributes(G4Colour(0,1.0,0,0.3));
+  G4VisAttributes* captureLogVisAtt= new G4VisAttributes(G4Colour(0,1.0,1.0,0.3));
   captureLogVisAtt->SetVisibility(true);
   captureLogVisAtt->SetForceSolid(true);
   captureLog->SetVisAttributes(captureLogVisAtt);
