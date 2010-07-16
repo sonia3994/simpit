@@ -19,6 +19,9 @@
 GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
   : fEMfieldSetup(pEMfield)
 { 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPFieldMessenger::GPFieldMessenger(GPFieldSetup*)"<<G4endl;
+#endif
   GPdetDir = new G4UIdirectory("/GP/field/");
   GPdetDir->SetGuidance("Field tracking control.");
 
@@ -48,17 +51,26 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
   UpdateCmd->SetGuidance("if you changed geometrical value(s).");
   UpdateCmd->AvailableForStates(G4State_Idle);
 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPFieldMessenger::GPFieldMessenger(GPFieldSetup*)"<<G4endl;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 GPFieldMessenger::~GPFieldMessenger()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPFieldMessenger::~GPFieldMessenger()"<<G4endl;
+#endif
   delete StepperCmd;
   delete MinStepCmd;
   delete GPdetDir;
   delete UpdateCmd;
   delete FieldFlag; 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPFieldMessenger::~GPFieldMessenger()"<<G4endl;
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////

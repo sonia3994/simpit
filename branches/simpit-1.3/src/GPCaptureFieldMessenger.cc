@@ -21,6 +21,9 @@
 GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield)
   : fEMfieldManager(pEMfield)
 { 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* )"<<G4endl;
+#endif
   GPdetDir = new G4UIdirectory("/GP/field/capture/");
   GPdetDir->SetGuidance("Field tracking control.");
 
@@ -95,12 +98,18 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   UpdateCmd->AvailableForStates(G4State_Idle);
       
 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* )"<<G4endl;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 GPCaptureFieldMessenger::~GPCaptureFieldMessenger()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureFieldMessenger::~GPCaptureFieldMessenger()"<<G4endl;
+#endif
   delete StepperCmd;
   delete CaptureType;
   delete MagFieldB0Cmd;
@@ -112,6 +121,9 @@ GPCaptureFieldMessenger::~GPCaptureFieldMessenger()
   delete FieldFlag; 
   delete QWTFermiApproxAlphaCmd;
   delete MagneticRigidityCmd;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureFieldMessenger::~GPCaptureFieldMessenger()"<<G4endl;
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////

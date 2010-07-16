@@ -38,6 +38,9 @@
 #define MacLeftAlign  std::setiosflags(std::ios_base::left)
 GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureField::GPCaptureField()"<<G4endl;
+#endif
 	//Change to kg, m, s, tesla units now.
   	dB0=6;
   	dB1=0.5;
@@ -47,14 +50,26 @@ GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 	dQwtFermiAlpha=300;
   	dMagneticRigidity=3.3e-2;
   	dFocalLength=0.01;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureField::GPCaptureField()"<<G4endl;
+#endif
 }
 
 GPCaptureField::~GPCaptureField()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureField::~GPCaptureField()"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureField::~GPCaptureField()"<<G4endl;
+#endif
 }
 
 void GPCaptureField::Init()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureField::Init()"<<G4endl;
+#endif
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
 
 	//transfer to international units
@@ -116,6 +131,9 @@ void GPCaptureField::Init()
 		      <<G4endl;
 	}
 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureField::Init()"<<G4endl;
+#endif
 }
 
 
@@ -337,6 +355,9 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 GPCaptureFieldManager::GPCaptureFieldManager()
 :G4FieldManager(), fCaptureChordFinder(0),fCaptureStepper(0)  
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureFieldManager::GPCaptureFieldManager()"<<G4endl;
+#endif
 
   	fCaptureField = new GPCaptureField();
   	fCaptureEquation = new G4EqEMFieldWithSpin(fCaptureField); 
@@ -356,6 +377,9 @@ GPCaptureFieldManager::GPCaptureFieldManager()
 	SetChordFinder( fCaptureChordFinder );
 
   	UpdateField();
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureFieldManager::GPCaptureFieldManager()"<<G4endl;
+#endif
 }
 
 
@@ -363,6 +387,9 @@ GPCaptureFieldManager::GPCaptureFieldManager()
 
 GPCaptureFieldManager::~GPCaptureFieldManager()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureFieldManager::~GPCaptureFieldManager()"<<G4endl;
+#endif
  
   	if(fCaptureField) 		delete fCaptureField;
   	if(fCaptureChordFinder)	delete fCaptureChordFinder;
@@ -372,15 +399,24 @@ GPCaptureFieldManager::~GPCaptureFieldManager()
   	//if(fCaptureIntegratorDriver)		delete fCaptureIntegratorDriver; 
      
   	if(fFieldMessenger)     delete fFieldMessenger;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureFieldManager::~GPCaptureFieldManager()"<<G4endl;
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //
 void GPCaptureFieldManager::Init()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureFieldManager::Init()"<<G4endl;
+#endif
 	UpdateField();
   	fCaptureField->Init();
 	
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureFieldManager::Init()"<<G4endl;
+#endif
 }
 // Update field
 void GPCaptureFieldManager::UpdateField()

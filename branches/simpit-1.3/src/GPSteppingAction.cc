@@ -26,22 +26,37 @@ GPSteppingAction::GPSteppingAction(GPDetectorConstruction* det,
                                          GPEventAction* evt)
 :detector(det), eventAction(evt)					 
 { 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSteppingAction::GPSteppingAction(GPDetectorConstruction*)"<<G4endl;
+#endif
   	sParticle="e+";
   	steppingMessenger = new GPSteppingMessenger(this);
 	verbose=0;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPSteppingAction::GPSteppingAction(GPDetectorConstruction*)"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPSteppingAction::~GPSteppingAction()
 { 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSteppingAction::~GPSteppingAction()"<<G4endl;
+#endif
   	delete 	steppingMessenger;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPSteppingAction::~GPSteppingAction()"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void GPSteppingAction::Init()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSteppingAction::Init()"<<G4endl;
+#endif
 
 	targetPhys = detector->GetTargetPhysical(); 
 	capturePhys = detector->GetCapturePhysical(); 
@@ -57,6 +72,9 @@ void GPSteppingAction::Init()
     dAcceleratorL = detector->GetDetectorSize("accelerator.l");
     dAcceleratorR = detector->GetDetectorSize("accelerator.or");
 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPSteppingAction::Init()"<<G4endl;
+#endif
 }
 
 void GPSteppingAction::UserSteppingAction(const G4Step* aStep)

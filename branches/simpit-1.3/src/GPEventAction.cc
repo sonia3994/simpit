@@ -29,18 +29,33 @@
 GPEventAction::GPEventAction(GPRunAction* run)
 :runAct(run),iPrintModel(1)//,eventMessenger(0)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPEventAction::GPEventAction(GPRunAction* )"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPEventAction::GPEventAction(GPRunAction* )"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPEventAction::~GPEventAction()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPEventAction::~GPEventAction()"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPEventAction::~GPEventAction()"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void GPEventAction::BeginOfEventAction(const G4Event* evt)
 {  
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPEventAction::BeginOfEventAction(const G4Event* )"<<G4endl;
+#endif
   G4int evtNb = evt->GetEventID();
 	iEventID=evtNb;
 //  if (evtNb%iPrintModel == 0) 
@@ -55,12 +70,18 @@ void GPEventAction::BeginOfEventAction(const G4Event* evt)
  dTrackL = 0.;
  iNPositronPerEvt=0;
 // de=0.;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPEventAction::BeginOfEventAction(const G4Event* )"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void GPEventAction::EndOfEventAction(const G4Event* evt)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPEventAction::EndOfEventAction(const G4Event* )"<<G4endl;
+#endif
   //accumulates statistic
   //
   runAct->FillPerEvent(dEnergyTar, dTrackL,iNPositronPerEvt);
@@ -110,6 +131,9 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
   //trj->DrawTrajectory();
   trj->ProcessTrajectory(1);
   }
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPEventAction::EndOfEventAction(const G4Event* )"<<G4endl;
+#endif
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

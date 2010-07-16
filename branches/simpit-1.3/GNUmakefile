@@ -12,14 +12,19 @@ ifndef G4INSTALL
 endif
 
 ifndef GP_DEBUG
- 	GP_DEBUG := 1
+  GP_DEBUG = 1
 endif
 
 .PHONY: all
 all: lib bin
 
 include $(G4INSTALL)/config/binmake.gmk
-G4BINDIR := ./bin/
+
+G4BINDIR = ./bin/
+#G4TMPDIR = ./tmp/
+
+#For debug
+#CPPFLAGS += -DGP_DEBUG
 
 
 

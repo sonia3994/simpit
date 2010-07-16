@@ -14,18 +14,43 @@
 G4Allocator<GPTargetHit> GPTargetHitAllocator;
 
 GPTargetHit::GPTargetHit()
-{pLogV=0;}
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetHit::GPTargetHit()"<<G4endl;
+#endif
+pLogV=0;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetHit::GPTargetHit()"<<G4endl;
+#endif
+}
 
 GPTargetHit::GPTargetHit(G4LogicalVolume* logVol,G4int x,G4int y,G4int z)
 :iXCellID(x),iYCellID(y), iZCellID(z), pLogV(logVol)
-{;}
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetHit::GPTargetHit(G4LogicalVolume*,G4int,G4int,G4int)"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetHit::GPTargetHit(G4LogicalVolume*,G4int,G4int,G4int)"<<G4endl;
+#endif
+}
 
 GPTargetHit::~GPTargetHit()
-{;}
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetHit::~GPTargetHit()"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetHit::~GPTargetHit()"<<G4endl;
+#endif
+}
 
 GPTargetHit::GPTargetHit(const GPTargetHit &right)
   : G4VHit()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetHit::GPTargetHit(const GPTargetHit&)"<<G4endl;
+#endif
   iXCellID = right.iXCellID;
   iYCellID = right.iYCellID;
   iZCellID = right.iZCellID;
@@ -33,6 +58,9 @@ GPTargetHit::GPTargetHit(const GPTargetHit &right)
   vecPos = right.vecPos;
   rot = right.rot;
   pLogV = right.pLogV;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetHit::~GPTargetHit(const GPTargetHit&)"<<G4endl;
+#endif
 }
 
 const GPTargetHit& GPTargetHit::operator=(const GPTargetHit &right)

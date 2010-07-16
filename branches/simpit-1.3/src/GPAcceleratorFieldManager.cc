@@ -36,18 +36,34 @@
 //////////////////////////////////////////////////////////////////////////
 GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorField::GPAcceleratorField()"<<G4endl;
+#endif
   	dB0=0;
   	dB1=0.5;
   	dE0=0;
   	dE1=15e+6;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorField::GPAcceleratorField()"<<G4endl;
+#endif
 }
 
 GPAcceleratorField::~GPAcceleratorField()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorField::~GPAcceleratorField()"<<G4endl;
+#endif
+
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorField::~GPAcceleratorField()"<<G4endl;
+#endif
 }
 
 void GPAcceleratorField::Init()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorField::Init()"<<G4endl;
+#endif
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
   	dTarL=detector->GetDetectorSize("target.z");
   	dCapL=detector->GetDetectorSize("capture.l");
@@ -56,6 +72,9 @@ void GPAcceleratorField::Init()
 
 	dDelta=dAccL/20;
 	
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorField::Init()"<<G4endl;
+#endif
 }
 
 
@@ -117,6 +136,9 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 GPAcceleratorFieldManager::GPAcceleratorFieldManager()
   :G4FieldManager(), fAcceleratorChordFinder(0), fAcceleratorStepper(0)  
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorFieldManager::GPAcceleratorFieldManager()"<<G4endl;
+#endif
 
   	fAcceleratorField = new GPAcceleratorField();
   	fAcceleratorEquation = new G4EqEMFieldWithSpin(fAcceleratorField); 
@@ -139,12 +161,18 @@ GPAcceleratorFieldManager::GPAcceleratorFieldManager()
 	SetChordFinder( fAcceleratorChordFinder );
 
   	UpdateField();
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldManager::GPAcceleratorFieldManager()"<<G4endl;
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 
 GPAcceleratorFieldManager::~GPAcceleratorFieldManager()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorFieldManager::~GPAcceleratorFieldManager()"<<G4endl;
+#endif
   	if(fAcceleratorField) 		delete fAcceleratorField;
   	if(fAcceleratorChordFinder)	delete fAcceleratorChordFinder;
   	if(fAcceleratorStepper)      	delete fAcceleratorStepper;
@@ -153,15 +181,24 @@ GPAcceleratorFieldManager::~GPAcceleratorFieldManager()
   	//if(fAcceleratorIntegratorDriver)		delete fAcceleratorIntegratorDriver; 
      
   	if(fFieldMessenger)     delete fFieldMessenger;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldManager::~GPAcceleratorFieldManager()"<<G4endl;
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //
 void GPAcceleratorFieldManager::Init()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorFieldManager::Init()"<<G4endl;
+#endif
 	UpdateField();
   	fAcceleratorField->Init();
 	
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldManager::Init()"<<G4endl;
+#endif
 }
 /////////////////////////////////////////////////////////////////////////////
 // Update field

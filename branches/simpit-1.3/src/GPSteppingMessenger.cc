@@ -11,6 +11,9 @@ GPSteppingMessenger::GPSteppingMessenger(
                                           GPSteppingAction* GPGun)
 :GPAction(GPGun)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSteppingMessenger::GPSteppingMessenger(GPSteppingAction*)"<<G4endl;
+#endif
   generatorDir = new G4UIdirectory("/GP/stepping/");
   generatorDir->SetGuidance("Stepping control");
    
@@ -58,18 +61,27 @@ GPSteppingMessenger::GPSteppingMessenger(
   parameter -> SetDefaultValue (0.01);
   MomDistrCmd -> SetParameter (parameter);
 */  
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPSteppingMessenger::GPSteppingMessenger(GPSteppingAction*)"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPSteppingMessenger::~GPSteppingMessenger()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSteppingMessenger::~GPSteppingMessenger()"<<G4endl;
+#endif
   delete generatorDir;
   delete selectParCmd;
 //  delete InitNumbCmd;
 //  delete EneDistrCmd;
 // delete PosDistrCmd;
 //  delete MomDistrCmd;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPSteppingMessenger::~GPSteppingMessenger()"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -15,17 +15,35 @@
 GPTargetROGeometry::GPTargetROGeometry()
   : G4VReadOutGeometry()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetROGeometry::GPTargetROGeometry()"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetROGeometry::GPTargetROGeometry()"<<G4endl;
+#endif
 }
 
 
 GPTargetROGeometry:: GPTargetROGeometry(G4String name, G4double x, G4double y, G4double z,std::vector<G4int> n)
   : G4VReadOutGeometry(name), dummyMat(0),dTargetBox_x(x),dTargetBox_y(y),dTargetBox_z(z),iTargetBox_RepX(n[0]),iTargetBox_RepY(n[1]),iTargetBox_RepZ(n[2])
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetROGeometry::GPTargetROGeometry(G4String, G4double, G4double, G4double,std::vector<G4int>)"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetROGeometry::GPTargetROGeometry(G4String, G4double, G4double, G4double,std::vector<G4int>)"<<G4endl;
+#endif
 }
 
 GPTargetROGeometry::~GPTargetROGeometry()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetROGeometry::~GPTargetROGeometry()"<<G4endl;
+#endif
   delete dummyMat;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetROGeometry::~GPTargetROGeometry()"<<G4endl;
+#endif
 }
 
 void GPTargetROGeometry::Init()
@@ -63,6 +81,9 @@ void GPTargetROGeometry::Init()
 
 G4VPhysicalVolume* GPTargetROGeometry::Build()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetROGeometry::Build()"<<G4endl;
+#endif
   Init();
   // A dummy material is used to fill the volumes of the readout geometry.
   // ( It will be allowed to set a NULL pointer in volumes of such virtual
@@ -169,6 +190,9 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
   GPDummySD * dummySensi = new GPDummySD;
   targetROZDivLog->SetSensitiveDetector(dummySensi);
 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetROGeometry::Build()"<<G4endl;
+#endif
   return ROWorldPhys;
   
 }

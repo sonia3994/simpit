@@ -51,6 +51,9 @@ fGlobalStepper(0),
 fGlobalIntegratorDriver(0),
 fFieldMessenger(0)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPFieldSetup::GPFieldSetup()"<<G4endl;
+#endif
 
   	fGlobalMagnetic = new G4UniformMagField( G4ThreeVector(3.3*tesla, 0.0,  0.0));
   	fGlobalEquation = new G4EqEMFieldWithSpin(fGlobalMagnetic); 
@@ -76,6 +79,9 @@ fFieldMessenger(0)
 	//G4cout<<"This is ok: mark 1 "<<G4endl ;
 
   	UpdateField();
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPFieldSetup::GPFieldSetup()"<<G4endl;
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +89,9 @@ fFieldMessenger(0)
 
 GPFieldSetup::~GPFieldSetup()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPFieldSetup::~GPFieldSetup()"<<G4endl;
+#endif
  
   	if(fGlobalMagnetic) 		delete fGlobalMagnetic;
   	if(fGlobalChordFinder)   		delete fGlobalChordFinder;
@@ -90,16 +99,25 @@ GPFieldSetup::~GPFieldSetup()
   	if(fGlobalEquation)			delete fGlobalEquation; 
   	//if(fGlobalIntegratorDriver)		delete fGlobalIntegratorDriver; 
   	if(fFieldMessenger)     delete fFieldMessenger;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPFieldSetup::~GPFieldSetup()"<<G4endl;
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //
 void GPFieldSetup::Init()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPFieldSetup::Init()"<<G4endl;
+#endif
 	UpdateField();
     fCaptureFieldManager->Init();
     fAcceleratorFieldManager->Init();
 	
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPFieldSetup::Init()"<<G4endl;
+#endif
 }
 //
 G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name) 

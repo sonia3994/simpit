@@ -12,8 +12,8 @@
 class GPTrackingAction : public G4UserTrackingAction {
 
   public:
-    GPTrackingAction(){};
-    virtual ~GPTrackingAction(){};
+    GPTrackingAction();
+    virtual ~GPTrackingAction();
    
     virtual void PreUserTrackingAction(const G4Track*);
     virtual void PostUserTrackingAction(const G4Track*);

@@ -29,6 +29,9 @@ GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(
                                           GPPrimaryGeneratorAction* GPGun)
 :GPPrimary(GPGun)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(GPPrimaryGeneratorAction*)"<<G4endl;
+#endif
   G4bool omitable;
   G4UIparameter* parameter;
   generatorDir = new G4UIdirectory("/GP/primary/");
@@ -135,12 +138,18 @@ GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(
   PrintParaCmd = new G4UIcmdWithoutParameter("/GP/primary/printParameters",this);
   PrintParaCmd->SetGuidance("Print primary particle parameters.");
   PrintParaCmd->AvailableForStates(G4State_Idle);     
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(GPPrimaryGeneratorAction*)"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()"<<G4endl;
+#endif
   delete						generatorDir;
   delete						ParStyleCmd;
   delete						InitFileCmd;
@@ -158,6 +167,9 @@ GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()
   delete						MomentumDirectionCmd;
   delete						LengthUnitCmd;
   delete						InputFileRMSFactorCmd;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

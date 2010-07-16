@@ -13,15 +13,32 @@ GPTargetSD::GPTargetSD(G4String name,std::vector<G4int> hitDim)
 :G4VSensitiveDetector(name),
  iNumberOfCellsInX(hitDim[0]),iNumberOfCellsInY(hitDim[1]),iNumberOfCellsInZ(hitDim[2])
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetSD::GPTargetSD(G4String,std::vector<G4int>)"<<G4endl;
+#endif
   G4String HCname;
   collectionName.insert(HCname="EddCollection");
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetSD::GPTargetSD(G4String,std::vector<G4int>)"<<G4endl;
+#endif
 }
 
 GPTargetSD::~GPTargetSD()
-{;}
+{
+
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetSD::~GPTargetSD()"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetSD::~GPTargetSD()"<<G4endl;
+#endif
+}
 
 void GPTargetSD::Initialize(G4HCofThisEvent* HCE)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetSD::Initialize(G4HCofThisEvent*)"<<G4endl;
+#endif
   vecIntCellID.clear();
   vecIntCellID.resize(iNumberOfCellsInX*iNumberOfCellsInY*iNumberOfCellsInZ); 
   EddCollection = new GPTargetHitsCollection
@@ -30,6 +47,9 @@ void GPTargetSD::Initialize(G4HCofThisEvent* HCE)
   for(G4int i=0;i<size_cell;i++)
      {vecIntCellID[i] = -1;}
   verboseLevel = 0;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTargetSD::Initialize(G4HCofThisEvent*)"<<G4endl;
+#endif
 }
 
 G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)

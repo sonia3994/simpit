@@ -41,6 +41,9 @@ GPDetectorConstruction::GPDetectorConstruction()
     worldBox(0),worldLog(0),worldPhys(0),
     fieldSetup(0),targetSD(0),targetRO(0)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::GPDetectorConstruction()"<<G4endl;
+#endif
     dTargetBoxY = 25e-3;
     dTargetBoxX = 25e-3;
     dTargetBoxZ = 6.0e-3;
@@ -116,16 +119,25 @@ GPDetectorConstruction::GPDetectorConstruction()
     SetTranTubeMaterial ("G4_Galactic");
     fieldSetup = new GPFieldSetup();
     detectorMessenger = new GPDetectorMessenger(this);
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::GPDetectorConstruction()"<<G4endl;
+#endif
 
 }
 
 GPDetectorConstruction::~GPDetectorConstruction()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::~GPDetectorConstruction()"<<G4endl;
+#endif
     if(detectorMessenger) 	delete detectorMessenger;
     if(fieldSetup) 			delete fieldSetup;
     if(targetRO) 			delete targetRO;
     if(Vacuum) 				delete Vacuum;
     if(W) 					delete W;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::~GPDetectorConstruction()"<<G4endl;
+#endif
 }
 
 G4VPhysicalVolume* GPDetectorConstruction::Construct()
@@ -135,6 +147,9 @@ G4VPhysicalVolume* GPDetectorConstruction::Construct()
 
 G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::ConstructPositronResource()"<<G4endl;
+#endif
   G4GeometryManager::GetInstance()->OpenGeometry();
   G4PhysicalVolumeStore::GetInstance()->Clean();
   G4LogicalVolumeStore::GetInstance()->Clean();
@@ -275,6 +290,9 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   //
   //always return the physical World
   //
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::ConstructPositronResource()"<<G4endl;
+#endif
 
   return worldPhys;
 }

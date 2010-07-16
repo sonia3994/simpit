@@ -19,6 +19,9 @@
 GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManager* pEMfield)
   : fEMfieldManager(pEMfield)
 { 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManager*)"<<G4endl;
+#endif
   GPdetDir = new G4UIdirectory("/GP/field/accelerator/");
   GPdetDir->SetGuidance("Field tracking control.");
 
@@ -75,12 +78,18 @@ GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManag
   FieldFlag->AvailableForStates(G4State_Idle);
 
 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManager*)"<<G4endl;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 GPAcceleratorFieldMessenger::~GPAcceleratorFieldMessenger()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorFieldMessenger::~GPAcceleratorFieldMessenger()"<<G4endl;
+#endif
   delete StepperCmd;
   delete FieldType;
   delete MagFieldB0Cmd;
@@ -89,6 +98,9 @@ GPAcceleratorFieldMessenger::~GPAcceleratorFieldMessenger()
   delete GPdetDir;
   delete UpdateCmd;
   delete FieldFlag; 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldMessenger::~GPAcceleratorFieldMessenger()"<<G4endl;
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////

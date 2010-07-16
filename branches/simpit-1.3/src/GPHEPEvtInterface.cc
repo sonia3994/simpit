@@ -26,17 +26,32 @@
 extern CLHEP::RanecuEngine ranecuEngine;
 GPHEPEvtInterface::GPHEPEvtInterface():fsInputFile(NULL)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPHEPEvtInterface::GPHEPEvtInterface()"<<G4endl;
+#endif
 	Init();
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPHEPEvtInterface::GPHEPEvtInterface()"<<G4endl;
+#endif
 }
 
 GPHEPEvtInterface::GPHEPEvtInterface(G4String evfile)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPHEPEvtInterface::GPHEPEvtInterface(G4String)"<<G4endl;
+#endif
 	Init();
 	SetInputFile(evfile);
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPHEPEvtInterface::GPHEPEvtInterface(G4String)"<<G4endl;
+#endif
 }
 
 void GPHEPEvtInterface::Init()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPHEPEvtInterface::Init()"<<G4endl;
+#endif
 	dUnitE=MeV;
 	dUnitP=MeV;
 	dUnitL=cm;
@@ -64,12 +79,21 @@ void GPHEPEvtInterface::Init()
 	 }
 	 */
 	
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPHEPEvtInterface::Init()"<<G4endl;
+#endif
 }
 
 GPHEPEvtInterface::~GPHEPEvtInterface()
 {  
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPHEPEvtInterface::~GPHEPEvtInterface()"<<G4endl;
+#endif
 	if(fsInputFile.is_open()) fsInputFile.close();
 	if(fsOutputFile.is_open()) fsOutputFile.close();
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPHEPEvtInterface::~GPHEPEvtInterface()"<<G4endl;
+#endif
 }
 
 void GPHEPEvtInterface::SetInputFile(G4String tmp)

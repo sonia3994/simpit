@@ -22,6 +22,9 @@ GPDetectorMessenger::GPDetectorMessenger(
                                            GPDetectorConstruction* GPDet)
 :GPDetector(GPDet)
 { 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPDetectorMessenger::GPDetectorMessenger(GPDetectorConstruction*)"<<G4endl;
+#endif
   G4bool omitable;
   G4UIparameter* parameter;
   GPDir = new G4UIdirectory("/GP/");
@@ -152,12 +155,18 @@ GPDetectorMessenger::GPDetectorMessenger(
   MagFieldCmd->SetUnitCategory("Magnetic flux density");
   MagFieldCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 */  
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPDetectorMessenger::GPDetectorMessenger(GPDetectorConstruction*)"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPDetectorMessenger::~GPDetectorMessenger()
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPDetectorMessenger::~GPDetectorMessenger()"<<G4endl;
+#endif
 //  delete NbLayersCmd;
   delete TarMaterCmd; 
   delete DetectorSizeCmd; 
@@ -175,6 +184,9 @@ GPDetectorMessenger::~GPDetectorMessenger()
   delete PrintParaCmd;
   delete detDir;
   delete GPDir;  
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPDetectorMessenger::~GPDetectorMessenger()"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

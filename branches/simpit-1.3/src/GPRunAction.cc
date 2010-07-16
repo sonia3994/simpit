@@ -35,6 +35,9 @@ using namespace std;
 GPRunAction::GPRunAction(GPPrimaryGeneratorAction* generator,GPDetectorConstruction* detector)
 :primaryGenerator(generator),mydetector(detector)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPRunAction::GPRunAction(GPPrimaryGeneratorAction* ,GPDetectorConstruction* )"<<G4endl;
+#endif
   time_t time_m=time(0);
   G4String tmpStr;
   tmpStr.insert(0,ctime(&time_m));
@@ -44,17 +47,31 @@ GPRunAction::GPRunAction(GPPrimaryGeneratorAction* generator,GPDetectorConstruct
   sFilePath="../"+tmpStr+"/";
 	G4cout<<"mkdir: "<<sFilePath<<G4endl;  
   mkdir(sFilePath,0755);
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPRunAction::GPRunAction(GPPrimaryGeneratorAction* ,GPDetectorConstruction* )"<<G4endl;
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPRunAction::~GPRunAction()
-{}
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPRunAction::~GPRunAction()"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPRunAction::~GPRunAction()"<<G4endl;
+#endif
+
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 { 
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPRunAction::BeginOfRunAction(const G4Run* )"<<G4endl;
+#endif
 //inform the runManager to save random number seed
   std::pair<std::string,std::ofstream* > pairHandle;
   G4String fileName;
@@ -156,7 +173,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   {vecDouEdd[i]=0;}
   }
 #ifdef GP_DEBUG
-  G4cout<<"Open new output file handls and begin to run."<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPRunAction::BeginOfRunAction(const G4Run* )"<<G4endl;
 #endif
 }
 
@@ -184,6 +201,9 @@ void GPRunAction::AddEddHit(G4int x, G4int y, G4int z, G4double e)
 
 void GPRunAction::EndOfRunAction(const G4Run* aRun)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPRunAction::EndOfRunAction(const G4Run* )"<<G4endl;
+#endif
   G4int NbOfEvents = aRun->GetNumberOfEvent();
   if (NbOfEvents == 0) return;
   
@@ -252,6 +272,9 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 	  ofsEddHandle<<G4endl;
 	  ofsEddHandle.close();
   }
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPRunAction::EndOfRunAction(const G4Run* aRun)"<<G4endl;
+#endif
 }
 
 void GPRunAction::OutPutData(std::string name,std::vector<G4double> value) 
