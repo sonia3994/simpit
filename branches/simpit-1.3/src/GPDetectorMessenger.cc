@@ -38,7 +38,7 @@ GPDetectorMessenger::GPDetectorMessenger(
   TarMaterCmd->SetParameterName("choice",false);
   TarMaterCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  DetectorSizeCmd = new G4UIcmdWithAString("/GP/detector/setDetectorSize",this);
+  DetectorSizeCmd = new G4UIcmdWithAString("/GP/detector/detectorSize",this);
   DetectorSizeCmd->SetGuidance("Set detector size.");
   DetectorSizeCmd->SetGuidance("Format: {name} {value} {unit}");
   DetectorSizeCmd->SetGuidance("For example: setDetectorSize target_l 8 mm");
@@ -131,13 +131,7 @@ GPDetectorMessenger::GPDetectorMessenger(
   SizeWorldZCmd->SetRange("Size>0.");
   SizeWorldZCmd->SetUnitCategory("Length");    
   SizeWorldZCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-/*  
-  NbLayersCmd = new G4UIcmdWithAnInteger("/GP/detector/setNbOfLayers",this);
-  NbLayersCmd->SetGuidance("Set number of layers.");
-  NbLayersCmd->SetParameterName("NbLayers",false);
-  NbLayersCmd->SetRange("NbLayers>0 && NbLayers<500");
-  NbLayersCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-*/
+
   UpdateCmd = new G4UIcmdWithoutParameter("/GP/detector/update",this);
   UpdateCmd->SetGuidance("Update Positron Resource geometry.");
   UpdateCmd->SetGuidance("This command MUST be applied before \"/run/beamOn\" ");
@@ -148,13 +142,6 @@ GPDetectorMessenger::GPDetectorMessenger(
   PrintParaCmd->SetGuidance("Print geometry parameters.");
   PrintParaCmd->AvailableForStates(G4State_Idle);      
 
-/*  MagFieldCmd = new G4UIcmdWithADoubleAndUnit("/GP/detector/setField",this);  
-  MagFieldCmd->SetGuidance("Define magnetic field.");
-  MagFieldCmd->SetGuidance("Magnetic field will be in Z direction.");
-  MagFieldCmd->SetParameterName("Bz",false);
-  MagFieldCmd->SetUnitCategory("Magnetic flux density");
-  MagFieldCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-*/  
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPDetectorMessenger::GPDetectorMessenger(GPDetectorConstruction*)"<<G4endl;
 #endif

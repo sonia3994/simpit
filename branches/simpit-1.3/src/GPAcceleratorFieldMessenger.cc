@@ -25,13 +25,13 @@ GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManag
   GPdetDir = new G4UIdirectory("/GP/field/accelerator/");
   GPdetDir->SetGuidance("Field tracking control.");
 
-  StepperCmd = new G4UIcmdWithAnInteger("/GP/field/accelerator/setStepperType",this);
+  StepperCmd = new G4UIcmdWithAnInteger("/GP/field/accelerator/stepperType",this);
   StepperCmd->SetGuidance("Select stepper type for magnetic field");
   StepperCmd->SetParameterName("StepperType",true);
   StepperCmd->SetDefaultValue(4);
   StepperCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  FieldType = new G4UIcmdWithAnInteger("/GP/field/accelerator/setFieldType",this);
+  FieldType = new G4UIcmdWithAnInteger("/GP/field/accelerator/fieldType",this);
   FieldType->SetGuidance("Select capture type for magnetic field:");
   FieldType->SetGuidance("Unvariable now!");
 /*
@@ -50,27 +50,27 @@ GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManag
   UpdateCmd->SetGuidance("if you changed geometrical value(s).");
   UpdateCmd->AvailableForStates(G4State_Idle);
       
-  MagFieldB0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/accelerator/setFieldB0",this);  
+  MagFieldB0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/accelerator/fieldB0",this);  
   MagFieldB0Cmd->SetGuidance("Define magnetic field B0.");
   MagFieldB0Cmd->SetGuidance("Magnetic field will be in Z direction.");
   MagFieldB0Cmd->SetParameterName("Bz",false,false);
   MagFieldB0Cmd->SetDefaultUnit("tesla");
   MagFieldB0Cmd->AvailableForStates(G4State_Idle); 
  
-  EleFieldE0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/accelerator/setFieldE0",this);  
+  EleFieldE0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/accelerator/fieldE0",this);  
   EleFieldE0Cmd->SetGuidance("Define electric field E0.");
   EleFieldE0Cmd->SetGuidance("electric field will be in Z direction.");
   EleFieldE0Cmd->SetParameterName("Ez",false,false);
   EleFieldE0Cmd->SetDefaultUnit("volt/m");
   EleFieldE0Cmd->AvailableForStates(G4State_Idle); 
  
-  MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/accelerator/setMinStep",this);  
+  MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/accelerator/minStep",this);  
   MinStepCmd->SetGuidance("Define minimal step");
   MinStepCmd->SetParameterName("MinStep",false,false);
   MinStepCmd->SetDefaultUnit("m");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
-  FieldFlag = new G4UIcmdWithABool("/GP/field/accelerator/setFieldFlag",this);
+  FieldFlag = new G4UIcmdWithABool("/GP/field/accelerator/fieldFlag",this);
   FieldFlag->SetGuidance("Switch accelerator field.");
   FieldFlag->SetGuidance("This command MUST be applied before \"beamOn\" ");
   FieldFlag->SetParameterName("FieldFlag",true);

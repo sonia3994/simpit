@@ -27,13 +27,13 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   GPdetDir = new G4UIdirectory("/GP/field/capture/");
   GPdetDir->SetGuidance("Field tracking control.");
 
-  StepperCmd = new G4UIcmdWithAnInteger("/GP/field/capture/setStepperType",this);
+  StepperCmd = new G4UIcmdWithAnInteger("/GP/field/capture/stepperType",this);
   StepperCmd->SetGuidance("Select stepper type for magnetic field");
   StepperCmd->SetParameterName("StepperType",true);
   StepperCmd->SetDefaultValue(4);
   StepperCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  CaptureType = new G4UIcmdWithAnInteger("/GP/field/capture/setFieldType",this);
+  CaptureType = new G4UIcmdWithAnInteger("/GP/field/capture/fieldType",this);
   CaptureType->SetGuidance("Select capture type for magnetic field:");
   CaptureType->SetGuidance("0 AMD");
   CaptureType->SetGuidance("1 Feimi distribution QWT");
@@ -43,21 +43,21 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   CaptureType->SetDefaultValue(0);
   CaptureType->AvailableForStates(G4State_PreInit,G4State_Idle);
  
-  MagFieldB0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setFieldB0",this);  
+  MagFieldB0Cmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/fieldB0",this);  
   MagFieldB0Cmd->SetGuidance("Define magnetic field B0.");
   MagFieldB0Cmd->SetGuidance("Magnetic field will be in Z direction.");
   MagFieldB0Cmd->SetParameterName("Bz",false,false);
   MagFieldB0Cmd->SetDefaultUnit("tesla");
   MagFieldB0Cmd->AvailableForStates(G4State_Idle); 
  
-  MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setMinStep",this);  
+  MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/minStep",this);  
   MinStepCmd->SetGuidance("Define minimal step");
   MinStepCmd->SetGuidance("Magnetic field will be in Z direction.");
   MinStepCmd->SetParameterName("MinStep",false,false);
   MinStepCmd->SetDefaultUnit("mm");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
-  LithumFocalLengthCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setLithumFocalLength",this);  
+  LithumFocalLengthCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/lithumFocalLength",this);  
   LithumFocalLengthCmd->SetGuidance("Define lithum focal length step");
   LithumFocalLengthCmd->SetParameterName("LithumFocalLengthCmd",false,false);
   LithumFocalLengthCmd->SetDefaultUnit("cm");
@@ -65,26 +65,26 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
        
   new G4UnitDefinition("tesla*m","tesla*m","MagneticRigidity",tesla*m);
   new G4UnitDefinition("gauss*cm","gauss*cm","MagneticRigidity",gauss*cm);
-  MagneticRigidityCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/setMagneticRigidity",this);  
+  MagneticRigidityCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/magneticRigidity",this);  
   MagneticRigidityCmd->SetGuidance("Set Magnetic Rigidity.");
   MagneticRigidityCmd->SetParameterName("MagneticRigidityCmd",false,false);
   MagneticRigidityCmd->SetDefaultValue(3.3e-2);
   MagneticRigidityCmd->SetDefaultUnit("tesla*m");
   MagneticRigidityCmd->AvailableForStates(G4State_Idle); 
 
-  AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/setAMDAlpha",this);  
+  AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/AMDAlpha",this);  
   AMDAlphaCmd->SetGuidance("Define AMD  magnetic field alpha, please transfer to the m unit and don't input unit");
   AMDAlphaCmd->SetParameterName("AMDB0",false,false);
   AMDAlphaCmd->SetDefaultValue(0.22);
   AMDAlphaCmd->AvailableForStates(G4State_Idle); 
  
-  QWTFermiApproxAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/setQWTFermiApproxAlpha",this);  
+  QWTFermiApproxAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/QWTFermiApproxAlpha",this);  
   QWTFermiApproxAlphaCmd->SetGuidance("Set QWT Fermi Approximate alpha");
   QWTFermiApproxAlphaCmd->SetParameterName("QWTFermiApproxAlphaCmd",false,false);
   QWTFermiApproxAlphaCmd->SetDefaultValue(300);
   QWTFermiApproxAlphaCmd->AvailableForStates(G4State_Idle); 
 
-  FieldFlag = new G4UIcmdWithABool("/GP/field/capture/setFieldFlag",this);
+  FieldFlag = new G4UIcmdWithABool("/GP/field/capture/fieldFlag",this);
   FieldFlag->SetGuidance("Switch capture field.");
   FieldFlag->SetGuidance("This command MUST be applied before \"beamOn\" ");
   FieldFlag->SetParameterName("FieldFlag",true);

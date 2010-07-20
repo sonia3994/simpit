@@ -78,7 +78,7 @@ fFieldMessenger(0)
 	fGlobalFieldManager->SetChordFinder( fGlobalChordFinder );
 	//G4cout<<"This is ok: mark 1 "<<G4endl ;
 
-  	UpdateField();
+  	//UpdateField();
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPFieldSetup::GPFieldSetup()"<<G4endl;
 #endif
@@ -111,7 +111,7 @@ void GPFieldSetup::Init()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPFieldSetup::Init()"<<G4endl;
 #endif
-	UpdateField();
+    UpdateField();
     fCaptureFieldManager->Init();
     fAcceleratorFieldManager->Init();
 	
@@ -144,6 +144,7 @@ void GPFieldSetup::UpdateField()
 	else
 	{
 		fGlobalFieldManager->SetDetectorField(NULL );
+  		G4cout<<"The Global Field is inactive."<<G4endl;
 	}
 }
 

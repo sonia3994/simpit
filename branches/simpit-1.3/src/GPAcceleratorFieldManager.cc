@@ -71,6 +71,10 @@ void GPAcceleratorField::Init()
   	dAccR=detector->GetDetectorSize("accelerator.or");
 
 	dDelta=dAccL/20;
+	G4cout<<"\nAccelerator field:\n"
+	      <<std::setw(8)<<"B0: "<<dB0<<" tesla\n"
+	      <<std::setw(8)<<"E0: "<<dE0<<" volt/m"
+	      <<G4endl;
 	
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPAcceleratorField::Init()"<<G4endl;
@@ -160,7 +164,7 @@ GPAcceleratorFieldManager::GPAcceleratorFieldManager()
 	
 	SetChordFinder( fAcceleratorChordFinder );
 
-  	UpdateField();
+  	//UpdateField();
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldManager::GPAcceleratorFieldManager()"<<G4endl;
 #endif
@@ -194,8 +198,6 @@ void GPAcceleratorFieldManager::Init()
   G4cout<<"GP_DEBUG: Enter GPAcceleratorFieldManager::Init()"<<G4endl;
 #endif
 	UpdateField();
-  	fAcceleratorField->Init();
-	
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldManager::Init()"<<G4endl;
 #endif
@@ -212,14 +214,16 @@ void GPAcceleratorFieldManager::UpdateField()
 		GetChordFinder()->SetDeltaChord(1e-9*m);
 		SetDeltaIntersection(1e-9*m);
 		SetDeltaOneStep(1e-9*m);
-	    SetMaximumEpsilonStep(1e-6*m); 
+	    	SetMaximumEpsilonStep(1e-6*m); 
 		SetMinimumEpsilonStep(1e-9*m);
 		//*/
+  		fAcceleratorField->Init();
 		
 	}
 	else
 	{
 		SetDetectorField(NULL );
+  		G4cout<<"The Accelerator Field is inactive."<<G4endl;
 	}
 	
 }

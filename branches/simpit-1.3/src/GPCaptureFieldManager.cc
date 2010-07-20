@@ -376,7 +376,7 @@ GPCaptureFieldManager::GPCaptureFieldManager()
 	fCaptureChordFinder = new G4ChordFinder(fCaptureIntegratorDriver);
 	SetChordFinder( fCaptureChordFinder );
 
-  	UpdateField();
+  	//UpdateField();
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPCaptureFieldManager::GPCaptureFieldManager()"<<G4endl;
 #endif
@@ -412,8 +412,6 @@ void GPCaptureFieldManager::Init()
   G4cout<<"GP_DEBUG: Enter GPCaptureFieldManager::Init()"<<G4endl;
 #endif
 	UpdateField();
-  	fCaptureField->Init();
-	
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPCaptureFieldManager::Init()"<<G4endl;
 #endif
@@ -430,13 +428,15 @@ void GPCaptureFieldManager::UpdateField()
 		GetChordFinder()->SetDeltaChord(1e-9*m);
 		SetDeltaIntersection(1e-9*m);
 		SetDeltaOneStep(1e-9*m);
-	    SetMaximumEpsilonStep(1e-6*m); 
+	    	SetMaximumEpsilonStep(1e-6*m); 
 		SetMinimumEpsilonStep(1e-9*m);
 		//*/
+  		fCaptureField->Init();
 	}
 	else
 	{
 		SetDetectorField(NULL );
+  		G4cout<<"The Capture Field is inactive."<<G4endl;
 	}
 	
 	

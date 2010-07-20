@@ -22,13 +22,13 @@ GPSteppingMessenger::GPSteppingMessenger(
   selectParCmd->SetParameterName("choice",false);
   selectParCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-/*  InitNumbCmd = new G4UIcmdWithAnInteger("/GP/primary/setParticleNum",this);
+/*  InitNumbCmd = new G4UIcmdWithAnInteger("/GP/primary/particleNum",this);
   InitNumbCmd->SetGuidance("Set number of particles.");
   InitNumbCmd->SetParameterName("NumParticle",false);
   InitNumbCmd->SetRange("NumParticle>0 && NumParticle<100");
   InitNumbCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
-  EneDistrCmd = new G4UIcommand("/GP/primary/setEnergyDistr", this);
+  EneDistrCmd = new G4UIcommand("/GP/primary/energyDistr", this);
   EneDistrCmd -> SetGuidance ("Set up energy distribution.");
   parameter = new G4UIparameter("mean", 'd', omitable = true);
   parameter -> SetDefaultValue (30.);
@@ -40,7 +40,7 @@ GPSteppingMessenger::GPSteppingMessenger(
   parameter -> SetDefaultValue ("MeV");
   EneDistrCmd -> SetParameter (parameter);
 
-  PosDistrCmd = new G4UIcommand("/GP/primary/setPositionDistr", this);
+  PosDistrCmd = new G4UIcommand("/GP/primary/positionDistr", this);
   PosDistrCmd -> SetGuidance ("Set up position distribution.");
   parameter = new G4UIparameter("mean", 'd', omitable = true);
   parameter -> SetDefaultValue (0.);
@@ -52,7 +52,7 @@ GPSteppingMessenger::GPSteppingMessenger(
   parameter -> SetDefaultValue ("mm");
   PosDistrCmd -> SetParameter (parameter);
 
-  MomDistrCmd = new G4UIcommand("/GP/primary/setMomentumDistr", this);
+  MomDistrCmd = new G4UIcommand("/GP/primary/momentumDistr", this);
   MomDistrCmd -> SetGuidance ("Set up momentum distribution.");
   parameter = new G4UIparameter("mean", 'd', omitable = true);
   parameter -> SetDefaultValue (0.);

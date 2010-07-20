@@ -25,20 +25,20 @@ GPFieldMessenger::GPFieldMessenger(GPFieldSetup* pEMfield)
   GPdetDir = new G4UIdirectory("/GP/field/");
   GPdetDir->SetGuidance("Field tracking control.");
 
-  StepperCmd = new G4UIcmdWithAnInteger("/GP/field/setStepperType",this);
+  StepperCmd = new G4UIcmdWithAnInteger("/GP/field/stepperType",this);
   StepperCmd->SetGuidance("Select stepper type for global  magnetic field");
   StepperCmd->SetParameterName("StepperType",true);
   StepperCmd->SetDefaultValue(4);
   StepperCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
-  MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/setMinStep",this);  
+  MinStepCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/minStep",this);  
   MinStepCmd->SetGuidance("Define minimal step");
   MinStepCmd->SetGuidance("Magnetic field will be in Z direction.");
   MinStepCmd->SetParameterName("MinStep",false,false);
   MinStepCmd->SetDefaultUnit("mm");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
-  FieldFlag = new G4UIcmdWithABool("/GP/field/setFieldFlag",this);
+  FieldFlag = new G4UIcmdWithABool("/GP/field/fieldFlag",this);
   FieldFlag->SetGuidance("Switch global field.");
   FieldFlag->SetGuidance("This command MUST be applied before \"beamOn\" ");
   FieldFlag->SetParameterName("FieldFlag",true);
