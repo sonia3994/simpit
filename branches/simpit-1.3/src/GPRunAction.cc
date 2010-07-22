@@ -16,20 +16,24 @@
 #include "G4FieldManager.hh"
 #include "G4SDManager.hh"
 #include "G4UnitsTable.hh"
+
+#include "boost/filesystem.hpp"
+
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
 
-#include<unistd.h>
-#include<dirent.h>
-#include<sys/types.h>
-#include <sys/stat.h>   //mkdir in this head file
+//#include<unistd.h>
+//#include<dirent.h>
+//#include<sys/types.h>
+//#include <sys/stat.h>   //mkdir in this head file
 
 
 #define MacRightAlign  std::setiosflags(std::ios_base::right)
 #define MacLeftAlign  std::setiosflags(std::ios_base::left)
 using namespace std;
+namespace fs=boost::filesystem;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPRunAction::GPRunAction(GPPrimaryGeneratorAction* generator,GPDetectorConstruction* detector)
@@ -40,13 +44,13 @@ GPRunAction::GPRunAction(GPPrimaryGeneratorAction* generator,GPDetectorConstruct
 #endif
   time_t time_m=time(0);
   G4String tmpStr;
-  tmpStr.insert(0,ctime(&time_m));
+  tmpStr=ctime(&time_m);
   tmpStr.resize(24);
   replace(tmpStr.begin(),tmpStr.end(),' ','-');
-  //replace(tmpStr.begin(),tmpStr.end(),':','-');
   sFilePath="../"+tmpStr+"/";
 	G4cout<<"mkdir: "<<sFilePath<<G4endl;  
-  mkdir(sFilePath,0755);
+  fs::path path(sFilePath);
+  fs::create_directories(path);
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPRunAction::GPRunAction(GPPrimaryGeneratorAction* ,GPDetectorConstruction* )"<<G4endl;
 #endif

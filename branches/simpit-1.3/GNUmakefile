@@ -11,17 +11,15 @@ ifndef G4INSTALL
   G4INSTALL = ../../..
 endif
 
-ifndef GP_DEBUG
-  GP_DEBUG = 1
-endif
-
 .PHONY: all
 all: lib bin
 
 include $(G4INSTALL)/config/binmake.gmk
 
-G4BINDIR = ./bin/
-#G4TMPDIR = ./tmp/
+G4BINDIR = ./bin
+#G4TMPDIR = ./tmp
+
+LDFLAGS += -lboost_filesystem-mt
 
 #For debug
 #CPPFLAGS += -DGP_DEBUG

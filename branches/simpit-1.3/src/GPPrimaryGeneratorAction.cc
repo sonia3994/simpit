@@ -15,8 +15,8 @@
 //#include "globals.hh"
 //#include "Randomize.hh"
 
-#include <sys/types.h>
-#include <unistd.h>
+//#include <sys/types.h>
+//#include <unistd.h>
 
 #include <cmath>
 #include <iomanip>
@@ -41,14 +41,13 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction(GPDetectorConstruction* myDC)
   bFixedParticleGun=true;
   vectMommentumDirection=G4ThreeVector(0,0,1);
 
+  srand(time(0));
   verbose=0;
   iNParticles = 1;
-  G4int index=getpid();
 
-  CLHEP:: HepRandom::setTheSeed(time(0),index);
+  CLHEP:: HepRandom::setTheSeed(rand(),rand());
   randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.);
 //  randFlat=new CLHEP::RandFlat(&ranecuEngine);
-  srand(time(0));
 
   particleGun = new G4ParticleGun(iNParticles);
   primaryMessenger = new GPPrimaryGeneratorMessenger(this);
