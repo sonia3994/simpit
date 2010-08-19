@@ -39,9 +39,9 @@ GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPAcceleratorField::GPAcceleratorField()"<<G4endl;
 #endif
-  	dB0=0;
+  	dB0=0.5;
   	dB1=0.5;
-  	dE0=0;
+  	dE0=15e+6;
   	dE1=15e+6;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPAcceleratorField::GPAcceleratorField()"<<G4endl;

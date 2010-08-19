@@ -3,7 +3,6 @@
 //
 
 #include "GPPrimaryGeneratorAction.hh"
-#include "GPDetectorConstruction.hh"
 #include "GPPrimaryGeneratorMessenger.hh"
 #include "GPHEPEvtInterface.hh"
 
@@ -24,10 +23,10 @@
 #define MacRightAlign  std::setiosflags(std::ios_base::right)
 #define MacLeftAlign  std::setiosflags(std::ios_base::left)
 
-GPPrimaryGeneratorAction::GPPrimaryGeneratorAction(GPDetectorConstruction* myDC):myDetector(myDC)
+GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::GPPrimaryGeneratorAction(GPDetectorConstruction*)"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()"<<G4endl;
 #endif
 
   dPositionMean=0.0e-3;
@@ -65,7 +64,7 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction(GPDetectorConstruction* myDC)
   HEPEvt = new GPHEPEvtInterface();
   bHEPEvtFlag = false;
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::GPPrimaryGeneratorAction(GPDetectorConstruction*)"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()"<<G4endl;
 #endif
 }
 

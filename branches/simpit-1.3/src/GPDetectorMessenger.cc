@@ -40,10 +40,18 @@ GPDetectorMessenger::GPDetectorMessenger(
 
   DetectorSizeCmd = new G4UIcmdWithAString("/GP/detector/detectorSize",this);
   DetectorSizeCmd->SetGuidance("Set detector size.");
-  DetectorSizeCmd->SetGuidance("Format: {name} {value} {unit}");
-  DetectorSizeCmd->SetGuidance("For example: setDetectorSize target_l 8 mm");
+  DetectorSizeCmd->SetGuidance("Usage: {key} {value} {unit}");
+  DetectorSizeCmd->SetGuidance("For example: setDetectorSize target.l 8 mm");
   DetectorSizeCmd->SetParameterName("choice",false);
   DetectorSizeCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  UserLimitsCmd = new G4UIcmdWithAString("/GP/detector/userLimits",this);
+  UserLimitsCmd->SetGuidance("Set detector user limits.");
+  UserLimitsCmd->SetGuidance("Usage: {key} {value} {unit}");
+  UserLimitsCmd->SetGuidance("For example: UserLimits capture.step.max 10 mm");
+  UserLimitsCmd->SetGuidance("Now it's just available for capture.step.max and accelerator.step.max");
+  UserLimitsCmd->SetParameterName("choice",false);
+  UserLimitsCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
   TarThickCmd = new G4UIcmdWithADoubleAndUnit("/GP/detector/targetThickness",this);
   TarThickCmd->SetGuidance("Set Thickness of the Target");
@@ -157,6 +165,7 @@ GPDetectorMessenger::~GPDetectorMessenger()
 //  delete NbLayersCmd;
   delete TarMaterCmd; 
   delete DetectorSizeCmd; 
+  delete UserLimitsCmd; 
   delete TarThickCmd;
   delete TarBoxXYCmd; 
   delete CapLengthCmd; 
@@ -185,6 +194,9 @@ void GPDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
    
   if( command == DetectorSizeCmd )
    { GPDetector->SetDetectorSize(newValue);}
+   
+  if( command == UserLimitsCmd )
+   { GPDetector->SetUserLimits(newValue);}
    
   if( command == TarThickCmd )
    { GPDetector->SetTargetThickness((TarThickCmd->GetNewDoubleValue(newValue))/m);}

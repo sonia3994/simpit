@@ -11,6 +11,11 @@
 
 #include "G4UserRunAction.hh"
 #include "globals.hh"
+
+//#include <boost/filesystem.hpp>            //equal to the following two lines.
+#include <boost/filesystem/operations.hpp>   // includes path.hpp
+#include <boost/filesystem/convenience.hpp>
+
 #include <fstream>
 #include <string>
 #include <utility>
@@ -19,13 +24,10 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
-class GPPrimaryGeneratorAction;
-class GPDetectorConstruction;  
 class GPRunAction : public G4UserRunAction
 {
 public:
-//  GPRunAction();
-  GPRunAction(GPPrimaryGeneratorAction*,GPDetectorConstruction*);
+  GPRunAction();
   virtual ~GPRunAction();
 
   void  BeginOfRunAction(const G4Run*);
@@ -58,8 +60,7 @@ private:
   std::vector<G4int> vecIntEddDim;
   std::map<std::string, std::ofstream* > mapStrOfsOutputHandler;
 
-  GPPrimaryGeneratorAction* primaryGenerator;
-  GPDetectorConstruction*   mydetector;
+  boost::filesystem::path   bfsWorkPath;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

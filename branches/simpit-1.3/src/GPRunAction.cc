@@ -5,6 +5,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "GPRunAction.hh"
+#include "GPTrajectoryAction.hh"
 #include "GPPrimaryGeneratorAction.hh"
 #include "GPDetectorConstruction.hh"
 #include "GPFieldSetup.hh"
@@ -17,7 +18,6 @@
 #include "G4SDManager.hh"
 #include "G4UnitsTable.hh"
 
-#include "boost/filesystem.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -36,23 +36,24 @@ using namespace std;
 namespace fs=boost::filesystem;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-GPRunAction::GPRunAction(GPPrimaryGeneratorAction* generator,GPDetectorConstruction* detector)
-:primaryGenerator(generator),mydetector(detector)
+GPRunAction::GPRunAction()
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPRunAction::GPRunAction(GPPrimaryGeneratorAction* ,GPDetectorConstruction* )"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPRunAction::GPRunAction()"<<G4endl;
 #endif
   time_t time_m=time(0);
   G4String tmpStr;
   tmpStr=ctime(&time_m);
   tmpStr.resize(24);
   replace(tmpStr.begin(),tmpStr.end(),' ','-');
-  sFilePath="../"+tmpStr+"/";
-	G4cout<<"mkdir: "<<sFilePath<<G4endl;  
-  fs::path path(sFilePath);
-  fs::create_directories(path);
+  replace(tmpStr.begin(),tmpStr.end(),':','-');
+  sFilePath="../"+tmpStr;
+	G4cout<<"Create directory: "<<sFilePath<<G4endl;  
+  //fs::path path(sFilePath);
+  bfsWorkPath=fs::path(sFilePath);
+  fs::create_directories(bfsWorkPath);
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPRunAction::GPRunAction(GPPrimaryGeneratorAction* ,GPDetectorConstruction* )"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPRunAction::GPRunAction()"<<G4endl;
 #endif
 }
 
@@ -93,7 +94,13 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
   if(gpSteppingAction) gpSteppingAction->Init();
   G4cout<<"Init SteppingActionn."<<G4endl;
-
+  /*
+  G4VUserDetectorConstruction* g4det=const_cast<G4VUserDetectorConstruction*>
+    (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+  GPDetectorConstruction* mydetector = dynamic_cast<GPDetectorConstruction*>(g4det);
+  */
+  GPDetectorConstruction* mydetector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
+  GPPrimaryGeneratorAction* primaryGenerator=(GPPrimaryGeneratorAction*)G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction();
   GPFieldSetup* gpFieldSetup=(GPFieldSetup*)mydetector->GetFieldSetup();
   if(gpFieldSetup) gpFieldSetup->Init();
   G4cout<<"Init Field."<<G4endl;
@@ -103,22 +110,26 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 
   mapStrOfsOutputHandler.clear();
   fileName=sFilePath +"SumAtExitOfTar.dat";
-  ofsParaFile.open(fileName,ios::ate|ios::app);
+  //ofsParaFile.open(fileName,ios::ate|ios::app);
+  ofsParaFile.open((bfsWorkPath/"SumAtExitOfTar.dat").string().c_str(),ios::ate|ios::app);
 
   fileName=sFilePath+chrunID+"ExitOfTar.dat";
-  ofsDataFileDT = new std::ofstream(fileName);
+  //ofsDataFileDT = new std::ofstream(fileName);
+  ofsDataFileDT = new std::ofstream((bfsWorkPath/(chrunID+"ExitOfTar.dat")).string().c_str());
   pairHandle.first="target";
   pairHandle.second=ofsDataFileDT;
   mapStrOfsOutputHandler.insert(pairHandle);
 
   fileName=sFilePath+chrunID+"ExitOfCap.dat";  
-  ofsDataFileDC = new std::ofstream(fileName);
+  //ofsDataFileDC = new std::ofstream(fileName);
+  ofsDataFileDC = new std::ofstream((bfsWorkPath/(chrunID+"ExitOfCap.dat")).string().c_str());
   pairHandle.first="capture";
   pairHandle.second=ofsDataFileDC;
   mapStrOfsOutputHandler.insert(pairHandle);
 
   fileName=sFilePath+chrunID+"ExitOfAcc.dat";  
-  ofsDataFileAC = new std::ofstream(fileName);
+  //ofsDataFileAC = new std::ofstream(fileName);
+  ofsDataFileAC = new std::ofstream((bfsWorkPath/(chrunID+"ExitOfAcc.dat")).string().c_str());
   pairHandle.first="accelerator";
   pairHandle.second=ofsDataFileAC;
   mapStrOfsOutputHandler.insert(pairHandle);
@@ -127,8 +138,15 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   if(bTargetSDFlag)
   {
   fileName=sFilePath+chrunID+"EddInTar.dat";
-  ofsEddHandle.open(fileName);
+  //ofsEddHandle.open(fileName);
+  ofsEddHandle.open((bfsWorkPath/"EddInTar.dat").string().c_str());
   }
+
+  std::ofstream* ofsTrajectoryHandle = new std::ofstream((bfsWorkPath/(chrunID+"Trajectory.dat")).string().c_str());
+  GPTrajectoryAction::GetGPTrajectoryAction()->SetOfstream(ofsTrajectoryHandle);
+  pairHandle.first="trajectory";
+  pairHandle.second=ofsTrajectoryHandle;
+  mapStrOfsOutputHandler.insert(pairHandle);
 
   G4cout<<"Created output files handlers"<<G4endl;
   mydetector->PrintDetectorParameters();

@@ -21,6 +21,7 @@
 #include "G4PrimaryParticle.hh"
 #include "GPTrackInformation.hh"
 
+#include <cmath>
 G4Allocator<GPTrajectory> GPTrajectoryAllocator;
 
 GPTrajectory::GPTrajectory()
@@ -29,17 +30,20 @@ GPTrajectory::GPTrajectory()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPTrajectory::GPTrajectory()"<<G4endl;
 #endif
-   fpParticleDefinition = 0;
-   sParticleName = "";
-   dPDGCharge = 0;
-   iPDGEncoding = 0;
-   iTrackID = 0;
-   iParentID = 0;
-   iTrackStatus = 0;
-   positionRecord = 0;
-   vecMomentum = G4ThreeVector(0.,0.,0.);
-   vecVertexPosition = G4ThreeVector(0.,0.,0.);
-   dGlobalTime = 0.;
+  fpParticleDefinition = 0;
+  sParticleName = "";
+  dPDGCharge = 0;
+  iPDGEncoding = 0;
+  iTrackID = 0;
+  iParentID = 0;
+  iTrackStatus = 0;
+  positionRecord = 0;
+  vecMomentum = G4ThreeVector(0.,0.,0.);
+  vecVertexPosition = G4ThreeVector(0.,0.,0.);
+  dGlobalTime = 0.;
+  dTrackLength = 0.;
+  dZLength = 0.;
+  vecFullInfor = new std::vector<std::vector<G4double>* >();
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPTrajectory::GPTrajectory()"<<G4endl;
 #endif
@@ -51,39 +55,52 @@ GPTrajectory::GPTrajectory(const G4Track* aTrack)
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPTrajectory::GPTrajectory(const G4Track*)"<<G4endl;
 #endif
-   fpParticleDefinition = aTrack->GetDefinition();
-   sParticleName = fpParticleDefinition->GetParticleName();
-   dPDGCharge = fpParticleDefinition->GetPDGCharge();
-   iPDGEncoding = fpParticleDefinition->GetPDGEncoding();
-   if(sParticleName=="unknown")
-   {
-     G4PrimaryParticle*pp = aTrack->GetDynamicParticle()->GetPrimaryParticle();
-     if(pp)
-     {
-       if(pp->GetCharge()<DBL_MAX) dPDGCharge = pp->GetCharge();
-       iPDGEncoding = pp->GetPDGcode();
-       if(pp->GetG4code()!=0)
-       {
-         sParticleName += " : ";
-         sParticleName += pp->GetG4code()->GetParticleName();
-       }
-     }
-   }
-   iTrackID = aTrack->GetTrackID();
-   GPTrackInformation* trackInfo
-    = (GPTrackInformation*)(aTrack->GetUserInformation());
-   iTrackStatus = trackInfo->GetTrackingStatus();
-   if(iTrackStatus == 1)
-   { iParentID = aTrack->GetParentID(); }
-   else if(iTrackStatus == 2)
-   { iParentID = trackInfo->GetSourceTrackID(); }
-   else
-   { iParentID = -1; }
-   positionRecord = new GPTrajectoryPointContainer();
-   positionRecord->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
-   vecMomentum = aTrack->GetMomentum();
-   vecVertexPosition = aTrack->GetPosition();
-   dGlobalTime = aTrack->GetGlobalTime();
+  fpParticleDefinition = aTrack->GetDefinition();
+  sParticleName = fpParticleDefinition->GetParticleName();
+  dPDGCharge = fpParticleDefinition->GetPDGCharge();
+  iPDGEncoding = fpParticleDefinition->GetPDGEncoding();
+  if(sParticleName=="unknown")
+  {
+    G4PrimaryParticle*pp = aTrack->GetDynamicParticle()->GetPrimaryParticle();
+    if(pp)
+    {
+      if(pp->GetCharge()<DBL_MAX) dPDGCharge = pp->GetCharge();
+      iPDGEncoding = pp->GetPDGcode();
+      if(pp->GetG4code()!=0)
+      {
+        sParticleName += " : ";
+        sParticleName += pp->GetG4code()->GetParticleName();
+      }
+    }
+  }
+  iTrackID = aTrack->GetTrackID();
+  GPTrackInformation* trackInfo
+   = (GPTrackInformation*)(aTrack->GetUserInformation());
+  iTrackStatus = trackInfo->GetTrackingStatus();
+  if(iTrackStatus == 1)
+  { iParentID = aTrack->GetParentID(); }
+  else if(iTrackStatus == 2)
+  { iParentID = trackInfo->GetSourceTrackID(); }
+  else
+  { iParentID = -1; }
+  positionRecord = new GPTrajectoryPointContainer();
+  positionRecord->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
+  vecMomentum = aTrack->GetMomentum();
+  vecVertexPosition = aTrack->GetPosition();
+  dGlobalTime = aTrack->GetGlobalTime();
+  dTrackLength = 0.;
+  dZLength = 0.;
+
+  vecFullInfor = new std::vector<std::vector<G4double>* >();
+  std::vector<G4double>* vecItem = new std::vector<G4double>();
+  vecItem->push_back(dGlobalTime);
+  vecItem->push_back(vecVertexPosition.x());
+  vecItem->push_back(vecVertexPosition.y());
+  vecItem->push_back(vecVertexPosition.z());
+  vecItem->push_back(vecMomentum.x());
+  vecItem->push_back(vecMomentum.y());
+  vecItem->push_back(vecMomentum.z());
+  vecFullInfor->push_back(vecItem);
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPTrajectory::GPTrajectory(const G4Track*)"<<G4endl;
 #endif
@@ -108,9 +125,24 @@ GPTrajectory::GPTrajectory(GPTrajectory & right)
     G4TrajectoryPoint* rightPoint = (G4TrajectoryPoint*)((*(right.positionRecord))[i]);
     positionRecord->push_back(new G4TrajectoryPoint(*rightPoint));
   }
-   vecMomentum = right.vecMomentum;
-   vecVertexPosition = right.vecVertexPosition;
-   dGlobalTime = right.dGlobalTime;
+  vecMomentum = right.vecMomentum;
+  vecVertexPosition = right.vecVertexPosition;
+  dGlobalTime = right.dGlobalTime;
+  dTrackLength = right.dTrackLength;
+  dZLength = right.dZLength ;
+///*
+  vecFullInfor = new std::vector<std::vector<G4double>* >();
+  std::vector<G4double>* vecItem;
+  for(size_t i=0;i<right.vecFullInfor->size();i++)
+  {
+    vecItem = new std::vector<G4double>();
+    for(size_t j=0;j<(*(right.vecFullInfor))[i]->size();j++)
+    {
+      vecItem->push_back((*(*vecFullInfor)[i])[j]);
+    }
+    vecFullInfor->push_back(vecItem);
+  }
+//*/
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPTrajectory::GPTrajectory(GPTrajectory&)"<<G4endl;
 #endif
@@ -126,8 +158,13 @@ GPTrajectory::~GPTrajectory()
     delete  (*positionRecord)[i];
   }
   positionRecord->clear();
-
   delete positionRecord;
+
+   for(size_t i=0;i<vecFullInfor->size();i++)
+   {
+      delete (*vecFullInfor)[i];
+   }
+   delete vecFullInfor;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPTrajectory::~GPTrajectory()"<<G4endl;
 #endif
@@ -144,6 +181,45 @@ void GPTrajectory::ProcessTrajectory(G4int code)
   else if(code==2)
 	return;          //TO DO: Save to disk
 }
+
+G4double GPTrajectory::GetRAtZ(G4double dZValue) const 
+{
+  size_t entries=vecFullInfor->size();
+  if (entries==0) return -1;
+
+  G4double dZLow=(*(*vecFullInfor)[0])[3];
+  G4double dZHigh=(*(*vecFullInfor)[entries-1])[3];
+  if(dZValue<dZLow||dZValue>dZHigh) return -1;
+
+  G4double dXValue;
+  G4double dYValue;
+  size_t iLow;
+  size_t iHigh;
+  size_t iIndex=entries*(dZValue-dZLow)/(dZHigh-dZLow);
+  G4double dCandidate=(*(*vecFullInfor)[iIndex])[3];
+  if(dCandidate<dZValue)
+  {
+    iLow=iIndex;
+    iHigh=entries;
+  }
+  else
+  {
+    iLow=0;
+    iHigh=iIndex;
+  }
+
+  for(size_t i=iLow;i<iHigh;i++)
+  {
+    dCandidate=(*(*vecFullInfor)[i])[3];
+    if(abs(dCandidate-dZValue)<=1)
+    {
+      dXValue=(*(*vecFullInfor)[i])[1];
+      dYValue=(*(*vecFullInfor)[i])[2];
+      return sqrt(dXValue*dXValue+dYValue*dYValue);
+    }
+  }
+  return -1;
+}
 void GPTrajectory::ShowTrajectory(std::ostream& os) const
 {
    os << G4endl << "TrackID =" << iTrackID 
@@ -156,11 +232,23 @@ void GPTrajectory::ShowTrajectory(std::ostream& os) const
         << "  Global time : " << G4BestUnit(dGlobalTime,"Time") << G4endl;
    os << "  Current trajectory has " << positionRecord->size() 
         << " points." << G4endl;
-
-   for( size_t i=0 ; i < positionRecord->size() ; i++){
+/*
+   for( size_t i=0 ; i < positionRecord->size() ; i++)
+   {
        G4TrajectoryPoint* aTrajectoryPoint = (G4TrajectoryPoint*)((*positionRecord)[i]);
        os << "Point[" << i << "]" 
             << " Position= " << aTrajectoryPoint->GetPosition() << G4endl;
+   }
+*/
+   for( size_t i=0 ; i < vecFullInfor->size() ; i++)
+   {
+      std::vector<G4double>* vecItem=(*vecFullInfor)[i];
+      os << "Slide[" << i << "]: ";
+	 for(size_t j=0; j< vecItem->size(); j++) 
+	 {
+            os<<(*vecItem)[j]<<" ";
+	 }
+      os<<G4endl;
    }
 }
 
@@ -291,8 +379,25 @@ std::vector<G4AttValue>* GPTrajectory::CreateAttValues() const
 
 void GPTrajectory::AppendStep(const G4Step* aStep)
 {
-   positionRecord->push_back( new G4TrajectoryPoint(aStep->GetPostStepPoint()->
-                                 GetPosition() ));
+   G4ThreeVector pos=aStep->GetPostStepPoint()->GetPosition();
+   G4ThreeVector mom=aStep->GetPostStepPoint()->GetMomentum();
+   G4double      time=aStep->GetPostStepPoint()->GetGlobalTime();
+
+   dTrackLength += aStep->GetStepLength();
+   G4double dZLengthT =pos.z()-vecVertexPosition.z() ;
+   dZLength = dZLength<dZLengthT ? dZLengthT : dZLength ;
+
+   positionRecord->push_back( new G4TrajectoryPoint(pos));
+   
+   std::vector<G4double>* vecItem = new std::vector<G4double>();
+   vecItem->push_back(time);
+   vecItem->push_back(pos.x());
+   vecItem->push_back(pos.y());
+   vecItem->push_back(pos.z());
+   vecItem->push_back(mom.x());
+   vecItem->push_back(mom.y());
+   vecItem->push_back(mom.z());
+   vecFullInfor->push_back(vecItem);
 }
   
 G4ParticleDefinition* GPTrajectory::GetParticleDefinition()
@@ -316,4 +421,18 @@ void GPTrajectory::MergeTrajectory(G4VTrajectory* secondTrajectory)
 }
 
 
+void GPTrajectory::SaveAs(std::ofstream* os) 
+{
+  size_t entries = vecFullInfor->size(); 
+   *os << iPDGEncoding << " " <<entries<< G4endl;
+   for( size_t i=0 ; i < entries ; i++)
+   {
+      std::vector<G4double>* vecItem=(*vecFullInfor)[i];
+	 for(size_t j=0; j< vecItem->size(); j++) 
+	 {
+            *os<<(*vecItem)[j]<<" ";
+	 }
+      *os<<G4endl;
+   }
+}
 

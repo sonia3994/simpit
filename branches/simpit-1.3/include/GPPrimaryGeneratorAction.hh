@@ -18,7 +18,6 @@
 extern CLHEP::RanecuEngine ranecuEngine;
 
 class GPPrimaryGeneratorMessenger;
-class GPDetectorConstruction;
 //class G4VPrimaryGenerator;
 class GPHEPEvtInterface;
 class G4ParticleGun;
@@ -26,7 +25,7 @@ class G4Event;
 class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
-    GPPrimaryGeneratorAction(GPDetectorConstruction*);
+    GPPrimaryGeneratorAction();
     ~GPPrimaryGeneratorAction();
 
   public:
@@ -83,7 +82,6 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4bool 						bFixedParticleGun;
     G4ParticleGun* 				particleGun;
     GPHEPEvtInterface* 			HEPEvt;
-    GPDetectorConstruction* 	myDetector;
     CLHEP::RandGauss* 			randGauss;
 //    CLHEP::RandFlat*			randFlat;
     GPPrimaryGeneratorMessenger* 	primaryMessenger;

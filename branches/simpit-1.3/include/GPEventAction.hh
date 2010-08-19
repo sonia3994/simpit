@@ -9,13 +9,12 @@
 #ifndef GPEventAction_h
 #define GPEventAction_h 1
 
-#include "G4UserEventAction.hh"
 #include "globals.hh"
 #include "G4ThreeVector.hh"
+#include "G4UserEventAction.hh"
 #include <fstream>
 using namespace std;
 
-class GPRunAction;
 //class GPEventActionMessenger;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -23,7 +22,7 @@ class GPRunAction;
 class GPEventAction : public G4UserEventAction// :public fstream
 {
 public:
-  GPEventAction(GPRunAction*);
+  GPEventAction();
   virtual ~GPEventAction();
 
   void  BeginOfEventAction(const G4Event*);
@@ -35,8 +34,6 @@ public:
   void  AddPositron(G4ThreeVector,G4ThreeVector,G4double);                  
     
 private:
-   GPRunAction*  runAct;
-
    G4double  dEnergyTar;
    G4double  dTrackL;
 //   G4double  de;                  

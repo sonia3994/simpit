@@ -11,9 +11,11 @@
 
 #include "GPRunAction.hh"
 #include "GPTrajectory.hh"
+#include "GPTrajectoryAction.hh"
 
 //#include "GPEventActionMessenger.hh"
 
+#include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4TrajectoryContainer.hh"
 #include "G4VTrajectory.hh"
@@ -26,14 +28,14 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-GPEventAction::GPEventAction(GPRunAction* run)
-:runAct(run),iPrintModel(1)//,eventMessenger(0)
+GPEventAction::GPEventAction()
+:iPrintModel(1)//,eventMessenger(0)
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPEventAction::GPEventAction(GPRunAction* )"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPEventAction::GPEventAction()"<<G4endl;
 #endif
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPEventAction::GPEventAction(GPRunAction* )"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPEventAction::GPEventAction()"<<G4endl;
 #endif
 }
 
@@ -84,6 +86,7 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 #endif
   //accumulates statistic
   //
+  GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
   runAct->FillPerEvent(dEnergyTar, dTrackL,iNPositronPerEvt);
  // PEDD
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
@@ -119,18 +122,7 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 
   //get number of stored trajectories
   G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
-  G4int n_trajectories = 0;
-  if (trajectoryContainer) n_trajectories = trajectoryContainer->entries();
-  //extract the trajectories and print them out
-  //G4cout << G4endl;
-  //G4cout << "Trajectories in tracker --------------------------------------------------------------" << G4endl;
-  for(G4int i=0; i<n_trajectories; i++) 
-  {
-  GPTrajectory* trj = (GPTrajectory*)((*trajectoryContainer)[i]);
-  //trj->ShowTrajectory();
-  //trj->DrawTrajectory();
-  trj->ProcessTrajectory(1);
-  }
+  if (trajectoryContainer) GPTrajectoryAction::GetGPTrajectoryAction()->ProcessTrajectory(trajectoryContainer);
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPEventAction::EndOfEventAction(const G4Event* )"<<G4endl;
 #endif

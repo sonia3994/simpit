@@ -49,13 +49,13 @@ int main(int argc,char** argv)
 
   // set mandatory user action class
   //
-  GPPrimaryGeneratorAction* gen_action = new GPPrimaryGeneratorAction(detector);
+  GPPrimaryGeneratorAction* gen_action = new GPPrimaryGeneratorAction();
   runManager->SetUserAction(gen_action);
 
-  GPRunAction* run_action = new GPRunAction(gen_action,detector);  
+  GPRunAction* run_action = new GPRunAction();  
   runManager->SetUserAction(run_action);
   //
-  GPEventAction* event_action = new GPEventAction(run_action);
+  GPEventAction* event_action = new GPEventAction();
   runManager->SetUserAction(event_action);
   //
   G4UserTrackingAction* tracking_Action= new GPTrackingAction();

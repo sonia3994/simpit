@@ -29,6 +29,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     const G4VPhysicalVolume* GetPhysicalVolume(std::string name) const;
     G4double GetDetectorSize(std::string name) const;
     void SetDetectorSize(std::string str);
+    void SetUserLimits(std::string str);
 
   public:
     inline const G4VPhysicalVolume* GetVacuumPhysical() const        {return worldPhys;};
@@ -92,6 +93,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4double dCaptureTubeLength;
     G4double dCaptureTubeStartAngle;
     G4double dCaptureTubeSpanningAngle;
+    G4double dCaptureStepMax;
 
     G4Material* captureMaterial;
     G4Tubs* captureTube;
@@ -116,6 +118,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4double dAcceleratorTubeLength;
     G4double dAcceleratorTubeStartAngle;
     G4double dAcceleratorTubeSpanningAngle;
+    G4double dAcceleratorStepMax;
 
     G4Material* acceleratorMaterial;
     G4Tubs* acceleratorTube;

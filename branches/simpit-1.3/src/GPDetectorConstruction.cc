@@ -60,6 +60,7 @@ GPDetectorConstruction::GPDetectorConstruction()
     dCaptureTubeStartAngle = 0.0;
     dCaptureTubeSpanningAngle = 360.0;
     dCaptureTubeLength = 500.0e-3;
+    dCaptureStepMax = 1.0e-2;
 
     dTranTubeInnerRadius = 0.0e-3;
     dTranTubeOuterRadius = 20e-3;
@@ -72,6 +73,7 @@ GPDetectorConstruction::GPDetectorConstruction()
     dAcceleratorTubeStartAngle = 0.0;
     dAcceleratorTubeSpanningAngle = 360.0;
     dAcceleratorTubeLength = 1000.0e-3;
+    dAcceleratorStepMax = 1.0e-2;
 
     dWorldX = 500.0e-3;
     dWorldY = 500.0e-3;
@@ -111,7 +113,6 @@ GPDetectorConstruction::GPDetectorConstruction()
     dWorldZ = 10000.0*mm;
     */    
     DefineMaterials();
-    //SetTargetMaterial ("Galactic");
     SetTargetMaterial ("G4_W");
     SetWorldMaterial ("G4_Galactic");
     SetCaptureMaterial ("G4_Galactic");
@@ -185,7 +186,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
              captureLog,"capture",worldLog,false,0);
 
   captureLog->SetFieldManager(fieldSetup->GetLocalFieldManager("capture"),true);
-  captureLog->SetUserLimits(new G4UserLimits(1*mm));
+  captureLog->SetUserLimits(new G4UserLimits(dCaptureStepMax*m));
 
   //------------------------------ accelerator tube
 
@@ -201,7 +202,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
              acceleratorLog,"accelerator",worldLog,false,0);
 
   acceleratorLog->SetFieldManager(fieldSetup->GetLocalFieldManager("accelerator"),true);
-  acceleratorLog->SetUserLimits(new G4UserLimits(1*mm));
+  acceleratorLog->SetUserLimits(new G4UserLimits(dAcceleratorStepMax*m));
 
 //--------------------------------transportion tube
   tranTube = new G4Tubs("tranTube",m*dTranTubeInnerRadius,
@@ -439,8 +440,9 @@ void GPDetectorConstruction::PrintDetectorParameters()
         <<MacRightAlign<<std::setw(24)<<"Target EDD Cell: "<<dTargetCellX<<"*" <<dTargetCellY<<"*"<<dTargetCellZ<<" m^3\n"
         <<MacRightAlign<<std::setw(24)<<"Target Cell number: "<<vectEddDim[0]<<"*"<<vectEddDim[1]<<"*"<<vectEddDim[2]<<"\n"
         <<MacRightAlign<<std::setw(24)<<"Target material: "<< targetMaterial->GetName()<<"\n" 
-        <<MacRightAlign<<std::setw(24)<<"Capture tube: "<<"radius "<<dCaptureTubeOuterRadius <<" m, length "<<dCaptureTubeLength <<" m.\n" 
-        <<MacRightAlign<<std::setw(24)<<"Accelerator tube: "<<"radius "<<dAcceleratorTubeOuterRadius <<" m, length "<<dAcceleratorTubeLength <<" m.\n" 
+        <<MacRightAlign<<std::setw(24)<<"Capture tube: "<<"radius "<<dCaptureTubeOuterRadius <<" m, length "<<dCaptureTubeLength <<" m\n" 
+        <<MacRightAlign<<std::setw(24)<<"capture.step.max: "<<dCaptureStepMax<<" m\n" 
+        <<MacRightAlign<<std::setw(24)<<"accelerator.step.max: "<<dAcceleratorStepMax<<" m\n" 
         << "------------------------------------------------------------\n"
         << G4endl;
 
@@ -465,6 +467,31 @@ const G4VPhysicalVolume* GPDetectorConstruction::GetPhysicalVolume(std::string n
 
 	else return NULL;
 }
+void GPDetectorConstruction::SetUserLimits(std::string str)
+{
+	std::stringstream ss(str);
+	std::string key;
+	double      value;
+	std::string unit;
+	ss>>key>>value>>unit;   
+      	value=(value*G4UIcommand::ValueOf(unit.c_str()))/m;
+	if(key=="capture.step.max")
+	{
+        	dCaptureStepMax = value;
+		G4cout<<"Set "<<key<<" to: "<<value<<" m"<<G4endl;  
+	}
+	else if(key=="accelerator.step.max")
+	{
+        	dAcceleratorStepMax = value;
+		G4cout<<"Set "<<key<<" to: "<<value<<" m"<<G4endl;
+	}
+	else
+	{
+		G4cout<<"The key does't exist: "<<key<<G4endl;
+	}
+
+}
+
 
 G4double GPDetectorConstruction::GetDetectorSize(std::string name) const
 {
