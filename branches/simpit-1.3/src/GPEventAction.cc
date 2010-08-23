@@ -13,7 +13,7 @@
 #include "GPTrajectory.hh"
 #include "GPTrajectoryAction.hh"
 
-//#include "GPEventActionMessenger.hh"
+#include "GPEventActionMessenger.hh"
 
 #include "G4RunManager.hh"
 #include "G4Event.hh"
@@ -29,11 +29,12 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPEventAction::GPEventAction()
-:iPrintModel(1)//,eventMessenger(0)
+:iPrintModel(1)
 {
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPEventAction::GPEventAction()"<<G4endl;
 #endif
+  eventMessenger = new GPEventActionMessenger(this);
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPEventAction::GPEventAction()"<<G4endl;
 #endif
@@ -46,6 +47,7 @@ GPEventAction::~GPEventAction()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPEventAction::~GPEventAction()"<<G4endl;
 #endif
+  if(eventMessenger)    delete eventMessenger;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPEventAction::~GPEventAction()"<<G4endl;
 #endif
@@ -122,7 +124,13 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 
   //get number of stored trajectories
   G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
-  if (trajectoryContainer) GPTrajectoryAction::GetGPTrajectoryAction()->ProcessTrajectory(trajectoryContainer);
+  if (trajectoryContainer) 
+  {
+    if(iTrajectoryFlag==-1)
+    GPTrajectoryAction::GetGPTrajectoryAction()->ProcessTrajectory(trajectoryContainer);
+    else if(evtNb<iTrajectoryFlag)
+    GPTrajectoryAction::GetGPTrajectoryAction()->ProcessTrajectory(trajectoryContainer);
+  }
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPEventAction::EndOfEventAction(const G4Event* )"<<G4endl;
 #endif

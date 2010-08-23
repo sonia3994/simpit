@@ -15,7 +15,7 @@
 #include <fstream>
 using namespace std;
 
-//class GPEventActionMessenger;
+class GPEventActionMessenger;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -32,16 +32,18 @@ public:
   inline void AddTargetED(G4double de) {dEnergyTar+=de;};
   inline void AddTargetStep(G4double TargetStep) {dTrackL+=TargetStep;}; 
   void  AddPositron(G4ThreeVector,G4ThreeVector,G4double);                  
+  void  SetTrajectoryFlag(G4int i){iTrajectoryFlag=i;};                  
     
 private:
    G4double  dEnergyTar;
    G4double  dTrackL;
-//   G4double  de;                  
    G4int     iPrintModel;
    G4int     iNPositronPerEvt;
    G4int     iEventID;
+    //-1, record all trajectories, 0, doesn't record, other positive n, record n events' trajectory.
+   G4int     iTrajectoryFlag;
                              
-//   GPEventActionMessenger*  eventMessenger;
+   GPEventActionMessenger*  eventMessenger;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

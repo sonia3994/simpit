@@ -74,7 +74,7 @@ int main(int argc,char** argv)
   G4UImanager* UI = G4UImanager::GetUIpointer();
   if (argc!=1)
 	{
-	G4String command="/control/execute";
+	G4String command="/control/execute ";
 	G4String fileName=argv[1];
 	UI->ApplyCommand(command+fileName);
 	}
