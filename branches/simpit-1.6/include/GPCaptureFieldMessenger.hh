@@ -44,8 +44,9 @@ class GPCaptureFieldMessenger: public G4UImessenger
     G4UIcmdWithAnInteger*     	 CaptureType;
     G4UIcmdWithADoubleAndUnit*	 MagFieldB0Cmd;
     G4UIcmdWithADoubleAndUnit*	 MinStepCmd;
-    G4UIcmdWithADoubleAndUnit*	 LithumFocalLengthCmd;
+    G4UIcmdWithADoubleAndUnit*	 LithiumFocalLengthCmd;
     G4UIcmdWithADoubleAndUnit*	 MagneticRigidityCmd;
+    G4UIcmdWithADoubleAndUnit*	 LithiumCurrentCmd;
     G4UIcmdWithADouble*	 		 AMDAlphaCmd;
     G4UIcmdWithADouble*	 		 QWTFermiApproxAlphaCmd;
     G4UIcmdWithoutParameter*  	 UpdateCmd;

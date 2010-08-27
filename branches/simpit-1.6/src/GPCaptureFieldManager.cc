@@ -84,7 +84,7 @@ void GPCaptureField::Init()
 	dQwtNegaSqrAlpha=(dB0/dB1-1)/(dCapL*dCapL);//unit m^(-2)
   	dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*dCapL)));
   	dQwtFermiCoef0=dB1-0.5*dQwtFermiCoef1;
-  	dCurrentI=1e+6*dCapR*dCapR*dMagneticRigidity/(0.2*dFocalLength*(dCapL-dFocalLength));
+	//dCurrentI=1e+6*dCapR*dCapR*dMagneticRigidity/(0.2*dFocalLength*(dCapL-dFocalLength));
 
 	if(iFieldType==0)
 	{
@@ -123,7 +123,7 @@ void GPCaptureField::Init()
 	else if(iFieldType==4)
 	{
 		G4cout<<"\nCapture field Active Lithium.\n"
-		      <<MacRightAlign<<std::setw(20)<<"Magnetic Rigidity: "<<dMagneticRigidity<<" tesla*m\n"
+		      //<<MacRightAlign<<std::setw(20)<<"Magnetic Rigidity: "<<dMagneticRigidity<<" tesla*m\n"
 		      <<MacRightAlign<<std::setw(20)<<"Li Lens Length: "<<(dCapL-dFocalLength)<<" m\n"
 		      <<MacRightAlign<<std::setw(20)<<"Capture Radius: "<<dCapR<<" m\n"
 		      <<MacRightAlign<<std::setw(20)<<"Focal Length: "<<dFocalLength<<" m\n"

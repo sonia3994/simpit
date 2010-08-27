@@ -40,8 +40,9 @@ public:
   	inline void SetAMDFieldAlpha(G4double     t){dAmdAlpha=t;G4cout<<"Set AMD field alpha value: "<<dAmdAlpha<<G4endl;} ;
   	inline void SetFermiApproximateAlpha(G4double     t){dQwtFermiAlpha=t;G4cout<<"Set QWT fermi approximate field alpha: "<<dQwtFermiAlpha<<G4endl;} ;
   	inline void SetCaptureType(G4int t) {iFieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
-  	inline void SetLithumFocalLength(G4double t) {dFocalLength=t;G4cout<<"Set lithum focal length to: "<<t<<" m"<<G4endl;};
+  	inline void SetLithiumFocalLength(G4double t) {dFocalLength=t;G4cout<<"Set lithium focal length to: "<<t<<" m"<<G4endl;};
   	inline void SetMagneticRigidity(G4double t) {dMagneticRigidity=t;G4cout<<"Set Magnetic Rigidity to: "<<t<<" T*m"<<G4endl;};
+  	inline void SetLithiumCurrent(G4double t) {dCurrentI=t;G4cout<<"Set Lithium current to: "<<t<<" A"<<G4endl;};
 
 private:
   	void GetFieldValueAMD(const G4double Point[3], G4double *Bfield) const;

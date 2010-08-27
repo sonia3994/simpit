@@ -57,11 +57,11 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   MinStepCmd->SetDefaultUnit("mm");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
-  LithumFocalLengthCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/lithumFocalLength",this);  
-  LithumFocalLengthCmd->SetGuidance("Define lithum focal length step");
-  LithumFocalLengthCmd->SetParameterName("LithumFocalLengthCmd",false,false);
-  LithumFocalLengthCmd->SetDefaultUnit("cm");
-  LithumFocalLengthCmd->AvailableForStates(G4State_Idle);  
+  LithiumFocalLengthCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/lithiumFocalLength",this);  
+  LithiumFocalLengthCmd->SetGuidance("Define lithium focal length step");
+  LithiumFocalLengthCmd->SetParameterName("LithiumFocalLengthCmd",false,false);
+  LithiumFocalLengthCmd->SetDefaultUnit("cm");
+  LithiumFocalLengthCmd->AvailableForStates(G4State_Idle);  
        
   new G4UnitDefinition("tesla*m","tesla*m","MagneticRigidity",tesla*m);
   new G4UnitDefinition("gauss*cm","gauss*cm","MagneticRigidity",gauss*cm);
@@ -71,6 +71,13 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   MagneticRigidityCmd->SetDefaultValue(3.3e-2);
   MagneticRigidityCmd->SetDefaultUnit("tesla*m");
   MagneticRigidityCmd->AvailableForStates(G4State_Idle); 
+
+  LithiumCurrentCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/lithiumCurrent",this);  
+  LithiumCurrentCmd->SetGuidance("Set lithium current.");
+  LithiumCurrentCmd->SetParameterName("LithiumCurrentCmd",false,false);
+  LithiumCurrentCmd->SetDefaultValue(165000);
+  LithiumCurrentCmd->SetDefaultUnit("ampere");
+  LithiumCurrentCmd->AvailableForStates(G4State_Idle); 
 
   AMDAlphaCmd = new G4UIcmdWithADouble("/GP/field/capture/AMDAlpha",this);  
   AMDAlphaCmd->SetGuidance("Define AMD  magnetic field alpha, please transfer to the m unit and don't input unit");
@@ -115,12 +122,13 @@ GPCaptureFieldMessenger::~GPCaptureFieldMessenger()
   delete MagFieldB0Cmd;
   delete AMDAlphaCmd;
   delete MinStepCmd;
-  delete LithumFocalLengthCmd;
+  delete LithiumFocalLengthCmd;
   delete GPdetDir;
   delete UpdateCmd;
   delete FieldFlag; 
   delete QWTFermiApproxAlphaCmd;
   delete MagneticRigidityCmd;
+  delete LithiumCurrentCmd;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPCaptureFieldMessenger::~GPCaptureFieldMessenger()"<<G4endl;
 #endif
@@ -167,14 +175,19 @@ void GPCaptureFieldMessenger::SetNewValue( G4UIcommand* command, G4String newVal
     fieldPoint->SetMagneticRigidity((MagneticRigidityCmd->GetNewDoubleValue(newValue))/(tesla*m));
   }
 
+  if( command == LithiumCurrentCmd )
+  { 
+    fieldPoint->SetLithiumCurrent((LithiumCurrentCmd->GetNewDoubleValue(newValue))/ampere);
+  }
+
   if( command == MinStepCmd )
   { 
     fEMfieldManager->SetMinStep((MinStepCmd->GetNewDoubleValue(newValue))/m);
   }
 
-  if( command == LithumFocalLengthCmd )
+  if( command == LithiumFocalLengthCmd )
   { 
-    fieldPoint->SetLithumFocalLength((LithumFocalLengthCmd->GetNewDoubleValue(newValue))/m);
+    fieldPoint->SetLithiumFocalLength((LithiumFocalLengthCmd->GetNewDoubleValue(newValue))/m);
   }
 
 
