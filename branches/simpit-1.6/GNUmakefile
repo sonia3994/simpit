@@ -19,7 +19,7 @@ include $(G4INSTALL)/config/binmake.gmk
 G4BINDIR = ./bin
 #G4TMPDIR = ./tmp
 
-LDFLAGS += -lboost_filesystem
+LDFLAGS += -lboost_filesystem -lboost_system
 #LDFLAGS += -lboost_filesystem-mt
 
 #For debug

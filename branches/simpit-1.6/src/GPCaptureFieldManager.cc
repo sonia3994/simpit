@@ -49,7 +49,6 @@ GPCaptureField::GPCaptureField():G4ElectroMagneticField()
 	dCurrentI=150*1000;
 	dQwtFermiAlpha=300;
   	dMagneticRigidity=3.3e-2;
-  	dFocalLength=0.01;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPCaptureField::GPCaptureField()"<<G4endl;
 #endif
@@ -73,18 +72,21 @@ void GPCaptureField::Init()
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
 
 	//transfer to international units
-  	dTarL=detector->GetDetectorSize("target.z");
-  	dCapL=detector->GetDetectorSize("capture.l");
-  	dCapR=detector->GetDetectorSize("capture.or");
+  	dTargetL=detector->GetDetectorSize("target.z");
+  	dCaptureL=detector->GetDetectorSize("capture.l");
+  	dCaptureR=detector->GetDetectorSize("capture.or");
+	dCaptureLithiumL=detector->GetDetectorSize("capture.lithium.l");
+	dCaptureLithiumR=detector->GetDetectorSize("capture.lithium.or");
+	iFieldType=detector->GetCaptureType();
 
-   	dSqrCapR=dCapR*dCapR;
-	dHalfTarL=dTarL/2;
-	dHalfCapL=dCapL/2;
-  	dAmdAlpha=(dB0/dB1-1)/(dCapL); //unit m^(-1)
-	dQwtNegaSqrAlpha=(dB0/dB1-1)/(dCapL*dCapL);//unit m^(-2)
-  	dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*dCapL)));
+   	dSqrCapR=dCaptureR*dCaptureR;
+	dHalfTarL=dTargetL/2;
+	dHalfCapL=dCaptureL/2;
+  	dAmdAlpha=(dB0/dB1-1)/(dCaptureL); //unit m^(-1)
+	dQwtNegaSqrAlpha=(dB0/dB1-1)/(dCaptureL*dCaptureL);//unit m^(-2)
+  	dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*dCaptureL)));
   	dQwtFermiCoef0=dB1-0.5*dQwtFermiCoef1;
-	//dCurrentI=1e+6*dCapR*dCapR*dMagneticRigidity/(0.2*dFocalLength*(dCapL-dFocalLength));
+	dFocalLength=dCaptureL-dCaptureLithiumL;
 
 	if(iFieldType==0)
 	{
@@ -123,11 +125,12 @@ void GPCaptureField::Init()
 	else if(iFieldType==4)
 	{
 		G4cout<<"\nCapture field Active Lithium.\n"
-		      //<<MacRightAlign<<std::setw(20)<<"Magnetic Rigidity: "<<dMagneticRigidity<<" tesla*m\n"
-		      <<MacRightAlign<<std::setw(20)<<"Li Lens Length: "<<(dCapL-dFocalLength)<<" m\n"
-		      <<MacRightAlign<<std::setw(20)<<"Capture Radius: "<<dCapR<<" m\n"
-		      <<MacRightAlign<<std::setw(20)<<"Focal Length: "<<dFocalLength<<" m\n"
-		      <<MacRightAlign<<std::setw(20)<<"Current: "<<dCurrentI<<" A\n"
+		      <<MacRightAlign<<std::setw(24)<<"Capture length: "<<dCaptureL<<" m\n"
+		      <<MacRightAlign<<std::setw(24)<<"Capture radius: "<<dCaptureR<<" m\n"
+		      <<MacRightAlign<<std::setw(24)<<"Lithium lens length: "<<dCaptureLithiumL<<" m\n"
+		      <<MacRightAlign<<std::setw(24)<<"Lithium lens radius: "<<dCaptureLithiumR<<" m\n"
+		      <<MacRightAlign<<std::setw(24)<<"Focal length: "<<dFocalLength<<" m\n"
+		      <<MacRightAlign<<std::setw(24)<<"Current: "<<dCurrentI<<" A\n"
 		      <<G4endl;
 	}
 
@@ -177,7 +180,7 @@ void GPCaptureField::GetFieldValueAMD(const G4double Point[3], G4double *Bfield)
 
     localR2=localX*localX+localY*localY;
 
-  	if(localZ>0&&localZ<=dCapL&&localR2<=dSqrCapR)
+  	if(localZ>0&&localZ<=dCaptureL&&localR2<=dSqrCapR)
   	{
 		fz=1/(1+dAmdAlpha*localZ);
 		fz2=fz*fz;
@@ -214,9 +217,9 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
 	localZ=Point[2]/m-dHalfTarL;
     localR2=localX*localX+localY*localY;
 
-  	if(localZ>0&&localZ<=dCapL&&localR2<=dSqrCapR)
+  	if(localZ>0&&localZ<=dCaptureL&&localR2<=dSqrCapR)
 	{
-		dPublic0=exp(dQwtFermiAlpha*(localZ-dCapL));
+		dPublic0=exp(dQwtFermiAlpha*(localZ-dCaptureL));
 		dPublic1=dQwtFermiCoef0+dQwtFermiCoef1/(1+dPublic0);
 
 		//Add the magnetic unit "tesla" when transfer to kernel.
@@ -249,7 +252,7 @@ void GPCaptureField::GetFieldValueQWTNegativeSqr(const G4double Point[3], G4doub
     localR2=localX*localX+localY*localY;
 
 
-  	if(localZ>0&&localZ<=dCapL&&localR2<=dSqrCapR)
+  	if(localZ>0&&localZ<=dCaptureL&&localR2<=dSqrCapR)
 	{
 		feiMi=1/(1+dQwtNegaSqrAlpha*localZ*localZ);
   		Bfield[0]=localX*dQwtNegaSqrAlpha*localZ*feiMi*feiMi*dB0*tesla;
@@ -278,7 +281,7 @@ void GPCaptureField::GetFieldValueQWTAbrupt(const G4double Point[3], G4double *B
 	localZ=Point[2]/m-dHalfTarL;
 
     localR2=localX*localX+localY*localY;
-  	if(localZ>0&&localZ<=dCapL&&localR2<=dSqrCapR)
+  	if(localZ>0&&localZ<=dCaptureL&&localR2<=dSqrCapR)
 	{
   		Bfield[0]=0;
   		Bfield[1]=0;
@@ -328,10 +331,10 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
 	magI=vectCurrent.mag();
 	
 //*/
-  	if(localZ>dFocalLength&&localZ<=dCapL&&magTP2<=dSqrCapR)
+  	if(localZ>dFocalLength&&localZ<=dCaptureL&&magTP2<=dCaptureLithiumR*dCaptureLithiumR)
 	{
 
-		vectorB=vectCurrentUnit.cross(vectHorizonPosUnit)*magI*magTP*dMu0*tesla/(6.2832*dSqrCapR);
+		vectorB=vectCurrentUnit.cross(vectHorizonPosUnit)*magI*magTP*dMu0*tesla/(6.2832*dCaptureLithiumR*dCaptureLithiumR);
 		Bfield[0]=vectorB.x();
 		Bfield[1]=vectorB.y();
 		Bfield[2]=vectorB.z();

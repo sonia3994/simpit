@@ -7,6 +7,8 @@
 #include "GPTargetSD.hh"
 #include "GPDetectorMessenger.hh"
 #include "GPFieldSetup.hh"
+#include "GPCaptureFieldManager.hh"
+
 
 #include "G4Box.hh"
 #include "G4Tubs.hh"
@@ -61,9 +63,9 @@ GPDetectorConstruction::GPDetectorConstruction()
     dCaptureTubeSpanningAngle = 360.0;
     dCaptureTubeLength = 500.0e-3;
     dCaptureStepMax = 1.0e-2;
-	dLithiumTubeLength=1.0e-2;
-	dLithiumTubeOuterRadius=1.0-2;
-	bLithiumFlag=TRUE;
+    dLithiumTubeLength=1.0e-2;
+    dLithiumTubeOuterRadius=1.0e-2;
+    iCaptureType=0;
 
     dTranTubeInnerRadius = 0.0e-3;
     dTranTubeOuterRadius = 20e-3;
@@ -81,40 +83,7 @@ GPDetectorConstruction::GPDetectorConstruction()
     dWorldX = 500.0e-3;
     dWorldY = 500.0e-3;
     dWorldZ = 10000.0e-3;
-    /*
-    dTargetBoxY = 25*mm;
-    dTargetBoxX = 25*mm;
-    dTargetBoxZ = 6.0*mm;
 
-    dTargetCellX=0.5*mm;
-    dTargetCellY=0.5*mm;
-    dTargetCellZ=1*mm;
-    vectEddDim.push_back(ceil(dTargetBoxX/dTargetCellX));
-    vectEddDim.push_back(ceil(dTargetBoxY/dTargetCellY));
-    vectEddDim.push_back(ceil(dTargetBoxZ/dTargetCellZ));
-
-    dCaptureTubeInnerRadius = 0.*mm;
-    dCaptureTubeOuterRadius = 20*mm;
-    dCaptureTubeStartAngle = 0.*deg;
-    dCaptureTubeSpanningAngle = 360.*deg;
-    dCaptureTubeLength = 500.0*mm;
-
-    dTranTubeInnerRadius = 0.*mm;
-    dTranTubeOuterRadius = 20*mm;
-    dTranTubeStartAngle = 0.*deg;
-    dTranTubeSpanningAngle = 360.*deg;
-    dTranTubeLength =4500.0*mm;
-
-    dAcceleratorTubeInnerRadius = 0.*mm;
-    dAcceleratorTubeOuterRadius = 20*mm;
-    dAcceleratorTubeStartAngle = 0.*deg;
-    dAcceleratorTubeSpanningAngle = 360.*deg;
-    dAcceleratorTubeLength = 1000.0*mm;
-
-    dWorldX = 500.0*mm;
-    dWorldY = 500.0*mm;
-    dWorldZ = 10000.0*mm;
-    */    
     DefineMaterials();
     SetTargetMaterial ("G4_W");
     SetWorldMaterial ("G4_Galactic");
@@ -181,7 +150,6 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
 					m*dCaptureTubeOuterRadius,m*dCaptureTubeLength/2.0,
                                     deg*dCaptureTubeStartAngle,deg*dCaptureTubeSpanningAngle);
   captureLog = new G4LogicalVolume(captureTube,captureMaterial,"captureLog");
-  if(bLithiumFlag) SetLithiumLens();
   G4double capturePos_x = 0.0;
   G4double capturePos_y = 0.0;
   G4double capturePos_z = (dTargetBoxZ+dCaptureTubeLength)/2;
@@ -192,6 +160,10 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   captureLog->SetFieldManager(fieldSetup->GetLocalFieldManager("capture"),true);
   captureLog->SetUserLimits(new G4UserLimits(dCaptureStepMax*m));
 
+  if(iCaptureType==4) 
+  {
+    SetLithiumLens(dLithiumTubeLength,dLithiumTubeOuterRadius);
+  }
   //------------------------------ accelerator tube
 
   acceleratorTube = new G4Tubs("acceleratorTube",m*dAcceleratorTubeInnerRadius,
@@ -270,27 +242,6 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   acceleratorLogVisAtt->SetVisibility(true);
   acceleratorLogVisAtt->SetForceSolid(true);
   acceleratorLog->SetVisAttributes(acceleratorLogVisAtt);
- /*
-  // Below are vis attributes that permits someone to test / play 
-  // with the interactive expansion / contraction geometry system of the
-  // vis/OpenInventor driver :
- {G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0.0));
-  simpleBoxVisAtt->SetVisibility(true);
-  delete logicCalor->GetVisAttributes();
-  logicCalor->SetVisAttributes(simpleBoxVisAtt);}
-
- {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,0.0,0.0));
-  logicLayer->SetVisAttributes(atb);}
-  
- {G4VisAttributes* atb= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
-  atb->SetForceSolid(true);
-  logicAbsorber->SetVisAttributes(atb);}
-  
- {//Set opacity = 0.2 then transparency = 1 - 0.2 = 0.8
-  G4VisAttributes* atb= new G4VisAttributes(G4Colour(0.0,0.0,1.0,0.2));
-  atb->SetForceSolid(true);
-  logicGap->SetVisAttributes(atb);}
-  */
 
   //
   //always return the physical World
@@ -636,7 +587,7 @@ void GPDetectorConstruction::SetLithiumLens(G4double dLength,G4double dOuterRadi
   G4double dLithiumTubeSpanningAngle=dSpanningAngle;
   G4double lithiumPos_x = 0.0;
   G4double lithiumPos_y = 0.0;
-  G4double lithiumPos_z = (dCaptureTubeLength-dLithiumTubeLength)/2;
+  G4double lithiumPos_z = (dCaptureTubeLength-dLithiumTubeLength)/2-0.1e-3;
 
   G4String sLithiumMaterial="G4_Li";
 
@@ -664,4 +615,9 @@ void GPDetectorConstruction::SetLithiumLens(G4double dLength,G4double dOuterRadi
   lithiumLogVisAtt->SetForceSolid(true);
   lithiumLog->SetVisAttributes(lithiumLogVisAtt);
 
+}
+void GPDetectorConstruction::SetCaptureType(G4int i)
+{
+  iCaptureType=i;
+  G4cout<<"Set capture type to:"<<i<<G4endl;
 }

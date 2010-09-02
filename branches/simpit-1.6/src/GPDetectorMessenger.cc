@@ -33,6 +33,16 @@ GPDetectorMessenger::GPDetectorMessenger(
   detDir = new G4UIdirectory("/GP/detector/");
   detDir->SetGuidance("detector control");
        
+  CaptureType = new G4UIcmdWithAnInteger("/GP/detector/captureType",this);
+  CaptureType->SetGuidance("Select capture type for magnetic field:");
+  CaptureType->SetGuidance("0 AMD");
+  CaptureType->SetGuidance("1 Feimi distribution QWT");
+  CaptureType->SetGuidance("2 Negative sqr QWT");
+  CaptureType->SetGuidance("3 Abrutp QWT");
+  CaptureType->SetParameterName("CaptureType",true);
+  CaptureType->SetDefaultValue(0);
+  CaptureType->AvailableForStates(G4State_PreInit,G4State_Idle);
+
   TarMaterCmd = new G4UIcmdWithAString("/GP/detector/targerMaterial",this);
   TarMaterCmd->SetGuidance("Set Material of the Target.");
   TarMaterCmd->SetParameterName("choice",false);
@@ -163,6 +173,7 @@ GPDetectorMessenger::~GPDetectorMessenger()
   G4cout<<"GP_DEBUG: Enter GPDetectorMessenger::~GPDetectorMessenger()"<<G4endl;
 #endif
 //  delete NbLayersCmd;
+  delete CaptureType;
   delete TarMaterCmd; 
   delete DetectorSizeCmd; 
   delete UserLimitsCmd; 
@@ -198,6 +209,11 @@ void GPDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   if( command == UserLimitsCmd )
    { GPDetector->SetUserLimits(newValue);}
    
+  if( command == CaptureType )
+  { 
+    GPDetector->SetCaptureType(CaptureType->GetNewIntValue(newValue));
+  }  
+
   if( command == TarThickCmd )
    { GPDetector->SetTargetThickness((TarThickCmd->GetNewDoubleValue(newValue))/m);}
 

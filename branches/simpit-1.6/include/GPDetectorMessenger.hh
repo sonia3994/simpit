@@ -35,6 +35,7 @@ class GPDetectorMessenger: public G4UImessenger
     
     G4UIdirectory*					GPDir;
     G4UIdirectory*					detDir;
+    G4UIcmdWithAnInteger*     	 CaptureType;
     G4UIcmdWithAString*				TarMaterCmd;
     G4UIcmdWithAString*				DetectorSizeCmd;
     G4UIcmdWithAString*				UserLimitsCmd;

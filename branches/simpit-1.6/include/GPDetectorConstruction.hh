@@ -48,6 +48,8 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     void SetWorldSizeX(G4double);
     void SetWorldSizeY(G4double);
     void SetWorldSizeZ(G4double);
+    void SetCaptureType(G4int);
+    
     inline G4double GetTargetThickness()	const	{return dTargetBoxZ;};
     inline G4double GetTargetXY()		const	{return dTargetBoxX;};
     inline G4double GetTargetX()		const	{return dTargetBoxX;};
@@ -59,6 +61,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     inline G4double GetWorldSizeY()          	const	{return dWorldY;};
     inline G4double GetWorldSizeZ()           	const	{return dWorldZ;};
     inline std::vector<G4int> GetEddDim()           	const	{return vectEddDim;};
+    inline G4int GetCaptureType()           	const	{return iCaptureType;};
 
     void SetTargetMaterial (G4String);
     void SetWorldMaterial (G4String);
@@ -95,9 +98,9 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4double dCaptureTubeStartAngle;
     G4double dCaptureTubeSpanningAngle;
     G4double dCaptureStepMax;
-  	G4double dLithiumTubeLength;
-  	G4double dLithiumTubeOuterRadius;
-    G4bool   bLithiumFlag;
+    G4double dLithiumTubeLength;
+    G4double dLithiumTubeOuterRadius;
+    G4int iCaptureType;
 
     G4Material* captureMaterial;
     G4Tubs* captureTube;

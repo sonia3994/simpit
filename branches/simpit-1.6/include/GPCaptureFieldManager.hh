@@ -59,11 +59,13 @@ private:
   	G4double 	dQwtFermiCoef0;
   	G4double 	dQwtFermiCoef1;
   	G4double 	dQwtFermiAlpha;
+  	G4double 	dCaptureLithiumR;
+  	G4double 	dCaptureLithiumL;
   	G4int		iFieldType;
 private:
-  	G4double 	dTarL;
-  	G4double 	dCapL;
-  	G4double 	dCapR;
+  	G4double 	dTargetL;
+  	G4double 	dCaptureL;
+  	G4double 	dCaptureR;
    	G4double 	dSqrCapR;
 	G4double 	dHalfTarL;
 	G4double 	dHalfCapL;
