@@ -61,6 +61,9 @@ GPDetectorConstruction::GPDetectorConstruction()
     dCaptureTubeSpanningAngle = 360.0;
     dCaptureTubeLength = 500.0e-3;
     dCaptureStepMax = 1.0e-2;
+	dLithiumTubeLength=1.0e-2;
+	dLithiumTubeOuterRadius=1.0-2;
+	bLithiumFlag=TRUE;
 
     dTranTubeInnerRadius = 0.0e-3;
     dTranTubeOuterRadius = 20e-3;
@@ -178,6 +181,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
 					m*dCaptureTubeOuterRadius,m*dCaptureTubeLength/2.0,
                                     deg*dCaptureTubeStartAngle,deg*dCaptureTubeSpanningAngle);
   captureLog = new G4LogicalVolume(captureTube,captureMaterial,"captureLog");
+  if(bLithiumFlag) SetLithiumLens();
   G4double capturePos_x = 0.0;
   G4double capturePos_y = 0.0;
   G4double capturePos_z = (dTargetBoxZ+dCaptureTubeLength)/2;
@@ -512,6 +516,10 @@ G4double GPDetectorConstruction::GetDetectorSize(std::string name) const
     return dCaptureTubeStartAngle;
     else if(name=="capture.ea")
     return dCaptureTubeSpanningAngle;
+    else if(name=="capture.lithium.l")
+    return dLithiumTubeLength;
+    else if(name=="capture.lithium.or")
+    return dLithiumTubeOuterRadius;
     
     else if(name=="transport.ir")
     return dTranTubeInnerRadius;
@@ -572,6 +580,11 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
     dCaptureTubeStartAngle = value;
     else if(key=="capture.ea")
     dCaptureTubeSpanningAngle = value;
+    else if(key=="capture.lithium.l")
+    dLithiumTubeLength = value;
+    else if(key=="capture.lithium.or")
+    dLithiumTubeOuterRadius = value;
+    
     
     else if(key=="transport.ir")
     dTranTubeInnerRadius = value;
@@ -609,5 +622,46 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
 	}
 
 	std::cout<<"Set "<<key<<" to "<< value<<" m"<<std::endl;
+
+}
+void GPDetectorConstruction::SetLithiumLens(G4double dLength,G4double dOuterRadius,G4double dInnerRadius, G4double dStartAngle, G4double dSpanningAngle )
+{
+
+    //Lithium lens
+    //
+  G4double dLithiumTubeInnerRadius=dInnerRadius;
+  G4double dLithiumTubeOuterRadius=dOuterRadius;
+  G4double dLithiumTubeLength=dLength;
+  G4double dLithiumTubeStartAngle=dStartAngle;
+  G4double dLithiumTubeSpanningAngle=dSpanningAngle;
+  G4double lithiumPos_x = 0.0;
+  G4double lithiumPos_y = 0.0;
+  G4double lithiumPos_z = (dCaptureTubeLength-dLithiumTubeLength)/2;
+
+  G4String sLithiumMaterial="G4_Li";
+
+  G4Material* lithiumMaterial;
+  G4Tubs* lithiumTube;
+  G4LogicalVolume* lithiumLog;
+  G4VPhysicalVolume* lithiumPhys;
+
+  lithiumMaterial = G4NistManager::Instance()->FindOrBuildMaterial(sLithiumMaterial);
+  if (lithiumMaterial) 
+  G4cout<<"The lithium material is set to "<<sLithiumMaterial<<G4endl;
+  else 
+  G4cout<<"Set lithium material failed"<<G4endl;
+
+  lithiumTube = new G4Tubs("lithiumTube",m*dLithiumTubeInnerRadius,
+					m*dLithiumTubeOuterRadius,m*dLithiumTubeLength/2.0,
+                                    deg*dLithiumTubeStartAngle,deg*dLithiumTubeSpanningAngle);
+  lithiumLog = new G4LogicalVolume(lithiumTube,lithiumMaterial,"lithiumLog");
+  lithiumPhys = new G4PVPlacement(0,
+             G4ThreeVector(m*lithiumPos_x,m*lithiumPos_y,m*lithiumPos_z),
+             lithiumLog,"lithium",captureLog,false,0);
+
+  G4VisAttributes* lithiumLogVisAtt= new G4VisAttributes(G4Colour(0,0,1.0,0.3));
+  lithiumLogVisAtt->SetVisibility(true);
+  lithiumLogVisAtt->SetForceSolid(true);
+  lithiumLog->SetVisAttributes(lithiumLogVisAtt);
 
 }

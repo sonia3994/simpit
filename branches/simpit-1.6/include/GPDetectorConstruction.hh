@@ -72,6 +72,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
   private:
     G4VPhysicalVolume* ConstructPositronResource();
     void DefineMaterials();
+    void SetLithiumLens(G4double dLength=1e-2,G4double dOuterRadius=1e-2,G4double dInnerRadius=0.0, G4double dStartAngle=0.0, G4double dSpanningAngle=360.0 );
     
   private:
     
@@ -94,6 +95,9 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4double dCaptureTubeStartAngle;
     G4double dCaptureTubeSpanningAngle;
     G4double dCaptureStepMax;
+  	G4double dLithiumTubeLength;
+  	G4double dLithiumTubeOuterRadius;
+    G4bool   bLithiumFlag;
 
     G4Material* captureMaterial;
     G4Tubs* captureTube;
