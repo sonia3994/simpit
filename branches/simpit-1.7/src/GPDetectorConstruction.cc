@@ -8,6 +8,7 @@
 #include "GPDetectorMessenger.hh"
 #include "GPFieldSetup.hh"
 #include "GPCaptureFieldManager.hh"
+#include "GPSurfaceParticleScorer.hh"
 
 
 #include "G4Box.hh"
@@ -18,6 +19,7 @@
 #include "G4SDManager.hh"
 #include "G4NistManager.hh"
 #include "G4VisAttributes.hh"
+#include "G4MultiFunctionalDetector.hh"
 
 #include "G4UserLimits.hh"
 #include "G4ThreeVector.hh"
@@ -197,7 +199,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
 //Sensitive Detector
 //----------------------------------------------------------------------------
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4String targetSDName="/mydet/target";
+  G4String targetSDName="/PositronSource/Target/EddSD";
   G4String targetROName="targetROGeometry";
 
   if(targetSD)
@@ -219,6 +221,24 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   targetSD->SetROgeometry(targetRO);  
   SDman->AddNewDetector(targetSD);
   targetLog->SetSensitiveDetector(targetSD); 
+
+  G4MultiFunctionalDetector* targetMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Target/MultiFunDet");
+  GPSurfaceParticleScorer* targetParticleScorer = new GPSurfaceParticleScorer("TargetParticleScorerZPlus",1,2);
+  targetMultiFunDet->RegisterPrimitive(targetParticleScorer);
+  SDman->AddNewDetector(targetMultiFunDet);
+  targetLog->SetSensitiveDetector(targetMultiFunDet); 
+  
+  G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Capture/MultiFunDet");
+  GPSurfaceParticleScorer* captureParticleScorer = new GPSurfaceParticleScorer("CaptureParticleScorerZPlus",1,2);
+  captureMultiFunDet->RegisterPrimitive(captureParticleScorer);
+  SDman->AddNewDetector(captureMultiFunDet);
+  captureLog->SetSensitiveDetector(captureMultiFunDet); 
+
+  G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Accelerator/MultiFunDet");
+  GPSurfaceParticleScorer* acceleratorParticleScorer = new GPSurfaceParticleScorer("AcceleratorParticleScorerZPlus",1,2);
+  acceleratorMultiFunDet->RegisterPrimitive(acceleratorParticleScorer);
+  SDman->AddNewDetector(acceleratorMultiFunDet);
+  acceleratorLog->SetSensitiveDetector(acceleratorMultiFunDet); 
 
   // Visualization attributes
   //

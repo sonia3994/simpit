@@ -37,6 +37,7 @@ public:
   void FillPerEvent(G4double,G4double,G4int); 
   void AddEddHit(G4int, G4int, G4int, G4double);
   void AddActualG(G4int t){iActualG+=t;};
+  void AddElectronNumber(G4String,G4int);
 
 private:
   void OutPut(std::map<std::string, std::ofstream* >::iterator,std::vector<G4double>); 
@@ -59,6 +60,7 @@ private:
   std::vector<G4double > vecDouEdd;
   std::vector<G4int> vecIntEddDim;
   std::map<std::string, std::ofstream* > mapStrOfsOutputHandler;
+  std::map<G4String, G4int> mapElectron;
 
   boost::filesystem::path   bfsWorkPath;
 };

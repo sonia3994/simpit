@@ -7,7 +7,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "GPEventAction.hh"
-#include "GPTargetHit.hh"
 
 #include "GPRunAction.hh"
 #include "GPTrajectory.hh"
@@ -88,28 +87,38 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 #endif
   //accumulates statistic
   //
+  G4int evtNb = evt->GetEventID();
   GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
   runAct->FillPerEvent(dEnergyTar, dTrackL,iNPositronPerEvt);
  // PEDD
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
   G4SDManager* SDM=G4SDManager::GetSDMpointer();
+
   GPTargetHitsCollection* EddCollection;
-  GPTargetHit* PEDDHit;
+  GPParticleHitsCollection* particleHitsCollection;
+
   G4int CollectionID=SDM->GetCollectionID("EddCollection"); 
   EddCollection =static_cast<GPTargetHitsCollection*>(HCE->GetHC(CollectionID));
-
   if(EddCollection)
-  {
-    size_t numHit=EddCollection->GetSize(); 
-    for(size_t i=0;i!=numHit;i++)
-    {
-       PEDDHit=static_cast<GPTargetHit*>(EddCollection->GetHit(i));
-       runAct->AddEddHit(PEDDHit->GetX(),PEDDHit->GetY(),PEDDHit->GetZ(),PEDDHit->GetEdep());
-    }
-  }
+    ProcessEdd(EddCollection);
+  
+  CollectionID=SDM->GetCollectionID("TargetParticleScorerZPlus"); 
+  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
+  if(particleHitsCollection)
+    ProcessParticleHits(particleHitsCollection,"target");
+
+  CollectionID=SDM->GetCollectionID("CaptureParticleScorerZPlus"); 
+  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
+  if(particleHitsCollection)
+    ProcessParticleHits(particleHitsCollection,"capture");
+
+  CollectionID=SDM->GetCollectionID("AcceleratorParticleScorerZPlus"); 
+  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
+  if(particleHitsCollection)
+    ProcessParticleHits(particleHitsCollection,"accelerator");
+
   //print per event (modulo n)
   //
-  G4int evtNb = evt->GetEventID();
 //  if (evtNb%iPrintModel == 0) 
     if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
     {
@@ -137,9 +146,71 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-  void GPEventAction::AddPositron(G4ThreeVector Position,G4ThreeVector MomentumDirection,G4double TotalEnergy)
-  {
+void GPEventAction::AddPositron(G4ThreeVector Position,G4ThreeVector MomentumDirection,G4double TotalEnergy)
+{
    iNPositronPerEvt++;
 if (G4EventManager::GetEventManager()->GetVerboseLevel()>=2)   G4cout << "positron num:" << iNPositronPerEvt<<", position: "<<Position <<"m, direction: "<<MomentumDirection<<", energy: "<<TotalEnergy<<" MeV"<<G4endl;
    
+}
+
+void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCollection,G4String sVolume)
+{
+  GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
+  
+  std::vector<G4double>   vecTrackInf;
+  G4String particleName;
+  G4ThreeVector vecPos;
+  G4ThreeVector vecMom;
+  G4double	totalE; 
+  G4double	globalTime; 
+  G4int iTrackID;
+  G4int iNum=0;
+
+  GPParticleHit* particleHit;
+  size_t numHit=particleHitsCollection->GetSize(); 
+  for(size_t i=0;i!=numHit;i++)
+  {
+    particleHit=static_cast<GPParticleHit*>(particleHitsCollection->GetHit(i));
+    G4Track* track = particleHit->GetTrack();
+    particleName = track->GetDefinition()->GetParticleName();
+    if(particleName=="e-")
+    {
+      iNum++;
+    }
+    else if(particleName=="e+")
+    {
+      vecPos = track->GetPosition()/m;
+      vecMom = track->GetMomentum()/MeV;
+      totalE = track->GetTotalEnergy()/MeV; 
+      globalTime = track->GetGlobalTime()/picosecond; 
+      iTrackID = track->GetTrackID();
+
+      vecTrackInf.push_back(iEventID);
+      vecTrackInf.push_back(iTrackID);
+      vecTrackInf.push_back(vecPos.x()*m/mm);
+      vecTrackInf.push_back(vecPos.y()*m/mm);
+      //vecTrackInf.push_back(vecPos.z()*m/mm);
+      vecTrackInf.push_back(vecMom.x());
+      vecTrackInf.push_back(vecMom.y());
+      vecTrackInf.push_back(vecMom.z());
+      vecTrackInf.push_back(totalE);
+      vecTrackInf.push_back(globalTime);
+
+      runAct->OutPutData(sVolume,vecTrackInf);
+    }
   }
+  runAct->AddElectronNumber(sVolume,iNum);
+    
+}
+
+void GPEventAction::ProcessEdd(GPTargetHitsCollection* EddCollection)
+{
+  GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
+  GPTargetHit* PEDDHit;
+  size_t numHit=EddCollection->GetSize(); 
+  for(size_t i=0;i!=numHit;i++)
+  {
+     PEDDHit=static_cast<GPTargetHit*>(EddCollection->GetHit(i));
+     runAct->AddEddHit(PEDDHit->GetX(),PEDDHit->GetY(),PEDDHit->GetZ(),PEDDHit->GetEdep());
+  }
+}

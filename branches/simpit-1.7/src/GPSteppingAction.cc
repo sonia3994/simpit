@@ -79,14 +79,17 @@ void GPSteppingAction::Init()
 
 void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-  static G4VPhysicalVolume* 	postPhys=NULL; 
+  //static G4VPhysicalVolume* 	postPhys=NULL; 
   static G4VPhysicalVolume* 	prevPhys;
-  static G4StepPoint* 		prevStepPoint;
-  static G4StepPoint* 		postStepPoint;
+  //static G4StepPoint* 		prevStepPoint;
+  //static G4StepPoint* 		postStepPoint;
   static G4Track*		currentTrack;
   static G4TrackStatus		currentTrackStatus;
-
+  static G4double		stepE;
+  static G4double		stepL;
   static G4String 		particleName;
+  static G4int   		stopFlag;
+  /*
   static G4ThreeVector		prevPos;
   static G4ThreeVector		postPos;
   static G4ThreeVector		prevMom;
@@ -94,9 +97,6 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
   static std::vector<G4double>  outVector; 
   static G4double		globalTime; 
   static G4double		totalE; 
-  static G4double		stepE;
-  static G4double		stepL;
-  static G4int   		stopFlag;
   static G4int   		trackID;
   static G4int   		eventID;
   static G4int			targetFilteredTrackID=-1;
@@ -111,12 +111,13 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 
   eventID=eventAction->GetEventID();
   trackID=aStep->GetTrack()->GetTrackID();
+  */
+
+  //particleName = aStep->GetTrack()->GetDefinition()->GetParticleName();
+
   currentTrack=aStep->GetTrack();
   currentTrackStatus=fStopAndKill;
-
   stepE=aStep->GetTotalEnergyDeposit();
-  particleName = aStep->GetTrack()->GetDefinition()->GetParticleName();
-
   if(stepE<0) {return;}
   
   stepL = aStep->GetStepLength();
@@ -137,11 +138,12 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
   else 
   { stopFlag=0; }
 
-
+/*
   prevStepPoint=aStep->GetPreStepPoint();
   postStepPoint=aStep->GetPostStepPoint();
-
-  prevPhys= prevStepPoint->GetPhysicalVolume();
+*/
+  prevPhys= aStep->GetPreStepPoint()->GetPhysicalVolume();
+  /*
   prevPos=prevStepPoint->GetPosition()/m;
   prevMom=prevStepPoint->GetMomentum()/MeV;
   totalE=prevStepPoint->GetTotalEnergy()/MeV;
@@ -165,7 +167,6 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 
   if (particleName==sParticle)
   {
-    ///*	
     //if (prevPos.z()>=dTargetL/2)
     if (prevPhys == capturePhys&&postPhys==targetPhys)
     {  
@@ -189,7 +190,6 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
       }
     }
 
-    //*/	
     else if(prevPhys==vacuumPhys&&postPhys==acceleratorPhys)
     {
       if((prevPos.x()*prevPos.x()+prevPos.y()*prevPos.y())<=dAcceleratorR*dAcceleratorR&&prevPos.z()>=(dTargetL/2+dCaptureL+dAcceleratorL))
@@ -203,7 +203,6 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
   postPhys=prevPhys;
 
   }
-
   else if(particleName=="gamma")
   {
     if (prevPhys == targetPhys&&postPhys==transferPhys)
@@ -213,63 +212,14 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 
     postPhys=prevPhys;
   }
+ */
 
   if (prevPhys==targetPhys) 
   {
     eventAction->AddTargetED(stepE);
     eventAction->AddTargetStep(stepL);
   }
-  /*
-  if (prevPhys!=targetPhys&&particleName=="e-") 
-  {
-    currentTrack->SetTrackStatus(currentTrackStatus);
-    if(verbose>=1)
-    {
-      G4cout<<"Kill a e- because it isn't in target: "<<particleName<<G4endl;
-    }
-  }
-
-  else if (prevPhys==vacuumPhys) 
-  {
-    currentTrack->SetTrackStatus(currentTrackStatus);
-    if (verbose>=2)
-      G4cout<<"Kill a gamma because it move out of tube "<<particleName<<G4endl;
-  }
-
-  if (prevPos.z()>dTargetL/2&&particleName!="e+") 
-  {
-    currentTrack->SetTrackStatus(currentTrackStatus);
-    if (verbose>=2)
-    { 
-      G4cout<<"Kill a particle because it is not a e+ after target: "<<particleName<<G4endl;
-      return;
-    }
-  }
-    */
 }
-
-/*
-void GPSteppingAction::WriteToFileDT(G4ThreeVector P,G4ThreeVector M,G4double T, G4double time)
-{
-	GPRunAction* userRunAction =
-	(GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
-	userRunAction->dataFileDT
-	  <<P.x()<<" "<<P.y()<<" "
-	  <<M.x()<<" "<<M.y()<<" "<<M.z()<<" "
-	  <<T<<" "<<time<<G4endl;
-	
-}
-void GPSteppingAction::WriteToFileDC(G4ThreeVector P,G4ThreeVector M,G4double T, G4double time)
-{
-	GPRunAction* userRunAction =
-	(GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
-	userRunAction->dataFileDC
-	  <<P.x()<<" "<<P.y()<<" "
-	  <<M.x()<<" "<<M.y()<<" "<<M.z()<<" "
-	  <<T<<" "<<time<<G4endl;
-	
-}
-*/
 
 void GPSteppingAction::SetSelectedParticle(G4String tmpParticle)
 {

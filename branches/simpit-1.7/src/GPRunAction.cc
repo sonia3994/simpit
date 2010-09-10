@@ -94,19 +94,20 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
   if(gpSteppingAction) gpSteppingAction->Init();
   G4cout<<"Init SteppingActionn."<<G4endl;
-  /*
-  G4VUserDetectorConstruction* g4det=const_cast<G4VUserDetectorConstruction*>
-    (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-  GPDetectorConstruction* mydetector = dynamic_cast<GPDetectorConstruction*>(g4det);
-  */
+
   GPDetectorConstruction* mydetector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
   GPPrimaryGeneratorAction* primaryGenerator=(GPPrimaryGeneratorAction*)G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction();
   GPFieldSetup* gpFieldSetup=(GPFieldSetup*)mydetector->GetFieldSetup();
   if(gpFieldSetup) gpFieldSetup->Init();
   G4cout<<"Init Field."<<G4endl;
 
-  bTargetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("mydet/target")->isActive();
+  bTargetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("/PositronSource/Target/EddSD")->isActive();
   G4cout<<"Target sensitive detector status: "<<bTargetSDFlag<<G4endl;
+
+  mapElectron.clear();
+  mapElectron.insert(std::pair<G4String,G4int>("target",0));
+  mapElectron.insert(std::pair<G4String,G4int>("capture",0));
+  mapElectron.insert(std::pair<G4String,G4int>("accelerator",0));
 
   mapStrOfsOutputHandler.clear();
   fileName=sFilePath +"SumAtExitOfTar.dat";
@@ -245,8 +246,8 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
   //
   G4cout
      <<"\n--------------------Results------------------------------\n"
-     <<MacRightAlign<<std::setw(46)<<"The actual gammas impinged target: "<<iActualG <<"\n"
-     <<MacRightAlign<<std::setw(46)<<"Number of e+ in this run: "<<iPositronPerRun<<"\n"
+     //<<MacRightAlign<<std::setw(46)<<"The actual gammas impinged target: "<<iActualG <<"\n"
+     //<<MacRightAlign<<std::setw(46)<<"Number of e+ in this run: "<<iPositronPerRun<<"\n"
      <<MacRightAlign<<std::setw(46)<<"Energy deposited in target in the run: " << G4BestUnit(dSumETar,"Energy")<<"\n"
      <<MacRightAlign<<std::setw(46)<<"Mean energy deposited in target per event: " << G4BestUnit(dSumETar/NbOfEvents,"Energy") <<" +- "<< G4BestUnit(rmsETar,"Energy")<<"\n"  
      <<MacRightAlign<<std::setw(46)<<"Mean track length in Target: " << G4BestUnit(dSumLTrack,"Length") <<" +- "<< G4BestUnit(rmsLTrack,"Length")<<"\n"  
@@ -254,11 +255,14 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
      <<"==================================End of Run ===================================\n"
      << G4endl;
   ofsParaFile
-	<<iPositronPerRun<<" "
+	//<<iPositronPerRun<<" "
 	<<dSumETar<<" "
 	<<rmsETar<<" "
 	<<dSumLTrack<<" "
 	<<rmsLTrack
+	<<"\n"
+	<<"e- number,target,capture,accelerator\n"
+	<<"number,"<<mapElectron["target"]<<","<<mapElectron["capture"]<<","<<mapElectron["accelerator"]
      	<< G4endl;
 
   	ofsParaFile.close();
@@ -323,5 +327,13 @@ void GPRunAction::OutPut(std::map<std::string, std::ofstream* >::iterator iter,s
 
 	*(iter->second)<<G4endl;
 
+}
+void GPRunAction::AddElectronNumber(G4String key, G4int value) 
+{
+  std::map<G4String, G4int>::iterator iter=mapElectron.find(key);
+  if(iter!=mapElectron.end())
+  {
+    mapElectron[key] += value;
+  }
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
