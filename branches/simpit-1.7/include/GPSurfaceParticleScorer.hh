@@ -26,14 +26,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+class G4HCofThisEvent;
 class GPSurfaceParticleScorer : public G4VPrimitiveScorer
 {
  
-  public: // with description
+  public: 
       GPSurfaceParticleScorer(G4String name ,G4int surface, G4int direction, G4int depth=0);
       virtual ~GPSurfaceParticleScorer();
 
-  protected: // with description
+  protected: 
       virtual G4bool ProcessHits(G4Step*,G4TouchableHistory*);
       void CheckSurfaceAndDirection(G4Step*,G4VSolid*);
       void CheckForBox(G4Step*,G4Box*);
@@ -47,13 +48,14 @@ class GPSurfaceParticleScorer : public G4VPrimitiveScorer
       virtual void PrintAll();
 
   private:
-      G4int  HCID;
-      G4int  iSelectedSurface;
-      G4int  iSelectedDirection;
-      G4int  iSurface;
-      G4int  iDirection;
+   G4HCofThisEvent* hitCE;
+   GPParticleHitsCollection* hitsCollection;
 
-      GPParticleHitsCollection* particleHitCollection;
+   G4int  HCID;
+   G4int  iSelectedSurface;
+   G4int  iSelectedDirection;
+   G4int  iSurface;
+   G4int  iDirection;
 
 };
 

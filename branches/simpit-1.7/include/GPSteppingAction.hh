@@ -12,7 +12,6 @@
 #include "G4UserSteppingAction.hh"
 #include "G4ThreeVector.hh"
 #include "globals.hh"
-#include <fstream>
 
 class GPSteppingMessenger;
 class GPDetectorConstruction;
@@ -32,29 +31,13 @@ public:
   void Init();
     
 private:
-  //void WriteToFileDT(G4ThreeVector,G4ThreeVector,G4double,G4double);
-  //void WriteToFileDC(G4ThreeVector,G4ThreeVector,G4double,G4double);
-
   GPDetectorConstruction* detector;
   GPEventAction*          eventAction;
-  GPSteppingMessenger*	steppingMessenger;
-    const G4VPhysicalVolume* capturePhys;
-    const G4VPhysicalVolume* targetPhys;
-    const G4VPhysicalVolume* transferPhys;
-    const G4VPhysicalVolume* vacuumPhys;
-    const G4VPhysicalVolume* acceleratorPhys;
+  GPSteppingMessenger*	  steppingMessenger;
+  const G4VPhysicalVolume* targetPhys;
 
-  	G4String 		sParticle;
-  	std::ofstream 	  ofsWriteFile;
-    G4double dTargetL;
-    G4double dTargetX;
-    G4double dTargetY;
-    G4double dCaptureL;
-    G4double dCaptureR;
-    G4double dAcceleratorL;
-    G4double dAcceleratorR;
-
-	G4int   verbose;
+  G4String 		sParticle;
+  G4int   verbose;
   
 };
 

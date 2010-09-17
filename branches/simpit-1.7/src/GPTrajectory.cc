@@ -379,6 +379,9 @@ std::vector<G4AttValue>* GPTrajectory::CreateAttValues() const
 
 void GPTrajectory::AppendStep(const G4Step* aStep)
 {
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTrajectory::AppendStep(const G4Step*)"<<G4endl;
+#endif
    G4ThreeVector pos=aStep->GetPostStepPoint()->GetPosition();
    G4ThreeVector mom=aStep->GetPostStepPoint()->GetMomentum();
    G4double      time=aStep->GetPostStepPoint()->GetGlobalTime();
@@ -398,6 +401,9 @@ void GPTrajectory::AppendStep(const G4Step* aStep)
    vecItem->push_back(mom.y());
    vecItem->push_back(mom.z());
    vecFullInfor->push_back(vecItem);
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPTrajectory::AppendStep(const G4Step*)"<<G4endl;
+#endif
 }
   
 G4ParticleDefinition* GPTrajectory::GetParticleDefinition()

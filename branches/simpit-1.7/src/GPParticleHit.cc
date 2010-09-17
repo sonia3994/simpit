@@ -26,13 +26,13 @@ GPParticleHit::GPParticleHit()
 GPParticleHit::GPParticleHit(G4Track* track)
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit(G4LogicalVolume*,G4int,G4int,G4int)"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit(G4Track* track)"<<G4endl;
 #endif
-trackHit = new G4Track(*track);
-trackHit->SetTrackID(track->GetTrackID());
-trackHit->SetParentID(track->GetParentID());
+  trackHit = new G4Track((*track));
+  trackHit->SetTrackID(track->GetTrackID());
+  trackHit->SetParentID(track->GetParentID());
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPParticleHit::GPParticleHit(G4LogicalVolume*,G4int,G4int,G4int)"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPParticleHit::GPParticleHit(G4Track* track)"<<G4endl;
 #endif
 }
 

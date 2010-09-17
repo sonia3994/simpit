@@ -62,11 +62,11 @@ void GPEventAction::BeginOfEventAction(const G4Event* evt)
   G4int evtNb = evt->GetEventID();
 	iEventID=evtNb;
 //  if (evtNb%iPrintModel == 0) 
-    if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
-    { 
+  if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
+  { 
     G4cout << "\n------------------> Begin of event: " << evtNb<<" <--------------------" << G4endl;
     CLHEP::HepRandom::showEngineStatus();
-    }
+  }
  
 // initialisation per event
  dEnergyTar = 0.;
@@ -97,16 +97,20 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
   GPTargetHitsCollection* EddCollection;
   GPParticleHitsCollection* particleHitsCollection;
 
-  G4int CollectionID=SDM->GetCollectionID("EddCollection"); 
+  G4int CollectionID;
+  /*
+  CollectionID=SDM->GetCollectionID("EddCollection"); 
   EddCollection =static_cast<GPTargetHitsCollection*>(HCE->GetHC(CollectionID));
   if(EddCollection)
     ProcessEdd(EddCollection);
+  */
   
   CollectionID=SDM->GetCollectionID("TargetParticleScorerZPlus"); 
   particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
   if(particleHitsCollection)
     ProcessParticleHits(particleHitsCollection,"target");
 
+  /*
   CollectionID=SDM->GetCollectionID("CaptureParticleScorerZPlus"); 
   particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
   if(particleHitsCollection)
@@ -116,6 +120,7 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
   particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
   if(particleHitsCollection)
     ProcessParticleHits(particleHitsCollection,"accelerator");
+   */
 
   //print per event (modulo n)
   //

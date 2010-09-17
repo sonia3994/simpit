@@ -3,6 +3,7 @@
 //
 // GPSurfaceParticleScorer
 #include "GPSurfaceParticleScorer.hh"
+
 #include "G4StepStatus.hh"
 #include "G4Track.hh"
 #include "G4VSolid.hh"
@@ -12,31 +13,40 @@
 #include "G4GeometryTolerance.hh"
 
 
-GPSurfaceParticleScorer::GPSurfaceParticleScorer(G4String name, 
-					G4int surface, G4int direction, G4int depth)
-    :G4VPrimitiveScorer(name,depth),HCID(-1),
-    iSelectedSurface(surface),iSelectedDirection(direction),
-    iSurface(-1),iDirection(-1)
-{;}
-
-GPSurfaceParticleScorer::~GPSurfaceParticleScorer()
-{;}
-
-void GPSurfaceParticleScorer::Initialize(G4HCofThisEvent* HCE)
+GPSurfaceParticleScorer::GPSurfaceParticleScorer(G4String name,G4int surface, G4int direction, G4int depth)
+    :G4VPrimitiveScorer(name,depth)
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPSurfaceParticleScorer::Initialize(G4HCofThisEvent*)"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPSurfaceParticleScorer::GPSurfaceParticleScorer(G4String, G4int, G4int, G4int)"<<G4endl;
 #endif
-  particleHitCollection = new GPParticleHitsCollection(detector->GetName(), GetName());
-  if ( HCID < 0 ) HCID = GetCollectionID(0);
-  HCE->AddHitsCollection(HCID,particleHitCollection);
+  HCID=-1;
+  iSelectedSurface=surface;
+  iSelectedDirection=direction;
+  iSurface=-1;
+  iDirection=-1;
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPSurfaceParticleScorer::Initialize(G4HCofThisEvent*)"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPSurfaceParticleScorer::GPSurfaceParticleScorer(G4String, G4int, G4int, G4int)"<<G4endl;
+#endif
+}
+
+GPSurfaceParticleScorer::~GPSurfaceParticleScorer()
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSurfaceParticleScorer::~GPSurfaceParticleScorer()"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPSurfaceParticleScorer::~GPSurfaceParticleScorer()"<<G4endl;
 #endif
 }
 
 G4bool GPSurfaceParticleScorer::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 {
+  //hitsCollection = (GPParticleHitsCollection*)(hitCE->GetHC(HCID));
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSurfaceParticleScorer::ProcessHits(G4Step*,G4TouchableHistory*)"<<G4endl;
+  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection="<<hitsCollection<<G4endl;
+  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection::size="<<hitsCollection->GetSize()<<G4endl;
+#endif
   G4StepPoint* preStep = aStep->GetPreStepPoint();
   G4VPhysicalVolume* physVol = preStep->GetPhysicalVolume();
   G4VPVParameterisation* physParam = physVol->GetParameterisation();
@@ -60,23 +70,25 @@ G4bool GPSurfaceParticleScorer::ProcessHits(G4Step* aStep,G4TouchableHistory*)
     if(iSelectedDirection==iDirection)
     {
       GPParticleHit* particleHit = new GPParticleHit(aStep->GetTrack());
-      particleHitCollection->insert(particleHit);
+      hitsCollection->insert(particleHit);
     }
     else if(iSelectedDirection==fCurrent_InOut&&(iDirection==fCurrent_Out||iDirection==fCurrent_In))
     {
       GPParticleHit* particleHit = new GPParticleHit(aStep->GetTrack());
-      particleHitCollection->insert(particleHit);
+      hitsCollection->insert(particleHit);
     }
-    iSurface=-1;
-    iDirection=-1;
   }
+  iSurface=-1;
+  iDirection=-1;
 
-  return TRUE;
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPSurfaceParticleScorer::ProcessHits(G4Step*,G4TouchableHistory*)"<<G4endl;
+#endif
+  return true;
 }
 
 void GPSurfaceParticleScorer::CheckSurfaceAndDirection(G4Step* aStep, G4VSolid* solid)
 {
-
   if(solid->GetEntityType()=="G4Box")
   {
     //G4cout<<"current solid is G4Box."<<G4endl;
@@ -107,7 +119,6 @@ void GPSurfaceParticleScorer::CheckForBox(G4Step* aStep, G4Box* boxSolid)
     {
       iDirection = fCurrent_In;
       iSurface   = 1;
-      //return fCurrent_In;
     }
   }
 
@@ -119,7 +130,6 @@ void GPSurfaceParticleScorer::CheckForBox(G4Step* aStep, G4Box* boxSolid)
       theTouchable->GetHistory()->GetTopTransform().TransformPoint(stppos2);
     if(std::fabs( localpos2.z() - boxSolid->GetZHalfLength())<kCarTolerance )
     {
-      //return fCurrent_Out;
       iDirection = fCurrent_Out;
       iSurface   = 1;
     }
@@ -143,7 +153,6 @@ void GPSurfaceParticleScorer::CheckForTube(G4Step* aStep, G4Tubs* tubeSolid)
     {
       iDirection = fCurrent_In;
       iSurface   = 1;
-      //return fCurrent_In;
     }
   }
 
@@ -157,21 +166,46 @@ void GPSurfaceParticleScorer::CheckForTube(G4Step* aStep, G4Tubs* tubeSolid)
     {
       iDirection = fCurrent_Out;
       iSurface   = 1;
-      //return fCurrent_Out;
     }
   }
 
 }
 
-void GPSurfaceParticleScorer::EndOfEvent(G4HCofThisEvent*)
-{;}
+
+void GPSurfaceParticleScorer::Initialize(G4HCofThisEvent* HCE)
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSurfaceParticleScorer::Initialize(G4HCofThisEvent*)"<<G4endl;
+#endif
+  hitsCollection = new GPParticleHitsCollection(detector->GetName(), GetName());
+  if ( HCID < 0 ) {HCID = GetCollectionID(0);}
+  HCE->AddHitsCollection(HCID,hitsCollection);
+  //hitCE=HCE;
+#ifdef GP_DEBUG
+  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection="<<hitsCollection<<G4endl;
+  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection::size="<<hitsCollection->GetSize()<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPSurfaceParticleScorer::Initialize(G4HCofThisEvent*)"<<G4endl;
+#endif
+}
+
+void GPSurfaceParticleScorer::EndOfEvent(G4HCofThisEvent* HCE)
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSurfaceParticleScorer::EndOfEvent(G4HCofThisEvent* HCE)"<<G4endl;
+#endif
+#ifdef GP_DEBUG
+  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection="<<hitsCollection<<G4endl;
+  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection::size="<<hitsCollection->GetSize()<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPSurfaceParticleScorer::EndOfEvent(G4HCofThisEvent* HCE)"<<G4endl;
+#endif
+}
 
 void GPSurfaceParticleScorer::clear()
-{;}
+{}
 
 void GPSurfaceParticleScorer::DrawAll()
-{;}
+{}
 
 void GPSurfaceParticleScorer::PrintAll()
-{;}
+{}
 

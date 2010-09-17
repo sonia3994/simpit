@@ -91,30 +91,3 @@ G4bool GPTrajectoryAction::TrajectoryFilter(GPTrajectory* trajectory)
 
   return FALSE;
 }
-/*
-void GPTrajectoryAction::PostUserTrackingAction(const G4Track* aTrack)
-{
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectoryAction::PostUserTrackingAction(const G4Track*)"<<G4endl;
-#endif
-  G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
-  if(secondaries)
-  {
-    GPTrackInformation* info = (GPTrackInformation*)(aTrack->GetUserInformation());
-    size_t nSeco = secondaries->size();
-    if(nSeco>0)
-    {
-      for(size_t i=0;i<nSeco;i++)
-      { 
-        GPTrackInformation* infoNew = new GPTrackInformation(info);
-        (*secondaries)[i]->SetUserInformation(infoNew);
-      }
-    }
-  }
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectoryAction::PostUserTrackingAction(const G4Track*)"<<G4endl;
-#endif
-}
-
-*/
-

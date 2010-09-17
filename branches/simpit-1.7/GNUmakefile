@@ -20,11 +20,8 @@ G4BINDIR = ./bin
 #G4TMPDIR = ./tmp
 
 LDFLAGS += -lboost_filesystem -lboost_system
-#LDFLAGS += -lboost_filesystem-mt
+#LDFLAGS += -lboost_filesystem
 
 #For debug
-#CPPFLAGS += -DGP_DEBUG
-
-
-
+CPPFLAGS += -DGP_DEBUG 
 

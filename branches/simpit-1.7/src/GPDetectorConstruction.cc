@@ -199,7 +199,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
 //Sensitive Detector
 //----------------------------------------------------------------------------
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4String targetSDName="/PositronSource/Target/EddSD";
+  G4String targetSDName="/PositronSource/Target.EddSD";
   G4String targetROName="targetROGeometry";
 
   if(targetSD)
@@ -219,26 +219,28 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   targetRO->BuildROGeometry();
   targetRO->SetName(targetROName);
   targetSD->SetROgeometry(targetRO);  
-  SDman->AddNewDetector(targetSD);
-  targetLog->SetSensitiveDetector(targetSD); 
+  //SDman->AddNewDetector(targetSD);
+  //targetLog->SetSensitiveDetector(targetSD); 
 
-  G4MultiFunctionalDetector* targetMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Target/MultiFunDet");
+  G4MultiFunctionalDetector* targetMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Target.MultiFunDet");
   GPSurfaceParticleScorer* targetParticleScorer = new GPSurfaceParticleScorer("TargetParticleScorerZPlus",1,2);
   targetMultiFunDet->RegisterPrimitive(targetParticleScorer);
   SDman->AddNewDetector(targetMultiFunDet);
   targetLog->SetSensitiveDetector(targetMultiFunDet); 
-  
-  G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Capture/MultiFunDet");
+  /*
+  G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Capture.MultiFunDet");
   GPSurfaceParticleScorer* captureParticleScorer = new GPSurfaceParticleScorer("CaptureParticleScorerZPlus",1,2);
   captureMultiFunDet->RegisterPrimitive(captureParticleScorer);
   SDman->AddNewDetector(captureMultiFunDet);
-  captureLog->SetSensitiveDetector(captureMultiFunDet); 
+  //captureLog->SetSensitiveDetector(captureMultiFunDet); 
 
-  G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Accelerator/MultiFunDet");
+  G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Accelerator.MultiFunDet");
   GPSurfaceParticleScorer* acceleratorParticleScorer = new GPSurfaceParticleScorer("AcceleratorParticleScorerZPlus",1,2);
   acceleratorMultiFunDet->RegisterPrimitive(acceleratorParticleScorer);
   SDman->AddNewDetector(acceleratorMultiFunDet);
-  acceleratorLog->SetSensitiveDetector(acceleratorMultiFunDet); 
+  //acceleratorLog->SetSensitiveDetector(acceleratorMultiFunDet); 
+  */
+  
 
   // Visualization attributes
   //

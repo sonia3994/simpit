@@ -47,7 +47,7 @@ GPRunAction::GPRunAction()
   tmpStr.resize(24);
   replace(tmpStr.begin(),tmpStr.end(),' ','-');
   replace(tmpStr.begin(),tmpStr.end(),':','-');
-  sFilePath="../"+tmpStr;
+  sFilePath="./output/"+tmpStr;
 	G4cout<<"Create directory: "<<sFilePath<<G4endl;  
   //fs::path path(sFilePath);
   bfsWorkPath=fs::path(sFilePath);
