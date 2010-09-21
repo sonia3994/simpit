@@ -47,7 +47,7 @@ GPRunAction::GPRunAction()
   tmpStr.resize(24);
   replace(tmpStr.begin(),tmpStr.end(),' ','-');
   replace(tmpStr.begin(),tmpStr.end(),':','-');
-  sFilePath="../"+tmpStr;
+  sFilePath="./output/"+tmpStr;
 	G4cout<<"Create directory: "<<sFilePath<<G4endl;  
   //fs::path path(sFilePath);
   bfsWorkPath=fs::path(sFilePath);
@@ -101,7 +101,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   if(gpFieldSetup) gpFieldSetup->Init();
   G4cout<<"Init Field."<<G4endl;
 
-  //bTargetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("/PositronSource/Target.EddSD")->isActive();
+  //bTargetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("/PositronSource/Target/EddSD")->isActive();
   //G4cout<<"Target sensitive detector status: "<<bTargetSDFlag<<G4endl;
 
   mapElectron.clear();

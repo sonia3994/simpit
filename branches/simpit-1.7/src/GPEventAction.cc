@@ -110,7 +110,7 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
   if(particleHitsCollection)
     ProcessParticleHits(particleHitsCollection,"target");
 
-  /*
+  ///*
   CollectionID=SDM->GetCollectionID("CaptureParticleScorerZPlus"); 
   particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
   if(particleHitsCollection)
@@ -120,7 +120,7 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
   particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
   if(particleHitsCollection)
     ProcessParticleHits(particleHitsCollection,"accelerator");
-   */
+   //*/
 
   //print per event (modulo n)
   //

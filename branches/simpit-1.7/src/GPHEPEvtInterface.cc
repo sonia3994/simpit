@@ -62,7 +62,7 @@ void GPHEPEvtInterface::Init()
 	particle_position = zero;
 	particle_time = 0.0;
 	dTimeUnit=picosecond;
-	dParticlePosZ=-3e-3;
+	dParticlePosZ=-4e-3;
 	CLHEP:: HepRandom::setTheSeed(time(0),time(0));
 	randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.5);
 	
@@ -165,7 +165,7 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 	G4HEPEvtParticle* 	hepParticle;
     G4PrimaryVertex* 	vertex;
 
-    VHEP3=-dParticlePosZ-tarThick/2-1;
+    VHEP3=dParticlePosZ;
   
     fsInputFile>>NHEP;
   //  G4cout<<"The entries of this event: "<<NHEP<<G4endl;

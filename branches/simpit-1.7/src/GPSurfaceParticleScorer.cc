@@ -39,7 +39,7 @@ GPSurfaceParticleScorer::~GPSurfaceParticleScorer()
 #endif
 }
 
-G4bool GPSurfaceParticleScorer::ProcessHits(G4Step* aStep,G4TouchableHistory*)
+G4bool GPSurfaceParticleScorer::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
 {
   //hitsCollection = (GPParticleHitsCollection*)(hitCE->GetHC(HCID));
 #ifdef GP_DEBUG
@@ -180,10 +180,7 @@ void GPSurfaceParticleScorer::Initialize(G4HCofThisEvent* HCE)
   hitsCollection = new GPParticleHitsCollection(detector->GetName(), GetName());
   if ( HCID < 0 ) {HCID = GetCollectionID(0);}
   HCE->AddHitsCollection(HCID,hitsCollection);
-  //hitCE=HCE;
 #ifdef GP_DEBUG
-  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection="<<hitsCollection<<G4endl;
-  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection::size="<<hitsCollection->GetSize()<<G4endl;
   G4cout<<"GP_DEBUG: Exit GPSurfaceParticleScorer::Initialize(G4HCofThisEvent*)"<<G4endl;
 #endif
 }
@@ -194,8 +191,6 @@ void GPSurfaceParticleScorer::EndOfEvent(G4HCofThisEvent* HCE)
   G4cout<<"GP_DEBUG: Enter GPSurfaceParticleScorer::EndOfEvent(G4HCofThisEvent* HCE)"<<G4endl;
 #endif
 #ifdef GP_DEBUG
-  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection="<<hitsCollection<<G4endl;
-  //G4cout<<"GP_DEBUG: GPSurfaceParticleScorer::hitsCollection::size="<<hitsCollection->GetSize()<<G4endl;
   G4cout<<"GP_DEBUG: Exit GPSurfaceParticleScorer::EndOfEvent(G4HCofThisEvent* HCE)"<<G4endl;
 #endif
 }
