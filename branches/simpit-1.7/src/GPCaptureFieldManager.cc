@@ -84,7 +84,7 @@ void GPCaptureField::Init()
 	dHalfCapL=dCaptureL/2;
   	dAmdAlpha=(dB0/dB1-1)/(dCaptureL); //unit m^(-1)
 	dQwtNegaSqrAlpha=(dB0/dB1-1)/(dCaptureL*dCaptureL);//unit m^(-2)
-  	dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*dCaptureL)));
+  	dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*(dCaptureL-0.02))));
   	dQwtFermiCoef0=dB1-0.5*dQwtFermiCoef1;
 	dFocalLength=dCaptureL-dCaptureLithiumL;
 
@@ -217,7 +217,7 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
 	localZ=Point[2]/m-dHalfTarL;
     localR2=localX*localX+localY*localY;
 
-  	if(localZ>0&&localZ<=dCaptureL&&localR2<=dSqrCapR)
+  	if(localZ>0&&localZ<=(dCaptureL-0.02)&&localR2<=dSqrCapR)
 	{
 		dPublic0=exp(dQwtFermiAlpha*(localZ-dCaptureL));
 		dPublic1=dQwtFermiCoef0+dQwtFermiCoef1/(1+dPublic0);
@@ -226,6 +226,13 @@ void GPCaptureField::GetFieldValueQWTFermi(const G4double Point[3], G4double *Bf
   		Bfield[0]=tesla*0.5*localX*dQwtFermiCoef1*dQwtFermiAlpha*dPublic0/((1+dPublic0)*(1+dPublic0));
   		Bfield[1]=Bfield[0]*localY/localX;
 		Bfield[2]=tesla*dPublic1;
+	}
+	else if(localZ>(dCaptureL-0.02)&&localZ<=dCaptureL&&localR2<=dSqrCapR)
+	{
+
+		//Add the magnetic unit "tesla" when transfer to kernel.
+  		Bfield[0]=Bfield[1]=0;
+		Bfield[2]=tesla*dB1;
 	}
 
   	else 
