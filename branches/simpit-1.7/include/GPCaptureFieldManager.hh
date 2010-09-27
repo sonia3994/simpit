@@ -69,6 +69,7 @@ private:
    	G4double 	dSqrCapR;
 	G4double 	dHalfTarL;
 	G4double 	dHalfCapL;
+	G4double 	dCaptureLExtend;
 
 private:
   	G4double 	dMu0;
