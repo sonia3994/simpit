@@ -67,7 +67,7 @@ void GPSteppingAction::Init()
   dTargetX = detector->GetDetectorSize("target.x");
   dTargetY = detector->GetDetectorSize("target.y");
   dTargetL = detector->GetDetectorSize("target.z");
-  dCaptureL = detector->GetDetectorSize("capture.z");
+  dCaptureL = detector->GetDetectorSize("capture.l");
   dCaptureR = detector->GetDetectorSize("capture.or");
   dAcceleratorL = detector->GetDetectorSize("accelerator.l");
   dAcceleratorR = detector->GetDetectorSize("accelerator.or");

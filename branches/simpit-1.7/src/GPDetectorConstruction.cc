@@ -160,7 +160,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
              captureLog,"capture",worldLog,false,0);
 
   captureLog->SetFieldManager(fieldSetup->GetLocalFieldManager("capture"),true);
-  captureLog->SetUserLimits(new G4UserLimits(dCaptureStepMax*m));
+  //captureLog->SetUserLimits(new G4UserLimits(dCaptureStepMax*m));
 
   if(iCaptureType==4) 
   {
@@ -180,7 +180,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
              acceleratorLog,"accelerator",worldLog,false,0);
 
   acceleratorLog->SetFieldManager(fieldSetup->GetLocalFieldManager("accelerator"),true);
-  acceleratorLog->SetUserLimits(new G4UserLimits(dAcceleratorStepMax*m));
+  //acceleratorLog->SetUserLimits(new G4UserLimits(dAcceleratorStepMax*m));
 
 //--------------------------------transportion tube
   tranTube = new G4Tubs("tranTube",m*dTranTubeInnerRadius,

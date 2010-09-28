@@ -109,6 +109,11 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   mapElectron.insert(std::pair<G4String,G4int>("capture",0));
   mapElectron.insert(std::pair<G4String,G4int>("accelerator",0));
 
+  mapPositron.clear();
+  mapPositron.insert(std::pair<G4String,G4int>("target",0));
+  mapPositron.insert(std::pair<G4String,G4int>("capture",0));
+  mapPositron.insert(std::pair<G4String,G4int>("accelerator",0));
+
   mapStrOfsOutputHandler.clear();
   fileName=sFilePath +"SumAtExitOfTar.dat";
   //ofsParaFile.open(fileName,ios::ate|ios::app);
@@ -156,30 +161,8 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   G4cout << "Start run: " << runID<<G4endl;
 
   ofsParaFile 
-	<<runID<<" "
-//        RunID
-	<<mydetector->GetDetectorSize("target.z")<<" "
-
-//        target thickness
-	<<numEvt*primaryGenerator->GetParticleInitNumber()<<" "
-//        injection particles number
-	<<numEvt<<" "
-//	number of events
-	<<primaryGenerator->GetParticleInitNumber()<<" "
-//	number of this event
-	<<primaryGenerator->GetParticleEnergyMean()<<" "
-//	primary energy mean
-	<<primaryGenerator->GetParticleEnergyRMS()<<" "
-//	primary energy rms
-	<<primaryGenerator->GetParticlePositionMean()<<" "	
-//	primary positon mean
-	<<primaryGenerator->GetParticlePositionRMS()<<" "
-//	primary positon rms: 
-	<<primaryGenerator->GetParticleMomentumMean()<<" "
-//	primary momentum mean
-	<<primaryGenerator->GetParticleMomentumRMS()<<" "
-	;
-//	nprimary momentum rms
+    	<<"run id, events\n"
+	<<runID<<"," <<numEvt<<"\n";
   //initialize cumulative quantities
   //
   dSumETar = dSum2ETar = 0.;
@@ -255,14 +238,12 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
      <<"==================================End of Run ===================================\n"
      << G4endl;
   ofsParaFile
-	//<<iPositronPerRun<<" "
-	<<dSumETar<<" "
-	<<rmsETar<<" "
-	<<dSumLTrack<<" "
-	<<rmsLTrack
-	<<"\n"
+    	<<"sum E deposited in target, deposited E rms, sum track length in target, track length rms\n"
+	<<dSumETar<<"," <<rmsETar<<"," <<dSumLTrack<<"," <<rmsLTrack <<"\n"
+	<<"e+ number,target,capture,accelerator\n"
+	<<"number,"<<mapPositron["target"]<<","<<mapPositron["capture"]<<","<<mapPositron["accelerator"]<<"\n"
 	<<"e- number,target,capture,accelerator\n"
-	<<"number,"<<mapElectron["target"]<<","<<mapElectron["capture"]<<","<<mapElectron["accelerator"]
+	<<"number,"<<mapElectron["target"]<<","<<mapElectron["capture"]<<","<<mapElectron["accelerator"]<<"\n"
      	<< G4endl;
 
   	ofsParaFile.close();
@@ -334,6 +315,14 @@ void GPRunAction::AddElectronNumber(G4String key, G4int value)
   if(iter!=mapElectron.end())
   {
     mapElectron[key] += value;
+  }
+}
+void GPRunAction::AddPositronNumber(G4String key, G4int value) 
+{
+  std::map<G4String, G4int>::iterator iter=mapPositron.find(key);
+  if(iter!=mapPositron.end())
+  {
+    mapPositron[key] += value;
   }
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

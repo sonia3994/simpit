@@ -169,7 +169,8 @@ void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCo
   G4double	totalE; 
   G4double	globalTime; 
   G4int iTrackID;
-  G4int iNum=0;
+  G4int iNumElectron=0;
+  G4int iNumPositron=0;
 
   GPParticleHit* particleHit;
   size_t numHit=particleHitsCollection->GetSize(); 
@@ -180,10 +181,11 @@ void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCo
     particleName = track->GetDefinition()->GetParticleName();
     if(particleName=="e-")
     {
-      iNum++;
+      iNumElectron++;
     }
     else if(particleName=="e+")
     {
+      iNumPositron++;
       vecPos = track->GetPosition()/m;
       vecMom = track->GetMomentum()/MeV;
       totalE = track->GetTotalEnergy()/MeV; 
@@ -204,7 +206,8 @@ void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCo
       runAct->OutPutData(sVolume,vecTrackInf);
     }
   }
-  runAct->AddElectronNumber(sVolume,iNum);
+  runAct->AddElectronNumber(sVolume,iNumElectron);
+  runAct->AddPositronNumber(sVolume,iNumPositron);
     
 }
 

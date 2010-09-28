@@ -108,7 +108,7 @@ void GPSurfaceParticleScorer::CheckForBox(G4Step* aStep, G4Box* boxSolid)
   G4TouchableHandle theTouchable = 
     aStep->GetPreStepPoint()->GetTouchableHandle();
   G4double kCarTolerance = G4GeometryTolerance::GetInstance()->GetSurfaceTolerance();
-  kCarTolerance +=10e-1; 
+  kCarTolerance +=1e-1; 
 
   if (aStep->GetPreStepPoint()->GetStepStatus() == fGeomBoundary )
   {
@@ -116,7 +116,7 @@ void GPSurfaceParticleScorer::CheckForBox(G4Step* aStep, G4Box* boxSolid)
     G4ThreeVector stppos1= aStep->GetPreStepPoint()->GetPosition();
     G4ThreeVector localpos1 = 
       theTouchable->GetHistory()->GetTopTransform().TransformPoint(stppos1);
-    if(std::fabs( localpos1.z() - boxSolid->GetZHalfLength())<kCarTolerance )
+    if(std::fabs( localpos1.z() - boxSolid->GetZHalfLength())<=kCarTolerance )
     {
       iDirection = fCurrent_In;
       iSurface   = 1;
@@ -129,7 +129,7 @@ void GPSurfaceParticleScorer::CheckForBox(G4Step* aStep, G4Box* boxSolid)
     G4ThreeVector stppos2= aStep->GetPostStepPoint()->GetPosition();
     G4ThreeVector localpos2 = 
       theTouchable->GetHistory()->GetTopTransform().TransformPoint(stppos2);
-    if(std::fabs( localpos2.z() - boxSolid->GetZHalfLength())<kCarTolerance )
+    if(std::fabs( localpos2.z() - boxSolid->GetZHalfLength())<=kCarTolerance )
     {
       iDirection = fCurrent_Out;
       iSurface   = 1;
@@ -143,7 +143,7 @@ void GPSurfaceParticleScorer::CheckForTube(G4Step* aStep, G4Tubs* tubeSolid)
   G4TouchableHandle theTouchable = 
     aStep->GetPreStepPoint()->GetTouchableHandle();
   G4double kCarTolerance = G4GeometryTolerance::GetInstance()->GetSurfaceTolerance();
-  kCarTolerance = 2;
+  kCarTolerance = 1e-1;
 
   if (aStep->GetPreStepPoint()->GetStepStatus() == fGeomBoundary )
   {
@@ -151,7 +151,7 @@ void GPSurfaceParticleScorer::CheckForTube(G4Step* aStep, G4Tubs* tubeSolid)
     G4ThreeVector stppos1= aStep->GetPreStepPoint()->GetPosition();
     G4ThreeVector localpos1 = 
       theTouchable->GetHistory()->GetTopTransform().TransformPoint(stppos1);
-    if(std::fabs( localpos1.z() - tubeSolid->GetZHalfLength())<kCarTolerance )
+    if(std::fabs( localpos1.z() - tubeSolid->GetZHalfLength())<=kCarTolerance )
     {
       iDirection = fCurrent_In;
       iSurface   = 1;
@@ -164,7 +164,7 @@ void GPSurfaceParticleScorer::CheckForTube(G4Step* aStep, G4Tubs* tubeSolid)
     G4ThreeVector stppos2= aStep->GetPostStepPoint()->GetPosition();
     G4ThreeVector localpos2 = 
       theTouchable->GetHistory()->GetTopTransform().TransformPoint(stppos2);
-    if(std::fabs( localpos2.z() - tubeSolid->GetZHalfLength())<kCarTolerance )
+    if(std::fabs( localpos2.z() - tubeSolid->GetZHalfLength())<=kCarTolerance )
     {
       iDirection = fCurrent_Out;
       iSurface   = 1;
