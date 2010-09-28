@@ -165,7 +165,7 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 	G4HEPEvtParticle* 	hepParticle;
     G4PrimaryVertex* 	vertex;
 
-    VHEP3=-dParticlePosZ-tarThick/2-1;
+    VHEP3=dParticlePosZ;
   
     fsInputFile>>NHEP;
   //  G4cout<<"The entries of this event: "<<NHEP<<G4endl;

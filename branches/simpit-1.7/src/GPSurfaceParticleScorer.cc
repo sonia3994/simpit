@@ -108,6 +108,7 @@ void GPSurfaceParticleScorer::CheckForBox(G4Step* aStep, G4Box* boxSolid)
   G4TouchableHandle theTouchable = 
     aStep->GetPreStepPoint()->GetTouchableHandle();
   G4double kCarTolerance = G4GeometryTolerance::GetInstance()->GetSurfaceTolerance();
+  kCarTolerance +=10e-1; 
 
   if (aStep->GetPreStepPoint()->GetStepStatus() == fGeomBoundary )
   {
@@ -142,6 +143,7 @@ void GPSurfaceParticleScorer::CheckForTube(G4Step* aStep, G4Tubs* tubeSolid)
   G4TouchableHandle theTouchable = 
     aStep->GetPreStepPoint()->GetTouchableHandle();
   G4double kCarTolerance = G4GeometryTolerance::GetInstance()->GetSurfaceTolerance();
+  kCarTolerance = 2;
 
   if (aStep->GetPreStepPoint()->GetStepStatus() == fGeomBoundary )
   {
