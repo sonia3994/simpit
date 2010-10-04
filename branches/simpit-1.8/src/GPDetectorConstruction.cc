@@ -219,7 +219,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   targetRO->BuildROGeometry();
   targetRO->SetName(targetROName);
   targetSD->SetROgeometry(targetRO);  
-  //SDman->AddNewDetector(targetSD);
+  SDman->AddNewDetector(targetSD);
   //targetLog->SetSensitiveDetector(targetSD); 
 
   G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Target/MultiFunDet");

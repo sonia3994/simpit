@@ -57,6 +57,13 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
   MinStepCmd->SetDefaultUnit("mm");
   MinStepCmd->AvailableForStates(G4State_Idle);  
        
+  QwtExtendCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/qwtExtend",this);  
+  QwtExtendCmd->SetGuidance("Define minimal step");
+  QwtExtendCmd->SetGuidance("Magnetic field will be in Z direction.");
+  QwtExtendCmd->SetParameterName("MinStep",false,false);
+  QwtExtendCmd->SetDefaultUnit("mm");
+  QwtExtendCmd->AvailableForStates(G4State_Idle);  
+
   LithiumFocalLengthCmd = new G4UIcmdWithADoubleAndUnit("/GP/field/capture/lithiumFocalLength",this);  
   LithiumFocalLengthCmd->SetGuidance("Define lithium focal length step");
   LithiumFocalLengthCmd->SetParameterName("LithiumFocalLengthCmd",false,false);
@@ -122,6 +129,7 @@ GPCaptureFieldMessenger::~GPCaptureFieldMessenger()
   delete MagFieldB0Cmd;
   delete AMDAlphaCmd;
   delete MinStepCmd;
+  delete QwtExtendCmd;
   delete LithiumFocalLengthCmd;
   delete GPdetDir;
   delete UpdateCmd;
@@ -183,6 +191,11 @@ void GPCaptureFieldMessenger::SetNewValue( G4UIcommand* command, G4String newVal
   if( command == MinStepCmd )
   { 
     fEMfieldManager->SetMinStep((MinStepCmd->GetNewDoubleValue(newValue))/m);
+  }
+
+  if( command == QwtExtendCmd )
+  { 
+    fieldPoint->SetQwtExtend((QwtExtendCmd->GetNewDoubleValue(newValue))/m);
   }
 
   if( command == LithiumFocalLengthCmd )

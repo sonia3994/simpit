@@ -23,16 +23,22 @@ GPParticleHit::GPParticleHit()
 #endif
 }
 
-GPParticleHit::GPParticleHit(G4Track* track)
+GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit(G4Track* track)"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)"<<G4endl;
 #endif
-  trackHit = new G4Track((*track));
-  trackHit->SetTrackID(track->GetTrackID());
-  trackHit->SetParentID(track->GetParentID());
+  sParticleName=step->GetTrack()->GetDefinition()->GetParticleName();
+  iTrackID=step->GetTrack()->GetTrackID();
+  G4StepPoint* stepPoint;
+  if(iDirection>0) stepPoint=step->GetPreStepPoint();
+  else	stepPoint=step->GetPostStepPoint();
+  vecPos=stepPoint->GetPosition()/m;
+  vecMom=stepPoint->GetMomentum()/MeV;
+  dTotalEnergy=stepPoint->GetTotalEnergy()/MeV;
+  dGlobalTime=stepPoint->GetGlobalTime()/second;
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPParticleHit::GPParticleHit(G4Track* track)"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)"<<G4endl;
 #endif
 }
 
@@ -41,7 +47,6 @@ GPParticleHit::~GPParticleHit()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPParticleHit::~GPParticleHit()"<<G4endl;
 #endif
-  delete trackHit;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPParticleHit::~GPParticleHit()"<<G4endl;
 #endif
@@ -53,7 +58,12 @@ GPParticleHit::GPParticleHit(const GPParticleHit &right)
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit(const GPParticleHit&)"<<G4endl;
 #endif
-  trackHit = new G4Track(*(right.trackHit));
+  sParticleName=right.sParticleName;
+  iTrackID=right.iTrackID;
+  vecPos=right.vecPos;
+  vecMom=right.vecMom;
+  dTotalEnergy=right.dTotalEnergy;
+  dGlobalTime=right.dGlobalTime;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPParticleHit::~GPParticleHit(const GPParticleHit&)"<<G4endl;
 #endif
@@ -61,7 +71,6 @@ GPParticleHit::GPParticleHit(const GPParticleHit &right)
 
 const GPParticleHit& GPParticleHit::operator=(const GPParticleHit &right)
 {
-  trackHit = new G4Track(*(right.trackHit));
   return *this;
 }
 

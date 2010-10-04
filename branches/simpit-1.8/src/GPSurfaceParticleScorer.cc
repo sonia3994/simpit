@@ -65,16 +65,20 @@ G4bool GPSurfaceParticleScorer::ProcessHits(G4Step* aStep,G4TouchableHistory* RO
 
   CheckSurfaceAndDirection(aStep,solid);
 
+  static G4int iPreOrPost;
+  if(iDirection==fCurrent_Out) iPreOrPost=-1;
+  else if(iDirection==fCurrent_In)  iPreOrPost=1;
+
   if(iSurface==iSelectedSurface)
   {
     if(iSelectedDirection==iDirection)
     {
-      GPParticleHit* particleHit = new GPParticleHit(aStep->GetTrack());
+      GPParticleHit* particleHit = new GPParticleHit(aStep,iPreOrPost);
       hitsCollection->insert(particleHit);
     }
     else if(iSelectedDirection==fCurrent_InOut&&(iDirection==fCurrent_Out||iDirection==fCurrent_In))
     {
-      GPParticleHit* particleHit = new GPParticleHit(aStep->GetTrack());
+      GPParticleHit* particleHit = new GPParticleHit(aStep,iPreOrPost);
       hitsCollection->insert(particleHit);
     }
   }

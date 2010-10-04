@@ -161,24 +161,33 @@ if (G4EventManager::GetEventManager()->GetVerboseLevel()>=2)   G4cout << "positr
 void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCollection,G4String sVolume)
 {
   GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
-  
-  std::vector<G4double>   vecTrackInf;
-  G4String particleName;
-  G4ThreeVector vecPos;
-  G4ThreeVector vecMom;
-  G4double	totalE; 
-  G4double	globalTime; 
-  G4int iTrackID;
-  G4int iNumElectron=0;
-  G4int iNumPositron=0;
-
   GPParticleHit* particleHit;
-  size_t numHit=particleHitsCollection->GetSize(); 
+  
+  static std::vector<G4double>   vecTrackInf;
+  static G4ThreeVector  vecPos;
+  static G4ThreeVector  vecMom;
+  static G4String       particleName;
+  static G4double	totalE; 
+  static G4double	globalTime; 
+  static G4int iTrackID=0;
+  static G4int iLastTrackID=-1;
+  static G4int iNumElectron=0;
+  static G4int iNumPositron=0;
+  static size_t numHit; 
+
+  iNumPositron=0;
+  iNumElectron=0;
+  numHit=particleHitsCollection->GetSize(); 
   for(size_t i=0;i!=numHit;i++)
   {
     particleHit=static_cast<GPParticleHit*>(particleHitsCollection->GetHit(i));
-    G4Track* track = particleHit->GetTrack();
-    particleName = track->GetDefinition()->GetParticleName();
+    iTrackID = particleHit->GetTrackID();
+    if(iTrackID==iLastTrackID)	
+    {
+      continue;
+    }
+    iLastTrackID=iTrackID;
+    particleName = particleHit->GetParticleName();
     if(particleName=="e-")
     {
       iNumElectron++;
@@ -186,12 +195,12 @@ void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCo
     else if(particleName=="e+")
     {
       iNumPositron++;
-      vecPos = track->GetPosition()/m;
-      vecMom = track->GetMomentum()/MeV;
-      totalE = track->GetTotalEnergy()/MeV; 
-      globalTime = track->GetGlobalTime()/picosecond; 
-      iTrackID = track->GetTrackID();
+      vecPos = particleHit->GetPosition();
+      vecMom = particleHit->GetMomentum();
+      totalE = particleHit->GetTotalEnergy(); 
+      globalTime = particleHit->GetGlobalTime(); 
 
+      vecTrackInf.clear();
       vecTrackInf.push_back(iEventID);
       vecTrackInf.push_back(iTrackID);
       vecTrackInf.push_back(vecPos.x()*m/mm);
@@ -201,7 +210,7 @@ void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCo
       vecTrackInf.push_back(vecMom.y());
       vecTrackInf.push_back(vecMom.z());
       vecTrackInf.push_back(totalE);
-      vecTrackInf.push_back(globalTime);
+      vecTrackInf.push_back(globalTime*second/picosecond);
 
       runAct->OutPutData(sVolume,vecTrackInf);
     }

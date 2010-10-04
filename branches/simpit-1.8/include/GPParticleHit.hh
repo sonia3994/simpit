@@ -18,7 +18,7 @@ class GPParticleHit : public G4VHit
   public:
 
       GPParticleHit();
-      GPParticleHit(G4Track*);
+      GPParticleHit(G4Step*, G4int);
       ~GPParticleHit();
       GPParticleHit(const GPParticleHit &right);
       const GPParticleHit& operator=(const GPParticleHit &right);
@@ -26,7 +26,17 @@ class GPParticleHit : public G4VHit
 
       inline void *operator new(size_t);
       inline void operator delete(void *aHit);
-      inline G4Track* GetTrack() const { return trackHit;};
+
+      inline G4ThreeVector GetPosition(){return vecPos;};
+      inline G4ThreeVector GetMomentum(){return vecMom;};
+      inline G4double 	   GetTotalEnergy(){return dTotalEnergy;}; 
+      inline G4double 	   GetGlobalTime(){return dGlobalTime;}; 
+      inline void 	   SetParticleName(G4String str ){sParticleName=str;};
+      inline G4String      GetParticleName(){return sParticleName;};
+      inline void 	   SetTrackID(G4int i){iTrackID=i;};
+      inline G4int 	   GetTrackID(){return iTrackID;};
+      inline void 	   SetPDG(G4int i){iPDG=i;};
+      inline G4int 	   GetPDG(){return iPDG;};
 
       void Draw();
       const std::map<G4String,G4AttDef>* GetAttDefs() const;
@@ -35,7 +45,14 @@ class GPParticleHit : public G4VHit
 
   private:
       static std::map<G4String,G4AttDef> mapStrAttDef;
-      G4Track* trackHit;
+      G4ThreeVector     vecPos;
+      G4ThreeVector     vecMom;
+      G4String		sParticleName;
+      G4double		dTotalEnergy;
+      G4double		dGlobalTime;
+      G4int		iTrackID;
+      G4int		iPDG;
+
 
 };
 

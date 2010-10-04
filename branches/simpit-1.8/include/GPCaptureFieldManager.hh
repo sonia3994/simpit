@@ -39,6 +39,7 @@ public:
   	inline void SetFieldValueAlpha(G4double   t){dAmdAlpha=t;G4cout<<"Set AMD field alpha value: "<<dAmdAlpha<<G4endl;};
   	inline void SetAMDFieldAlpha(G4double     t){dAmdAlpha=t;G4cout<<"Set AMD field alpha value: "<<dAmdAlpha<<G4endl;} ;
   	inline void SetFermiApproximateAlpha(G4double     t){dQwtFermiAlpha=t;G4cout<<"Set QWT fermi approximate field alpha: "<<dQwtFermiAlpha<<G4endl;} ;
+  	inline void SetQwtExtend(G4double      t){dQwtExtend=t;G4cout<<"Set QWT capture extend value: "<<dQwtExtend<<" m."<<G4endl;};
   	inline void SetCaptureType(G4int t) {iFieldType=t;G4cout<<"Set field type to: "<<t<<G4endl;};
   	inline void SetLithiumFocalLength(G4double t) {dFocalLength=t;G4cout<<"Set lithium focal length to: "<<t<<" m"<<G4endl;};
   	inline void SetMagneticRigidity(G4double t) {dMagneticRigidity=t;G4cout<<"Set Magnetic Rigidity to: "<<t<<" T*m"<<G4endl;};
@@ -69,7 +70,7 @@ private:
    	G4double 	dSqrCapR;
 	G4double 	dHalfTarL;
 	G4double 	dHalfCapL;
-	G4double 	dCaptureLExtend;
+	G4double 	dQwtExtend;
 
 private:
   	G4double 	dMu0;
