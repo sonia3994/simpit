@@ -1,8 +1,8 @@
-// $Id: GPDetectorConstruction.cc,v 1.9 2006/06/29 17:47:19 gunter Exp $
+// $Id: GPDetectorManager.cc,v 1.9 2006/06/29 17:47:19 gunter Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 
-#include "GPDetectorConstruction.hh"
+#include "GPDetectorManager.hh"
 #include "GPTargetROGeometry.hh"
 #include "GPTargetSD.hh"
 #include "GPDetectorMessenger.hh"
@@ -37,7 +37,7 @@
 #define MacRightAlign  std::setiosflags(std::ios_base::right)
 #define MacLeftAlign  std::setiosflags(std::ios_base::left)
 
-GPDetectorConstruction::GPDetectorConstruction()
+GPDetectorManager::GPDetectorManager()
  :  targetBox(0),targetLog(0),targetPhys(0),
     captureTube(0),captureLog(0),capturePhys(0),
     tranTube(0),tranLog(0),tranPhys(0),
@@ -46,7 +46,7 @@ GPDetectorConstruction::GPDetectorConstruction()
     fieldSetup(0),targetSD(0),targetRO(0)
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::GPDetectorConstruction()"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPDetectorManager::GPDetectorManager()"<<G4endl;
 #endif
     dTargetBoxY = 25e-3;
     dTargetBoxX = 25e-3;
@@ -95,15 +95,15 @@ GPDetectorConstruction::GPDetectorConstruction()
     fieldSetup = new GPFieldSetup();
     detectorMessenger = new GPDetectorMessenger(this);
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::GPDetectorConstruction()"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPDetectorManager::GPDetectorManager()"<<G4endl;
 #endif
 
 }
 
-GPDetectorConstruction::~GPDetectorConstruction()
+GPDetectorManager::~GPDetectorManager()
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::~GPDetectorConstruction()"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPDetectorManager::~GPDetectorManager()"<<G4endl;
 #endif
     if(detectorMessenger) 	delete detectorMessenger;
     if(fieldSetup) 			delete fieldSetup;
@@ -111,19 +111,19 @@ GPDetectorConstruction::~GPDetectorConstruction()
     if(Vacuum) 				delete Vacuum;
     if(W) 					delete W;
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::~GPDetectorConstruction()"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPDetectorManager::~GPDetectorManager()"<<G4endl;
 #endif
 }
 
-G4VPhysicalVolume* GPDetectorConstruction::Construct()
+G4VPhysicalVolume* GPDetectorManager::Construct()
 { 
     return ConstructPositronResource();
 }
 
-G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
+G4VPhysicalVolume* GPDetectorManager::ConstructPositronResource()
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::ConstructPositronResource()"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPDetectorManager::ConstructPositronResource()"<<G4endl;
 #endif
   G4GeometryManager::GetInstance()->OpenGeometry();
   G4PhysicalVolumeStore::GetInstance()->Clean();
@@ -284,13 +284,13 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   //always return the physical World
   //
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::ConstructPositronResource()"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPDetectorManager::ConstructPositronResource()"<<G4endl;
 #endif
 
   return worldPhys;
 }
 
-void GPDetectorConstruction::DefineMaterials()
+void GPDetectorManager::DefineMaterials()
 {
   //------------------------------------------------------ materials
 
@@ -319,14 +319,14 @@ void GPDetectorConstruction::DefineMaterials()
 }
 
 
-void GPDetectorConstruction::SetTargetThickness(G4double val)
+void GPDetectorManager::SetTargetThickness(G4double val)
 {
   dTargetBoxZ = val;
   vectEddDim[2] = ceil(val/dTargetCellZ);
   G4cout<<"The target thickness is set to "<<val<<" m"<<G4endl;
 }
 
-void GPDetectorConstruction::SetTargetXY(G4double val)
+void GPDetectorManager::SetTargetXY(G4double val)
 {
   dTargetBoxX = val;
   dTargetBoxY = val; 
@@ -335,7 +335,7 @@ void GPDetectorConstruction::SetTargetXY(G4double val)
   G4cout<<"The target box X and Y length is set to "<<val<<" m"<<G4endl;
 }
 
-void GPDetectorConstruction::SetWorldSizeXYZ(G4double valx,G4double valy, G4double valz)
+void GPDetectorManager::SetWorldSizeXYZ(G4double valx,G4double valy, G4double valz)
 {
   dWorldX = valx;
   dWorldY = valy;
@@ -343,25 +343,25 @@ void GPDetectorConstruction::SetWorldSizeXYZ(G4double valx,G4double valy, G4doub
   G4cout<<"The world volume is set to "<<valx<<"*"<<valy<<"*"<<valz<<" m^3!"<<G4endl;
 }
 
-void GPDetectorConstruction::SetWorldSizeX(G4double val)
+void GPDetectorManager::SetWorldSizeX(G4double val)
 {
   dWorldX = val;
   G4cout<<"The world x thickness is set to "<<val<<" m"<<G4endl;
 }
 
-void GPDetectorConstruction::SetWorldSizeY(G4double val)
+void GPDetectorManager::SetWorldSizeY(G4double val)
 {
   dWorldY = val;
   G4cout<<"The world y is set to "<<val<<" m"<<G4endl;
 }
 
-void GPDetectorConstruction::SetWorldSizeZ(G4double val)
+void GPDetectorManager::SetWorldSizeZ(G4double val)
 {
   dWorldZ = val;
   G4cout<<"The world z is set to "<<val<<" m"<<G4endl;
 }
 
-void GPDetectorConstruction::SetTargetMaterial(G4String materialChoice)
+void GPDetectorManager::SetTargetMaterial(G4String materialChoice)
 {
   // search the material by its name   
   //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);     
@@ -370,7 +370,7 @@ void GPDetectorConstruction::SetTargetMaterial(G4String materialChoice)
   G4cout<<"The target material is set to "<<materialChoice<<G4endl;
 }
 
-void GPDetectorConstruction::SetWorldMaterial(G4String materialChoice)
+void GPDetectorManager::SetWorldMaterial(G4String materialChoice)
 {
   // search the material by its name
   //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
@@ -379,7 +379,7 @@ void GPDetectorConstruction::SetWorldMaterial(G4String materialChoice)
   G4cout<<"The world material is set to "<<materialChoice<<G4endl;
 }
 
-void GPDetectorConstruction::SetCaptureMaterial(G4String materialChoice)
+void GPDetectorManager::SetCaptureMaterial(G4String materialChoice)
 {
   // search the material by its name
   //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
@@ -388,7 +388,7 @@ void GPDetectorConstruction::SetCaptureMaterial(G4String materialChoice)
   G4cout<<"The Capture material is set to "<<materialChoice<<G4endl;
 }
 
-void GPDetectorConstruction::SetAcceleratorMaterial(G4String materialChoice)
+void GPDetectorManager::SetAcceleratorMaterial(G4String materialChoice)
 {
   // search the material by its name
   //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
@@ -397,7 +397,7 @@ void GPDetectorConstruction::SetAcceleratorMaterial(G4String materialChoice)
   G4cout<<"The Accelerator material is set to "<<materialChoice<<G4endl;
 }
 
-void GPDetectorConstruction::SetTranTubeMaterial(G4String materialChoice)
+void GPDetectorManager::SetTranTubeMaterial(G4String materialChoice)
 {
   // search the material by its name
   //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
@@ -408,7 +408,7 @@ void GPDetectorConstruction::SetTranTubeMaterial(G4String materialChoice)
 
 #include "G4RunManager.hh"
 
-void GPDetectorConstruction::UpdateGeometry()
+void GPDetectorManager::UpdateGeometry()
 {
     vectEddDim[0]=ceil(dTargetBoxX/dTargetCellX);
     vectEddDim[1]=ceil(dTargetBoxY/dTargetCellY);
@@ -423,7 +423,7 @@ void GPDetectorConstruction::UpdateGeometry()
 
 
 
-void GPDetectorConstruction::PrintDetectorParameters()
+void GPDetectorManager::PrintDetectorParameters()
 {
   G4cout 
 	<<"\n--------------------Print detector status-------------------\n"
@@ -440,7 +440,7 @@ void GPDetectorConstruction::PrintDetectorParameters()
 
 }
 
-const G4VPhysicalVolume* GPDetectorConstruction::GetPhysicalVolume(std::string name) const
+const G4VPhysicalVolume* GPDetectorManager::GetPhysicalVolume(std::string name) const
 {   
    	if(name=="target")
     	{return targetPhys;}
@@ -459,7 +459,7 @@ const G4VPhysicalVolume* GPDetectorConstruction::GetPhysicalVolume(std::string n
 
 	else return NULL;
 }
-void GPDetectorConstruction::SetUserLimits(std::string str)
+void GPDetectorManager::SetUserLimits(std::string str)
 {
 	std::stringstream ss(str);
 	std::string key;
@@ -485,7 +485,7 @@ void GPDetectorConstruction::SetUserLimits(std::string str)
 }
 
 
-G4double GPDetectorConstruction::GetDetectorSize(std::string name) const
+G4double GPDetectorManager::GetDetectorSize(std::string name) const
 {
     if(name=="target.x")
     return dTargetBoxY;
@@ -541,7 +541,7 @@ G4double GPDetectorConstruction::GetDetectorSize(std::string name) const
 	else return 0;
 }
 
-void GPDetectorConstruction::SetDetectorSize(std::string str)
+void GPDetectorManager::SetDetectorSize(std::string str)
 {
 	std::stringstream ss(str);
 	std::string		  unit;
@@ -612,7 +612,7 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
 	std::cout<<"Set "<<key<<" to "<< value<<" m"<<std::endl;
 
 }
-void GPDetectorConstruction::SetLithiumLens(G4double dLength,G4double dOuterRadius,G4double dInnerRadius, G4double dStartAngle, G4double dSpanningAngle )
+void GPDetectorManager::SetLithiumLens(G4double dLength,G4double dOuterRadius,G4double dInnerRadius, G4double dStartAngle, G4double dSpanningAngle )
 {
 
     //Lithium lens
@@ -653,7 +653,7 @@ void GPDetectorConstruction::SetLithiumLens(G4double dLength,G4double dOuterRadi
   lithiumLog->SetVisAttributes(lithiumLogVisAtt);
 
 }
-void GPDetectorConstruction::SetCaptureType(G4int i)
+void GPDetectorManager::SetCaptureType(G4int i)
 {
   iCaptureType=i;
   G4cout<<"Set capture type to:"<<i<<G4endl;
