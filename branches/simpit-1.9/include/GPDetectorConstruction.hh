@@ -40,27 +40,9 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     inline const G4LogicalVolume* 	GetCaptureLogical()		const		{return captureLog;};
     inline GPFieldSetup* GetFieldSetup	()					const		{return fieldSetup;};
 
-    void SetTargetThickness(G4double);
-    void SetTargetXY(G4double);
     void SetTargetCellXYZ(G4double x,G4double y,G4double z){ dTargetCellZ=x; dTargetCellR=y; dTargetCellPhi=z;};
-    void SetCaptureLength(G4double t)	{dCaptureTubeLength=t;};
-    void SetCaptureRadius(G4double t)	{dCaptureTubeOuterRadius=t;};
-    void SetWorldSizeXYZ(G4double ,G4double , G4double );
-    void SetWorldSizeX(G4double);
-    void SetWorldSizeY(G4double);
-    void SetWorldSizeZ(G4double);
     void SetCaptureType(G4int);
     
-    inline G4double GetTargetThickness()	const	{return dTargetTubeLength;};
-    inline G4double GetTargetXY()		const	{return dTargetTubeOuterRadius;};
-    inline G4double GetTargetX()		const	{return dTargetTubeOuterRadius;};
-    inline G4double GetTargetY()		const	{return dTargetTubeOuterRadius;};
-    inline G4double GetTargetLength()	const	{return dTargetTubeLength;};
-    inline G4double GetCaptureLength()		const	{return dCaptureTubeLength;};
-    inline G4double GetCaptureRadius()		const	{return dCaptureTubeOuterRadius;};
-    inline G4double GetWorldSizeX() 		const	{return dWorldX;}; 
-    inline G4double GetWorldSizeY()          	const	{return dWorldY;};
-    inline G4double GetWorldSizeZ()           	const	{return dWorldZ;};
     inline std::vector<G4int> GetEddDim()           	const	{return vectEddDim;};
     inline G4int GetCaptureType()           	const	{return iCaptureType;};
 
@@ -78,6 +60,10 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     void DefineMaterials();
     void SetLithiumLens(G4double dLength=1e-2,G4double dOuterRadius=1e-2,G4double dInnerRadius=0.0, G4double dStartAngle=0.0, G4double dSpanningAngle=360.0 );
     
+    void ConstructTarget();
+    void ConstructCapture();
+    void ConstructAccelerator();
+    void ConstructTranTubs();
   private:
     
     // target
