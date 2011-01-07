@@ -4,6 +4,7 @@
 
 #include "GPDetectorConstruction.hh"
 #include "GPTargetROGeometry.hh"
+#include "GPTargetROGeometryTubs.hh"
 #include "GPTargetSD.hh"
 #include "GPDetectorMessenger.hh"
 #include "GPFieldSetup.hh"
@@ -38,26 +39,28 @@
 #define MacLeftAlign  std::setiosflags(std::ios_base::left)
 
 GPDetectorConstruction::GPDetectorConstruction()
- :  targetBox(0),targetLog(0),targetPhys(0),
+ :  targetTubs(0),targetLog(0),targetPhys(0),
     captureTube(0),captureLog(0),capturePhys(0),
     tranTube(0),tranLog(0),tranPhys(0),
     acceleratorTube(0),acceleratorLog(0),acceleratorPhys(0),
     worldBox(0),worldLog(0),worldPhys(0),
-    fieldSetup(0),targetSD(0),targetRO(0)
+    fieldSetup(0),targetSD(0),targetRO(0),targetROTubs(0)
 {
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::GPDetectorConstruction()"<<G4endl;
 #endif
-    dTargetBoxY = 25e-3;
-    dTargetBoxX = 25e-3;
-    dTargetBoxZ = 6.0e-3;
+    dTargetTubeInnerRadius = 0;
+    dTargetTubeOuterRadius = 25e-3;
+    dTargetTubeLength = 6.0e-3;
+    dTargetTubeStartAngle = 0;
+    dTargetTubeSpanningAngle = 360;
 
-    dTargetCellX=0.5e-3;
-    dTargetCellY=0.5e-3;
     dTargetCellZ=1e-3;
-    vectEddDim.push_back(ceil(dTargetBoxX/dTargetCellX));
-    vectEddDim.push_back(ceil(dTargetBoxY/dTargetCellY));
-    vectEddDim.push_back(ceil(dTargetBoxZ/dTargetCellZ));
+    dTargetCellR=1e-3;
+    dTargetCellPhi=90;
+    vectEddDim.push_back(ceil(dTargetTubeLength/dTargetCellZ));
+    vectEddDim.push_back(ceil(dTargetTubeOuterRadius/dTargetCellR));
+    vectEddDim.push_back(ceil(dTargetTubeSpanningAngle/dTargetCellPhi));
 
     dCaptureTubeInnerRadius = 0.0e-3;
     dCaptureTubeOuterRadius = 20e-3;
@@ -108,6 +111,7 @@ GPDetectorConstruction::~GPDetectorConstruction()
     if(detectorMessenger) 	delete detectorMessenger;
     if(fieldSetup) 			delete fieldSetup;
     if(targetRO) 			delete targetRO;
+    if(targetROTubs) 			delete targetROTubs;
     if(Vacuum) 				delete Vacuum;
     if(W) 					delete W;
 #ifdef GP_DEBUG
@@ -135,10 +139,16 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   worldLog = new G4LogicalVolume(worldBox,worldMaterial,"worldLog");
   worldPhys = new G4PVPlacement(0,G4ThreeVector(),worldLog,"world",0,false,0);
 
-  //------------------------------ target box
+  //------------------------------ target tube
 
-  targetBox = new G4Box("targetBox",m*dTargetBoxY/2,m*dTargetBoxX/2,m*dTargetBoxZ/2);
-  targetLog = new G4LogicalVolume(targetBox,targetMaterial,"targetLog");
+  targetTubs = new G4Tubs("targetTubs",
+      m*dTargetTubeInnerRadius,
+      m*dTargetTubeOuterRadius,
+      m*dTargetTubeLength/2,
+      deg*dTargetTubeStartAngle,
+      deg*dTargetTubeSpanningAngle);
+
+  targetLog = new G4LogicalVolume(targetTubs,targetMaterial,"targetLog");
   G4double targetPos_x = 0.0;
   G4double targetPos_y = 0.0;
   G4double targetPos_z = 0.0;
@@ -148,13 +158,17 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   
   //------------------------------ capture tube
 
-  captureTube = new G4Tubs("captureTube",m*dCaptureTubeInnerRadius,
-					m*dCaptureTubeOuterRadius,m*dCaptureTubeLength/2.0,
-                                    deg*dCaptureTubeStartAngle,deg*dCaptureTubeSpanningAngle);
+  captureTube = new G4Tubs("captureTube",
+      m*dCaptureTubeInnerRadius,
+      m*dCaptureTubeOuterRadius,
+      m*dCaptureTubeLength/2.0,
+      deg*dCaptureTubeStartAngle,
+      deg*dCaptureTubeSpanningAngle);
+
   captureLog = new G4LogicalVolume(captureTube,captureMaterial,"captureLog");
   G4double capturePos_x = 0.0;
   G4double capturePos_y = 0.0;
-  G4double capturePos_z = (dTargetBoxZ+dCaptureTubeLength)/2;
+  G4double capturePos_z = (dTargetTubeLength+dCaptureTubeLength)/2;
   capturePhys = new G4PVPlacement(0,
              G4ThreeVector(m*capturePos_x,m*capturePos_y,m*capturePos_z),
              captureLog,"capture",worldLog,false,0);
@@ -168,13 +182,17 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   }
   //------------------------------ accelerator tube
 
-  acceleratorTube = new G4Tubs("acceleratorTube",m*dAcceleratorTubeInnerRadius,
-                                    m*dAcceleratorTubeOuterRadius,m*dAcceleratorTubeLength/2.0,
-                                    deg*dAcceleratorTubeStartAngle,deg*dAcceleratorTubeSpanningAngle);
+  acceleratorTube = new G4Tubs("acceleratorTube",
+      m*dAcceleratorTubeInnerRadius,
+      m*dAcceleratorTubeOuterRadius,
+      m*dAcceleratorTubeLength/2.0,
+      deg*dAcceleratorTubeStartAngle,
+      deg*dAcceleratorTubeSpanningAngle);
+
   acceleratorLog = new G4LogicalVolume(acceleratorTube,acceleratorMaterial,"acceleratorLog");
   G4double acceleratorPos_x = 0.0;
   G4double acceleratorPos_y = 0.0;
-  G4double acceleratorPos_z = dCaptureTubeLength+(dTargetBoxZ+dAcceleratorTubeLength)/2;
+  G4double acceleratorPos_z = dCaptureTubeLength+(dTargetTubeLength+dAcceleratorTubeLength)/2;
   acceleratorPhys = new G4PVPlacement(0,
              G4ThreeVector(m*acceleratorPos_x,m*acceleratorPos_y,m*acceleratorPos_z),
              acceleratorLog,"accelerator",worldLog,false,0);
@@ -183,13 +201,17 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   //acceleratorLog->SetUserLimits(new G4UserLimits(dAcceleratorStepMax*m));
 
 //--------------------------------transportion tube
-  tranTube = new G4Tubs("tranTube",m*dTranTubeInnerRadius,
-                                    m*dTranTubeOuterRadius,m*dTranTubeLength/2.0,
-                                    deg*dTranTubeStartAngle,deg*dTranTubeSpanningAngle);
+  tranTube = new G4Tubs("tranTube",
+      m*dTranTubeInnerRadius,
+      m*dTranTubeOuterRadius,
+      m*dTranTubeLength/2.0,
+      deg*dTranTubeStartAngle,
+      deg*dTranTubeSpanningAngle);
+
   tranLog = new G4LogicalVolume(tranTube,tranMaterial,"tranLog");
   G4double tranPos_x = 0.0;
   G4double tranPos_y = 0.0;
-  G4double tranPos_z = -(dTargetBoxZ+dTranTubeLength)/2;
+  G4double tranPos_z = -(dTargetTubeLength+dTranTubeLength)/2;
   tranPhys = new G4PVPlacement(0,
              G4ThreeVector(m*tranPos_x,m*tranPos_y,m*tranPos_z),
              tranLog,"tran",worldLog,false,0);
@@ -210,17 +232,30 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   {
     targetSD=new GPTargetSD(targetSDName,vectEddDim);
   }
-
+  /*
   if(targetRO)
   {
     delete targetRO;
   }
-  targetRO=new GPTargetROGeometry(targetROName,dTargetBoxX,dTargetBoxY,dTargetBoxZ,vectEddDim);
+  targetRO=new GPTargetROGeometry(targetROName,dTargetTubeOuterRadius,dTargetTubeOuterRadius,dTargetTubeLength,vectEddDim);
   targetRO->BuildROGeometry();
   targetRO->SetName(targetROName);
+
   targetSD->SetROgeometry(targetRO);  
+
+  */
+  if(targetROTubs)
+  {
+    delete targetROTubs;
+  }
+  targetROTubs=new GPTargetROGeometryTubs(targetROName,dTargetTubeInnerRadius,dTargetTubeOuterRadius,dTargetTubeLength,vectEddDim);
+  targetROTubs->BuildROGeometry();
+  targetROTubs->SetName(targetROName);
+  
+  targetSD->SetROgeometry(targetROTubs);  
+
   SDman->AddNewDetector(targetSD);
-  //targetLog->SetSensitiveDetector(targetSD); 
+  targetLog->SetSensitiveDetector(targetSD); 
 
   G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Target/MultiFunDet");
   GPSurfaceParticleScorer* targetParticleScorer=0;
@@ -231,7 +266,7 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
     targetMultiFunDet->RegisterPrimitive(targetParticleScorer);
     SDman->AddNewDetector(targetMultiFunDet);
   }
-  targetLog->SetSensitiveDetector(targetMultiFunDet); 
+  //targetLog->SetSensitiveDetector(targetMultiFunDet); 
 
   G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Capture/MultiFunDet");
   GPSurfaceParticleScorer* captureParticleScorer=0;
@@ -321,17 +356,13 @@ void GPDetectorConstruction::DefineMaterials()
 
 void GPDetectorConstruction::SetTargetThickness(G4double val)
 {
-  dTargetBoxZ = val;
-  vectEddDim[2] = ceil(val/dTargetCellZ);
+  dTargetTubeLength = val;
   G4cout<<"The target thickness is set to "<<val<<" m"<<G4endl;
 }
 
 void GPDetectorConstruction::SetTargetXY(G4double val)
 {
-  dTargetBoxX = val;
-  dTargetBoxY = val; 
-  vectEddDim[0] = ceil(val/dTargetCellX);
-  vectEddDim[1] = ceil(val/dTargetCellY);
+  dTargetTubeOuterRadius = val; 
   G4cout<<"The target box X and Y length is set to "<<val<<" m"<<G4endl;
 }
 
@@ -410,9 +441,9 @@ void GPDetectorConstruction::SetTranTubeMaterial(G4String materialChoice)
 
 void GPDetectorConstruction::UpdateGeometry()
 {
-    vectEddDim[0]=ceil(dTargetBoxX/dTargetCellX);
-    vectEddDim[1]=ceil(dTargetBoxY/dTargetCellY);
-    vectEddDim[2]=ceil(dTargetBoxZ/dTargetCellZ);
+    vectEddDim[0]=ceil(dTargetTubeLength/dTargetCellZ);
+    vectEddDim[1]=ceil(dTargetTubeOuterRadius/dTargetCellR);
+    vectEddDim[2]=ceil(dTargetTubeSpanningAngle/dTargetCellPhi);
     
   	G4RunManager::GetRunManager()->DefineWorldVolume(ConstructPositronResource());
   	G4cout<<"Updated the detector!"<<G4endl;
@@ -428,8 +459,8 @@ void GPDetectorConstruction::PrintDetectorParameters()
   G4cout 
 	<<"\n--------------------Print detector status-------------------\n"
         <<MacRightAlign<<std::setw(24)<<"The world box: " << dWorldX <<"*"<<dWorldY <<"*" <<dWorldZ<<" m^3\n" 
-        <<MacRightAlign<<std::setw(24)<<"Target box: "<<dTargetBoxX <<"*"<<dTargetBoxY <<"*"<<dTargetBoxZ<< " m^3\n" 
-        <<MacRightAlign<<std::setw(24)<<"Target EDD Cell: "<<dTargetCellX<<"*" <<dTargetCellY<<"*"<<dTargetCellZ<<" m^3\n"
+        <<MacRightAlign<<std::setw(24)<<"Target tube: "<<"radius "<<dTargetTubeOuterRadius <<" m, length " <<dTargetTubeLength<< " m\n" 
+        <<MacRightAlign<<std::setw(24)<<"Target EDD Cell: "<<dTargetCellZ<<"*" <<dTargetCellR<<"*"<<dTargetCellPhi<<" m^3\n"
         <<MacRightAlign<<std::setw(24)<<"Target Cell number: "<<vectEddDim[0]<<"*"<<vectEddDim[1]<<"*"<<vectEddDim[2]<<"\n"
         <<MacRightAlign<<std::setw(24)<<"Target material: "<< targetMaterial->GetName()<<"\n" 
         <<MacRightAlign<<std::setw(24)<<"Capture tube: "<<"radius "<<dCaptureTubeOuterRadius <<" m, length "<<dCaptureTubeLength <<" m\n" 
@@ -488,11 +519,11 @@ void GPDetectorConstruction::SetUserLimits(std::string str)
 G4double GPDetectorConstruction::GetDetectorSize(std::string name) const
 {
     if(name=="target.x")
-    return dTargetBoxY;
+    return dTargetTubeOuterRadius;
     else if(name=="target.y")
-    return dTargetBoxX;
+    return dTargetTubeOuterRadius;
     else if(name=="target.z")
-    return dTargetBoxZ;
+    return dTargetTubeLength;
     
     else if(name=="capture.ir")
     return dCaptureTubeInnerRadius;
@@ -552,11 +583,11 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
     value=(value*G4UIcommand::ValueOf(unit.c_str()))/m;
 
     if(key=="target.x")
-    dTargetBoxY = value;
+    dTargetTubeOuterRadius = value;
     else if(key=="target.y")
-    dTargetBoxX = value;
+    dTargetTubeOuterRadius = value;
     else if(key=="target.z")
-    dTargetBoxZ = value;
+    dTargetTubeLength = value;
     
     else if(key=="capture.ir")
     dCaptureTubeInnerRadius = value;

@@ -187,7 +187,7 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
   //Flags the cells as sensitive .The pointer here serves
   // as a flag only to check for sensitivity.
   // (Could we make it by a simple cast of a non-NULL value ?)
-  GPDummySD * dummySensi = new GPDummySD;
+  GPDummySD* dummySensi = new GPDummySD();
   targetROZDivLog->SetSensitiveDetector(dummySensi);
 
 #ifdef GP_DEBUG
