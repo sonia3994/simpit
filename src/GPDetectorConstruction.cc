@@ -57,7 +57,7 @@ GPDetectorConstruction::GPDetectorConstruction()
 
     dTargetCellZ=1e-3;
     dTargetCellR=1e-3;
-    dTargetCellPhi=90;
+    dTargetCellPhi=360;
     vectEddDim.push_back(ceil(dTargetTubeLength/dTargetCellZ));
     vectEddDim.push_back(ceil(dTargetTubeOuterRadius/dTargetCellR));
     vectEddDim.push_back(ceil(dTargetTubeSpanningAngle/dTargetCellPhi));
@@ -138,7 +138,75 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   worldBox = new G4Box("worldBox",m*dWorldX/2,m*dWorldY/2,m*dWorldZ/2);
   worldLog = new G4LogicalVolume(worldBox,worldMaterial,"worldLog");
   worldPhys = new G4PVPlacement(0,G4ThreeVector(),worldLog,"world",0,false,0);
+  ConstructTarget();
+  ConstructCapture();
+  ConstructAccelerator();
+  ConstructTranTubs();
+  //always return the physical World
+  //
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::ConstructPositronResource()"<<G4endl;
+#endif
 
+  return worldPhys;
+}
+
+void GPDetectorConstruction::DefineMaterials()
+{
+  //------------------------------------------------------ materials
+
+  G4double a;  // atomic mass
+  G4double z;  // atomic number
+  G4double density;
+  G4double pressure;
+  G4double temperature;
+
+//  G4Material* Ar = 
+//  new G4Material("ArgonGas", z= 18., a= 39.95*g/mole, density= 1.782*mg/cm3);
+
+//  G4Material* Al = 
+//  new G4Material("Aluminum", z= 13., a= 26.98*g/mole, density= 2.7*g/cm3);
+
+//  G4Material* Pb = 
+//  new G4Material("Lead", z= 82., a= 207.19*g/mole, density= 11.35*g/cm3);
+//  a = 183.84*g/mole;
+//  G4Element* elW = new G4Element(name="Tungsten" ,symbol="W", z=74., a);
+  density = universe_mean_density; //from PhysicalConstants.h
+  pressure = 1.e-19*pascal;
+  temperature = 0.1*kelvin;
+  Vacuum = new G4Material("Galactic", z=1., a=1.01*g/mole, density,kStateGas,temperature,pressure);
+  W = new G4Material("Tungsten",z=74.,a=183.84*g/mole,density=19.3*g/cm3);
+ 
+}
+void GPDetectorConstruction::ConstructTranTubs()
+{
+//--------------------------------transportion tube
+  tranTube = new G4Tubs("tranTube",
+      m*dTranTubeInnerRadius,
+      m*dTranTubeOuterRadius,
+      m*dTranTubeLength/2.0,
+      deg*dTranTubeStartAngle,
+      deg*dTranTubeSpanningAngle);
+
+  tranLog = new G4LogicalVolume(tranTube,tranMaterial,"tranLog");
+  G4double tranPos_x = 0.0;
+  G4double tranPos_y = 0.0;
+  G4double tranPos_z = -(dTargetTubeLength+dTranTubeLength)/2;
+  tranPhys = new G4PVPlacement(0,
+             G4ThreeVector(m*tranPos_x,m*tranPos_y,m*tranPos_z),
+             tranLog,"tran",worldLog,false,0);
+
+  // Visualization attributes
+  //
+  //worldLog->SetVisAttributes (G4VisAttributes::Invisible);
+  G4VisAttributes* tranLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0,0.3));
+  tranLogVisAtt->SetVisibility(true);
+  tranLogVisAtt->SetForceSolid(true);
+  tranLog->SetVisAttributes(tranLogVisAtt);
+}
+
+void GPDetectorConstruction::ConstructTarget()
+{
   //------------------------------ target tube
 
   targetTubs = new G4Tubs("targetTubs",
@@ -156,70 +224,28 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
              G4ThreeVector(m*targetPos_x,m*targetPos_y,m*targetPos_z),
              targetLog,"targetPhys",worldLog,false,0);
   
-  //------------------------------ capture tube
+  //sub detector of target: for hits
+  G4double dTargetHitTubeInnerRadius=dTargetTubeInnerRadius;      
+  G4double dTargetHitTubeOuterRadius=dTargetTubeOuterRadius;      
+  G4double dTargetHitTubeLength=dTargetTubeLength/4;         
+  G4double dTargetHitTubeStartAngle=dTargetTubeStartAngle;     
+  G4double dTargetHitTubeSpanningAngle=dTargetTubeSpanningAngle; 
 
-  captureTube = new G4Tubs("captureTube",
-      m*dCaptureTubeInnerRadius,
-      m*dCaptureTubeOuterRadius,
-      m*dCaptureTubeLength/2.0,
-      deg*dCaptureTubeStartAngle,
-      deg*dCaptureTubeSpanningAngle);
+  G4Tubs* targetHitTubs = new G4Tubs("targetHitTubs",
+      m*dTargetHitTubeInnerRadius,
+      m*dTargetHitTubeOuterRadius,
+      m*dTargetHitTubeLength/2,
+      deg*dTargetHitTubeStartAngle,
+      deg*dTargetHitTubeSpanningAngle);
 
-  captureLog = new G4LogicalVolume(captureTube,captureMaterial,"captureLog");
-  G4double capturePos_x = 0.0;
-  G4double capturePos_y = 0.0;
-  G4double capturePos_z = (dTargetTubeLength+dCaptureTubeLength)/2;
-  capturePhys = new G4PVPlacement(0,
-             G4ThreeVector(m*capturePos_x,m*capturePos_y,m*capturePos_z),
-             captureLog,"capture",worldLog,false,0);
+  G4LogicalVolume* targetHitLog = new G4LogicalVolume(targetHitTubs,targetMaterial,"targetHitLog");
+  G4double targetHitPos_x = 0.0;
+  G4double targetHitPos_y = 0.0;
+  G4double targetHitPos_z = dTargetHitTubeLength*1.5;
+  G4VPhysicalVolume* targetHitPhys = new G4PVPlacement(0,
+             G4ThreeVector(m*targetHitPos_x,m*targetHitPos_y,m*targetHitPos_z),
+             targetHitLog,"targetHitPhys",targetLog,false,0);
 
-  captureLog->SetFieldManager(fieldSetup->GetLocalFieldManager("capture"),true);
-  //captureLog->SetUserLimits(new G4UserLimits(dCaptureStepMax*m));
-
-  if(iCaptureType==4) 
-  {
-    SetLithiumLens(dLithiumTubeLength,dLithiumTubeOuterRadius);
-  }
-  //------------------------------ accelerator tube
-
-  acceleratorTube = new G4Tubs("acceleratorTube",
-      m*dAcceleratorTubeInnerRadius,
-      m*dAcceleratorTubeOuterRadius,
-      m*dAcceleratorTubeLength/2.0,
-      deg*dAcceleratorTubeStartAngle,
-      deg*dAcceleratorTubeSpanningAngle);
-
-  acceleratorLog = new G4LogicalVolume(acceleratorTube,acceleratorMaterial,"acceleratorLog");
-  G4double acceleratorPos_x = 0.0;
-  G4double acceleratorPos_y = 0.0;
-  G4double acceleratorPos_z = dCaptureTubeLength+(dTargetTubeLength+dAcceleratorTubeLength)/2;
-  acceleratorPhys = new G4PVPlacement(0,
-             G4ThreeVector(m*acceleratorPos_x,m*acceleratorPos_y,m*acceleratorPos_z),
-             acceleratorLog,"accelerator",worldLog,false,0);
-
-  acceleratorLog->SetFieldManager(fieldSetup->GetLocalFieldManager("accelerator"),true);
-  //acceleratorLog->SetUserLimits(new G4UserLimits(dAcceleratorStepMax*m));
-
-//--------------------------------transportion tube
-  tranTube = new G4Tubs("tranTube",
-      m*dTranTubeInnerRadius,
-      m*dTranTubeOuterRadius,
-      m*dTranTubeLength/2.0,
-      deg*dTranTubeStartAngle,
-      deg*dTranTubeSpanningAngle);
-
-  tranLog = new G4LogicalVolume(tranTube,tranMaterial,"tranLog");
-  G4double tranPos_x = 0.0;
-  G4double tranPos_y = 0.0;
-  G4double tranPos_z = -(dTargetTubeLength+dTranTubeLength)/2;
-  tranPhys = new G4PVPlacement(0,
-             G4ThreeVector(m*tranPos_x,m*tranPos_y,m*tranPos_z),
-             tranLog,"tran",worldLog,false,0);
-
-
-//----------------------------------------------------------------------------
-//Sensitive Detector
-//----------------------------------------------------------------------------
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4String targetSDName="/PositronSource/Target/EddSD";
   G4String targetROName="targetROGeometry";
@@ -266,8 +292,43 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
     targetMultiFunDet->RegisterPrimitive(targetParticleScorer);
     SDman->AddNewDetector(targetMultiFunDet);
   }
-  //targetLog->SetSensitiveDetector(targetMultiFunDet); 
 
+  targetHitLog->SetSensitiveDetector(targetMultiFunDet); 
+  G4VisAttributes* targetLogVisAtt= new G4VisAttributes(G4Colour(1.0,0,1.0,0.3));
+  targetLogVisAtt->SetVisibility(true);
+  targetLogVisAtt->SetForceSolid(true);
+  targetLog->SetVisAttributes(targetLogVisAtt);
+
+}
+
+void GPDetectorConstruction::ConstructCapture()
+{
+  //------------------------------ capture tube
+
+  captureTube = new G4Tubs("captureTube",
+      m*dCaptureTubeInnerRadius,
+      m*dCaptureTubeOuterRadius,
+      m*dCaptureTubeLength/2.0,
+      deg*dCaptureTubeStartAngle,
+      deg*dCaptureTubeSpanningAngle);
+
+  captureLog = new G4LogicalVolume(captureTube,captureMaterial,"captureLog");
+  G4double capturePos_x = 0.0;
+  G4double capturePos_y = 0.0;
+  G4double capturePos_z = (dTargetTubeLength+dCaptureTubeLength)/2;
+  capturePhys = new G4PVPlacement(0,
+             G4ThreeVector(m*capturePos_x,m*capturePos_y,m*capturePos_z),
+             captureLog,"capture",worldLog,false,0);
+
+  captureLog->SetFieldManager(fieldSetup->GetLocalFieldManager("capture"),true);
+  //captureLog->SetUserLimits(new G4UserLimits(dCaptureStepMax*m));
+
+  if(iCaptureType==4) 
+  {
+    SetLithiumLens(dLithiumTubeLength,dLithiumTubeOuterRadius);
+  }
+
+  G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Capture/MultiFunDet");
   GPSurfaceParticleScorer* captureParticleScorer=0;
   if(captureMultiFunDet==NULL)
@@ -279,6 +340,41 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   }
   captureLog->SetSensitiveDetector(captureMultiFunDet); 
 
+  G4VisAttributes* captureLogVisAtt= new G4VisAttributes(G4Colour(0,1.0,1.0,0.3));
+  captureLogVisAtt->SetVisibility(true);
+  captureLogVisAtt->SetForceSolid(true);
+  captureLog->SetVisAttributes(captureLogVisAtt);
+
+}
+
+void GPDetectorConstruction::ConstructAccelerator()
+{
+  //------------------------------ accelerator tube
+
+  acceleratorTube = new G4Tubs("acceleratorTube",
+      m*dAcceleratorTubeInnerRadius,
+      m*dAcceleratorTubeOuterRadius,
+      m*dAcceleratorTubeLength/2.0,
+      deg*dAcceleratorTubeStartAngle,
+      deg*dAcceleratorTubeSpanningAngle);
+
+  acceleratorLog = new G4LogicalVolume(acceleratorTube,acceleratorMaterial,"acceleratorLog");
+  G4double acceleratorPos_x = 0.0;
+  G4double acceleratorPos_y = 0.0;
+  G4double acceleratorPos_z = dCaptureTubeLength+(dTargetTubeLength+dAcceleratorTubeLength)/2;
+  acceleratorPhys = new G4PVPlacement(0,
+             G4ThreeVector(m*acceleratorPos_x,m*acceleratorPos_y,m*acceleratorPos_z),
+             acceleratorLog,"accelerator",worldLog,false,0);
+
+  acceleratorLog->SetFieldManager(fieldSetup->GetLocalFieldManager("accelerator"),true);
+  //acceleratorLog->SetUserLimits(new G4UserLimits(dAcceleratorStepMax*m));
+
+  G4VisAttributes* acceleratorLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0,0.3));
+  acceleratorLogVisAtt->SetVisibility(true);
+  acceleratorLogVisAtt->SetForceSolid(true);
+  acceleratorLog->SetVisAttributes(acceleratorLogVisAtt);
+
+  G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4MultiFunctionalDetector* acceleratorMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Accelerator/MultiFunDet");
   GPSurfaceParticleScorer* acceleratorParticleScorer=0;
   if(acceleratorMultiFunDet==NULL)
@@ -290,106 +386,6 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
   }
   acceleratorLog->SetSensitiveDetector(acceleratorMultiFunDet); 
   
-  
-
-  // Visualization attributes
-  //
-  //worldLog->SetVisAttributes (G4VisAttributes::Invisible);
-  G4VisAttributes* tranLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0,0.3));
-  tranLogVisAtt->SetVisibility(true);
-  tranLogVisAtt->SetForceSolid(true);
-  tranLog->SetVisAttributes(tranLogVisAtt);
-
-  G4VisAttributes* targetLogVisAtt= new G4VisAttributes(G4Colour(1.0,0,1.0,0.3));
-  targetLogVisAtt->SetVisibility(true);
-  targetLogVisAtt->SetForceSolid(true);
-  targetLog->SetVisAttributes(targetLogVisAtt);
-
-  G4VisAttributes* captureLogVisAtt= new G4VisAttributes(G4Colour(0,1.0,1.0,0.3));
-  captureLogVisAtt->SetVisibility(true);
-  captureLogVisAtt->SetForceSolid(true);
-  captureLog->SetVisAttributes(captureLogVisAtt);
-
-  G4VisAttributes* acceleratorLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0,0.3));
-  acceleratorLogVisAtt->SetVisibility(true);
-  acceleratorLogVisAtt->SetForceSolid(true);
-  acceleratorLog->SetVisAttributes(acceleratorLogVisAtt);
-
-  //
-  //always return the physical World
-  //
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::ConstructPositronResource()"<<G4endl;
-#endif
-
-  return worldPhys;
-}
-
-void GPDetectorConstruction::DefineMaterials()
-{
-  //------------------------------------------------------ materials
-
-  G4double a;  // atomic mass
-  G4double z;  // atomic number
-  G4double density;
-  G4double pressure;
-  G4double temperature;
-
-//  G4Material* Ar = 
-//  new G4Material("ArgonGas", z= 18., a= 39.95*g/mole, density= 1.782*mg/cm3);
-
-//  G4Material* Al = 
-//  new G4Material("Aluminum", z= 13., a= 26.98*g/mole, density= 2.7*g/cm3);
-
-//  G4Material* Pb = 
-//  new G4Material("Lead", z= 82., a= 207.19*g/mole, density= 11.35*g/cm3);
-//  a = 183.84*g/mole;
-//  G4Element* elW = new G4Element(name="Tungsten" ,symbol="W", z=74., a);
-  density = universe_mean_density; //from PhysicalConstants.h
-  pressure = 1.e-19*pascal;
-  temperature = 0.1*kelvin;
-  Vacuum = new G4Material("Galactic", z=1., a=1.01*g/mole, density,kStateGas,temperature,pressure);
-  W = new G4Material("Tungsten",z=74.,a=183.84*g/mole,density=19.3*g/cm3);
- 
-}
-
-
-void GPDetectorConstruction::SetTargetThickness(G4double val)
-{
-  dTargetTubeLength = val;
-  G4cout<<"The target thickness is set to "<<val<<" m"<<G4endl;
-}
-
-void GPDetectorConstruction::SetTargetXY(G4double val)
-{
-  dTargetTubeOuterRadius = val; 
-  G4cout<<"The target box X and Y length is set to "<<val<<" m"<<G4endl;
-}
-
-void GPDetectorConstruction::SetWorldSizeXYZ(G4double valx,G4double valy, G4double valz)
-{
-  dWorldX = valx;
-  dWorldY = valy;
-  dWorldZ = valz;
-  G4cout<<"The world volume is set to "<<valx<<"*"<<valy<<"*"<<valz<<" m^3!"<<G4endl;
-}
-
-void GPDetectorConstruction::SetWorldSizeX(G4double val)
-{
-  dWorldX = val;
-  G4cout<<"The world x thickness is set to "<<val<<" m"<<G4endl;
-}
-
-void GPDetectorConstruction::SetWorldSizeY(G4double val)
-{
-  dWorldY = val;
-  G4cout<<"The world y is set to "<<val<<" m"<<G4endl;
-}
-
-void GPDetectorConstruction::SetWorldSizeZ(G4double val)
-{
-  dWorldZ = val;
-  G4cout<<"The world z is set to "<<val<<" m"<<G4endl;
 }
 
 void GPDetectorConstruction::SetTargetMaterial(G4String materialChoice)
@@ -404,7 +400,6 @@ void GPDetectorConstruction::SetTargetMaterial(G4String materialChoice)
 void GPDetectorConstruction::SetWorldMaterial(G4String materialChoice)
 {
   // search the material by its name
-  //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
   G4Material* pttoMaterial= G4NistManager::Instance()->FindOrBuildMaterial(materialChoice);
   if (pttoMaterial) worldMaterial = pttoMaterial;
   G4cout<<"The world material is set to "<<materialChoice<<G4endl;
@@ -413,7 +408,6 @@ void GPDetectorConstruction::SetWorldMaterial(G4String materialChoice)
 void GPDetectorConstruction::SetCaptureMaterial(G4String materialChoice)
 {
   // search the material by its name
-  //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
   G4Material* pttoMaterial= G4NistManager::Instance()->FindOrBuildMaterial(materialChoice);
   if (pttoMaterial) captureMaterial = pttoMaterial;
   G4cout<<"The Capture material is set to "<<materialChoice<<G4endl;
@@ -422,7 +416,6 @@ void GPDetectorConstruction::SetCaptureMaterial(G4String materialChoice)
 void GPDetectorConstruction::SetAcceleratorMaterial(G4String materialChoice)
 {
   // search the material by its name
-  //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
   G4Material* pttoMaterial= G4NistManager::Instance()->FindOrBuildMaterial(materialChoice);
   if (pttoMaterial) acceleratorMaterial = pttoMaterial;
   G4cout<<"The Accelerator material is set to "<<materialChoice<<G4endl;
@@ -431,7 +424,6 @@ void GPDetectorConstruction::SetAcceleratorMaterial(G4String materialChoice)
 void GPDetectorConstruction::SetTranTubeMaterial(G4String materialChoice)
 {
   // search the material by its name
-  //G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
   G4Material* pttoMaterial= G4NistManager::Instance()->FindOrBuildMaterial(materialChoice);
   if (pttoMaterial) tranMaterial = pttoMaterial;
   G4cout<<"The transportion tube  material is set to "<<materialChoice<<G4endl;

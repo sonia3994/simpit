@@ -63,6 +63,7 @@ GPDetectorMessenger::GPDetectorMessenger(
   UserLimitsCmd->SetParameterName("choice",false);
   UserLimitsCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
+  /*
   TarThickCmd = new G4UIcmdWithADoubleAndUnit("/GP/detector/targetThickness",this);
   TarThickCmd->SetGuidance("Set Thickness of the Target");
   TarThickCmd->SetParameterName("Size",false);
@@ -109,6 +110,7 @@ GPDetectorMessenger::GPDetectorMessenger(
   parameter -> SetDefaultValue ("mm");
   SizeWorldXYZCmd -> SetParameter (parameter);
   SizeWorldXYZCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  */
 
   TargetCellXYZCmd = new G4UIcommand("/GP/detector/targetCellXYZ", this);
   TargetCellXYZCmd -> SetGuidance ("Set up target cell volume size.");
@@ -128,7 +130,7 @@ GPDetectorMessenger::GPDetectorMessenger(
   parameter -> SetDefaultValue ("mm");
   TargetCellXYZCmd -> SetParameter (parameter);
   TargetCellXYZCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
+  /*
   SizeWorldXCmd = new G4UIcmdWithADoubleAndUnit("/GP/detector/worldX",this);
   SizeWorldXCmd->SetGuidance("Set X size of the World");
   SizeWorldXCmd->SetParameterName("Size",false);
@@ -149,6 +151,7 @@ GPDetectorMessenger::GPDetectorMessenger(
   SizeWorldZCmd->SetRange("Size>0.");
   SizeWorldZCmd->SetUnitCategory("Length");    
   SizeWorldZCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  */
 
   UpdateCmd = new G4UIcmdWithoutParameter("/GP/detector/update",this);
   UpdateCmd->SetGuidance("Update Positron Resource geometry.");
@@ -177,14 +180,14 @@ GPDetectorMessenger::~GPDetectorMessenger()
   delete TarMaterCmd; 
   delete DetectorSizeCmd; 
   delete UserLimitsCmd; 
-  delete TarThickCmd;
-  delete TarBoxXYCmd; 
-  delete CapLengthCmd; 
-  delete CapRadiusCmd;
-  delete SizeWorldXCmd;   
-  delete SizeWorldYCmd;
-  delete SizeWorldZCmd;
-  delete SizeWorldXYZCmd;   
+  //delete TarThickCmd;
+  //delete TarBoxXYCmd; 
+  //delete CapLengthCmd; 
+  //delete CapRadiusCmd;
+  //delete SizeWorldXCmd;   
+  //delete SizeWorldYCmd;
+  //delete SizeWorldZCmd;
+  //delete SizeWorldXYZCmd;   
   delete TargetCellXYZCmd;   
   delete UpdateCmd;
 //  delete MagFieldCmd;
@@ -214,6 +217,7 @@ void GPDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
     GPDetector->SetCaptureType(CaptureType->GetNewIntValue(newValue));
   }  
 
+  /*
   if( command == TarThickCmd )
    { GPDetector->SetTargetThickness((TarThickCmd->GetNewDoubleValue(newValue))/m);}
 
@@ -246,6 +250,7 @@ void GPDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	z=z*G4UIcommand::ValueOf(unit)/m;
 	GPDetector->SetWorldSizeXYZ(x,y,z);
    }
+   */
 
  if( command == TargetCellXYZCmd )
    {
