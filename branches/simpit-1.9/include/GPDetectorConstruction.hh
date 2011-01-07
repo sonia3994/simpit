@@ -12,6 +12,7 @@ class GPDetectorMessenger;
 class GPFieldSetup;
 class GPTargetSD;
 class GPTargetROGeometry;
+class GPTargetROGeometryTubs;
 class G4Box;
 class G4Tubs;
 class G4LogicalVolume;
@@ -41,7 +42,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
 
     void SetTargetThickness(G4double);
     void SetTargetXY(G4double);
-    void SetTargetCellXYZ(G4double x,G4double y,G4double z){ dTargetCellX=x; dTargetCellY=y; dTargetCellZ=z;};
+    void SetTargetCellXYZ(G4double x,G4double y,G4double z){ dTargetCellZ=x; dTargetCellR=y; dTargetCellPhi=z;};
     void SetCaptureLength(G4double t)	{dCaptureTubeLength=t;};
     void SetCaptureRadius(G4double t)	{dCaptureTubeOuterRadius=t;};
     void SetWorldSizeXYZ(G4double ,G4double , G4double );
@@ -50,11 +51,11 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     void SetWorldSizeZ(G4double);
     void SetCaptureType(G4int);
     
-    inline G4double GetTargetThickness()	const	{return dTargetBoxZ;};
-    inline G4double GetTargetXY()		const	{return dTargetBoxX;};
-    inline G4double GetTargetX()		const	{return dTargetBoxX;};
-    inline G4double GetTargetY()		const	{return dTargetBoxY;};
-    inline G4double GetTargetLength()	const	{return dTargetBoxZ;};
+    inline G4double GetTargetThickness()	const	{return dTargetTubeLength;};
+    inline G4double GetTargetXY()		const	{return dTargetTubeOuterRadius;};
+    inline G4double GetTargetX()		const	{return dTargetTubeOuterRadius;};
+    inline G4double GetTargetY()		const	{return dTargetTubeOuterRadius;};
+    inline G4double GetTargetLength()	const	{return dTargetTubeLength;};
     inline G4double GetCaptureLength()		const	{return dCaptureTubeLength;};
     inline G4double GetCaptureRadius()		const	{return dCaptureTubeOuterRadius;};
     inline G4double GetWorldSizeX() 		const	{return dWorldX;}; 
@@ -81,12 +82,14 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     
     // target
     //
-    G4double dTargetBoxY;
-    G4double dTargetBoxX;
-    G4double dTargetBoxZ;
+    G4double dTargetTubeInnerRadius;
+    G4double dTargetTubeOuterRadius;
+    G4double dTargetTubeLength;
+    G4double dTargetTubeStartAngle;
+    G4double dTargetTubeSpanningAngle;
 
     G4Material* targetMaterial;
-    G4Box* targetBox;
+    G4Tubs* targetTubs;
     G4LogicalVolume* targetLog;
     G4VPhysicalVolume* targetPhys;
 
@@ -149,10 +152,11 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     //sensetive detector
     GPTargetSD* targetSD;
     GPTargetROGeometry* targetRO;
+    GPTargetROGeometryTubs* targetROTubs;
 
-    G4double dTargetCellX;
-    G4double dTargetCellY;
     G4double dTargetCellZ;
+    G4double dTargetCellR;
+    G4double dTargetCellPhi;
     std::vector<G4int> vectEddDim;
 
     //material

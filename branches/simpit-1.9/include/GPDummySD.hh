@@ -21,7 +21,9 @@ public:
   void DrawAll() {}
   void PrintAll() {}
 };
+/*
 GPDummySD::GPDummySD()
   : G4VSensitiveDetector("dummySD")
 {}
+*/
 #endif
