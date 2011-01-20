@@ -73,6 +73,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     G4double dTargetTubeLength;
     G4double dTargetTubeStartAngle;
     G4double dTargetTubeSpanningAngle;
+    G4int iGranularFlag;
 
     G4Material* targetMaterial;
     G4Tubs* targetTubs;

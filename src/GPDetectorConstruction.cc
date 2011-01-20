@@ -10,6 +10,7 @@
 #include "GPFieldSetup.hh"
 #include "GPCaptureFieldManager.hh"
 #include "GPSurfaceParticleScorer.hh"
+#include "GPTargetGeometry.hh"
 
 
 #include "G4Box.hh"
@@ -51,9 +52,10 @@ GPDetectorConstruction::GPDetectorConstruction()
 #endif
     dTargetTubeInnerRadius = 0;
     dTargetTubeOuterRadius = 25e-3;
-    dTargetTubeLength = 6.0e-3;
+    dTargetTubeLength = 10.0e-3;
     dTargetTubeStartAngle = 0;
     dTargetTubeSpanningAngle = 360;
+    iGranularFlag=1;
 
     dTargetCellZ=1e-3;
     dTargetCellR=1e-3;
@@ -216,7 +218,7 @@ void GPDetectorConstruction::ConstructTarget()
       deg*dTargetTubeStartAngle,
       deg*dTargetTubeSpanningAngle);
 
-  targetLog = new G4LogicalVolume(targetTubs,targetMaterial,"targetLog");
+  targetLog = new G4LogicalVolume(targetTubs,Vacuum,"targetLog");
   G4double targetPos_x = 0.0;
   G4double targetPos_y = 0.0;
   G4double targetPos_z = 0.0;
@@ -224,12 +226,31 @@ void GPDetectorConstruction::ConstructTarget()
              G4ThreeVector(m*targetPos_x,m*targetPos_y,m*targetPos_z),
              targetLog,"targetPhys",worldLog,false,0);
   
+  GPTargetGeometry* targetGeometry = new GPTargetGeometry;
+  if(iGranularFlag==1)
+  {
+    targetLog->SetMaterial(Vacuum);
+    //targetGeometry->SetPoint(G4ThreeVector(0,0,0));
+    targetGeometry->Construct(targetLog,
+	G4ThreeVector(0,0,0),
+	0.002,
+        dTargetTubeOuterRadius*2,
+	dTargetTubeOuterRadius*2,
+	dTargetTubeLength,
+	0);
+  //G4cout<<"here is ok?"<<G4endl;
+  }
+  
+  delete targetGeometry;
   //sub detector of target: for hits
   G4double dTargetHitTubeInnerRadius=dTargetTubeInnerRadius;      
   G4double dTargetHitTubeOuterRadius=dTargetTubeOuterRadius;      
   G4double dTargetHitTubeLength=dTargetTubeLength/4;         
   G4double dTargetHitTubeStartAngle=dTargetTubeStartAngle;     
   G4double dTargetHitTubeSpanningAngle=dTargetTubeSpanningAngle; 
+
+  G4ThreeVector targetHitPoint = G4ThreeVector( 0.0, 0.0, dTargetHitTubeLength*1.5*m);
+
 
   G4Tubs* targetHitTubs = new G4Tubs("targetHitTubs",
       m*dTargetHitTubeInnerRadius,
@@ -238,13 +259,10 @@ void GPDetectorConstruction::ConstructTarget()
       deg*dTargetHitTubeStartAngle,
       deg*dTargetHitTubeSpanningAngle);
 
-  G4LogicalVolume* targetHitLog = new G4LogicalVolume(targetHitTubs,targetMaterial,"targetHitLog");
-  G4double targetHitPos_x = 0.0;
-  G4double targetHitPos_y = 0.0;
-  G4double targetHitPos_z = dTargetHitTubeLength*1.5;
+  G4LogicalVolume* targetHitLog = new G4LogicalVolume(targetHitTubs,Vacuum,"targetHitLog");
   G4VPhysicalVolume* targetHitPhys = new G4PVPlacement(0,
-             G4ThreeVector(m*targetHitPos_x,m*targetHitPos_y,m*targetHitPos_z),
-             targetHitLog,"targetHitPhys",targetLog,false,0);
+    targetHitPoint,
+    targetHitLog,"targetHitPhys",targetLog,false,0);
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4String targetSDName="/PositronSource/Target/EddSD";
@@ -294,10 +312,12 @@ void GPDetectorConstruction::ConstructTarget()
   }
 
   targetHitLog->SetSensitiveDetector(targetMultiFunDet); 
+  /*
   G4VisAttributes* targetLogVisAtt= new G4VisAttributes(G4Colour(1.0,0,1.0,0.3));
   targetLogVisAtt->SetVisibility(true);
   targetLogVisAtt->SetForceSolid(true);
   targetLog->SetVisAttributes(targetLogVisAtt);
+  */
 
 }
 
