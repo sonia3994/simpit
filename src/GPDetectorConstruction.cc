@@ -50,12 +50,14 @@ GPDetectorConstruction::GPDetectorConstruction()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::GPDetectorConstruction()"<<G4endl;
 #endif
+    targetGeometry = new GPTargetGeometry();
     dTargetTubeInnerRadius = 0;
     dTargetTubeOuterRadius = 25e-3;
     dTargetTubeLength = 10.0e-3;
     dTargetTubeStartAngle = 0;
     dTargetTubeSpanningAngle = 360;
-    iGranularFlag=1;
+    dTargetGranularRadius = 0.00075;
+    iTargetGranularFlag=1;
 
     dTargetCellZ=1e-3;
     dTargetCellR=1e-3;
@@ -110,6 +112,7 @@ GPDetectorConstruction::~GPDetectorConstruction()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::~GPDetectorConstruction()"<<G4endl;
 #endif
+    if(targetGeometry)		delete targetGeometry;
     if(detectorMessenger) 	delete detectorMessenger;
     if(fieldSetup) 			delete fieldSetup;
     if(targetRO) 			delete targetRO;
@@ -226,22 +229,21 @@ void GPDetectorConstruction::ConstructTarget()
              G4ThreeVector(m*targetPos_x,m*targetPos_y,m*targetPos_z),
              targetLog,"targetPhys",worldLog,false,0);
   
-  GPTargetGeometry* targetGeometry = new GPTargetGeometry;
-  if(iGranularFlag==1)
+  ///*
+  if(iTargetGranularFlag==1)
   {
     targetLog->SetMaterial(Vacuum);
     //targetGeometry->SetPoint(G4ThreeVector(0,0,0));
     targetGeometry->Construct(targetLog,
 	G4ThreeVector(0,0,0),
-	0.002,
-        dTargetTubeOuterRadius*2,
-	dTargetTubeOuterRadius*2,
+	dTargetGranularRadius,
+        dTargetTubeOuterRadius*sqrt(2.0),
+	dTargetTubeOuterRadius*sqrt(2.0),
 	dTargetTubeLength,
 	0);
-  //G4cout<<"here is ok?"<<G4endl;
   }
+  //*/
   
-  delete targetGeometry;
   //sub detector of target: for hits
   G4double dTargetHitTubeInnerRadius=dTargetTubeInnerRadius;      
   G4double dTargetHitTubeOuterRadius=dTargetTubeOuterRadius;      
@@ -589,62 +591,69 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
 	std::stringstream ss(str);
 	std::string		  unit;
 	std::string		  key;
-	G4double   		  value;
+	G4double   		  dValueNew;
+	G4double   		  dValueOrg;
 	
-	ss>>key>>value>>unit;
-    value=(value*G4UIcommand::ValueOf(unit.c_str()))/m;
+	ss>>key>>dValueOrg>>unit;
+    if(unit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(unit.c_str()))/m;
+    else dValueNew=dValueOrg;
 
     if(key=="target.x")
-    dTargetTubeOuterRadius = value;
+    dTargetTubeOuterRadius = dValueNew;
     else if(key=="target.y")
-    dTargetTubeOuterRadius = value;
+    dTargetTubeOuterRadius = dValueNew;
     else if(key=="target.z")
-    dTargetTubeLength = value;
+    dTargetTubeLength = dValueNew;
+    else if(key=="target.granular.flag")
+    iTargetGranularFlag = dValueNew;
+    else if(key=="target.granular.radius")
+    dTargetGranularRadius = dValueNew;
     
     else if(key=="capture.ir")
-    dCaptureTubeInnerRadius = value;
+    dCaptureTubeInnerRadius = dValueNew;
     else if(key=="capture.or")
-    dCaptureTubeOuterRadius = value;
+    dCaptureTubeOuterRadius = dValueNew;
     else if(key=="capture.l")
-    dCaptureTubeLength = value;
+    dCaptureTubeLength = dValueNew;
     else if(key=="capture.sa")
-    dCaptureTubeStartAngle = value;
+    dCaptureTubeStartAngle = dValueNew;
     else if(key=="capture.ea")
-    dCaptureTubeSpanningAngle = value;
+    dCaptureTubeSpanningAngle = dValueNew;
     else if(key=="capture.lithium.l")
-    dLithiumTubeLength = value;
+    dLithiumTubeLength = dValueNew;
     else if(key=="capture.lithium.or")
-    dLithiumTubeOuterRadius = value;
+    dLithiumTubeOuterRadius = dValueNew;
     
     
     else if(key=="transport.ir")
-    dTranTubeInnerRadius = value;
+    dTranTubeInnerRadius = dValueNew;
     else if(key=="transport.or")
-    dTranTubeOuterRadius = value;
+    dTranTubeOuterRadius = dValueNew;
     else if(key=="transport.l")
-    dTranTubeLength = value;
+    dTranTubeLength = dValueNew;
     else if(key=="transport.sa")
-    dTranTubeStartAngle = value;
+    dTranTubeStartAngle = dValueNew;
     else if(key=="transport.ea")
-    dTranTubeSpanningAngle = value;
+    dTranTubeSpanningAngle = dValueNew;
     
     else if(key=="accelerator.ir")
-    dAcceleratorTubeInnerRadius = value;
+    dAcceleratorTubeInnerRadius = dValueNew;
     else if(key=="accelerator.or")
-    dAcceleratorTubeOuterRadius = value;
+    dAcceleratorTubeOuterRadius = dValueNew;
     else if(key=="accelerator.l")
-    dAcceleratorTubeLength = value;
+    dAcceleratorTubeLength = dValueNew;
     else if(key=="accelerator.sa")
-    dAcceleratorTubeStartAngle = value;
+    dAcceleratorTubeStartAngle = dValueNew;
     else if(key=="accelerator.ea")
-    dAcceleratorTubeSpanningAngle = value;
+    dAcceleratorTubeSpanningAngle = dValueNew;
     
     else if(key=="world.x")
-    dWorldX = value;
+    dWorldX = dValueNew;
     else if(key=="world.y")
-    dWorldY = value;
+    dWorldY = dValueNew;
     else if(key=="world.z")
-    dWorldZ = value;
+    dWorldZ = dValueNew;
 
 	else 
 	{
@@ -652,7 +661,7 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
 		return;
 	}
 
-	std::cout<<"Set "<<key<<" to "<< value<<" m"<<std::endl;
+	std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
 
 }
 void GPDetectorConstruction::SetLithiumLens(G4double dLength,G4double dOuterRadius,G4double dInnerRadius, G4double dStartAngle, G4double dSpanningAngle )

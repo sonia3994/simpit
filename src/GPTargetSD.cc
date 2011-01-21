@@ -1,6 +1,7 @@
 #include "GPTargetSD.hh"
 #include "GPTargetHit.hh"
 #include "G4VPhysicalVolume.hh"
+#include "G4VSolid.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Track.hh"
 #include "G4Step.hh"
@@ -63,6 +64,7 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
   //if(physVol->GetName()!="")
   //ROhist->MoveUpHistory();
   //G4VPhysicalVolume* mothVol = ROhist->GetVolume(1);
+  G4double dCellVolume = ROhist->GetSolid(2)->GetCubicVolume();
   G4int copyIDinX = ROhist->GetReplicaNumber(2);
   G4int copyIDinY = ROhist->GetReplicaNumber(1);
   G4int copyIDinZ = ROhist->GetReplicaNumber(0);
@@ -70,6 +72,13 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
 
   if (vecIntCellID[cellIndex]==-1)
   {
+    G4cout<<"Cell and Volume:\n"
+      <<" Z: "<<copyIDinZ
+      <<" R: "<<copyIDinY
+      <<" Phi: "<<copyIDinX
+      <<" Volume: "<<dCellVolume
+      <<G4endl;
+
     GPTargetHit* calHit = new GPTargetHit (physVol->GetLogicalVolume(),copyIDinX,copyIDinY,copyIDinZ);
     calHit->SetEdep( edep );
     //G4AffineTransform aTrans = ROhist->GetHistory()->GetTopTransform();

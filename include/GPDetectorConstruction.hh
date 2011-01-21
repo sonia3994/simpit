@@ -18,6 +18,7 @@ class G4Tubs;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
+class GPTargetGeometry;
 
 class GPDetectorConstruction : public G4VUserDetectorConstruction
 {
@@ -68,12 +69,14 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     
     // target
     //
+    GPTargetGeometry* targetGeometry;
     G4double dTargetTubeInnerRadius;
     G4double dTargetTubeOuterRadius;
     G4double dTargetTubeLength;
     G4double dTargetTubeStartAngle;
     G4double dTargetTubeSpanningAngle;
-    G4int iGranularFlag;
+    G4double dTargetGranularRadius;
+    G4int iTargetGranularFlag;
 
     G4Material* targetMaterial;
     G4Tubs* targetTubs;
