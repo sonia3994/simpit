@@ -41,13 +41,15 @@ G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4Thre
   dWidthY = 2*sqrt(3.0)*dSphereRadiu;
   dWidthZ = 4*sqrt(6.0)*dSphereRadiu/3;
 
-  iNumX = dLengthX/dWidthX;
-  iNumY = dLengthY/dWidthY;
-  iNumZ = dLengthZ/dWidthZ;
+  iNumX = dLengthX/dWidthX-1;
+  iNumY = dLengthY/dWidthY-1;
+  iNumZ = dLengthZ/dWidthZ-1;
+  /*
   G4cout<<"X "<<iNumX
    <<", Y "<<iNumY
    <<", Z "<<iNumZ
    <<G4endl;
+   */
 
   return Granular(motherLog);
 }
@@ -65,7 +67,10 @@ G4VPhysicalVolume* GPTargetGeometry::Granular(G4LogicalVolume* MotherLog)
       false,
       0);
 
-  G4Box* ExpXYBox= new G4Box("ExpXYBox",dLengthX*m/2,dLengthY*m/2,sqrt(6.0)*dSphereRadiu*m/3);
+  G4Box* ExpXYBox= new G4Box("ExpXYBox",
+    dLengthX*m/2,
+    dLengthY*m/2,
+    (sqrt(6.0)/3+1)*dSphereRadiu*m);
   G4LogicalVolume* ExpXYLog = new G4LogicalVolume(ExpXYBox,spaceMaterial,"ExpXYLog",0,0,0);
   G4VPhysicalVolume* ExpXYPhy = new G4PVReplica("ExpXYPhys",
       ExpXYLog,
@@ -74,8 +79,12 @@ G4VPhysicalVolume* GPTargetGeometry::Granular(G4LogicalVolume* MotherLog)
       iNumZ,
       dWidthZ*m);
 
-  //G4cout<<"here is ok?"<<G4endl;
-  G4Box* ExpXBox= new G4Box("ExpXBox",dLengthX*m/2,0.5*sqrt(3.0)*dSphereRadiu*m,sqrt(6.0)*dSphereRadiu/3*m);
+  ///*
+  G4Box* ExpXBox= new G4Box("ExpXBox",
+    (dLengthX+1)*m/2,
+    (2*sqrt(3.0)/3+1)*dSphereRadiu*m,
+    (sqrt(6.0)/3+1)*dSphereRadiu*m);
+
   G4LogicalVolume* ExpXLog = new G4LogicalVolume(ExpXBox,spaceMaterial,"ExpXLog",0,0,0);
   G4VPhysicalVolume* ExpXPhy= new G4PVReplica("ExpXPhy",
       ExpXLog,
@@ -85,6 +94,7 @@ G4VPhysicalVolume* GPTargetGeometry::Granular(G4LogicalVolume* MotherLog)
       dWidthY*m);
 
   GranularCell(ExpXLog);
+  //*/
   return ExpXYZPhy;
 
 }
@@ -92,7 +102,8 @@ G4VPhysicalVolume* GPTargetGeometry::Granular(G4LogicalVolume* MotherLog)
 G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* MotherLog)
 {
 
-  G4Para* ExpCellPara = new G4Para("ExpCellPara",
+  /*
+  G4Para* ExpCellSolid = new G4Para("ExpCellSolid",
                       dSphereRadiu*m,
 		      sqrt(3.0)*dSphereRadiu/2*m,
 		      sqrt(6.0)*dSphereRadiu/3*m,
@@ -100,9 +111,14 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* MotherLog)
 		      //acos(sqrt(3.0)/3));
 		      acos(sqrt(6.0)/3),
 		      150);
-  G4LogicalVolume* ExpCellLog= new G4LogicalVolume(ExpCellPara,
+  */
+  G4Box* ExpCellSolid = new G4Box("ExpCellSolid",
+    3*dSphereRadiu*m,
+    (2*sqrt(3.0)/3+1)*dSphereRadiu*m,
+    (sqrt(6.0)/3+1)*dSphereRadiu*m);
+  G4LogicalVolume* ExpCellLog= new G4LogicalVolume(ExpCellSolid,
       spaceMaterial,
-      "ExpCellPara",
+      "ExpCellSolid",
       0,0,0);
  
   G4ThreeVector sphPoint= G4ThreeVector(-2*dSphereRadiu*m,-2*sqrt(3.0)*dSphereRadiu/3*m,-sqrt(6.0)*dSphereRadiu/3*m);
