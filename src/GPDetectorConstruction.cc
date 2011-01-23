@@ -229,29 +229,29 @@ void GPDetectorConstruction::ConstructTarget()
              G4ThreeVector(m*targetPos_x,m*targetPos_y,m*targetPos_z),
              targetLog,"targetPhys",worldLog,false,0);
   
+  G4double dTargetHitTubeInnerRadius=dTargetTubeInnerRadius;      
+  G4double dTargetHitTubeOuterRadius=dTargetTubeOuterRadius;      
+  G4double dTargetHitTubeLength=0.001;         
+  G4double dTargetHitTubeStartAngle=dTargetTubeStartAngle;     
+  G4double dTargetHitTubeSpanningAngle=dTargetTubeSpanningAngle; 
   ///*
   if(iTargetGranularFlag==1)
   {
     targetLog->SetMaterial(Vacuum);
     //targetGeometry->SetPoint(G4ThreeVector(0,0,0));
     targetGeometry->Construct(targetLog,
-	G4ThreeVector(0,0,0),
+	G4ThreeVector(0,0,-dTargetHitTubeLength*0.5),
 	dTargetGranularRadius,
         dTargetTubeOuterRadius*sqrt(2.0),
 	dTargetTubeOuterRadius*sqrt(2.0),
-	dTargetTubeLength,
+	dTargetTubeLength-dTargetHitTubeLength,
 	0);
   }
   //*/
   
   //sub detector of target: for hits
-  G4double dTargetHitTubeInnerRadius=dTargetTubeInnerRadius;      
-  G4double dTargetHitTubeOuterRadius=dTargetTubeOuterRadius;      
-  G4double dTargetHitTubeLength=dTargetTubeLength/4;         
-  G4double dTargetHitTubeStartAngle=dTargetTubeStartAngle;     
-  G4double dTargetHitTubeSpanningAngle=dTargetTubeSpanningAngle; 
 
-  G4ThreeVector targetHitPoint = G4ThreeVector( 0.0, 0.0, dTargetHitTubeLength*1.5*m);
+  G4ThreeVector targetHitPoint = G4ThreeVector( 0.0, 0.0, (dTargetTubeLength*0.5-dTargetHitTubeLength*0.5)*m);
 
 
   G4Tubs* targetHitTubs = new G4Tubs("targetHitTubs",
@@ -262,9 +262,11 @@ void GPDetectorConstruction::ConstructTarget()
       deg*dTargetHitTubeSpanningAngle);
 
   G4LogicalVolume* targetHitLog = new G4LogicalVolume(targetHitTubs,Vacuum,"targetHitLog");
+  
   G4VPhysicalVolume* targetHitPhys = new G4PVPlacement(0,
     targetHitPoint,
     targetHitLog,"targetHitPhys",targetLog,false,0);
+    
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4String targetSDName="/PositronSource/Target/EddSD";

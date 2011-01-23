@@ -29,6 +29,8 @@ G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog,
   private:
     G4VPhysicalVolume* Granular(G4LogicalVolume*);
     G4VPhysicalVolume* GranularCell(G4LogicalVolume*);
+    G4VPhysicalVolume* GranularHexagonal(G4LogicalVolume* motherLog,G4ThreeVector point);
+    void GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeVector point,long iIndex);
   private:
     
     G4ThreeVector vecPoint;
