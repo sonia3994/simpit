@@ -72,6 +72,7 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
 
   if (vecIntCellID[cellIndex]==-1)
   {
+    /*
     G4cout<<"Cell and Volume:\n"
       <<" Z: "<<copyIDinZ
       <<" R: "<<copyIDinY
@@ -79,6 +80,7 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
       <<" Volume: "<<dCellVolume
       <<G4endl;
 
+      */
     GPTargetHit* calHit = new GPTargetHit (physVol->GetLogicalVolume(),copyIDinX,copyIDinY,copyIDinZ);
     calHit->SetEdep( edep );
     //G4AffineTransform aTrans = ROhist->GetHistory()->GetTopTransform();

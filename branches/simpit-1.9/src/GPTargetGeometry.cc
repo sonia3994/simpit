@@ -22,7 +22,7 @@
 #include <sstream>
 GPTargetGeometry::GPTargetGeometry()
 {
-  dSphereRadiu=40*cm;
+  dSphereRadius=0.02;
   targetMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
 }
@@ -31,29 +31,35 @@ GPTargetGeometry::~GPTargetGeometry()
 {
 }
 
-G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point,G4double dSphereR,G4double dLX,G4double dLY,G4double dLZ,int iIndex)
+G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point,G4int iNumber,G4double dLX,G4double dLY,G4double dLZ,int iIndex)
 {
   vecPoint=point;
-  dSphereRadiu=dSphereR;
   dLengthX = dLX;
   dLengthY = dLY;
   dLengthZ = dLZ;
-  dWidthX = 4*dSphereRadiu;
-  dWidthY = 2*sqrt(3.0)*dSphereRadiu;
-  dWidthZ = 4*sqrt(6.0)*dSphereRadiu/3;
+  dSphereRadius = dLengthZ/(2+(iNumber-0.5)*4*sqrt(6)/3);
+  dWidthX = 4*dSphereRadius;
+  dWidthY = 2*sqrt(3.0)*dSphereRadius;
+  dWidthZ = 4*sqrt(6.0)*dSphereRadius/3;
 
-  iNumX = dLengthX/dWidthX;
-  iNumY = dLengthY/dWidthY;
-  iNumZ = dLengthZ/dWidthZ;
-  /*
-  G4cout<<"X "<<iNumX
-   <<", Y "<<iNumY
-   <<", Z "<<iNumZ
-   <<G4endl;
-   */
-
+  iNumX = (dLengthX-2*dSphereRadius+0.5*dWidthX)/dWidthX;
+  iNumY = (dLengthY-2*dSphereRadius+0.5*dWidthY)/dWidthY;
+  iNumZ = iNumber;
   //return Granular(motherLog);
   return GranularHexagonal(motherLog,vecPoint);
+}
+
+void GPTargetGeometry::Print()
+{
+  G4cout<<"-----------Hexagonal construct------------\n"
+   <<"\nRadius of sphere: "<<dSphereRadius
+   <<"\nNumber of X cell: "<<iNumX
+   <<"\nNumber of Y cell: "<<iNumY
+   <<"\nNumber of Z cell: "<<iNumZ
+   <<"\nZ axis Cell width: "<<dWidthZ/mm<< " mm"
+   <<"\nActual thickness: "<<dLengthZ/mm<<" mm"
+   <<G4endl;
+
 }
 
 G4VPhysicalVolume* GPTargetGeometry::Granular(G4LogicalVolume* motherLog)
@@ -72,7 +78,7 @@ G4VPhysicalVolume* GPTargetGeometry::Granular(G4LogicalVolume* motherLog)
   G4Box* ExpXYBox= new G4Box("ExpXYBox",
     dLengthX*m/2,
     dLengthY*m/2,
-    (sqrt(6.0)/3+1)*dSphereRadiu*m);
+    (sqrt(6.0)/3+1)*dSphereRadius*m);
   G4LogicalVolume* ExpXYLog = new G4LogicalVolume(ExpXYBox,spaceMaterial,"ExpXYLog",0,0,0);
   G4VPhysicalVolume* ExpXYPhy = new G4PVReplica("ExpXYPhys",
       ExpXYLog,
@@ -84,8 +90,8 @@ G4VPhysicalVolume* GPTargetGeometry::Granular(G4LogicalVolume* motherLog)
   ///*
   G4Box* ExpXBox= new G4Box("ExpXBox",
     dLengthX*m/2,
-    (2*sqrt(3.0)/3+1)*dSphereRadiu*m,
-    (sqrt(6.0)/3+1)*dSphereRadiu*m);
+    (2*sqrt(3.0)/3+1)*dSphereRadius*m,
+    (sqrt(6.0)/3+1)*dSphereRadius*m);
 
   G4LogicalVolume* ExpXLog = new G4LogicalVolume(ExpXBox,spaceMaterial,"ExpXLog",0,0,0);
   G4VPhysicalVolume* ExpXPhy= new G4PVReplica("ExpXPhy",
@@ -106,25 +112,25 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* motherLog)
 
   /*
   G4Para* ExpCellSolid = new G4Para("ExpCellSolid",
-                      dSphereRadiu*m,
-		      sqrt(3.0)*dSphereRadiu/2*m,
-		      sqrt(6.0)*dSphereRadiu/3*m,
+                      dSphereRadius*m,
+		      sqrt(3.0)*dSphereRadius/2*m,
+		      sqrt(6.0)*dSphereRadius/3*m,
 		      60,
 		      //acos(sqrt(3.0)/3));
 		      acos(sqrt(6.0)/3),
 		      150);
   */
   G4Box* ExpCellSolid = new G4Box("ExpCellSolid",
-    3*dSphereRadiu*m,
-    (2*sqrt(3.0)/3+1)*dSphereRadiu*m,
-    (sqrt(6.0)/3+1)*dSphereRadiu*m);
+    3*dSphereRadius*m,
+    (2*sqrt(3.0)/3+1)*dSphereRadius*m,
+    (sqrt(6.0)/3+1)*dSphereRadius*m);
   G4LogicalVolume* ExpCellLog= new G4LogicalVolume(ExpCellSolid,
       spaceMaterial,
       "ExpCellSolid",
       0,0,0);
  
-  G4ThreeVector sphPoint= G4ThreeVector(-2*dSphereRadiu*m,-2*sqrt(3.0)*dSphereRadiu/3*m,-sqrt(6.0)*dSphereRadiu/3*m);
-  G4Orb* sphOrbA = new G4Orb("sphOrbA",dSphereRadiu*m);
+  G4ThreeVector sphPoint= G4ThreeVector(-2*dSphereRadius*m,-2*sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m);
+  G4Orb* sphOrbA = new G4Orb("sphOrbA",dSphereRadius*m);
   G4LogicalVolume* sphLogA = new G4LogicalVolume(sphOrbA,
       targetMaterial,
       "sphLogA",
@@ -136,8 +142,8 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* motherLog)
       ExpCellLog,
       false,
       0);
-  sphPoint= G4ThreeVector(0,-2.0*sqrt(3.0)*dSphereRadiu/3*m,-sqrt(6.0)*dSphereRadiu/3*m); 
-  G4Orb* sphOrbB = new G4Orb("sphOrbB",dSphereRadiu*m);
+  sphPoint= G4ThreeVector(0,-2.0*sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m); 
+  G4Orb* sphOrbB = new G4Orb("sphOrbB",dSphereRadius*m);
   G4LogicalVolume* sphLogB = new G4LogicalVolume(sphOrbB,
       targetMaterial,
       "sphLogB",
@@ -150,8 +156,8 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* motherLog)
       false,
       0);
 
-  sphPoint= G4ThreeVector(dSphereRadiu*m,-sqrt(3.0)*dSphereRadiu/3*m,sqrt(6.0)*dSphereRadiu/3*m); 
-  G4Orb* sphOrbC = new G4Orb("sphOrbC",dSphereRadiu*m);
+  sphPoint= G4ThreeVector(dSphereRadius*m,-sqrt(3.0)*dSphereRadius/3*m,sqrt(6.0)*dSphereRadius/3*m); 
+  G4Orb* sphOrbC = new G4Orb("sphOrbC",dSphereRadius*m);
   G4LogicalVolume* sphLogC = new G4LogicalVolume(sphOrbC,
       targetMaterial,
       "sphLogC",
@@ -164,8 +170,8 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* motherLog)
       false,
       0);
 
-  sphPoint= G4ThreeVector(-dSphereRadiu*m,-sqrt(3.0)*dSphereRadiu/3*m,sqrt(6.0)*dSphereRadiu/3*m); 
-  G4Orb* sphOrbD = new G4Orb("sphOrbD",dSphereRadiu*m);
+  sphPoint= G4ThreeVector(-dSphereRadius*m,-sqrt(3.0)*dSphereRadius/3*m,sqrt(6.0)*dSphereRadius/3*m); 
+  G4Orb* sphOrbD = new G4Orb("sphOrbD",dSphereRadius*m);
   G4LogicalVolume* sphLogD = new G4LogicalVolume(sphOrbD,
       targetMaterial,
       "sphLogD",
@@ -178,8 +184,8 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* motherLog)
       false,
       0);
 
-  sphPoint= G4ThreeVector(-dSphereRadiu*m,sqrt(3.0)*dSphereRadiu/3*m,-sqrt(6.0)*dSphereRadiu/3*m); 
-  G4Orb* sphOrbE = new G4Orb("sphOrbE",dSphereRadiu*m);
+  sphPoint= G4ThreeVector(-dSphereRadius*m,sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m); 
+  G4Orb* sphOrbE = new G4Orb("sphOrbE",dSphereRadius*m);
   G4LogicalVolume* sphLogE = new G4LogicalVolume(sphOrbE,
       targetMaterial,
       "sphLogE",
@@ -192,8 +198,8 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* motherLog)
       false,
       0);
 
-  sphPoint= G4ThreeVector(dSphereRadiu*m,sqrt(3.0)*dSphereRadiu*m/3,-sqrt(6.0)*dSphereRadiu*m/3); 
-  G4Orb* sphOrbF = new G4Orb("sphOrbF",dSphereRadiu*m);
+  sphPoint= G4ThreeVector(dSphereRadius*m,sqrt(3.0)*dSphereRadius*m/3,-sqrt(6.0)*dSphereRadius*m/3); 
+  G4Orb* sphOrbF = new G4Orb("sphOrbF",dSphereRadius*m);
   G4LogicalVolume* sphLogF = new G4LogicalVolume(sphOrbF,
       targetMaterial,
       "sphLogF",
@@ -206,8 +212,8 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* motherLog)
       false,
       0);
 
-  sphPoint= G4ThreeVector(2*dSphereRadiu*m,2*sqrt(3.0)*dSphereRadiu*m/3,sqrt(6.0)*dSphereRadiu*m/3); 
-  G4Orb* sphOrbG = new G4Orb("sphOrbG",dSphereRadiu*m);
+  sphPoint= G4ThreeVector(2*dSphereRadius*m,2*sqrt(3.0)*dSphereRadius*m/3,sqrt(6.0)*dSphereRadius*m/3); 
+  G4Orb* sphOrbG = new G4Orb("sphOrbG",dSphereRadius*m);
   G4LogicalVolume* sphLogG = new G4LogicalVolume(sphOrbG,
       targetMaterial,
       "sphLogG",
@@ -220,8 +226,8 @@ G4VPhysicalVolume* GPTargetGeometry::GranularCell(G4LogicalVolume* motherLog)
       false,
       0);
 
-  sphPoint= G4ThreeVector(0,2*sqrt(3.0)*dSphereRadiu*m/3,sqrt(6.0)*dSphereRadiu*m/3); 
-  G4Orb* sphOrbH = new G4Orb("sphOrbH",dSphereRadiu*m);
+  sphPoint= G4ThreeVector(0,2*sqrt(3.0)*dSphereRadius*m/3,sqrt(6.0)*dSphereRadius*m/3); 
+  G4Orb* sphOrbH = new G4Orb("sphOrbH",dSphereRadius*m);
   G4LogicalVolume* sphLogH = new G4LogicalVolume(sphOrbH,
       targetMaterial,
       "sphLogH",
@@ -277,9 +283,9 @@ G4VPhysicalVolume* GPTargetGeometry::GranularHexagonal(G4LogicalVolume* motherLo
     {
       for(G4int i=0;i<iNumX;i++)
       {
-	G4ThreeVector vecCenter=G4ThreeVector(i*dWidthX+0.5*dWidthX-0.5*dLengthX,
-	    j*dWidthY+0.5*dWidthY-0.5*dLengthY,
-	    k*dWidthZ+0.5*dWidthZ-0.5*dLengthZ);
+	G4ThreeVector vecCenter=G4ThreeVector(i*dWidthX+0.25*dWidthX+dSphereRadius-0.5*dLengthX,
+	    j*dWidthY+0.25*dWidthY+dSphereRadius-0.5*dLengthY,
+	    k*dWidthZ+0.25*dWidthZ+dSphereRadius-0.5*dLengthZ);
 	GranularHexagonalCell(hexagonalLog,vecCenter,i+i*j+i*j*k);
       }
     }
@@ -304,9 +310,9 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
   strSolid="sphOrbA_"+strSuffix;
   strLog="sphLogA_"+strSuffix;
   strPhy="sphPhyA_"+strSuffix;
-  sphPoint= G4ThreeVector(-2*dSphereRadiu*m,-2*sqrt(3.0)*dSphereRadiu/3*m,-sqrt(6.0)*dSphereRadiu/3*m);
+  sphPoint= G4ThreeVector(-2*dSphereRadius*m,-2*sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m);
   sphPoint=sphPoint+vecCenter*m;
-  G4Orb* sphOrbA = new G4Orb(strSolid,dSphereRadiu*m);
+  G4Orb* sphOrbA = new G4Orb(strSolid,dSphereRadius*m);
   G4LogicalVolume* sphLogA = new G4LogicalVolume(sphOrbA,
       targetMaterial,
       strLog,
@@ -322,9 +328,9 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
   strSolid="sphOrbB_"+strSuffix;
   strLog="sphLogB_"+strSuffix;
   strPhy="sphPhyB_"+strSuffix;
-  sphPoint= G4ThreeVector(0,-2.0*sqrt(3.0)*dSphereRadiu/3*m,-sqrt(6.0)*dSphereRadiu/3*m); 
+  sphPoint= G4ThreeVector(0,-2.0*sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m); 
   sphPoint=sphPoint+vecCenter*m;
-  G4Orb* sphOrbB = new G4Orb(strSolid,dSphereRadiu*m);
+  G4Orb* sphOrbB = new G4Orb(strSolid,dSphereRadius*m);
   G4LogicalVolume* sphLogB = new G4LogicalVolume(sphOrbB,
       targetMaterial,
       strLog,
@@ -340,9 +346,9 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
   strSolid="sphOrbC_"+strSuffix;
   strLog="sphLogC_"+strSuffix;
   strPhy="sphPhyC_"+strSuffix;
-  sphPoint= G4ThreeVector(dSphereRadiu*m,-sqrt(3.0)*dSphereRadiu/3*m,sqrt(6.0)*dSphereRadiu/3*m); 
+  sphPoint= G4ThreeVector(dSphereRadius*m,-sqrt(3.0)*dSphereRadius/3*m,sqrt(6.0)*dSphereRadius/3*m); 
   sphPoint=sphPoint+vecCenter*m;
-  G4Orb* sphOrbC = new G4Orb(strSolid,dSphereRadiu*m);
+  G4Orb* sphOrbC = new G4Orb(strSolid,dSphereRadius*m);
   G4LogicalVolume* sphLogC = new G4LogicalVolume(sphOrbC,
       targetMaterial,
       strLog,
@@ -358,9 +364,9 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
   strSolid="sphOrbD_"+strSuffix;
   strLog="sphLogD_"+strSuffix;
   strPhy="sphPhyD_"+strSuffix;
-  sphPoint= G4ThreeVector(-dSphereRadiu*m,-sqrt(3.0)*dSphereRadiu/3*m,sqrt(6.0)*dSphereRadiu/3*m); 
+  sphPoint= G4ThreeVector(-dSphereRadius*m,-sqrt(3.0)*dSphereRadius/3*m,sqrt(6.0)*dSphereRadius/3*m); 
   sphPoint=sphPoint+vecCenter*m;
-  G4Orb* sphOrbD = new G4Orb(strSolid,dSphereRadiu*m);
+  G4Orb* sphOrbD = new G4Orb(strSolid,dSphereRadius*m);
   G4LogicalVolume* sphLogD = new G4LogicalVolume(sphOrbD,
       targetMaterial,
       strLog,
@@ -376,9 +382,9 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
   strSolid="sphOrbE_"+strSuffix;
   strLog="sphLogE_"+strSuffix;
   strPhy="sphPhyE_"+strSuffix;
-  sphPoint= G4ThreeVector(-dSphereRadiu*m,sqrt(3.0)*dSphereRadiu/3*m,-sqrt(6.0)*dSphereRadiu/3*m); 
+  sphPoint= G4ThreeVector(-dSphereRadius*m,sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m); 
   sphPoint=sphPoint+vecCenter*m;
-  G4Orb* sphOrbE = new G4Orb(strSolid,dSphereRadiu*m);
+  G4Orb* sphOrbE = new G4Orb(strSolid,dSphereRadius*m);
   G4LogicalVolume* sphLogE = new G4LogicalVolume(sphOrbE,
       targetMaterial,
       strLog,
@@ -394,9 +400,9 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
   strSolid="sphOrbF_"+strSuffix;
   strLog="sphLogF_"+strSuffix;
   strPhy="sphPhyF_"+strSuffix;
-  sphPoint= G4ThreeVector(dSphereRadiu*m,sqrt(3.0)*dSphereRadiu*m/3,-sqrt(6.0)*dSphereRadiu*m/3); 
+  sphPoint= G4ThreeVector(dSphereRadius*m,sqrt(3.0)*dSphereRadius*m/3,-sqrt(6.0)*dSphereRadius*m/3); 
   sphPoint=sphPoint+vecCenter*m;
-  G4Orb* sphOrbF = new G4Orb(strSolid,dSphereRadiu*m);
+  G4Orb* sphOrbF = new G4Orb(strSolid,dSphereRadius*m);
   G4LogicalVolume* sphLogF = new G4LogicalVolume(sphOrbF,
       targetMaterial,
       strLog,
@@ -412,9 +418,9 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
   strSolid="sphOrbG_"+strSuffix;
   strLog="sphLogG_"+strSuffix;
   strPhy="sphPhyG_"+strSuffix;
-  sphPoint= G4ThreeVector(2*dSphereRadiu*m,2*sqrt(3.0)*dSphereRadiu*m/3,sqrt(6.0)*dSphereRadiu*m/3); 
+  sphPoint= G4ThreeVector(2*dSphereRadius*m,2*sqrt(3.0)*dSphereRadius*m/3,sqrt(6.0)*dSphereRadius*m/3); 
   sphPoint=sphPoint+vecCenter*m;
-  G4Orb* sphOrbG = new G4Orb(strSolid,dSphereRadiu*m);
+  G4Orb* sphOrbG = new G4Orb(strSolid,dSphereRadius*m);
   G4LogicalVolume* sphLogG = new G4LogicalVolume(sphOrbG,
       targetMaterial,
       strLog,
@@ -430,9 +436,9 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
   strSolid="sphOrbH_"+strSuffix;
   strLog="sphLogH_"+strSuffix;
   strPhy="sphPhyH_"+strSuffix;
-  sphPoint= G4ThreeVector(0,2*sqrt(3.0)*dSphereRadiu*m/3,sqrt(6.0)*dSphereRadiu*m/3); 
+  sphPoint= G4ThreeVector(0,2*sqrt(3.0)*dSphereRadius*m/3,sqrt(6.0)*dSphereRadius*m/3); 
   sphPoint=sphPoint+vecCenter*m;
-  G4Orb* sphOrbH = new G4Orb(strSolid,dSphereRadiu*m);
+  G4Orb* sphOrbH = new G4Orb(strSolid,dSphereRadius*m);
   G4LogicalVolume* sphLogH = new G4LogicalVolume(sphOrbH,
       targetMaterial,
       strLog,

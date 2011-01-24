@@ -23,6 +23,6 @@ LDFLAGS += -lboost_filesystem -lboost_system
 #LDFLAGS += -lboost_filesystem
 
 #For debug
-CPPFLAGS += -DGP_DEBUG 
+#CPPFLAGS += -DGP_DEBUG 
 #CPPFLAGS += -g
 
