@@ -20,11 +20,14 @@ class GPTargetGeometry
     GPTargetGeometry();
     ~GPTargetGeometry();
 
-G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog,
-    G4ThreeVector point,
-    G4double dSphereR,
-    G4double dLengthX,G4double dLengthY,G4double dLengthZ,
-    int iIndex);
+    G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog,
+      G4ThreeVector point,
+      int iNumber,
+      G4double dLengthX,G4double dLengthY,G4double dLengthZ,
+      int iIndex);
+
+    void Print();
+
 
   private:
     G4VPhysicalVolume* Granular(G4LogicalVolume*);
@@ -34,7 +37,7 @@ G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog,
   private:
     
     G4ThreeVector vecPoint;
-    G4double dSphereRadiu;
+    G4double dSphereRadius;
     G4double dLengthX;
     G4double dLengthY;
     G4double dLengthZ;

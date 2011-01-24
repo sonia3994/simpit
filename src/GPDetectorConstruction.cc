@@ -58,6 +58,7 @@ GPDetectorConstruction::GPDetectorConstruction()
     dTargetTubeSpanningAngle = 360;
     dTargetGranularRadius = 0.00075;
     iTargetGranularFlag=1;
+    iTargetGranularZNumber=3;
 
     dTargetCellZ=1e-3;
     dTargetCellR=1e-3;
@@ -235,15 +236,17 @@ void GPDetectorConstruction::ConstructTarget()
   G4double dTargetHitTubeStartAngle=dTargetTubeStartAngle;     
   G4double dTargetHitTubeSpanningAngle=dTargetTubeSpanningAngle; 
   ///*
+  G4VPhysicalVolume* targetGranularPhy;
   if(iTargetGranularFlag==1)
   {
     targetLog->SetMaterial(Vacuum);
     //targetGeometry->SetPoint(G4ThreeVector(0,0,0));
-    targetGeometry->Construct(targetLog,
+    targetGranularPhy = targetGeometry->Construct(targetLog,
 	G4ThreeVector(0,0,-dTargetHitTubeLength*0.5),
-	dTargetGranularRadius,
-        dTargetTubeOuterRadius*sqrt(2.0),
-	dTargetTubeOuterRadius*sqrt(2.0),
+	iTargetGranularZNumber,
+	//dTargetGranularRadius,
+        dTargetTubeOuterRadius*2.0,
+	dTargetTubeOuterRadius*2.0,
 	dTargetTubeLength-dTargetHitTubeLength,
 	0);
   }
@@ -275,7 +278,7 @@ void GPDetectorConstruction::ConstructTarget()
   if(targetSD)
   {
     targetSD->SetEddDim(vectEddDim);  
-  }
+  }                                                                  
   else
   {
     targetSD=new GPTargetSD(targetSDName,vectEddDim);
@@ -296,14 +299,19 @@ void GPDetectorConstruction::ConstructTarget()
   {
     delete targetROTubs;
   }
-  targetROTubs=new GPTargetROGeometryTubs(targetROName,dTargetTubeInnerRadius,dTargetTubeOuterRadius,dTargetTubeLength,vectEddDim);
+  targetROTubs=new GPTargetROGeometryTubs(targetROName,
+      dTargetTubeInnerRadius,
+      dTargetTubeOuterRadius,
+      dTargetTubeLength-dTargetHitTubeLength,
+      vectEddDim);
   targetROTubs->BuildROGeometry();
   targetROTubs->SetName(targetROName);
   
   targetSD->SetROgeometry(targetROTubs);  
 
   SDman->AddNewDetector(targetSD);
-  targetLog->SetSensitiveDetector(targetSD); 
+  //targetLog->SetSensitiveDetector(targetSD); 
+  targetGranularPhy->GetLogicalVolume()->SetSensitiveDetector(targetSD);
 
   G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Target/MultiFunDet");
   GPSurfaceParticleScorer* targetParticleScorer=0;
@@ -484,6 +492,7 @@ void GPDetectorConstruction::PrintDetectorParameters()
         <<MacRightAlign<<std::setw(24)<<"accelerator.step.max: "<<dAcceleratorStepMax<<" m\n" 
         << "------------------------------------------------------------\n"
         << G4endl;
+  targetGeometry->Print();
 
 }
 
@@ -606,11 +615,13 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
     else if(key=="target.y")
     dTargetTubeOuterRadius = dValueNew;
     else if(key=="target.z")
-    dTargetTubeLength = dValueNew;
+    dTargetTubeLength = dValueNew+0.001;
     else if(key=="target.granular.flag")
     iTargetGranularFlag = dValueNew;
     else if(key=="target.granular.radius")
     dTargetGranularRadius = dValueNew;
+    else if(key=="target.granular.z.number")
+    iTargetGranularZNumber = dValueNew;
     
     else if(key=="capture.ir")
     dCaptureTubeInnerRadius = dValueNew;
