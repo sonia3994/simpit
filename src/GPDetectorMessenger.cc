@@ -261,7 +261,7 @@ void GPDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	x=x*G4UIcommand::ValueOf(unit)/m;
 	y=y*G4UIcommand::ValueOf(unit)/m;
 	z=z*G4UIcommand::ValueOf(unit)/m;
-	GPDetector->SetTargetCellXYZ(x,y,z);
+	//GPDetector->SetTargetCellXYZ(x,y,z);
    }
 
 

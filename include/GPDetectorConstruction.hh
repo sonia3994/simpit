@@ -1,4 +1,3 @@
-// $Id: GPDetectorConstruction.hh,v 1.6 2006/06/29 17:47:13 gunter Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 
@@ -41,13 +40,13 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     inline const G4LogicalVolume* 	GetCaptureLogical()		const		{return captureLog;};
     inline GPFieldSetup* GetFieldSetup	()					const		{return fieldSetup;};
 
-    void SetTargetCellXYZ(G4double x,G4double y,G4double z){ dTargetCellZ=x; dTargetCellR=y; dTargetCellPhi=z;};
+    //void SetTargetCellXYZ(G4double x,G4double y,G4double z){};
     void SetCaptureType(G4int);
     
-    inline std::vector<G4int> GetEddDim()           	const	{return vectEddDim;};
+    std::vector<G4int> GetEddDim();
     inline G4int GetCaptureType()           	const	{return iCaptureType;};
 
-    void SetTargetMaterial (G4String);
+    void SetTargetMaterial (G4String strMa);
     void SetWorldMaterial (G4String);
     void SetCaptureMaterial (G4String);
     void SetAcceleratorMaterial (G4String);
@@ -61,7 +60,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     void DefineMaterials();
     void SetLithiumLens(G4double dLength=1e-2,G4double dOuterRadius=1e-2,G4double dInnerRadius=0.0, G4double dStartAngle=0.0, G4double dSpanningAngle=360.0 );
     
-    void ConstructTarget();
+    //void ConstructTarget();
     void ConstructCapture();
     void ConstructAccelerator();
     void ConstructTranTubs();
@@ -70,18 +69,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     // target
     //
     GPTargetGeometry* targetGeometry;
-    G4double dTargetTubeInnerRadius;
-    G4double dTargetTubeOuterRadius;
     G4double dTargetTubeLength;
-    G4double dTargetTubeStartAngle;
-    G4double dTargetTubeSpanningAngle;
-    G4double dTargetGranularRadius;
-    G4int iTargetGranularFlag;
-    G4int iTargetGranularZNumber;
-
-    G4Material* targetMaterial;
-    G4Tubs* targetTubs;
-    G4LogicalVolume* targetLog;
     G4VPhysicalVolume* targetPhys;
 
     //Capture
@@ -140,17 +128,6 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     GPFieldSetup* fieldSetup;
     GPDetectorMessenger* detectorMessenger;
 
-    //sensetive detector
-    GPTargetSD* targetSD;
-    GPTargetROGeometry* targetRO;
-    GPTargetROGeometryTubs* targetROTubs;
-
-    G4double dTargetCellZ;
-    G4double dTargetCellR;
-    G4double dTargetCellPhi;
-    std::vector<G4int> vectEddDim;
-
-    //material
     G4Material* Vacuum;
     G4Material* W;
 };

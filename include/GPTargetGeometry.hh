@@ -6,6 +6,8 @@
 #ifndef GPTARGETGEOMETRY_H
 #define GPTARGETGEOMETRY_H 1
 #include "G4ThreeVector.hh"
+#include <string>
+#include <vector>
 
 class G4LogicalVolume;
 class G4VPhysicalVolume;
@@ -20,12 +22,12 @@ class GPTargetGeometry
     GPTargetGeometry();
     ~GPTargetGeometry();
 
-    G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog,
-      G4ThreeVector point,
-      int iNumber,
-      G4double dLengthX,G4double dLengthY,G4double dLengthZ,
-      int iIndex);
+    G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog, G4ThreeVector point);
 
+    void SetTargetMaterial (G4String strMa);
+    void SetDetectorSize(std::string, std::string);
+    G4double GetDetectorSize(std::string) const;
+    std::vector<G4int> GetEddDim();
     void Print();
 
 
@@ -33,20 +35,39 @@ class GPTargetGeometry
     G4VPhysicalVolume* Granular(G4LogicalVolume*);
     G4VPhysicalVolume* GranularCell(G4LogicalVolume*);
     G4VPhysicalVolume* GranularHexagonal(G4LogicalVolume* motherLog,G4ThreeVector point);
+    G4VPhysicalVolume* SetupTargetHit(G4LogicalVolume*,G4ThreeVector);
     void GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeVector point,long iIndex);
+    void GranularHexagonalInit();
+    void SetupTargetSD(G4LogicalVolume*);
+
   private:
     
     G4ThreeVector vecPoint;
-    G4double dSphereRadius;
-    G4double dLengthX;
-    G4double dLengthY;
-    G4double dLengthZ;
+    G4double dTargetGlobalSolidX;
+    G4double dTargetGlobalSolidY;
+    G4double dTargetGlobalSolidZ;
+    G4double dTargetHexagonalSphereRadius;
+    G4double dTargetSolidX;
+    G4double dTargetSolidY;
+    G4double dTargetSolidZ;
+    G4double dTargetHitL;
     G4double dWidthX;
     G4double dWidthY;
     G4double dWidthZ;
-    G4int    iNumX;
-    G4int    iNumY;
-    G4int    iNumZ;
+    G4int    iTargetGranularXNumber;
+    G4int    iTargetGranularYNumber;
+    G4int    iTargetGranularZNumber;
+    G4int    iTargetGranularFlag;
+
+    std::vector<G4int> vecEddDim;
+    G4double dTargetSDSolidR;
+    G4double dTargetSDSolidZ;
+    G4double dTargetSDSolidAngle;
+
+    G4double dTargetSDCellZ;
+    G4double dTargetSDCellR;
+    G4double dTargetSDCellPhi;
+
     
     G4Material* targetMaterial;
     G4Material* spaceMaterial;
