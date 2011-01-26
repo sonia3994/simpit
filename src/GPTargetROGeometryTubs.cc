@@ -199,7 +199,6 @@ G4VPhysicalVolume* GPTargetROGeometryTubs::Build()
   // (Could we make it by a simple cast of a non-NULL value ?)
   GPDummySD * dummySensi = new GPDummySD();
   targetROPhiDivLog->SetSensitiveDetector(dummySensi);
-  //targetRORDivLog->SetSensitiveDetector(dummySensi);
 
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPTargetROGeometryTubs::Build()"<<G4endl;
