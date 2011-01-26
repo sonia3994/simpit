@@ -65,7 +65,7 @@ void GPAcceleratorField::Init()
   G4cout<<"GP_DEBUG: Enter GPAcceleratorField::Init()"<<G4endl;
 #endif
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
-  	dTarL=detector->GetDetectorSize("target.z");
+  	dTarL=detector->GetDetectorSize("target.gz");
   	dCapL=detector->GetDetectorSize("capture.l");
   	dAccL=detector->GetDetectorSize("accelerator.l");
   	dAccR=detector->GetDetectorSize("accelerator.or");

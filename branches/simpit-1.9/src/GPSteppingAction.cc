@@ -57,7 +57,7 @@ void GPSteppingAction::Init()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPSteppingAction::Init()"<<G4endl;
 #endif
-  targetPhys = detector->GetTargetPhysical(); 
+  targetPhys = detector->GetPhysicalVolume("target"); 
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPSteppingAction::Init()"<<G4endl;
 #endif

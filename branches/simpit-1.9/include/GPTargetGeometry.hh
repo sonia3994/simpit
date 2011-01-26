@@ -35,10 +35,12 @@ class GPTargetGeometry
     G4VPhysicalVolume* Granular(G4LogicalVolume*);
     G4VPhysicalVolume* GranularCell(G4LogicalVolume*);
     G4VPhysicalVolume* GranularHexagonal(G4LogicalVolume* motherLog,G4ThreeVector point);
-    G4VPhysicalVolume* SetupTargetHit(G4LogicalVolume*,G4ThreeVector);
+    G4VPhysicalVolume* SetTargetHit(G4LogicalVolume*,G4ThreeVector);
+    G4VPhysicalVolume* TubularTarget(G4LogicalVolume*,G4ThreeVector);
     void GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeVector point,long iIndex);
     void GranularHexagonalInit();
-    void SetupTargetSD(G4LogicalVolume*);
+    void SetTargetSD(G4LogicalVolume*);
+    void PrintSD();
 
   private:
     
@@ -58,6 +60,7 @@ class GPTargetGeometry
     G4int    iTargetGranularYNumber;
     G4int    iTargetGranularZNumber;
     G4int    iTargetGranularFlag;
+    G4int    iTargetHitFlag;
 
     std::vector<G4int> vecEddDim;
     G4double dTargetSDSolidR;

@@ -188,7 +188,7 @@ void GPRunAction::AddEddHit(G4int x, G4int y, G4int z, G4double e)
 {
   if(bTargetSDFlag)
   {
-  G4int index=z*vecIntEddDim[0]*vecIntEddDim[1]+y*vecIntEddDim[0]+x;
+  G4int index=x+y*vecIntEddDim[0]+z*vecIntEddDim[0]*vecIntEddDim[1];
   vecDouEdd[index]=vecDouEdd[index]+e;
   }
 }

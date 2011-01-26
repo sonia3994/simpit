@@ -57,30 +57,30 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
 {
   if(!ROhist) return false;
   G4double edep = aStep->GetTotalEnergyDeposit();
-  if(verboseLevel>1) G4cout << "Next step edep(MeV) = " << edep/MeV << G4endl;
+  if(verboseLevel>1) G4cout << "Deposite energy of this step: " << edep/MeV<<" MeV" << G4endl;
   if(edep==0.) return false;
 
   G4VPhysicalVolume* physVol = ROhist->GetVolume();
   //if(physVol->GetName()!="")
   //ROhist->MoveUpHistory();
   //G4VPhysicalVolume* mothVol = ROhist->GetVolume(1);
-  G4double dCellVolume = ROhist->GetSolid(2)->GetCubicVolume();
+  G4double dCellVolume = ROhist->GetSolid()->GetCubicVolume();
   G4int copyIDinX = ROhist->GetReplicaNumber(2);
   G4int copyIDinY = ROhist->GetReplicaNumber(1);
   G4int copyIDinZ = ROhist->GetReplicaNumber(0);
-  G4int cellIndex=copyIDinZ*iNumberOfCellsInX*iNumberOfCellsInY+copyIDinY*iNumberOfCellsInX+copyIDinX;
+  G4int cellIndex=copyIDinX+copyIDinY*iNumberOfCellsInX+copyIDinZ*iNumberOfCellsInX*iNumberOfCellsInY;
 
   if (vecIntCellID[cellIndex]==-1)
   {
     /*
     G4cout<<"Cell and Volume:\n"
-      <<" Z: "<<copyIDinZ
+      <<" Z: "<<copyIDinX
       <<" R: "<<copyIDinY
-      <<" Phi: "<<copyIDinX
+      <<" Phi: "<<copyIDinZ
       <<" Volume: "<<dCellVolume
       <<G4endl;
 
-      */
+     */
     GPTargetHit* calHit = new GPTargetHit (physVol->GetLogicalVolume(),copyIDinX,copyIDinY,copyIDinZ);
     calHit->SetEdep( edep );
     //G4AffineTransform aTrans = ROhist->GetHistory()->GetTopTransform();

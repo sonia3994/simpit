@@ -223,7 +223,7 @@ void GPDetectorConstruction::ConstructCapture()
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Capture/MultiFunDet");
-  GPSurfaceParticleScorer* captureParticleScorer=0;
+  //GPSurfaceParticleScorer* captureParticleScorer=0;
   if(captureMultiFunDet==NULL)
   {
     G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Capture/MultiFunDet");
@@ -269,7 +269,7 @@ void GPDetectorConstruction::ConstructAccelerator()
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4MultiFunctionalDetector* acceleratorMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Accelerator/MultiFunDet");
-  GPSurfaceParticleScorer* acceleratorParticleScorer=0;
+  //GPSurfaceParticleScorer* acceleratorParticleScorer=0;
   if(acceleratorMultiFunDet==NULL)
   {
     G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Accelerator/MultiFunDet");
@@ -388,14 +388,21 @@ void GPDetectorConstruction::SetUserLimits(std::string str)
 
 G4double GPDetectorConstruction::GetDetectorSize(std::string name) const
 {
-  /*
-    if(name=="target.x")
-    return dTargetTubeOuterRadius;
-    else if(name=="target.y")
-    return dTargetTubeOuterRadius;
-    else if(name=="target.z")
-    return dTargetTubeLength;
-    */
+    std::string strInput=name;
+    std::string strFirstLevel;
+    std::string strLeft;
+    size_t iFirstDot;
+    iFirstDot = strInput.find(".");
+    if(iFirstDot!=std::string::npos)
+    {
+    strFirstLevel=strInput.substr(0,iFirstDot);
+    strLeft=strInput.substr(iFirstDot+1);
+    }
+
+    if(strFirstLevel=="target")
+    {
+      return targetGeometry->GetDetectorSize(strLeft);
+    }
     
     if(name=="capture.ir")
     return dCaptureTubeInnerRadius;
@@ -466,30 +473,14 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
     {
     strFirstLevel=strInput.substr(0,iFirstDot);
     strLeft=strInput.substr(iFirstDot+1);
-    std::cout<<"First part: "<<strFirstLevel
-    <<"\nLeft part: "<<strLeft
-    <<std::endl;
     }
 
     if(strFirstLevel=="target")
     {
       targetGeometry->SetDetectorSize(strLeft,str);
+      return;
     }
 
-    /*
-    if(key=="target.x")
-    dTargetTubeOuterRadius = dValueNew;
-    else if(key=="target.y")
-    dTargetTubeOuterRadius = dValueNew;
-    else if(key=="target.z")
-    dTargetTubeLength = dValueNew+0.001;
-    else if(key=="target.granular.flag")
-    iTargetGranularFlag = dValueNew;
-    else if(key=="target.granular.radius")
-    dTargetGranularRadius = dValueNew;
-    else if(key=="target.granular.z.number")
-    iTargetGranularZNumber = dValueNew;
-    */
     
     else if(key=="capture.ir")
     dCaptureTubeInnerRadius = dValueNew;
@@ -536,13 +527,13 @@ void GPDetectorConstruction::SetDetectorSize(std::string str)
     else if(key=="world.z")
     dWorldZ = dValueNew;
 
-	else 
-	{
-     	std::cout<<"the key is not exist."<<std::endl;
-		return;
-	}
+   else 
+   {
+     std::cout<<"the key is not exist."<<std::endl;
+     return;
+   }
 
-	std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
+   std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
 
 }
 void GPDetectorConstruction::SetLithiumLens(G4double dLength,G4double dOuterRadius,G4double dInnerRadius, G4double dStartAngle, G4double dSpanningAngle )
