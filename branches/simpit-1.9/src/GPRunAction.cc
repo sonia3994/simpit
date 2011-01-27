@@ -94,9 +94,9 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   if(gpSteppingAction) gpSteppingAction->Init();
   G4cout<<"Init SteppingActionn."<<G4endl;
 
-  GPDetectorConstruction* mydetector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
+  GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
   GPPrimaryGeneratorAction* primaryGenerator=(GPPrimaryGeneratorAction*)G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction();
-  GPFieldSetup* gpFieldSetup=(GPFieldSetup*)mydetector->GetFieldSetup();
+  GPFieldSetup* gpFieldSetup=(GPFieldSetup*)detector->GetFieldSetup();
   if(gpFieldSetup) gpFieldSetup->Init();
   G4cout<<"Init Field."<<G4endl;
 
@@ -144,7 +144,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   mapStrOfsOutputHandler.insert(pairHandle);
 
   G4cout<<"Created output files handlers"<<G4endl;
-  mydetector->PrintDetectorParameters();
+  detector->PrintDetectorParameters();
   primaryGenerator->PrintPrimaryMessage();
 
   G4cout << "Start run: " << runID<<G4endl;
@@ -162,7 +162,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   vecDouEdd.clear();
   if(bTargetSDFlag)
   {
-  vecIntEddDim=mydetector->GetEddDim();
+  vecIntEddDim=detector->GetEddDim();
   vecDouEdd.resize(vecIntEddDim[0]*vecIntEddDim[1]*vecIntEddDim[2]);
   for(size_t i=0;i!=vecDouEdd.size();i++)
   {vecDouEdd[i]=0;}
@@ -243,9 +243,9 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 	 mapStrOfsOutputHandler.clear();
 	
   //G4double x,y,z;
-  //G4double dx=mydetector->GetDetectorSize("target.x")/vecIntEddDim[0];
-  //G4double dy=mydetector->GetDetectorSize("target.y")/vecIntEddDim[1];
-  //G4double dz=mydetector->GetDetectorSize("target.z")/vecIntEddDim[2];
+  //G4double dx=detector->GetDetectorSize("target.x")/vecIntEddDim[0];
+  //G4double dy=detector->GetDetectorSize("target.y")/vecIntEddDim[1];
+  //G4double dz=detector->GetDetectorSize("target.z")/vecIntEddDim[2];
   long int index;
   if(bTargetSDFlag)
   {
