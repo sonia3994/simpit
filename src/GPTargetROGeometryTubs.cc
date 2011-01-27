@@ -200,6 +200,12 @@ G4VPhysicalVolume* GPTargetROGeometryTubs::Build()
   GPDummySD * dummySensi = new GPDummySD();
   targetROPhiDivLog->SetSensitiveDetector(dummySensi);
 
+  /*
+  G4VisAttributes* readoutLogVisAtt= new G4VisAttributes(G4Colour(1.0,0,1.0,0.3));
+  readoutLogVisAtt->SetVisibility(true);
+  readoutLogVisAtt->SetForceSolid(true);
+  targetROPhiDivLog->SetVisAttributes(readoutLogVisAtt);
+  */
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPTargetROGeometryTubs::Build()"<<G4endl;
 #endif

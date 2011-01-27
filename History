@@ -12,3 +12,6 @@ $Id: History,v 1.12 2010/07/09 10:24:40 $
      * Reverse chronological order (last date on top), please *
      ----------------------------------------------------------
      
+
+Thu Jan 27 15:39:11 CET 2011
+	Target sensitive detector seems does not work right if target is hexagonal granular target(which has lots of daugther), but if target is a normalsolid without daugther, it work right.
