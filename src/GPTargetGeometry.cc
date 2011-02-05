@@ -59,12 +59,8 @@ GPTargetGeometry::~GPTargetGeometry()
 {
 }
 
-G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
+void GPTargetGeometry::Init()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
-#endif
-  G4double dIndexPoint;
   if(iTargetHitFlag==1)
   {
     dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
@@ -75,6 +71,16 @@ G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4Thre
     dTargetGlobalSolidZ = dTargetSolidZ;
     dIndexPoint = 0;
   }
+
+  GranularHexagonalInit();
+}
+G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPTargetGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
+#endif
+
+  Init();
 
   G4Box* targetSolid= new G4Box("targetSolid",
       m*dTargetGlobalSolidX/2,
@@ -188,7 +194,9 @@ G4VPhysicalVolume* GPTargetGeometry::GranularHexagonal(G4LogicalVolume* motherLo
 	G4ThreeVector vecCenter=G4ThreeVector(i*dWidthX+0.25*dWidthX+dTargetHexagonalSphereRadius-0.5*dTargetSolidX,
 	    j*dWidthY+0.25*dWidthY+dTargetHexagonalSphereRadius-0.5*dTargetSolidY,
 	    k*dWidthZ+0.25*dWidthZ+dTargetHexagonalSphereRadius-0.5*dTargetSolidZ);
-	GranularHexagonalCell(hexagonalLog,vecCenter,i+i*j+i*j*k);
+	GranularHexagonalCell(hexagonalLog,
+	    vecCenter,
+	    i+j*iTargetGranularXNumber+k*iTargetGranularXNumber*iTargetGranularYNumber);
       }
     }
   
@@ -402,16 +410,17 @@ void GPTargetGeometry::SetDetectorSize(std::string str,std::string strGlobal)
     else if(key=="hit.flag")
     iTargetHitFlag = dValueNew;
 
-     else 
-     {
+    else 
+    {
   	std::cout<<"the key is not exist."<<std::endl;
      	return;
-     }
+    }
 
-     ss.clear();
-     ss.str(strGlobal);
-     ss>>key;
-     std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
+    Init();
+    ss.clear();
+    ss.str(strGlobal);
+    ss>>key;
+    std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
 }
 
 G4double GPTargetGeometry::GetDetectorSize(std::string name) const
@@ -424,6 +433,14 @@ G4double GPTargetGeometry::GetDetectorSize(std::string name) const
     return dTargetSolidY;
     else if(name=="z")
     return dTargetSolidZ;
+    else if(name=="granular.flag")
+    return iTargetGranularFlag;
+    else if(name=="granular.z.number")
+    return iTargetGranularZNumber;
+    else if(name=="granular.y.number")
+    return iTargetGranularYNumber;
+    else if(name=="granular.x.number")
+    return iTargetGranularXNumber;
 
     else
     {

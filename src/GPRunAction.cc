@@ -81,14 +81,14 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   std::pair<std::string,std::ofstream* > pairHandle;
   G4String chrunID;
   stringstream ss;
-  G4int runID=aRun->GetRunID();
+  iRunID=aRun->GetRunID();
   G4int numEvt=aRun->GetNumberOfEventToBeProcessed();
-  ss <<runID;
+  ss <<iRunID;
   ss >>chrunID;
 
   G4RunManager::GetRunManager()->SetRandomNumberStore(true);
 
-  G4cout<<"\n========================Begin of Run: "<<runID<<"==================================\n"
+  G4cout<<"\n========================Begin of Run: "<<iRunID<<"==================================\n"
   <<"Prepare run: "<<G4endl;
   GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
   if(gpSteppingAction) gpSteppingAction->Init();
@@ -147,11 +147,11 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   detector->PrintDetectorParameters();
   primaryGenerator->PrintPrimaryMessage();
 
-  G4cout << "Start run: " << runID<<G4endl;
+  G4cout << "Start run: " << iRunID<<G4endl;
 
   ofsParaFile 
     	<<"run id, events\n"
-	<<runID<<"," <<numEvt<<"\n";
+	<<iRunID<<"," <<numEvt<<"\n";
   //initialize cumulative quantities
   //
   dSumETar = dSum2ETar = 0.;
@@ -199,6 +199,9 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPRunAction::EndOfRunAction(const G4Run* )"<<G4endl;
 #endif
+  GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
+  if(gpSteppingAction) gpSteppingAction->CleanUp();
+
   G4int NbOfEvents = aRun->GetNumberOfEvent();
   if (NbOfEvents == 0) return;
   
@@ -313,5 +316,15 @@ void GPRunAction::AddPositronNumber(G4String key, G4int value)
   {
     mapPositron[key] += value;
   }
+}
+
+G4int GPRunAction::GetRunID()
+{
+   return iRunID;
+}
+
+G4String GPRunAction::GetDataPath()
+{
+   return bfsWorkPath.string();
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -10,6 +10,7 @@
 #include "GPSteppingMessenger.hh"
 
 #include "GPDetectorConstruction.hh"
+#include "GPTargetSteppingAction.hh"
 #include "GPEventAction.hh"
 #include "GPRunAction.hh"
 
@@ -31,6 +32,7 @@ GPSteppingAction::GPSteppingAction(GPDetectorConstruction* det,
 #endif
   sParticle="e+";
   steppingMessenger = new GPSteppingMessenger(this);
+  targetSteppingAction = new GPTargetSteppingAction();
   verbose=0;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPSteppingAction::GPSteppingAction(GPDetectorConstruction*)"<<G4endl;
@@ -45,6 +47,7 @@ GPSteppingAction::~GPSteppingAction()
   G4cout<<"GP_DEBUG: Enter GPSteppingAction::~GPSteppingAction()"<<G4endl;
 #endif
   delete 	steppingMessenger;
+  delete	targetSteppingAction;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPSteppingAction::~GPSteppingAction()"<<G4endl;
 #endif
@@ -57,12 +60,23 @@ void GPSteppingAction::Init()
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPSteppingAction::Init()"<<G4endl;
 #endif
+  targetSteppingAction->Init();
   targetPhys = detector->GetPhysicalVolume("target"); 
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPSteppingAction::Init()"<<G4endl;
 #endif
 }
 
+void GPSteppingAction::CleanUp()
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPSteppingAction::CleanUp()"<<G4endl;
+#endif
+  targetSteppingAction->CleanUp();
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPSteppingAction::CleanUp()"<<G4endl;
+#endif
+}
 void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 #ifdef GP_DEBUG
@@ -105,6 +119,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
     eventAction->AddTargetED(stepE);
     eventAction->AddTargetStep(stepL);
   }
+  targetSteppingAction->UserSteppingAction(aStep);
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPSteppingAction:::UserSteppingAction(const G4Step*)"<<G4endl;
 #endif

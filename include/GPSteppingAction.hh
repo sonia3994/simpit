@@ -15,6 +15,7 @@
 
 class GPSteppingMessenger;
 class GPDetectorConstruction;
+class GPTargetSteppingAction;
 class GPEventAction;
 class G4VPhysicalVolume;
 
@@ -29,9 +30,11 @@ public:
   void UserSteppingAction(const G4Step*);
   void SetSelectedParticle(G4String);
   void Init();
+  void CleanUp();
     
 private:
   GPDetectorConstruction* detector;
+  GPTargetSteppingAction* targetSteppingAction;
   GPEventAction*          eventAction;
   GPSteppingMessenger*	  steppingMessenger;
   const G4VPhysicalVolume* targetPhys;

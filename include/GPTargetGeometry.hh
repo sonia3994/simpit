@@ -41,6 +41,7 @@ class GPTargetGeometry
     void GranularHexagonalInit();
     void SetTargetSD(G4LogicalVolume*);
     void PrintSD();
+    void Init();
 
   private:
     
@@ -71,6 +72,7 @@ class GPTargetGeometry
     G4double dTargetSDCellR;
     G4double dTargetSDCellPhi;
 
+    G4double dIndexPoint;
     
     G4Material* targetMaterial;
     G4Material* spaceMaterial;
