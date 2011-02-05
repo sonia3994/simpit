@@ -39,6 +39,8 @@ public:
   void AddActualG(G4int t){iActualG+=t;};
   void AddElectronNumber(G4String,G4int);
   void AddPositronNumber(G4String,G4int);
+  G4String GetDataPath();
+  G4int    GetRunID();
 
 private:
   void OutPut(std::map<std::string, std::ofstream* >::iterator,std::vector<G4double>); 
@@ -49,6 +51,7 @@ private:
   G4double dSumLTrack, dSum2LTrack;
   G4int  iPositronPerRun;
   G4int  iActualG;
+  G4int  iRunID;
   G4bool bTargetSDFlag; 
 
   std::ofstream* ofsDataFileDT;
