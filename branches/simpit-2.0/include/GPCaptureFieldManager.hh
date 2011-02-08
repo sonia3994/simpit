@@ -33,6 +33,7 @@ public:
   	GPCaptureField();
   	~GPCaptureField();
 	void Init();
+	void Print(std::ofstream&);
 	G4bool	DoesFieldChangeEnergy() const {return false;};
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
   	inline void SetFieldValueB0(G4double      t){dB0=t;G4cout<<"Set capture field dB0 value: "<<dB0<<" tesla."<<G4endl;};
@@ -89,6 +90,7 @@ public:
  ~GPCaptureFieldManager() ;
       
   void Init();
+  void Print(std::ofstream&);
   inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set capture field stepper type: "<<i<<G4endl; };
   inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set  capture field minmum step: "<<s<<" m"<<G4endl; };
   void UpdateField();

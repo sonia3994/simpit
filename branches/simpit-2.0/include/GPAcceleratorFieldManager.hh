@@ -33,6 +33,7 @@ public:
   	GPAcceleratorField();
   	~GPAcceleratorField();
 	void Init();
+	void Print(std::ofstream&);
   	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
   	inline void SetFieldValueB0(G4double t){dB0=t;G4cout<<"Set accelerator field  B0: "<<t<<" tesla"<<G4endl;};
   	inline void SetFieldValueE0(G4double t){dE0=t;G4cout<<"Set accelerator field  E0: "<<t<<" volt/m"<<G4endl;};
@@ -62,6 +63,7 @@ public:
  ~GPAcceleratorFieldManager() ;
       
   void Init();
+  void Print(std::ofstream&);
   inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set accelerator field stepper type: "<<i<<G4endl; };
   inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set accelerator field  minmum step: "<<s<<" m"<<G4endl; };
   void UpdateField();

@@ -29,6 +29,7 @@ class GPTargetGeometry
     G4double GetDetectorSize(std::string) const;
     std::vector<G4int> GetEddDim();
     void Print();
+    void Print(std::ofstream& );
 
 
   private:
@@ -62,6 +63,7 @@ class GPTargetGeometry
     G4int    iTargetGranularZNumber;
     G4int    iTargetGranularFlag;
     G4int    iTargetHitFlag;
+    G4int    iTargetEddFlag;
 
     std::vector<G4int> vecEddDim;
     G4double dTargetSDSolidR;

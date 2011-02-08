@@ -80,6 +80,7 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
   
   public:
     void GeneratePrimaryVertex(G4Event* evt);
+    void Print(std::ofstream&);
 
   private:
     void Init();

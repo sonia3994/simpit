@@ -143,6 +143,12 @@ void GPTargetSteppingAction::CleanUp()
   G4cout<<"GP_DEBUG: Enter GPTargetSteppingAction::CleanUp()"<<G4endl;
 #endif
   GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
+
+  if(!(detector->GetDetectorSize("target.granular.flag")))
+  {
+    fstHangle.close();
+    return;
+  }
   G4int iXN = detector->GetDetectorSize("target.granular.x.number");
   G4int iYN = detector->GetDetectorSize("target.granular.y.number");
   G4int iZN = detector->GetDetectorSize("target.granular.z.number");
@@ -186,6 +192,7 @@ void GPTargetSteppingAction::CleanUp()
 
 
   fstHangle.close();
+  mapSphereEddVec.clear();
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPTargetSteppingAction::CleanUp()"<<G4endl;
 #endif
@@ -207,4 +214,7 @@ void GPTargetSteppingAction::UserSteppingAction(const G4Step* aStep)
 #endif
 }
 
+void GPTargetSteppingAction::Print(std::ofstream fstOutput)
+{
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

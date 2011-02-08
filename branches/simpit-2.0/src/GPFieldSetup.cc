@@ -206,3 +206,8 @@ G4FieldManager*  GPFieldSetup::GetGlobalFieldManager()
 }
 
 
+void GPFieldSetup::Print(std::ofstream& ofsOutput)
+{
+  fCaptureFieldManager->Print(ofsOutput);
+  fAcceleratorFieldManager->Print(ofsOutput);
+}

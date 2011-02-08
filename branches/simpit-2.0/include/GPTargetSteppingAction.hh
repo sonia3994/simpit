@@ -30,6 +30,7 @@ public:
   void UserSteppingAction(const G4Step*);
   void Init();
   void CleanUp();
+  void Print(std::ofstream);
     
 private:
   G4int   verbose;

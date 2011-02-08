@@ -592,3 +592,21 @@ void GPDetectorConstruction::SetTargetMaterial(G4String str)
 {
   targetGeometry->SetTargetMaterial(str);
 }
+void GPDetectorConstruction::Print(std::ofstream& fstOuput)
+{
+  fstOuput
+	<<"\nDetector status:"
+        <<"\nWorld box(m):" 
+        <<"\nx, " << dWorldX 
+        <<"\ny, " << dWorldY 
+        <<"\nz, " << dWorldZ 
+        <<"\nCapture tube(m):" 
+        <<"\nRadius,"<<dCaptureTubeOuterRadius
+	<<"\nLength,"<<dCaptureTubeLength 
+        <<"\nAccelerator tube(m):" 
+        <<"\nRadius,"<<dAcceleratorTubeOuterRadius
+	<<"\nLength,"<<dAcceleratorTubeLength
+        << G4endl;
+  targetGeometry->Print(fstOuput);
+  fieldSetup->Print(fstOuput);
+}

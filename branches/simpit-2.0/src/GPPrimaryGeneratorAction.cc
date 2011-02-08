@@ -284,6 +284,46 @@ void GPPrimaryGeneratorAction::PrintPrimaryMessage()
 
 }
 
+void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
+{ 
+  ofsOutput
+  <<"\nPrimary status:" ;
+  if(bHEPEvtFlag == true)
+    {           
+      HEPEvt->Print(ofsOutput);
+      return;
+    }
+  else if(bFixedParticleGun== true)
+    {
+  	ofsOutput
+  	<<"\nFixed primary condition:"
+    	<<"\nParticle style, "<<sParticleStyle
+    	<<"\nNumber per event, "<<iNParticles
+    	<<"\nEnergy , "<<dEnergyMean<<" MeV"
+    	<<"\nPosition radius(Transverse), "<<dPositionMean<<" m"
+    	<<"\nPosition Z , "<<dParticlePosZ<<" m"
+    	<<"\nMomentum direction: " 
+	<<"\npx0, "<<vectMommentumDirection.x()
+	<<"\npy0, "<<vectMommentumDirection.y()
+	<<"\npz0, "<<vectMommentumDirection.z()
+        <<G4endl;	
+	return;
+     }
+
+       ofsOutput
+        <<"\nSelected distribution is, "<<"CLHEP::RandGauss"
+    	<<"\nParticle style, "<<sParticleStyle
+    	<<"\nNumber per event, "<<iNParticles
+    	<<"\nEnergy mean, "<<dEnergyMean<<" MeV"
+    	<<"\nEnergy rms, "<<dEnergyRMS<<" MeV"
+    	<<"\nPosition mean(Transverse), "<<dPositionMean<<" m"
+    	<<"\nPosition rms(Transverse), "<<dPositionRMS<<" m"
+    	<<"\nPosition Z , "<<dParticlePosZ<<" m"
+    	<<"\nMomentum mean(Transverse), "<<dMommentumMean
+    	<<"\nMomentum rms(Transverse), "<<dMommentumRMS
+    	<<G4endl;
+
+}
 void GPPrimaryGeneratorAction::SetInputFile(G4String tmp)
 { 
 	if(HEPEvt) 

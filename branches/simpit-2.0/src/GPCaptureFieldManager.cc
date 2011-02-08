@@ -360,6 +360,64 @@ void GPCaptureField::GetFieldValueLithium(const G4double Point[3], G4double *Bfi
   	Bfield[3]=Bfield[4]=Bfield[5]=0;
 }
 
+void GPCaptureField::Print(std::ofstream& ofsOutput)
+{
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Enter GPCaptureField::Print()"<<G4endl;
+#endif
+
+	if(iFieldType==0)
+	{
+		ofsOutput<<"\nCapture field type, AMD"
+		      <<"\nFormula, B=B0/(1+z*Alpha)"
+		      <<"\nAlpha, "<<dAmdAlpha<<" m^(-1)"
+	      	      <<"\nB0, "<<dB0<<" tesla"
+	      	      <<"\nB1, "<<dB1<<" tesla"
+		      <<G4endl;
+	}
+	else if(iFieldType==1)
+	{
+		ofsOutput<<"\nCapture field type, QWT(Fermi Distribution approximation)"
+		      <<"\nFormula, B=A1+A2/(1+exp(A3*(Z-Z1)))"
+		      <<"\nA1, "<<dQwtFermiCoef0
+		      <<"\nA2, "<<dQwtFermiCoef1
+		      <<"\nA3, "<<dQwtFermiAlpha
+		      <<"\nB0, "<<dB0<<" tesla"
+		      <<"\nB1, "<<dB1<<" tesla"
+		      <<G4endl;
+	}
+	else if(iFieldType==2)
+	{
+		ofsOutput<<"\nCapture field tyep, QWT(Negative Quadratic approximation)"
+		      <<"\nFormula, B=B0/(1+z*z*Alpha)"
+		      <<"\nAlpha, "<<dQwtNegaSqrAlpha<<" m^(-2)"
+		      <<"\nB0, "<<dB0<<" tesla"
+		      <<"\nB1, "<<dB1<<" tesla"
+		      <<G4endl;
+	}
+	else if(iFieldType==3)
+	{
+		ofsOutput<<"\nCapture field, QWT(Abrupt field)"
+		      <<"\nB0, "<<dB0<<" tesla"
+		      <<"\nB1, "<<dB1<<" tesla"
+		      <<G4endl;
+	}
+	else if(iFieldType==4)
+	{
+		ofsOutput<<"\nCapture field type,Lithium"
+		      <<"\nCapture length, "<<dCaptureL<<" m"
+		      <<"\nCapture radius, "<<dCaptureR<<" m"
+		      <<"\nLithium lens length, "<<dCaptureLithiumL<<" m"
+		      <<"\nLithium lens radius, "<<dCaptureLithiumR<<" m"
+		      <<"\nFocal length, "<<dFocalLength<<" m"
+		      <<"\nCurrent, "<<dCurrentI<<" A"
+		      <<G4endl;
+	}
+
+#ifdef GP_DEBUG
+  G4cout<<"GP_DEBUG: Exit GPCaptureField::Print()"<<G4endl;
+#endif
+}
 //////////////////////////////////////////////////////////////////////////
 //  Constructors:
 
@@ -506,3 +564,7 @@ void GPCaptureFieldManager::SetFieldFlag(G4bool t)
 }
 
 
+void GPCaptureFieldManager::Print(std::ofstream& ofsOutput)
+{
+  fCaptureField->Print(ofsOutput);
+}

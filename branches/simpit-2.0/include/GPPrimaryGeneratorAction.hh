@@ -45,6 +45,7 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetInputFileRMSFactor(G4double);    
     void SetBunchLength(G4double);    
     void PrintPrimaryMessage();
+    void Print(std::ofstream& );
     inline void SetHEPEvtGenerator(G4bool f)
     { bHEPEvtFlag = f; G4cout<<"The HEPEvt flag is set to: "<<f<<G4endl;}
 

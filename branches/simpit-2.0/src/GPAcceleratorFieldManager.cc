@@ -134,6 +134,13 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
 	}
 }
 
+void GPAcceleratorField::Print(std::ofstream& ofsOutput)
+{
+  ofsOutput<<"\nAccelerator field:"
+        <<"\nB0,"<<dB0<<" tesla"
+        <<"\nE0,"<<dE0<<" volt/m"
+        <<G4endl;
+}
 //
 //  Constructors:
 
@@ -278,4 +285,8 @@ void GPAcceleratorFieldManager::SetFieldFlag(G4bool t)
 	}
 }
 
+void GPAcceleratorFieldManager::Print(std::ofstream& ofsOutput)
+{
+  fAcceleratorField->Print(ofsOutput);
+}
 
