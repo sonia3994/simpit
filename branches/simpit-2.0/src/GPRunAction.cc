@@ -34,6 +34,7 @@
 #define MacLeftAlign  std::setiosflags(std::ios_base::left)
 using namespace std;
 namespace fs=boost::filesystem;
+extern std::string  strProgramVersionNumber;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPRunAction::GPRunAction()
@@ -113,7 +114,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   mapPositron.insert(std::pair<G4String,G4int>("accelerator",0));
 
   mapStrOfsOutputHandler.clear();
-  ofsParaFile.open((bfsWorkPath/"SumAtExitOfTar.csv").string().c_str(),ios::ate|ios::app);
+  ofsParaFile.open((bfsWorkPath/"Summary.csv").string().c_str(),ios::ate|ios::app);
 
   ofsDataFileDT = new std::ofstream((bfsWorkPath/(chrunID+"ExitOfTar.dat")).string().c_str());
   pairHandle.first="target";
@@ -150,6 +151,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 
   ofsParaFile 
     	<<"\n----Begin of a run----"
+    	<<"\n"<<strProgramVersionNumber
     	<<"\nRUN ID, EVENTS"
 	<<"\n"<<iRunID<<"," <<numEvt;
   primaryGenerator->Print(ofsParaFile);
