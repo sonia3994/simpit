@@ -39,6 +39,7 @@ GPTargetGeometry::GPTargetGeometry()
     iTargetGranularZNumber = 3;
     iTargetGranularFlag = 1;
     iTargetHitFlag = 1;
+    iTargetEddFlag = 1;
     
     dTargetGlobalSolidX = dTargetSolidX+0.01;
     dTargetGlobalSolidY = dTargetSolidY+0.01;
@@ -121,7 +122,10 @@ void GPTargetGeometry::GranularHexagonalInit()
   dWidthZ = 4*sqrt(6.0)*dTargetHexagonalSphereRadius/3;
 
   iTargetGranularXNumber = (dTargetSolidX-2*dTargetHexagonalSphereRadius+0.5*dWidthX)/dWidthX;
-  iTargetGranularYNumber = (dTargetSolidY-2*dTargetHexagonalSphereRadius+0.5*dWidthY)/dWidthY;
+  dTargetSolidX = iTargetGranularXNumber*dWidthX+2*dTargetHexagonalSphereRadius-0.5*dWidthX;
+  iTargetGranularYNumber = iTargetGranularXNumber;
+  dTargetSolidY = iTargetGranularYNumber*dWidthY+2*dTargetHexagonalSphereRadius-0.5*dWidthY;
+  //iTargetGranularYNumber = (dTargetSolidY-2*dTargetHexagonalSphereRadius+0.5*dWidthY)/dWidthY;
 }
 
 void GPTargetGeometry::Print()
@@ -152,7 +156,7 @@ void GPTargetGeometry::Print()
     <<G4endl;
   }
    
-  PrintSD();
+  if(iTargetEddFlag==1) PrintSD();
   G4cout
    <<"\n------------------------------------------------------------------------"
    <<G4endl;
@@ -202,7 +206,8 @@ G4VPhysicalVolume* GPTargetGeometry::GranularHexagonal(G4LogicalVolume* motherLo
   
   }
 
-  SetTargetSD(hexagonalLog);
+  if(iTargetEddFlag==1) SetTargetSD(hexagonalLog);
+
   return hexagonalPhy;
 
 }
@@ -364,7 +369,7 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
       0);
 
 
-  G4VisAttributes* sphereLogVisAtt= new G4VisAttributes(G4Colour(1.0,0,1.0,0.3));
+  G4VisAttributes* sphereLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0,0.3));
   sphereLogVisAtt->SetVisibility(true);
   sphereLogVisAtt->SetForceSolid(true);
   sphLogA->SetVisAttributes(sphereLogVisAtt);
@@ -549,9 +554,9 @@ G4VPhysicalVolume* GPTargetGeometry::TubularTarget(G4LogicalVolume* motherLog, G
       targetNormalLog,
       "targetNormalPhys",
       motherLog,false,0);
-  SetTargetSD(targetNormalLog); 
+  if(iTargetEddFlag==1) SetTargetSD(targetNormalLog); 
   
-  G4VisAttributes* targetNormalLogVisAtt= new G4VisAttributes(G4Colour(1.0,0,1.0,0.3));
+  G4VisAttributes* targetNormalLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0,0.3));
   targetNormalLogVisAtt->SetVisibility(true);
   targetNormalLogVisAtt->SetForceSolid(true);
   targetNormalLog->SetVisAttributes(targetNormalLogVisAtt);
@@ -559,3 +564,43 @@ G4VPhysicalVolume* GPTargetGeometry::TubularTarget(G4LogicalVolume* motherLog, G
   return targetNormalPhy;
 }
 
+void GPTargetGeometry::Print(std::ofstream& fstOutput)
+{
+  fstOutput
+   <<"\nTarget structure:";
+
+  if(iTargetGranularFlag==1)
+  {
+  fstOutput
+   <<"\nTarget type, Hexagonal granular construct."
+   <<"\nX of target, "<<dTargetSolidX*m/mm<<" mm"
+   <<"\nY of target, "<<dTargetSolidY*m/mm<<" mm"
+   <<"\nZ of target, "<<dTargetSolidZ*m/mm<<" mm"
+   <<"\nRadius of sphere, "<<dTargetHexagonalSphereRadius*m/mm<<" mm"
+   <<"\nZ axis Cell width, "<<dWidthZ*m/mm<< " mm"
+   <<"\nNumber of X cell, "<<iTargetGranularXNumber
+   <<"\nNumber of Y cell, "<<iTargetGranularYNumber
+   <<"\nNumber of Z cell, "<<iTargetGranularZNumber
+   <<G4endl;
+  }
+  else if(iTargetGranularFlag==0)
+  {
+  fstOutput
+    <<"\nTarget type, Tubs construct."
+    <<"\nRadius of target, "<<dTargetSolidX*m/mm/2<<" mm"
+    <<"\nLength of target, "<<dTargetSolidZ*m/mm<<" mm"
+    <<G4endl;
+  }
+  if(iTargetEddFlag==1) 
+  {
+  fstOutput
+   <<"\nTarget Sensitive detector:"
+   <<"\nZ Cell width, "<<dTargetSDCellZ*m/mm<<" mm"
+   <<"\nR Cell width, "<<dTargetSDCellR*m/mm<<" mm"
+   <<"\nPhi Cell width, "<<dTargetSDCellPhi<<" degree"
+   <<"\nZ Cell Number, "<<vecEddDim[0]
+   <<"\nR Cell Number, "<<vecEddDim[1]
+   <<"\nPhi Cell Number, "<<vecEddDim[2]
+   <<G4endl;
+  }
+}

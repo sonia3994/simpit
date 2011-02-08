@@ -38,6 +38,7 @@ public:
  ~GPFieldSetup() ;
       
   void Init();
+  void Print(std::ofstream&);
   inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set global field stepper: "<<i<<G4endl; };  
   inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set global field  minmum step: "<<s/mm<<" mm"<<G4endl; };
   void SetFieldFlag(G4bool) ;

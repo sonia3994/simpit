@@ -54,6 +54,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
 
     void UpdateGeometry();
     void PrintDetectorParameters(); 
+    void Print(std::ofstream&);
 
   private:
     G4VPhysicalVolume* ConstructPositronResource();

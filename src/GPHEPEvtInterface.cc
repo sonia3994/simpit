@@ -266,3 +266,15 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 	
 }
 
+
+void GPHEPEvtInterface::Print(std::ofstream& ofsOutput)
+{
+
+  ofsOutput
+    <<"\nEvents is implemented from, "<<sFileName
+    <<"\nBeam length, "<<dBunchLength<<" ps"
+    <<"\nBeam transverse dimension, "<<dRadiusRMSFactor<<" m"
+    <<"\nDistance From crystal to amorphous target, "<<dParticlePosZ<<" m"
+    <<G4endl;
+
+}
