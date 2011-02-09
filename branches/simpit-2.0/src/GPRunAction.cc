@@ -237,9 +237,9 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
     <<"\nResult:"
     <<"\nSum E deposited in target, deposited E rms, sum track length in target, track length rms"
     <<"\n"<<dSumETar<<"," <<rmsETar<<"," <<dSumLTrack<<"," <<rmsLTrack
-    <<"\ne+ number,target,capture,accelerator\n"
+    <<"\ne+ number,target,capture,accelerator"
     <<"\nnumber,"<<mapPositron["target"]<<","<<mapPositron["capture"]<<","<<mapPositron["accelerator"]
-    <<"\ne- number,target,capture,accelerator\n"
+    <<"\ne- number,target,capture,accelerator"
     <<"\nnumber,"<<mapElectron["target"]<<","<<mapElectron["capture"]<<","<<mapElectron["accelerator"]
     <<"\n----End of a run----"
     << G4endl;
