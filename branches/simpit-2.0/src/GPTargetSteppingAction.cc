@@ -203,11 +203,13 @@ void GPTargetSteppingAction::UserSteppingAction(const G4Step* aStep)
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPTargetSteppingAction::UserSteppingAction(const G4Step*)"<<G4endl;
 #endif
+  G4double dVolume;
   G4String strPrevPhysName= aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
   map<G4String,std::vector<G4double> >::iterator mapEddIt = mapSphereEddVec.find(strPrevPhysName);
   if(mapEddIt!=mapSphereEddVec.end())
   {
-    (mapSphereEddVec[strPrevPhysName])[3]=(mapSphereEddVec[strPrevPhysName])[3]+aStep->GetTotalEnergyDeposit()/MeV;
+    dVolume = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetSolid()->GetCubicVolume()/mm3;
+    (mapSphereEddVec[strPrevPhysName])[3]=(mapSphereEddVec[strPrevPhysName])[3]+aStep->GetTotalEnergyDeposit()/MeV/dVolume;
   }
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPTargetSteppingAction:::UserSteppingAction(const G4Step*)"<<G4endl;
