@@ -56,11 +56,11 @@ void GPTargetSteppingAction::Init()
   G4PhysicalVolumeStore* phyStore = G4PhysicalVolumeStore::GetInstance();
   G4ThreeVector vecPoint;
   std::vector<G4double>   vecTmp(4,0);
-  if(detector->GetDetectorSize("target.granular.flag"))
+  if(detector->GetParameter("target.granular.flag"))
   {
-    G4int iXN = detector->GetDetectorSize("target.granular.x.number");
-    G4int iYN = detector->GetDetectorSize("target.granular.y.number");
-    G4int iZN = detector->GetDetectorSize("target.granular.z.number");
+    G4int iXN = detector->GetParameter("target.granular.x.number");
+    G4int iYN = detector->GetParameter("target.granular.y.number");
+    G4int iZN = detector->GetParameter("target.granular.z.number");
     GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
     G4String strFolder = runAct->GetDataPath();
     G4int iRunID = runAct->GetRunID();
@@ -144,14 +144,14 @@ void GPTargetSteppingAction::CleanUp()
 #endif
   GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
 
-  if(!(detector->GetDetectorSize("target.granular.flag")))
+  if(!(detector->GetParameter("target.granular.flag")))
   {
     fstHangle.close();
     return;
   }
-  G4int iXN = detector->GetDetectorSize("target.granular.x.number");
-  G4int iYN = detector->GetDetectorSize("target.granular.y.number");
-  G4int iZN = detector->GetDetectorSize("target.granular.z.number");
+  G4int iXN = detector->GetParameter("target.granular.x.number");
+  G4int iYN = detector->GetParameter("target.granular.y.number");
+  G4int iZN = detector->GetParameter("target.granular.z.number");
   stringstream ss;
   G4String strSuffix;
   G4int iIndex;

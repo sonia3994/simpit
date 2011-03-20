@@ -96,8 +96,9 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 
   GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
   GPPrimaryGeneratorAction* primaryGenerator=(GPPrimaryGeneratorAction*)G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction();
-  GPFieldSetup* gpFieldSetup=(GPFieldSetup*)detector->GetFieldSetup();
-  if(gpFieldSetup) gpFieldSetup->Init();
+  //GPFieldSetup* gpFieldSetup=(GPFieldSetup*)detector->GetFieldSetup();
+  //if(gpFieldSetup) gpFieldSetup->Init();
+  GPFieldSetup::GetGPFieldSetup()->Init();
   G4cout<<"Init Field."<<G4endl;
 
   bTargetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("/PositronSource/Target/EddSD")->isActive();
@@ -252,9 +253,9 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 	 mapStrOfsOutputHandler.clear();
 	
   //G4double x,y,z;
-  //G4double dx=detector->GetDetectorSize("target.x")/vecIntEddDim[0];
-  //G4double dy=detector->GetDetectorSize("target.y")/vecIntEddDim[1];
-  //G4double dz=detector->GetDetectorSize("target.z")/vecIntEddDim[2];
+  //G4double dx=detector->GetParameter("target.x")/vecIntEddDim[0];
+  //G4double dy=detector->GetParameter("target.y")/vecIntEddDim[1];
+  //G4double dz=detector->GetParameter("target.z")/vecIntEddDim[2];
   long int index;
   if(bTargetSDFlag)
   {

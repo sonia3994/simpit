@@ -25,8 +25,8 @@ class GPTargetGeometry
     G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog, G4ThreeVector point);
 
     void SetTargetMaterial (G4String strMa);
-    void SetDetectorSize(std::string, std::string);
-    G4double GetDetectorSize(std::string) const;
+    void SetParameter(std::string, std::string);
+    G4double GetParameter(std::string) const;
     std::vector<G4int> GetEddDim();
     void Print();
     void Print(std::ofstream& );
