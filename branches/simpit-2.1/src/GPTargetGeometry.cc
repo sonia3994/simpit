@@ -384,7 +384,7 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
 
 }
 
-void GPTargetGeometry::SetDetectorSize(std::string str,std::string strGlobal)
+void GPTargetGeometry::SetParameter(std::string str,std::string strGlobal)
 {
 	std::stringstream ss(str);
 	std::string		  unit;
@@ -428,7 +428,7 @@ void GPTargetGeometry::SetDetectorSize(std::string str,std::string strGlobal)
     std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
 }
 
-G4double GPTargetGeometry::GetDetectorSize(std::string name) const
+G4double GPTargetGeometry::GetParameter(std::string name) const
 {
     if(name=="x")
     return dTargetSolidX;

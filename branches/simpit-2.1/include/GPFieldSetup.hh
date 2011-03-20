@@ -32,10 +32,13 @@ class GPFieldMessenger;
 class GPFieldSetup
 {
 
+  protected:
+    GPFieldSetup() ;
+    ~GPFieldSetup() ;
 public:
 
-  GPFieldSetup() ;
- ~GPFieldSetup() ;
+ static GPFieldSetup* GetGPFieldSetup();
+ static void DestroyGPFieldSetup();
       
   void Init();
   void Print(std::ofstream&);
@@ -48,6 +51,8 @@ public:
 protected:
   void SetStepper();
 
+protected:
+  static GPFieldSetup* instance;
 protected:
   G4PropagatorInField*    	propInField;
 

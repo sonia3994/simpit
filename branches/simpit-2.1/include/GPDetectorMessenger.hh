@@ -25,33 +25,19 @@ class G4UIcmdWithoutParameter;
 class GPDetectorMessenger: public G4UImessenger
 {
   public:
-    GPDetectorMessenger				(GPDetectorConstruction* );
-   ~GPDetectorMessenger				();
+    GPDetectorMessenger	 (GPDetectorConstruction* );
+   ~GPDetectorMessenger	 ();
     
-    void SetNewValue					(G4UIcommand*, G4String);
+    void SetNewValue	 (G4UIcommand*, G4String);
     
   private:
-    GPDetectorConstruction*				GPDetector;
+    GPDetectorConstruction*  GPDetector;
     
-    G4UIdirectory*					GPDir;
-    G4UIdirectory*					detDir;
-    G4UIcmdWithAnInteger*     	 CaptureType;
-    G4UIcmdWithAString*				TarMaterCmd;
-    G4UIcmdWithAString*				DetectorSizeCmd;
-    G4UIcmdWithAString*				UserLimitsCmd;
-    //G4UIcmdWithADoubleAndUnit*			TarThickCmd;
-    //G4UIcmdWithADoubleAndUnit*			TarBoxXYCmd;
-    //G4UIcmdWithADoubleAndUnit*			CapLengthCmd;
-    //G4UIcmdWithADoubleAndUnit*			CapRadiusCmd;
-    //G4UIcommand* 					SizeWorldXYZCmd;
-    G4UIcommand* 					TargetCellXYZCmd;
-    //G4UIcmdWithADoubleAndUnit*			SizeWorldXCmd;
-    //G4UIcmdWithADoubleAndUnit*			SizeWorldYCmd;
-    //G4UIcmdWithADoubleAndUnit*			SizeWorldZCmd;
-//    G4UIcmdWithAnInteger*			NbLayersCmd;    
-//    G4UIcmdWithADoubleAndUnit*		MagFieldCmd;
-    G4UIcmdWithoutParameter*			UpdateCmd;
-    G4UIcmdWithoutParameter*			PrintParaCmd;
+    G4UIdirectory*  GPDir;
+    G4UIdirectory*  detDir;
+    G4UIcmdWithAString*	DetectorSizeCmd;
+    G4UIcmdWithoutParameter* UpdateCmd;
+    G4UIcmdWithoutParameter* PrintParaCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -39,6 +39,18 @@
 //////////////////////////////////////////////////////////////////////////
 //  Constructors:
 
+GPFieldSetup* GPFieldSetup::instance = NULL;
+GPFieldSetup* GPFieldSetup::GetGPFieldSetup()
+{
+  if(instance==NULL)
+    instance = new GPFieldSetup();
+  return instance;
+}
+void GPFieldSetup::DestroyGPFieldSetup()
+{
+  if(instance) delete instance;
+}
+
 GPFieldSetup::GPFieldSetup():
 propInField(0),
 fGlobalFieldManager(0),

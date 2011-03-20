@@ -73,12 +73,12 @@ void GPCaptureField::Init()
   	GPDetectorConstruction * detector = (GPDetectorConstruction* )G4RunManager::GetRunManager()->GetUserDetectorConstruction() ;
 
 	//transfer to international units
-  	dTargetL=detector->GetDetectorSize("target.gz");
-  	dCaptureL=detector->GetDetectorSize("capture.l");
-  	dCaptureR=detector->GetDetectorSize("capture.or");
-	dCaptureLithiumL=detector->GetDetectorSize("capture.lithium.l");
-	dCaptureLithiumR=detector->GetDetectorSize("capture.lithium.or");
-	iFieldType=detector->GetCaptureType();
+  	dTargetL=detector->GetParameter("target.gz");
+  	dCaptureL=detector->GetParameter("capture.l");
+  	dCaptureR=detector->GetParameter("capture.or");
+	dCaptureLithiumL=detector->GetParameter("capture.lithium.l");
+	dCaptureLithiumR=detector->GetParameter("capture.lithium.or");
+	iFieldType=detector->GetParameter("capture.type");
 
    	dSqrCapR=dCaptureR*dCaptureR;
 	dHalfTarL=dTargetL/2;
