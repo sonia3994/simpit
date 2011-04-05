@@ -89,7 +89,8 @@ G4VPhysicalVolume* GPCaptureGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
   captureLogVisAtt->SetForceSolid(true);
   captureLog->SetVisAttributes(captureLogVisAtt);
 
-  SetHit(captureLog);
+  if(iCaptureHitFlag==1)
+    SetHit(captureLog);
 
   return capturePhys;
 

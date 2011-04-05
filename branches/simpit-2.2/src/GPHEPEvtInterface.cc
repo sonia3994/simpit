@@ -266,15 +266,108 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 	
 }
 
+void GPHEPEvtInterface::Print()
+{
+    G4cout
+    <<"\n------------------Print primary status---------------------------\n"
+    <<"\nPrimary Generator type: HEPEvt"
+    <<"\nEvents is implemented from: "<<sFileName
+    <<"\nBeam length: "<<dBunchLength<<" ps"
+    <<"\nBeam transverse dimension: "<<dRadiusRMSFactor<<" m"
+    <<"\nDistance From crystal to amorphous target: "<<dParticlePosZ<<" m"
+    <<"\n-----------------------------------------------------------------\n"
+    <<G4endl;
+
+}
 
 void GPHEPEvtInterface::Print(std::ofstream& ofsOutput)
 {
 
   ofsOutput
+    <<"\nPrimary status:"
+    <<"\nPrimary Generator type:, HEPEvt"
     <<"\nEvents is implemented from, "<<sFileName
     <<"\nBeam length, "<<dBunchLength<<" ps"
     <<"\nBeam transverse dimension, "<<dRadiusRMSFactor<<" m"
     <<"\nDistance From crystal to amorphous target, "<<dParticlePosZ<<" m"
+    <<"\n-----------------------------------------------------------------\n"
     <<G4endl;
 
 }
+void GPHEPEvtInterface::SetParameter(std::string sLocal, std::string sGlobal)
+{
+    std::stringstream ss(sLocal);
+    std::string		  sLocalKey;
+    std::string		  sGlobalKey;
+    std::string		  sValueOrg;
+    std::string		  sUnit;
+
+    G4double   		  dValueNew;
+    G4double   		  dValueOrg;
+    
+    ss>>sLocalKey>>sValueOrg>>sUnit;
+    ss.clear();
+    ss.str(sValueOrg);
+    ss>>dValueOrg;
+    ss.clear();
+    ss.str(sGlobal);
+    ss>>sGlobalKey;
+
+    if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()));
+    else dValueNew=dValueOrg;
+
+    if(sValueOrg!="")
+    {
+      if(sLocalKey=="inputFile")
+      {
+	SetInputFile(sValueOrg);
+        std::cout<<"Set: "<<sGlobalKey<<" to "<< sValueOrg<<std::endl;
+	return;
+      }
+      if(sLocalKey=="unit.length")
+      {
+        dUnitL = G4UIcommand::ValueOf(sValueOrg.c_str());
+        std::cout<<"Set: "<<sGlobalKey<<" to "<< sValueOrg<<std::endl;
+	return;
+      }
+      else if(sLocalKey=="unit.energy")
+      {
+        dUnitE = G4UIcommand::ValueOf(sValueOrg.c_str());
+        std::cout<<"Set: "<<sGlobalKey<<" to "<< sValueOrg<<std::endl;
+	return;
+      }
+      else if(sLocalKey=="unit.momentum")
+      {
+        dUnitP = G4UIcommand::ValueOf(sValueOrg.c_str());
+        std::cout<<"Set: "<<sGlobalKey<<" to "<< sValueOrg<<std::endl;
+	return;
+      }
+      else if(sLocalKey=="unit.time")
+      {
+        dTimeUnit = G4UIcommand::ValueOf(sValueOrg.c_str());
+        std::cout<<"Set: "<<sGlobalKey<<" to "<< sValueOrg<<std::endl;
+	return;
+      }
+    }
+
+    if(sLocalKey=="position.z")
+      dParticlePosZ = dValueNew/m;
+    else if(sLocalKey=="position.transverse.rms")
+      dRadiusRMSFactor = dValueNew/m;
+    else if(sLocalKey=="time.rms")
+      dBunchLength = dValueNew/picosecond;
+   else 
+   {
+     std::cout<<"The Key: "<<sGlobalKey<<" is not exist."<<std::endl;
+     return;
+   }
+
+   std::cout<<"Set: "<<sGlobalKey<<" to "<< dValueOrg<<" "<<sUnit<<std::endl;
+
+}
+G4double GPHEPEvtInterface::GetParameter(std::string sKey,std::string sKeyGlobal)
+{
+  return 0;
+}
+

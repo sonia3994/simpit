@@ -51,6 +51,9 @@ private:
   G4UIcmdWithADoubleAndUnit*			InputFileRMSFactorCmd;
   G4UIcmdWithADoubleAndUnit*			BunchLengthCmd;
   G4UIcmdWithoutParameter* 			PrintParaCmd;
+
+  G4UIcmdWithAString*	SetParameter;
+  G4UIcmdWithAString*	GetParameter;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
