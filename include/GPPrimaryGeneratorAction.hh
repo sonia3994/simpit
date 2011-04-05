@@ -17,11 +17,12 @@
 
 extern CLHEP::RanecuEngine ranecuEngine;
 
-class GPPrimaryGeneratorMessenger;
-//class G4VPrimaryGenerator;
-class GPHEPEvtInterface;
 class G4ParticleGun;
 class G4Event;
+class GPPrimaryGeneratorMessenger;
+class GPHEPEvtInterface;
+class GPCrystalPrimaryGA;
+
 class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
@@ -29,6 +30,10 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     ~GPPrimaryGeneratorAction();
 
   public:
+    void SetParameter(std::string);
+    void SetParameter(std::string, std::string);
+    G4double GetParameter(std::string);
+    G4double GetParameter(std::string,std::string);
     void GeneratePrimaries(G4Event*);
     void SetVerboseLevel(G4int);
     void SetParticleStyle(G4String);
@@ -44,7 +49,7 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetLengthUnit(G4String);
     void SetInputFileRMSFactor(G4double);    
     void SetBunchLength(G4double);    
-    void PrintPrimaryMessage();
+    void Print();
     void Print(std::ofstream& );
     inline void SetHEPEvtGenerator(G4bool f)
     { bHEPEvtFlag = f; G4cout<<"The HEPEvt flag is set to: "<<f<<G4endl;}
@@ -81,8 +86,10 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     
     G4bool 						bHEPEvtFlag;
     G4bool 						bFixedParticleGun;
+    G4int						iGeneratorType;
     G4ParticleGun* 				particleGun;
     GPHEPEvtInterface* 			HEPEvt;
+    GPCrystalPrimaryGA*			crystalGenerator;
     CLHEP::RandGauss* 			randGauss;
 //    CLHEP::RandFlat*			randFlat;
     GPPrimaryGeneratorMessenger* 	primaryMessenger;

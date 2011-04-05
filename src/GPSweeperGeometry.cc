@@ -37,7 +37,7 @@ GPSweeperGeometry::GPSweeperGeometry()
     dSweeperTubeSpanningAngle = 360;
     iSweeperLimitStepFlag = 0;
     dSweeperLimitStepMax = 0.002;
-    iSweeperHitFlag = 1;
+    iSweeperHitFlag = 0;
 
 }
 
@@ -76,12 +76,13 @@ G4VPhysicalVolume* GPSweeperGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
   if(iSweeperLimitStepFlag)
     sweeperLog->SetUserLimits(new G4UserLimits(dSweeperLimitStepMax*m));
 
-  G4VisAttributes* sweeperLogVisAtt= new G4VisAttributes(G4Colour(1.0,0.3,0,0.3));
+  G4VisAttributes* sweeperLogVisAtt= new G4VisAttributes(G4Colour(0.6,0.3,0,0.6));
   sweeperLogVisAtt->SetVisibility(true);
   sweeperLogVisAtt->SetForceSolid(true);
   sweeperLog->SetVisAttributes(sweeperLogVisAtt);
 
-  SetHit(sweeperLog);
+  if(iSweeperHitFlag==1)
+    SetHit(sweeperLog);
 
   return sweeperPhys;
 

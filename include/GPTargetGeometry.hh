@@ -64,6 +64,7 @@ class GPTargetGeometry
     G4int    iTargetGranularFlag;
     G4int    iTargetHitFlag;
     G4int    iTargetEddFlag;
+    G4int    iReadOutCylinderFlag;
 
     std::vector<G4int> vecEddDim;
     G4double dTargetSDSolidR;

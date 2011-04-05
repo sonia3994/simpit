@@ -11,6 +11,7 @@
 #include "GPCaptureGeometry.hh"
 #include "GPAcceleratorGeometry.hh"
 #include "GPSweeperGeometry.hh"
+#include "GPCrystalGeometry.hh"
 
 
 #include "G4Box.hh"
@@ -53,6 +54,7 @@ GPDetectorConstruction::GPDetectorConstruction()
     acceleratorGeometry = new GPAcceleratorGeometry();
     captureGeometry = new GPCaptureGeometry();
     sweeperGeometry = new GPSweeperGeometry();
+    crystalGeometry = new GPCrystalGeometry();
 
     dWorldX = 500.0e-3;
     dWorldY = 500.0e-3;
@@ -76,6 +78,7 @@ GPDetectorConstruction::~GPDetectorConstruction()
     if(targetGeometry)		delete targetGeometry;
     if(acceleratorGeometry)		delete acceleratorGeometry;
     if(sweeperGeometry)		delete sweeperGeometry;
+    if(crystalGeometry)		delete crystalGeometry;
     if(captureGeometry)		delete captureGeometry;
     if(detectorMessenger) 	delete detectorMessenger;
     //if(fieldSetup) 			delete fieldSetup;
@@ -116,11 +119,14 @@ G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
 
   pz = vecTarPosition.z()-targetGeometry->GetParameter("gz")/2-sweeperGeometry->GetParameter("l")/2;
   G4ThreeVector vecSwpPosition(0,0,pz);
+  pz = vecSwpPosition.z()-sweeperGeometry->GetParameter("l")/2-crystalGeometry->GetParameter("l")/2;
+  G4ThreeVector vecCryPosition(0,0,pz);
 
   targetPhys = targetGeometry->Construct(worldLog,vecTarPosition);
   capturePhys = captureGeometry->Construct(worldLog,vecCapPosition);
   acceleratorPhys = acceleratorGeometry->Construct(worldLog,vecAccPosition);
   sweeperPhys = sweeperGeometry->Construct(worldLog,vecSwpPosition);
+  crystalGeometry->Construct(worldLog,vecCryPosition);
   //always return the physical World
   //
 #ifdef GP_DEBUG
@@ -190,6 +196,7 @@ void GPDetectorConstruction::PrintDetectorParameters()
   captureGeometry->Print();
   acceleratorGeometry->Print();
   sweeperGeometry->Print();
+  crystalGeometry->Print();
   G4cout 
         << "\n------------------------------------------------------------"
         << G4endl;
@@ -247,6 +254,11 @@ G4double GPDetectorConstruction::GetParameter(std::string name) const
     if(strFirstLevel=="sweeper")
     {
       return sweeperGeometry->GetParameter(strLeft);
+    }
+
+    if(strFirstLevel=="crystal")
+    {
+      return crystalGeometry->GetParameter(strLeft);
     }
     
     else if(name=="world.x")
@@ -307,6 +319,12 @@ void GPDetectorConstruction::SetParameter(std::string str)
       return;
     }
 
+    if(strFirstLevel=="crystal")
+    {
+      crystalGeometry->SetParameter(strLeft,str);
+      return;
+    }
+
     else if(key=="world.x")
     dWorldX = dValueNew;
     else if(key=="world.y")
@@ -342,5 +360,6 @@ void GPDetectorConstruction::Print(std::ofstream& fstOuput)
   captureGeometry->Print(fstOuput);
   acceleratorGeometry->Print(fstOuput);
   sweeperGeometry->Print(fstOuput);
+  crystalGeometry->Print(fstOuput);
   GPFieldSetup::GetGPFieldSetup()->Print(fstOuput);
 }

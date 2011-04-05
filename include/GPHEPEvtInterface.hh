@@ -58,6 +58,8 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
     GPHEPEvtInterface(G4String evfile);
     ~GPHEPEvtInterface();
 
+    void SetParameter(std::string, std::string);
+    G4double GetParameter(std::string, std::string);
     void SetInputFile(G4String );
 
     inline void SetParticlePosZ(G4double t)
@@ -81,6 +83,7 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
   public:
     void GeneratePrimaryVertex(G4Event* evt);
     void Print(std::ofstream&);
+    void Print();
 
   private:
     void Init();

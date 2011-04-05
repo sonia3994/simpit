@@ -31,19 +31,20 @@ GPTargetGeometry::GPTargetGeometry()
   targetMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
 
-    dTargetHexagonalSphereRadius=0.02;
-    dTargetSolidX = 0.025;
-    dTargetSolidY = 0.025;
-    dTargetSolidZ = 0.01;
-    dTargetHitL = 0.001;
-    iTargetGranularZNumber = 3;
-    iTargetGranularFlag = 1;
-    iTargetHitFlag = 1;
-    iTargetEddFlag = 1;
-    
-    dTargetGlobalSolidX = dTargetSolidX+0.01;
-    dTargetGlobalSolidY = dTargetSolidY+0.01;
-    dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
+  dTargetHexagonalSphereRadius=0.02;
+  dTargetSolidX = 0.025;
+  dTargetSolidY = 0.025;
+  dTargetSolidZ = 0.01;
+  dTargetHitL = 0.001;
+  iTargetGranularZNumber = 3;
+  iTargetGranularFlag = 1;
+  iTargetHitFlag = 1;
+  iTargetEddFlag = 1;
+  iReadOutCylinderFlag = 0;
+
+  dTargetGlobalSolidX = dTargetSolidX+0.01;
+  dTargetGlobalSolidY = dTargetSolidY+0.01;
+  dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
     
   dTargetSDSolidZ=dTargetSolidZ;
   dTargetSDSolidR=dTargetSolidX/2;
@@ -62,6 +63,14 @@ GPTargetGeometry::~GPTargetGeometry()
 
 void GPTargetGeometry::Init()
 {
+  dTargetSDSolidZ=dTargetSolidZ;
+  dTargetSDSolidR=dTargetSolidX/2;
+  dTargetSDSolidAngle=360;
+
+  dTargetSDCellZ=0.001;
+  dTargetSDCellR=0.001;
+  dTargetSDCellPhi = 360;
+
   if(iTargetHitFlag==1)
   {
     dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
@@ -73,7 +82,7 @@ void GPTargetGeometry::Init()
     dIndexPoint = 0;
   }
 
-  GranularHexagonalInit();
+  //GranularHexagonalInit();
 }
 G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
@@ -156,7 +165,19 @@ void GPTargetGeometry::Print()
     <<G4endl;
   }
    
-  if(iTargetEddFlag==1) PrintSD();
+  if(iTargetEddFlag==1&&iReadOutCylinderFlag==1) PrintSD();
+  if(iTargetEddFlag==1&&iReadOutCylinderFlag!=1) 
+  {
+  G4cout
+   <<"\nTarget Sensitive detector:"
+   <<"\nX Cell width: "<<dTargetSDCellR*m/mm<<" mm"
+   <<"\nY Cell width: "<<dTargetSDCellR*m/mm<<" mm"
+   <<"\nZ Cell width: "<<dTargetSDCellZ*m/mm<<" mm"
+   <<"\nX Cell Number: "<<dTargetSolidX/dTargetSDCellR
+   <<"\nY Cell Number: "<<dTargetSolidX/dTargetSDCellR
+   <<"\nZ Cell Number: "<<dTargetSolidZ/dTargetSDCellZ
+   <<G4endl;
+  }
   G4cout
    <<"\n------------------------------------------------------------------------"
    <<G4endl;
@@ -466,30 +487,50 @@ void GPTargetGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
   vecEddDim[2]=(ceil(dTargetSDSolidAngle/dTargetSDCellPhi));
 
   GPTargetSD* targetSD = (GPTargetSD*)SDman->FindSensitiveDetector(targetSDName);
-  if(targetSD)
+  if(targetSD==NULL)
+    targetSD =new GPTargetSD(targetSDName,vecEddDim);
+
+  if(iReadOutCylinderFlag)
   {
-    targetSD->SetEddDim(vecEddDim);  
-  }                                                                  
+    targetSD->SetEddDim(vecEddDim);
+
+    GPTargetROGeometryTubs* targetROTubs = (GPTargetROGeometryTubs*)targetSD->GetROgeometry(); 
+    if(targetROTubs)
+    {
+      delete targetROTubs;
+    }
+    targetROTubs=new GPTargetROGeometryTubs(targetROName,
+        0,
+        dTargetSDSolidR,
+        dTargetSDSolidZ,
+        vecEddDim);
+
+    targetROTubs->BuildROGeometry();
+    targetSD->SetROgeometry(targetROTubs);  
+  }
+
   else
   {
-    targetSD=new GPTargetSD(targetSDName,vecEddDim);
-  }
+    vecEddDim[0]=(ceil(dTargetSolidX/dTargetSDCellR));
+    vecEddDim[1]=(ceil(dTargetSolidY/dTargetSDCellR));
+    vecEddDim[2]=(ceil(dTargetSolidZ/dTargetSDCellZ));
+    targetSD->SetEddDim(vecEddDim);
 
-  GPTargetROGeometryTubs* targetROTubs = (GPTargetROGeometryTubs*)targetSD->GetROgeometry(); 
-  if(targetROTubs)
-  {
-    delete targetROTubs;
-  }
-  targetROTubs=new GPTargetROGeometryTubs(targetROName,
-      0,
-      dTargetSolidX/2,
-      dTargetSolidZ,
-      vecEddDim);
+    GPTargetROGeometry* targetRO = (GPTargetROGeometry*)targetSD->GetROgeometry(); 
+    if(targetRO)
+    {
+      delete targetRO;
+    }
+    targetRO=new GPTargetROGeometry(targetROName,
+        dTargetSolidX,
+        dTargetSolidY,
+        dTargetSolidZ,
+        vecEddDim);
 
-  targetROTubs->BuildROGeometry();
-  //targetROTubs->SetName(targetROName);
-  
-  targetSD->SetROgeometry(targetROTubs);  
+    targetRO->BuildROGeometry();
+    
+    targetSD->SetROgeometry(targetRO);  
+  }
 
   SDman->AddNewDetector(targetSD);
   logicalVolume->SetSensitiveDetector(targetSD); 
@@ -591,7 +632,7 @@ void GPTargetGeometry::Print(std::ofstream& fstOutput)
     <<"\nLength of target, "<<dTargetSolidZ*m/mm<<" mm"
     <<G4endl;
   }
-  if(iTargetEddFlag==1) 
+  if(iTargetEddFlag==1&&iReadOutCylinderFlag==1) 
   {
   fstOutput
    <<"\nTarget Sensitive detector:"
@@ -601,6 +642,18 @@ void GPTargetGeometry::Print(std::ofstream& fstOutput)
    <<"\nZ Cell Number, "<<vecEddDim[0]
    <<"\nR Cell Number, "<<vecEddDim[1]
    <<"\nPhi Cell Number, "<<vecEddDim[2]
+   <<G4endl;
+  }
+  if(iTargetEddFlag==1&&iReadOutCylinderFlag!=1) 
+  {
+  fstOutput
+   <<"\nTarget Sensitive detector:"
+   <<"\nX Cell width, "<<dTargetSDCellR*m/mm<<" mm"
+   <<"\nY Cell width, "<<dTargetSDCellR*m/mm<<" mm"
+   <<"\nZ Cell width, "<<dTargetSDCellZ*m/mm<<" mm"
+   <<"\nX Cell Number, "<<dTargetSolidX/dTargetSDCellR
+   <<"\nY Cell Number, "<<dTargetSolidX/dTargetSDCellR
+   <<"\nZ Cell Number, "<<dTargetSolidZ/dTargetSDCellZ
    <<G4endl;
   }
 }

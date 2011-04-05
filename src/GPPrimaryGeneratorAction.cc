@@ -5,6 +5,7 @@
 #include "GPPrimaryGeneratorAction.hh"
 #include "GPPrimaryGeneratorMessenger.hh"
 #include "GPHEPEvtInterface.hh"
+#include "GPCrystalPrimaryGA.hh"
 
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
@@ -62,7 +63,9 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
   particleGun->SetParticleEnergy(dEnergyMean*MeV);
 
   HEPEvt = new GPHEPEvtInterface();
+  crystalGenerator = new GPCrystalPrimaryGA();
   bHEPEvtFlag = false;
+  iGeneratorType = 0;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()"<<G4endl;
 #endif
@@ -78,6 +81,7 @@ GPPrimaryGeneratorAction::~GPPrimaryGeneratorAction()
 //  if(randFlat) delete randFlat;
   if(primaryMessenger) delete primaryMessenger;
   if(HEPEvt) delete HEPEvt;
+  if(crystalGenerator) delete crystalGenerator;
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::~GPPrimaryGeneratorAction()"<<G4endl;
 #endif
@@ -88,16 +92,22 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPPrimaryGeneratorAction::GeneratePrimaries(G4Event*)"<<G4endl;
 #endif
-  if(bHEPEvtFlag)
+  //if(bHEPEvtFlag)
+  if(iGeneratorType==0)
     { 
       HEPEvt->GeneratePrimaryVertex(anEvent);
       return;
     }
+  else if(iGeneratorType==1)
+    { 
+      crystalGenerator->GeneratePrimaryVertex(anEvent);
+      return;
+    }
 
-  else if(bFixedParticleGun)
+  if(bFixedParticleGun)
     {
       GeneratePrimariesFixedParticleGun(anEvent);
-	  return;
+      return;
     }
 
   G4double 	r=randGauss->shoot(dPositionMean,dPositionRMS);
@@ -237,17 +247,18 @@ void GPPrimaryGeneratorAction::SetParticleInitNumber(G4int tmp)
 
 }
 
-void GPPrimaryGeneratorAction::PrintPrimaryMessage()
+void GPPrimaryGeneratorAction::Print()
 { 
-  if(bHEPEvtFlag == true)
+  if(iGeneratorType==0)
     {
-  		G4cout
-		<<"\n------------------Print primary status---------------------------\n"
-		<<"Primary Generator is implemented from file: "<<sInputFile<<"\n"
-		<<"-----------------------------------------------------------------\n"
-        <<G4endl;	
-		return;
-	}
+      HEPEvt->Print();
+      return;
+    }
+  if(iGeneratorType==1)
+    {
+      crystalGenerator->Print();
+      return;
+    }
   else if(bFixedParticleGun== true)
     {
   	G4cout
@@ -286,16 +297,22 @@ void GPPrimaryGeneratorAction::PrintPrimaryMessage()
 
 void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
 { 
-  ofsOutput
-  <<"\nPrimary status:" ;
-  if(bHEPEvtFlag == true)
+  //if(bHEPEvtFlag == true)
+  if(iGeneratorType==0)
     {           
       HEPEvt->Print(ofsOutput);
       return;
     }
-  else if(bFixedParticleGun== true)
+  if(iGeneratorType==1)
+    {           
+      crystalGenerator->Print(ofsOutput);
+      return;
+    }
+  if(bFixedParticleGun== true)
     {
   	ofsOutput
+        <<"\nPrimary status:"
+  	<<"\nPrimary Generator type:,Particle Gun"
   	<<"\nFixed primary condition:"
     	<<"\nParticle style, "<<sParticleStyle
     	<<"\nNumber per event, "<<iNParticles
@@ -311,6 +328,8 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
      }
 
        ofsOutput
+        <<"\nPrimary status:"
+  	<<"\nPrimary Generator type:,Particle Gun"
         <<"\nSelected distribution is, "<<"CLHEP::RandGauss"
     	<<"\nParticle style, "<<sParticleStyle
     	<<"\nNumber per event, "<<iNParticles
@@ -356,4 +375,187 @@ void GPPrimaryGeneratorAction::SetLengthUnit(G4String tmp)
 void GPPrimaryGeneratorAction::SetInputFileRMSFactor(G4double tmp)
 {
   if(HEPEvt!=0) HEPEvt->SetInputFileRMSFactor(tmp);
+}
+
+void GPPrimaryGeneratorAction::SetParameter(std::string sLocal)
+{
+    std::stringstream ss(sLocal);
+    std::string		  sGlobal=sLocal;
+    std::string		  sUnit;
+    std::string		  sKey;
+    std::string		  sValueOrg;
+    G4double   		  dValueNew;
+    G4double   		  dValueOrg;
+    
+    ss>>sKey>>sValueOrg>>sUnit;
+    ss.clear();
+    ss.str(sValueOrg);
+    ss>>dValueOrg;
+
+    if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()));
+    else dValueNew=dValueOrg;
+
+    std::string strInput=sLocal;
+    std::string strFirstLevel;
+    std::string strLeft;
+    size_t iFirstDot;
+    iFirstDot = strInput.find(".");
+    if(iFirstDot!=std::string::npos)
+    {
+    strFirstLevel=strInput.substr(0,iFirstDot);
+    strLeft=strInput.substr(iFirstDot+1);
+    }
+
+    if(strFirstLevel=="HEPEvt")
+    {
+      HEPEvt->SetParameter(strLeft,sGlobal);
+      return;
+    }
+    if(strFirstLevel=="crystal")
+    {
+      crystalGenerator->SetParameter(strLeft,sGlobal);
+      return;
+    }
+    if(strFirstLevel=="particleGun")
+    {
+      SetParameter(strLeft,sGlobal);
+      return;
+    }
+
+    if(sKey=="type")
+    {
+      iGeneratorType=dValueNew;
+      std::cout<<"Set: "<<sKey<<" to "<< dValueOrg<<" "<<sUnit<<std::endl;
+      return;
+    }
+    
+    std::cout<<"The Key: "<<sKey<<" is not exist."<<std::endl;
+}
+
+G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey)
+{
+    std::string strInput=sKey;
+    std::string strFirstLevel;
+    std::string strLeft;
+    size_t iFirstDot;
+    iFirstDot = strInput.find(".");
+    if(iFirstDot!=std::string::npos)
+    {
+    strFirstLevel=strInput.substr(0,iFirstDot);
+    strLeft=strInput.substr(iFirstDot+1);
+    }
+
+    if(strFirstLevel=="HEPEvt")
+    {
+      return HEPEvt->GetParameter(strLeft,sKey);
+    }
+    
+    if(strFirstLevel=="crystal")
+    {
+      return crystalGenerator->GetParameter(strLeft,sKey);
+    }
+    if(strFirstLevel=="particleGun")
+    {
+      return GetParameter(strLeft,sKey);
+    }
+    if(sKey=="type")
+      return iGeneratorType;
+    else 
+    {
+     std::cout<<"The Key: "<<sKey<<" is not exist."<<std::endl;
+    }
+    return 0;
+}
+
+void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlobal)
+{
+    std::stringstream ss(sLocal);
+    std::string		  sUnit;
+    std::string		  sKey;
+    std::string		  sValueOrg;
+    G4double   		  dValueNew;
+    G4double   		  dValueOrg;
+    
+    ss>>sKey>>sValueOrg>>sUnit;
+    ss.str(sValueOrg);
+    ss>>dValueOrg;
+
+    if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()));
+    else dValueNew=dValueOrg;
+    
+    if(sKey=="verbose")
+    verbose = dValueNew;
+    else if(sKey=="number")
+    iNParticles=dValueNew;
+    else if(sKey=="particle.type")
+    sParticleStyle=sValueOrg;
+    else if(sKey=="position.z")
+    dParticlePosZ=dValueNew/m;
+    else if(sKey=="position.mean")
+    dPositionMean=dValueNew/m;
+    else if(sKey=="position.tr.rms")
+    dPositionRMS=dValueNew/m;
+    else if(sKey=="energy.mean")
+    dEnergyMean=dValueNew/MeV;
+    else if(sKey=="energy.rms")
+    dEnergyRMS=dValueNew/MeV;
+    /*
+    else if(sKey=="momentum.mean")
+    dMommentumMean=dValueNew/MeV;
+    else if(sKey=="momentum.rms")
+    dMommentumRMS=dValueNew/MeV;
+    */
+    else if(sKey=="bunch.rms")
+    dBunchLength=dValueNew/picosecond;
+    else if(sKey=="random.flag")
+    bFixedParticleGun=dValueNew;
+
+   else 
+   {
+     std::cout<<"The sKey: "<<sKey<<" is not exist."<<std::endl;
+     return;
+   }
+
+   std::cout<<"Set: "<<sKey<<" to "<< dValueOrg<<" "<<sUnit<<std::endl;
+
+}
+
+G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey,std::string sKeyGlobal)
+{
+    if(sKey=="verbose")
+    return verbose;
+    else if(sKey=="number")
+    return iNParticles;
+    //else if(sKey=="particle.type")
+    //return sParticleStyle;
+    else if(sKey=="position.z")
+    return dParticlePosZ;
+    else if(sKey=="position.transverse.mean")
+    return dPositionMean;
+    else if(sKey=="position.transverse.rms")
+    return dPositionRMS;
+    else if(sKey=="energy.mean")
+    return dEnergyMean;
+    else if(sKey=="energy.rms")
+    return dEnergyRMS;
+    /*
+    else if(sKey=="momentum.mean")
+    return dMommentumMean;
+    else if(sKey=="momentum.rms")
+    return dMommentumRMS;
+    */
+    else if(sKey=="time.rms")
+    return dBunchLength;
+    //else if(sKey=="verbose")
+    //vectMommentumDirection;
+    else if(sKey=="random.flag")
+    return bFixedParticleGun;
+
+   else 
+   {
+     std::cout<<"The Key: "<<sKeyGlobal<<" is not exist."<<std::endl;
+   }
+   return 0;
 }

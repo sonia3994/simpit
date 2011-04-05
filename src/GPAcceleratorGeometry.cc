@@ -81,7 +81,8 @@ G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog,G
   acceleratorLogVisAtt->SetForceSolid(true);
   acceleratorLog->SetVisAttributes(acceleratorLogVisAtt);
 
-  SetHit(acceleratorLog);
+  if(iAcceleratorHitFlag==1)
+    SetHit(acceleratorLog);
 
   return acceleratorPhys;
 

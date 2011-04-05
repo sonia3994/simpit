@@ -146,7 +146,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 
   G4cout<<"Created output files handlers"<<G4endl;
   detector->PrintDetectorParameters();
-  primaryGenerator->PrintPrimaryMessage();
+  primaryGenerator->Print();
 
   G4cout << "Start run: " << iRunID<<G4endl;
 

@@ -138,6 +138,20 @@ GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(
   PrintParaCmd = new G4UIcmdWithoutParameter("/GP/primary/printParameters",this);
   PrintParaCmd->SetGuidance("Print primary particle parameters.");
   PrintParaCmd->AvailableForStates(G4State_Idle);     
+  
+  SetParameter = new G4UIcmdWithAString("/GP/primary/SetParameter",this);
+  SetParameter->SetGuidance("Set Primary parameter.");
+  SetParameter->SetGuidance("Usage: {key} {value} {unit}");
+  SetParameter->SetGuidance("For example: SetParameter crystal.time.rms 10 ps");
+  SetParameter->SetParameterName("choice",false);
+  SetParameter->AvailableForStates(G4State_PreInit,G4State_Idle);
+  
+  GetParameter = new G4UIcmdWithAString("/GP/primary/GetParameter",this);
+  GetParameter->SetGuidance("Get Primary parameter.");
+  GetParameter->SetGuidance("Usage: {key}");
+  GetParameter->SetGuidance("For example: GetParameter crystal.time.rms");
+  GetParameter->SetParameterName("choice",false);
+  GetParameter->AvailableForStates(G4State_PreInit,G4State_Idle);
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(GPPrimaryGeneratorAction*)"<<G4endl;
 #endif
@@ -167,6 +181,8 @@ GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()
   delete						MomentumDirectionCmd;
   delete						LengthUnitCmd;
   delete						InputFileRMSFactorCmd;
+  delete SetParameter; 
+  delete GetParameter; 
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()"<<G4endl;
 #endif
@@ -244,12 +260,17 @@ void GPPrimaryGeneratorMessenger::SetNewValue(
    }
 
    if(command == PrintParaCmd)
-   {GPPrimary->PrintPrimaryMessage();}
+   {GPPrimary->Print();}
    
    if(command == InputFileRMSFactorCmd)
    {
    GPPrimary->SetInputFileRMSFactor(InputFileRMSFactorCmd->GetNewDoubleValue(newValue)/m); 
    }
+   if( command == SetParameter )
+   { GPPrimary->SetParameter(newValue);}
+   if( command == GetParameter )
+   { GPPrimary->GetParameter(newValue);}
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -21,6 +21,7 @@ class GPTargetGeometry;
 class GPCaptureGeometry;
 class GPAcceleratorGeometry;
 class GPSweeperGeometry;
+class GPCrystalGeometry;
 
 class GPDetectorConstruction : public G4VUserDetectorConstruction
 {
@@ -58,6 +59,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     GPTargetGeometry* targetGeometry;
     GPAcceleratorGeometry* acceleratorGeometry;
     GPSweeperGeometry* sweeperGeometry;
+    GPCrystalGeometry* crystalGeometry;
     GPCaptureGeometry* captureGeometry;
 
     G4VPhysicalVolume* targetPhys;
