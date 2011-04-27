@@ -6,6 +6,7 @@
 #ifndef GPSWEEPERGEOMETRY_H
 #define GPSWEEPERGEOMETRY_H 1
 #include "G4ThreeVector.hh"
+#include "GPGeometry.hh"
 #include <string>
 #include <vector>
 
@@ -16,18 +17,19 @@ class G4Tubs;
 
 //#include "G4VUserDetectorConstruction.hh"
 
-class GPSweeperGeometry
+class GPSweeperGeometry : public GPGeometry
 {
   public:
 
+    GPSweeperGeometry(std::string sFirst, std::string sSecond);
     GPSweeperGeometry();
     ~GPSweeperGeometry();
 
     G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog, G4ThreeVector point);
+    G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog);
 
-    void SetMaterial (G4String strMa);
     void SetParameter(std::string, std::string);
-    G4double GetParameter(std::string) const;
+    G4double GetParameter(std::string,std::string) const;
     void Print();
     void Print(std::ofstream& );
 
@@ -43,13 +45,13 @@ class GPSweeperGeometry
     G4LogicalVolume* sweeperLog;
     G4VPhysicalVolume* sweeperPhys;
 
-    G4ThreeVector vecPosition;
     G4double dSweeperTubeInnerRadius;
     G4double dSweeperTubeOuterRadius;
     G4double dSweeperTubeLength;
     G4double dSweeperTubeStartAngle;
     G4double dSweeperTubeSpanningAngle;
     G4double dSweeperLimitStepMax;
+    G4double dGlobalLength;
     G4int    iSweeperLimitStepFlag;
     G4int    iSweeperHitFlag;
 

@@ -11,6 +11,8 @@
 #include "GPFieldSetup.hh"
 #include "GPSteppingAction.hh"
 
+#include "GPRunHandleManager.hh"
+
 #include "globals.hh"
 #include "G4Run.hh"
 #include "G4RunManager.hh"
@@ -79,6 +81,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   G4cout<<"GP_DEBUG: Enter GPRunAction::BeginOfRunAction(const G4Run* )"<<G4endl;
 #endif
 //inform the runManager to save random number seed
+  GPRunHandleManager::GetInstance()->BeginOfRunAction(aRun);
   std::pair<std::string,std::ofstream* > pairHandle;
   G4String chrunID;
   stringstream ss;
@@ -101,8 +104,8 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   GPFieldSetup::GetGPFieldSetup()->Init();
   G4cout<<"Init Field."<<G4endl;
 
-  bTargetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("/PositronSource/Target/EddSD")->isActive();
-  G4cout<<"Target sensitive detector status: "<<bTargetSDFlag<<G4endl;
+  //bTargetSDFlag=G4SDManager::GetSDMpointer()->FindSensitiveDetector("/PositronSource/Target/EddSD")->isActive();
+  //G4cout<<"Target sensitive detector status: "<<bTargetSDFlag<<G4endl;
 
   mapElectron.clear();
   mapElectron.insert(std::pair<G4String,G4int>("target",0));
@@ -204,6 +207,7 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPRunAction::EndOfRunAction(const G4Run* )"<<G4endl;
 #endif
+  GPRunHandleManager::GetInstance()->BeginOfRunAction(aRun);
   GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
   if(gpSteppingAction) gpSteppingAction->CleanUp();
 

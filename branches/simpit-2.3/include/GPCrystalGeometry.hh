@@ -6,6 +6,7 @@
 #ifndef GPCRYSTALGEOMETRY_H
 #define GPCRYSTALGEOMETRY_H 1
 #include "G4ThreeVector.hh"
+#include "GPGeometry.hh"
 #include <string>
 #include <vector>
 
@@ -18,19 +19,20 @@ class RunParameters;
 
 //#include "G4VUserDetectorConstruction.hh"
 
-class GPCrystalGeometry
+class GPCrystalGeometry : public GPGeometry
 {
   public:
 
     GPCrystalGeometry();
+    GPCrystalGeometry(std::string, std::string);
     ~GPCrystalGeometry();
 
     G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog, G4ThreeVector point);
+    G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog);
 
     void ConstructCrystal();
-    void SetMaterial (G4String strMa);
     void SetParameter(std::string, std::string);
-    G4double GetParameter(std::string) const;
+    double GetParameter(std::string, std::string) const;
     void Print();
     void Print(std::ofstream& );
 
@@ -46,13 +48,13 @@ class GPCrystalGeometry
     G4LogicalVolume* crystalLog;
     G4VPhysicalVolume* crystalPhys;
 
-    G4ThreeVector vecPosition;
     G4double dCrystalTubeInnerRadius;
     G4double dCrystalTubeOuterRadius;
     G4double dCrystalTubeLength;
     G4double dCrystalTubeStartAngle;
     G4double dCrystalTubeSpanningAngle;
     G4double dCrystalLimitStepMax;
+    G4double dGlobalLength;
     G4int    iCrystalLimitStepFlag;
     G4int    iCrystalHitFlag;
 

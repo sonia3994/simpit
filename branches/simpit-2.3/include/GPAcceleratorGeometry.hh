@@ -6,6 +6,7 @@
 #ifndef GPACCELERATORGEOMETRY_H
 #define GPACCELERATORGEOMETRY_H 1
 #include "G4ThreeVector.hh"
+#include "GPGeometry.hh"
 #include <string>
 #include <vector>
 
@@ -16,18 +17,19 @@ class G4Tubs;
 
 //#include "G4VUserDetectorConstruction.hh"
 
-class GPAcceleratorGeometry
+class GPAcceleratorGeometry : public GPGeometry
 {
   public:
 
+    GPAcceleratorGeometry(std::string sFirst, std::string sSecond);
     GPAcceleratorGeometry();
     ~GPAcceleratorGeometry();
 
     G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog, G4ThreeVector point);
+    G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog);
 
-    void SetMaterial (G4String strMa);
     void SetParameter(std::string, std::string);
-    G4double GetParameter(std::string) const;
+    G4double GetParameter(std::string,std::string) const;
     void Print();
     void Print(std::ofstream& );
 
@@ -43,13 +45,13 @@ class GPAcceleratorGeometry
     G4LogicalVolume* acceleratorLog;
     G4VPhysicalVolume* acceleratorPhys;
 
-    G4ThreeVector vecPosition;
     G4double dAcceleratorTubeInnerRadius;
     G4double dAcceleratorTubeOuterRadius;
     G4double dAcceleratorTubeLength;
     G4double dAcceleratorTubeStartAngle;
     G4double dAcceleratorTubeSpanningAngle;
     G4double dAcceleratorLimitStepMax;
+    G4double dGlobalLength;
     G4int    iAcceleratorLimitStepFlag;
     G4int    iAcceleratorHitFlag;
 

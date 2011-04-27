@@ -7,6 +7,7 @@
 #include "GPTargetROGeometryTubs.hh"
 #include "GPTargetSD.hh"
 #include "GPSurfaceParticleScorer.hh"
+#include "GPGeometryStore.hh"
 
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -26,6 +27,41 @@
 #include "globals.hh"
 
 #include <sstream>
+GPTargetGeometry::GPTargetGeometry(std::string sFirst, std::string sSecond)
+{
+  sName = sFirst;
+  sFatherName = sSecond;
+  iActiveFlag=1;
+  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+
+  targetMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
+  spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
+
+  dTargetHexagonalSphereRadius=0.02;
+  dTargetSolidX = 0.025;
+  dTargetSolidY = 0.025;
+  dTargetSolidZ = 0.01;
+  dTargetHitL = 0.001;
+  iTargetGranularZNumber = 3;
+  iTargetGranularFlag = 1;
+  iTargetHitFlag = 1;
+  iTargetEddFlag = 1;
+  iReadOutCylinderFlag = 0;
+
+  dTargetGlobalSolidX = dTargetSolidX+0.01;
+  dTargetGlobalSolidY = dTargetSolidY+0.01;
+  dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
+    
+  dTargetSDSolidZ=dTargetSolidZ;
+  dTargetSDSolidR=dTargetSolidX/2;
+  dTargetSDSolidAngle=360;
+
+  dTargetSDCellZ=0.001;
+  dTargetSDCellR=0.001;
+  dTargetSDCellPhi = 360;
+
+  vecEddDim = std::vector<G4int>(3,1);
+}
 GPTargetGeometry::GPTargetGeometry()
 {
   targetMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
@@ -59,6 +95,7 @@ GPTargetGeometry::GPTargetGeometry()
 
 GPTargetGeometry::~GPTargetGeometry()
 {
+  GPGeometryStore::GetInstance()->EraseItem(sName);
 }
 
 void GPTargetGeometry::Init()
@@ -81,8 +118,13 @@ void GPTargetGeometry::Init()
     dTargetGlobalSolidZ = dTargetSolidZ;
     dIndexPoint = 0;
   }
+  dGlobalLength=dTargetGlobalSolidZ;
 
   //GranularHexagonalInit();
+}
+G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog)
+{
+  return Construct(motherLog,vPosition);
 }
 G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
@@ -408,64 +450,63 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
 void GPTargetGeometry::SetParameter(std::string str,std::string strGlobal)
 {
 	std::stringstream ss(str);
-	std::string		  unit;
-	std::string		  key;
+	std::string		  sUnit;
+	std::string		  sKey;
 	G4double   		  dValueNew;
 	G4double   		  dValueOrg;
 	
-	ss>>key>>dValueOrg>>unit;
-    if(unit!="")
-    dValueNew=(dValueOrg*G4UIcommand::ValueOf(unit.c_str()))/m;
+	ss>>sKey>>dValueOrg>>sUnit;
+    if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
     else dValueNew=dValueOrg;
 
-    if(key=="x")
+    if(sKey=="x")
     dTargetSolidX = dValueNew;
-    else if(key=="y")
+    else if(sKey=="y")
     dTargetSolidY = dValueNew;
-    else if(key=="z")
+    else if(sKey=="z")
     {
       dTargetSolidZ = dValueNew;
       dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
     }
-    else if(key=="granular.flag")
+    else if(sKey=="granular.flag")
     iTargetGranularFlag = dValueNew;
-    else if(key=="granular.radius")
+    else if(sKey=="granular.radius")
     dTargetHexagonalSphereRadius = dValueNew;
-    else if(key=="granular.z.number")
+    else if(sKey=="granular.z.number")
     iTargetGranularZNumber = dValueNew;
-    else if(key=="hit.flag")
+    else if(sKey=="hit.flag")
     iTargetHitFlag = dValueNew;
 
     else 
     {
-  	std::cout<<"the key is not exist."<<std::endl;
+  	std::cout<<"the Key is not exist."<<std::endl;
      	return;
     }
 
     Init();
-    ss.clear();
-    ss.str(strGlobal);
-    ss>>key;
-    std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
+    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
-G4double GPTargetGeometry::GetParameter(std::string name) const
+G4double GPTargetGeometry::GetParameter(std::string sKey,std::string sGlobal) const
 {
-    if(name=="x")
+    if(sKey=="x")
     return dTargetSolidX;
-    else if(name=="gz")
+    else if(sKey=="gz")
     return dTargetGlobalSolidZ;
-    else if(name=="y")
+    else if(sKey=="y")
     return dTargetSolidY;
-    else if(name=="z")
+    else if(sKey=="z")
     return dTargetSolidZ;
-    else if(name=="granular.flag")
+    else if(sKey=="length")
+    return dGlobalLength;
+    else if(sKey=="granular.flag")
     return iTargetGranularFlag;
-    else if(name=="granular.z.number")
+    else if(sKey=="granular.z.number")
     return iTargetGranularZNumber;
-    else if(name=="granular.y.number")
+    else if(sKey=="granular.y.number")
     return iTargetGranularYNumber;
-    else if(name=="granular.x.number")
+    else if(sKey=="granular.x.number")
     return iTargetGranularXNumber;
 
     else
@@ -479,7 +520,8 @@ G4double GPTargetGeometry::GetParameter(std::string name) const
 void GPTargetGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
 {
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4String targetSDName="/PositronSource/Target/EddSD";
+  G4String targetSDName=sName+"edd";
+  //G4String targetSDName="/PositronSource/Target/EddSD";
   G4String targetROName="targetROGeometry";
 
   vecEddDim[0]=(ceil(dTargetSDSolidZ/dTargetSDCellZ));
@@ -556,11 +598,13 @@ G4VPhysicalVolume* GPTargetGeometry::SetTargetHit(G4LogicalVolume* targetLog,G4T
 
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Target/MultiFunDet");
+  G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
+  //G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Target/MultiFunDet");
   GPSurfaceParticleScorer* targetParticleScorer=0;
   if(targetMultiFunDet==NULL)
   {
-    targetMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Target/MultiFunDet");
+    targetMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
+    //targetMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Target/MultiFunDet");
     targetParticleScorer = new GPSurfaceParticleScorer("TargetParticleScorerZPlus",1,2);
     targetMultiFunDet->RegisterPrimitive(targetParticleScorer);
     SDman->AddNewDetector(targetMultiFunDet);
@@ -574,11 +618,6 @@ G4VPhysicalVolume* GPTargetGeometry::SetTargetHit(G4LogicalVolume* targetLog,G4T
 std::vector<G4int> GPTargetGeometry::GetEddDim()
 {
   return vecEddDim;
-}
-
-void GPTargetGeometry::SetTargetMaterial (G4String strMa)
-{
-  targetMaterial = G4NistManager::Instance()->FindOrBuildMaterial(strMa);
 }
 
 G4VPhysicalVolume* GPTargetGeometry::TubularTarget(G4LogicalVolume* motherLog, G4ThreeVector point)

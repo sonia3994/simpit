@@ -63,7 +63,7 @@ void GPCrystalPrimaryGA::Init()
   particle_time = 0.0;
   dUnitTime=picosecond;
   dParticlePosZ=-4e-3;
-  iUseOriginalElectronFlag = 1;
+  iUseOriginalElectronFlag = 0;
   iProducedPhoton = 0;
   CLHEP:: HepRandom::setTheSeed(time(0),time(0));
   randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.5);
@@ -125,20 +125,20 @@ void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
   //dMomentumX = sin(dTheta)*cos(dPhi);
   //dMomentumY = sin(dTheta)*sin(dPhi);
 
-  //Particle* particleFot = new Particle(dECharge,
-  //    0.0,
-  //    0.0,
-  //    0.0,
-  //    dMomentumX,
-  //    dMomentumY,
-  //    dGamma);
   Particle* particleFot = new Particle(dECharge,
-      dPositionX*m/angstrom,
-      dPositionY*m/angstrom,
-      0,
+      1.0,
+      1.0,
+      0.0,
       dMomentumX,
       dMomentumY,
       dGamma);
+  //Particle* particleFot = new Particle(dECharge,
+  //    dPositionX*m/angstrom,
+  //    dPositionY*m/angstrom,
+  //    0,
+  //    dMomentumX,
+  //    dMomentumY,
+  //    dGamma);
 
   ParticleInCrystal partCrys = fot.makeSingleParticleKumakhov(particleFot);
   std::list<struct Photon>::iterator it;
@@ -151,13 +151,14 @@ void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
     polY=G4UniformRand();
     polZ=std::sqrt(1.0-polX*polX-polY*polY);
     
-    //dPositionX = it->getXemis()*angstrom/m+randGauss->shoot(0.0,dRadiusRMSFactor);
-    //dPositionY = it->getYemis()*angstrom/m+randGauss->shoot(0.0,dRadiusRMSFactor);
+    dPositionX = it->getXemis()*angstrom/m+randGauss->shoot(0.0,dRadiusRMSFactor);
+    dPositionY = it->getYemis()*angstrom/m+randGauss->shoot(0.0,dRadiusRMSFactor);
     //dPositionZ = it->getZemis()*angstrom/m+dParticlePosZ;
-
-    dPositionX = it->getXemis()*angstrom/m;
-    dPositionY = it->getYemis()*angstrom/m;
     dPositionZ = it->getZemis()*angstrom/m + dCoordinateZG4FotCrystalToWorld;
+
+    //dPositionX = it->getXemis()*angstrom/m;
+    //dPositionY = it->getYemis()*angstrom/m;
+    //dPositionZ = it->getZemis()*angstrom/m + dCoordinateZG4FotCrystalToWorld;
     if(dPositionZ>dCrystalBorderPositionZPositive) 
       dPositionZ = dCrystalBorderPositionZPositive;
     

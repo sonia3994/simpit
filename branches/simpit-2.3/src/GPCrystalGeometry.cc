@@ -1,13 +1,15 @@
 // $Id: GPCrystalGeometry.cc,v 1.9 2006/06/29 17:47:19 gunter Granular $
 // GEANT4 tag $Name: geant4-09-02 $
 //
-#include "Crystal.h"
-#include "RunParameters.h"
-
 #include "GPCrystalGeometry.hh"
 #include "GPCrystalManager.hh"
 #include "GPSurfaceParticleScorer.hh"
 #include "GPFieldSetup.hh"
+
+#include "GPGeometryStore.hh"
+
+#include "Crystal.h"
+#include "RunParameters.h"
 
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -28,29 +30,55 @@
 #include "globals.hh"
 
 #include <sstream>
+GPCrystalGeometry::GPCrystalGeometry(std::string sFirst, std::string sSecond)
+{
+  sName = sFirst;
+  sFatherName = sSecond;
+  iActiveFlag=1;
+  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+
+  cryMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
+  spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
+
+  dCrystalTubeInnerRadius = 0;
+  dCrystalTubeOuterRadius = 20e-3;
+  dCrystalTubeLength = 1.0e-3;
+  dCrystalTubeStartAngle = 0;
+  dCrystalTubeSpanningAngle = 360;
+  iCrystalLimitStepFlag = 0;
+  dCrystalLimitStepMax = 0.002;
+  iCrystalHitFlag = 1;
+
+}
 GPCrystalGeometry::GPCrystalGeometry()
 {
   cryMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
 
-    dCrystalTubeInnerRadius = 0;
-    dCrystalTubeOuterRadius = 20e-3;
-    dCrystalTubeLength = 1.0e-3;
-    dCrystalTubeStartAngle = 0;
-    dCrystalTubeSpanningAngle = 360;
-    iCrystalLimitStepFlag = 0;
-    dCrystalLimitStepMax = 0.002;
-    iCrystalHitFlag = 0;
+  dCrystalTubeInnerRadius = 0;
+  dCrystalTubeOuterRadius = 20e-3;
+  dCrystalTubeLength = 1.0e-3;
+  dCrystalTubeStartAngle = 0;
+  dCrystalTubeSpanningAngle = 360;
+  iCrystalLimitStepFlag = 0;
+  dCrystalLimitStepMax = 0.002;
+  iCrystalHitFlag = 0;
 
 }
 
 GPCrystalGeometry::~GPCrystalGeometry()
 {
   GPCrystalManager::GetInstance()->Clear();
+  GPGeometryStore::GetInstance()->EraseItem(sName);
 }
 
 void GPCrystalGeometry::Init()
 {
+  dGlobalLength=dCrystalTubeLength;
+}
+G4VPhysicalVolume* GPCrystalGeometry::Construct(G4LogicalVolume* motherLog)
+{
+  return Construct(motherLog,vPosition);
 }
 G4VPhysicalVolume* GPCrystalGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
@@ -58,7 +86,7 @@ G4VPhysicalVolume* GPCrystalGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
   G4cout<<"GP_DEBUG: Enter GPCrystalGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
 #endif
 
-  vecPosition = point;
+  vPosition = point;
   Init();
 
   //------------------------------ crystal tube
@@ -72,7 +100,7 @@ G4VPhysicalVolume* GPCrystalGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
 
   crystalLog = new G4LogicalVolume(crystalTube,cryMaterial,"crystalLog");
   crystalPhys = new G4PVPlacement(0,
-             vecPosition*m,
+             vPosition*m,
              crystalLog,"crystal",motherLog,false,0);
 
   crystalLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager("crystal"),true);
@@ -130,67 +158,66 @@ void GPCrystalGeometry::Print()
 void GPCrystalGeometry::SetParameter(std::string str,std::string strGlobal)
 {
 	std::stringstream ss(str);
-	std::string		  unit;
-	std::string		  key;
+	std::string		  sUnit;
+	std::string		  sKey;
 	G4double   		  dValueNew;
 	G4double   		  dValueOrg;
 	
-	ss>>key>>dValueOrg>>unit;
-    if(unit!="")
-    dValueNew=(dValueOrg*G4UIcommand::ValueOf(unit.c_str()))/m;
+	ss>>sKey>>dValueOrg>>sUnit;
+    if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
     else dValueNew=dValueOrg;
 
-    if(key=="ir")
+    if(sKey=="ir")
     dCrystalTubeInnerRadius = dValueNew;
-    else if(key=="or")
+    else if(sKey=="or")
     dCrystalTubeOuterRadius = dValueNew;
-    else if(key=="l")
+    else if(sKey=="l")
     dCrystalTubeLength = dValueNew;
-    else if(key=="sa")
+    else if(sKey=="sa")
     dCrystalTubeStartAngle = dValueNew;
-    else if(key=="ea")
+    else if(sKey=="ea")
     dCrystalTubeSpanningAngle = dValueNew;
-    else if(key=="hit.flag")
+    else if(sKey=="hit.flag")
     iCrystalHitFlag = dValueNew;
-    else if(key=="limit.step.max")
+    else if(sKey=="limit.step.max")
     dCrystalLimitStepMax = dValueNew;
-    else if(key=="limit.step.flag")
+    else if(sKey=="limit.step.flag")
     iCrystalLimitStepFlag = dValueNew;
     else 
     {
-  	std::cout<<"the key is not exist."<<std::endl;
+  	std::cout<<"the Key is not exist."<<std::endl;
      	return;
     }
 
     Init();
-    ss.clear();
-    ss.str(strGlobal);
-    ss>>key;
-    std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
+    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
-G4double GPCrystalGeometry::GetParameter(std::string name) const
+G4double GPCrystalGeometry::GetParameter(std::string sKey, std::string sGlobal) const
 {
-    if(name=="ir")
+    if(sKey=="ir")
     return dCrystalTubeInnerRadius;
-    else if(name=="or")
+    else if(sKey=="or")
     return dCrystalTubeOuterRadius;
-    else if(name=="l")
+    else if(sKey=="l")
     return dCrystalTubeLength;
-    else if(name=="sa")
+    else if(sKey=="length")
+    return dGlobalLength;
+    else if(sKey=="sa")
     return dCrystalTubeStartAngle;
-    else if(name=="ea")
+    else if(sKey=="ea")
     return dCrystalTubeSpanningAngle;
-    else if(name=="hit.flag")
+    else if(sKey=="hit.flag")
     return iCrystalHitFlag;
-    else if(name=="limit.step.max")
+    else if(sKey=="limit.step.max")
     return dCrystalLimitStepMax;
-    else if(name=="limit.step.flag")
+    else if(sKey=="limit.step.flag")
     return iCrystalLimitStepFlag;
-    else if(name=="coordG4FotToGeant4.z")
-    return (vecPosition.z()-dCrystalTubeLength/2);
-    else if(name=="border.z.positive")
-    return (vecPosition.z()+dCrystalTubeLength/2);
+    else if(sKey=="coordG4FotToGeant4.z")
+    return (vPosition.z()-dCrystalTubeLength/2);
+    else if(sKey=="border.z.positive")
+    return (vPosition.z()+dCrystalTubeLength/2);
 
     else
     {
@@ -209,6 +236,7 @@ G4VPhysicalVolume* GPCrystalGeometry::SetHit(G4LogicalVolume* motherLog)
 G4VPhysicalVolume* GPCrystalGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
   //------------------------------ target tube
+  /*
     
   G4Tubs* crystalHitTube = new G4Tubs("crystalHitTube",
       m*dCrystalTubeInnerRadius,
@@ -222,26 +250,26 @@ G4VPhysicalVolume* GPCrystalGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4Th
              point*m,
              crystalHitLog,"crystalHit",motherLog,false,0);
 
+	     */
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* crystalMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Crystal/MultiFunDet");
+  //G4MultiFunctionalDetector* crystalMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Crystal/MultiFunDet");
+  G4MultiFunctionalDetector* crystalMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
   if(crystalMultiFunDet==NULL)
   {
-    G4MultiFunctionalDetector* crystalMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Crystal/MultiFunDet");
-    GPSurfaceParticleScorer* crystalParticleScorer = new GPSurfaceParticleScorer("CrystalParticleScorerZPlus",1,2);
+    G4MultiFunctionalDetector* crystalMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
+    //G4MultiFunctionalDetector* crystalMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Crystal/MultiFunDet");
+    GPSurfaceParticleScorer* crystalParticleScorer = new GPSurfaceParticleScorer("Crystal",1,2);
     crystalMultiFunDet->RegisterPrimitive(crystalParticleScorer);
     SDman->AddNewDetector(crystalMultiFunDet);
   }
-  crystalHitLog->SetSensitiveDetector(crystalMultiFunDet); 
+  //crystalHitLog->SetSensitiveDetector(crystalMultiFunDet); 
+  motherLog->SetSensitiveDetector(crystalMultiFunDet); 
   
 
-  return crystalHitPhys;
+  //return crystalHitPhys;
+  return NULL;
 }
 
-
-void GPCrystalGeometry::SetMaterial (G4String strMa)
-{
-  cryMaterial = G4NistManager::Instance()->FindOrBuildMaterial(strMa);
-}
 
 void GPCrystalGeometry::Print(std::ofstream& fstOutput)
 {

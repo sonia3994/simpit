@@ -6,6 +6,8 @@
 #include "GPSurfaceParticleScorer.hh"
 #include "GPFieldSetup.hh"
 
+#include "GPGeometryStore.hh"
+
 #include "G4Material.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
@@ -25,6 +27,29 @@
 #include "globals.hh"
 
 #include <sstream>
+GPCaptureGeometry::GPCaptureGeometry(std::string sFirst, std::string sSecond)
+{
+  sName = sFirst;
+  sFatherName = sSecond;
+  iActiveFlag=1;
+  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+
+  capMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
+  spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
+
+  dCaptureTubeInnerRadius = 0;
+  dCaptureTubeOuterRadius = 20e-3;
+  dCaptureTubeLength = 0.5;
+  dCaptureTubeStartAngle = 0;
+  dCaptureTubeSpanningAngle = 360;
+  iCaptureLimitStepFlag = 0;
+  dCaptureLimitStepMax = 0.002;
+  iCaptureHitFlag = 1;
+  iCaptureType = 0;
+  dLithiumTubeLength = 1e-3;
+  dLithiumTubeOuterRadius = 1e-3;
+
+}
 GPCaptureGeometry::GPCaptureGeometry()
 {
   capMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -46,10 +71,16 @@ GPCaptureGeometry::GPCaptureGeometry()
 
 GPCaptureGeometry::~GPCaptureGeometry()
 {
+  GPGeometryStore::GetInstance()->EraseItem(sName);
 }
 
 void GPCaptureGeometry::Init()
 {
+  dGlobalLength=dCaptureTubeLength+1e-3;
+}
+G4VPhysicalVolume* GPCaptureGeometry::Construct(G4LogicalVolume* motherLog)
+{
+  return Construct(motherLog,vPosition);
 }
 G4VPhysicalVolume* GPCaptureGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
@@ -124,79 +155,78 @@ void GPCaptureGeometry::Print()
 void GPCaptureGeometry::SetParameter(std::string str,std::string strGlobal)
 {
 	std::stringstream ss(str);
-	std::string		  unit;
-	std::string		  key;
+	std::string		  sUnit;
+	std::string		  sKey;
 	G4double   		  dValueNew;
 	G4double   		  dValueOrg;
 	
-	ss>>key>>dValueOrg>>unit;
-    if(unit!="")
-    dValueNew=(dValueOrg*G4UIcommand::ValueOf(unit.c_str()))/m;
+	ss>>sKey>>dValueOrg>>sUnit;
+    if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
     else dValueNew=dValueOrg;
 
-    if(key=="ir")
+    if(sKey=="ir")
       dCaptureTubeInnerRadius = dValueNew;
-    else if(key=="or")
+    else if(sKey=="or")
       dCaptureTubeOuterRadius = dValueNew;
-    else if(key=="l")
+    else if(sKey=="l")
       dCaptureTubeLength = dValueNew;
-    else if(key=="sa")
+    else if(sKey=="sa")
       dCaptureTubeStartAngle = dValueNew;
-    else if(key=="ea")
+    else if(sKey=="ea")
       dCaptureTubeSpanningAngle = dValueNew;
-    else if(key=="type")
+    else if(sKey=="type")
       iCaptureType = dValueNew;
-    else if(key=="lithium.l")
+    else if(sKey=="lithium.l")
       dLithiumTubeLength = dValueNew;
-    else if(key=="lithium.or")
+    else if(sKey=="lithium.or")
       dLithiumTubeOuterRadius = dValueNew;
-    else if(key=="hit.flag")
+    else if(sKey=="hit.flag")
       iCaptureHitFlag = dValueNew;
-    else if(key=="limit.step.max")
+    else if(sKey=="limit.step.max")
       dCaptureLimitStepMax = dValueNew;
-    else if(key=="limit.step.flag")
+    else if(sKey=="limit.step.flag")
       iCaptureLimitStepFlag = dValueNew;
     else 
     {
-  	std::cout<<"the key is not exist."<<std::endl;
+  	std::cout<<"the Key is not exist."<<std::endl;
      	return;
     }
 
     Init();
-    ss.clear();
-    ss.str(strGlobal);
-    ss>>key;
-    std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
+    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
-G4double GPCaptureGeometry::GetParameter(std::string name) const
+G4double GPCaptureGeometry::GetParameter(std::string sKey, std::string sGlobal) const
 {
-    if(name=="ir")
+    if(sKey=="ir")
     return dCaptureTubeInnerRadius;
-    else if(name=="or")
+    else if(sKey=="or")
     return dCaptureTubeOuterRadius;
-    else if(name=="l")
+    else if(sKey=="l")
     return (dCaptureTubeLength+1e-3);
-    else if(name=="sa")
+    else if(sKey=="length")
+    return dGlobalLength;
+    else if(sKey=="sa")
     return dCaptureTubeStartAngle;
-    else if(name=="ea")
+    else if(sKey=="ea")
     return dCaptureTubeSpanningAngle;
-    else if(name=="type")
+    else if(sKey=="type")
       return iCaptureType;
-    else if(name=="lithium.l")
+    else if(sKey=="lithium.l")
       return dLithiumTubeLength;
-    else if(name=="lithium.or")
+    else if(sKey=="lithium.or")
       return dLithiumTubeOuterRadius;
-    else if(name=="hit.flag")
+    else if(sKey=="hit.flag")
     return iCaptureHitFlag;
-    else if(name=="limit.step.max")
+    else if(sKey=="limit.step.max")
     return dCaptureLimitStepMax;
-    else if(name=="limit.step.flag")
+    else if(sKey=="limit.step.flag")
     return iCaptureLimitStepFlag;
 
     else
     {
-      std::cout<<"key does not exist.\n"<<std::endl;
+      std::cout<<"Key does not exist.\n"<<std::endl;
       return -1;
     }
 }
@@ -225,11 +255,13 @@ G4VPhysicalVolume* GPCaptureGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4Th
              captureHitLog,"captureHit",motherLog,false,0);
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Capture/MultiFunDet");
+  G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
+  //G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Capture/MultiFunDet");
   //GPSurfaceParticleScorer* captureParticleScorer=0;
   if(captureMultiFunDet==NULL)
   {
-    G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Capture/MultiFunDet");
+    //G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Capture/MultiFunDet");
+    G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
     GPSurfaceParticleScorer* captureParticleScorer = new GPSurfaceParticleScorer("CaptureParticleScorerZPlus",1,2);
     captureMultiFunDet->RegisterPrimitive(captureParticleScorer);
     SDman->AddNewDetector(captureMultiFunDet);
@@ -241,11 +273,6 @@ G4VPhysicalVolume* GPCaptureGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4Th
   return captureHitPhys;
 }
 
-
-void GPCaptureGeometry::SetMaterial (G4String strMa)
-{
-  capMaterial = G4NistManager::Instance()->FindOrBuildMaterial(strMa);
-}
 
 void GPCaptureGeometry::Print(std::ofstream& fstOutput)
 {
@@ -262,7 +289,7 @@ void GPCaptureGeometry::Print(std::ofstream& fstOutput)
     <<G4endl;
   
 }
-void GPCaptureGeometry::SetLithiumLens(G4LogicalVolume* mother, G4ThreeVector vecPosition, G4double dLength,G4double dOuterRadius,G4double dInnerRadius, G4double dStartAngle, G4double dSpanningAngle )
+void GPCaptureGeometry::SetLithiumLens(G4LogicalVolume* mother, G4ThreeVector vPosition, G4double dLength,G4double dOuterRadius,G4double dInnerRadius, G4double dStartAngle, G4double dSpanningAngle )
 {
 
     //Lithium lens
@@ -291,7 +318,7 @@ void GPCaptureGeometry::SetLithiumLens(G4LogicalVolume* mother, G4ThreeVector ve
                                     deg*dLithiumTubeStartAngle,deg*dLithiumTubeSpanningAngle);
   lithiumLog = new G4LogicalVolume(lithiumTube,lithiumMaterial,"lithiumLog");
   lithiumPhys = new G4PVPlacement(0,
-      	     vecPosition*m,
+      	     vPosition*m,
              lithiumLog,"lithium",mother,false,0);
 
   G4VisAttributes* lithiumLogVisAtt= new G4VisAttributes(G4Colour(0.5,0.5,0.5,0.3));

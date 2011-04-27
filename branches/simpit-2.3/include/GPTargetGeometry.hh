@@ -6,6 +6,7 @@
 #ifndef GPTARGETGEOMETRY_H
 #define GPTARGETGEOMETRY_H 1
 #include "G4ThreeVector.hh"
+#include "GPGeometry.hh"
 #include <string>
 #include <vector>
 
@@ -15,18 +16,19 @@ class G4Material;
 
 //#include "G4VUserDetectorConstruction.hh"
 
-class GPTargetGeometry
+class GPTargetGeometry : public GPGeometry
 {
   public:
 
+    GPTargetGeometry(std::string sFirst, std::string sSecond);
     GPTargetGeometry();
     ~GPTargetGeometry();
 
     G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog, G4ThreeVector point);
+    G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog);
 
-    void SetTargetMaterial (G4String strMa);
     void SetParameter(std::string, std::string);
-    G4double GetParameter(std::string) const;
+    G4double GetParameter(std::string,std::string) const;
     std::vector<G4int> GetEddDim();
     void Print();
     void Print(std::ofstream& );
@@ -58,6 +60,7 @@ class GPTargetGeometry
     G4double dWidthX;
     G4double dWidthY;
     G4double dWidthZ;
+    G4double dGlobalLength;
     G4int    iTargetGranularXNumber;
     G4int    iTargetGranularYNumber;
     G4int    iTargetGranularZNumber;

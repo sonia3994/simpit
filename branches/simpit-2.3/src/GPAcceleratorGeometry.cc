@@ -6,6 +6,8 @@
 #include "GPSurfaceParticleScorer.hh"
 #include "GPFieldSetup.hh"
 
+#include "GPGeometryStore.hh"
+
 #include "G4Material.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
@@ -25,6 +27,26 @@
 #include "globals.hh"
 
 #include <sstream>
+GPAcceleratorGeometry::GPAcceleratorGeometry(std::string sFirst, std::string sSecond)
+{
+  sName = sFirst;
+  sFatherName = sSecond;
+  iActiveFlag=1;
+  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+
+  accMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
+  spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
+
+  dAcceleratorTubeInnerRadius = 0;
+  dAcceleratorTubeOuterRadius = 20e-3;
+  dAcceleratorTubeLength = 1.0;
+  dAcceleratorTubeStartAngle = 0;
+  dAcceleratorTubeSpanningAngle = 360;
+  iAcceleratorLimitStepFlag = 0;
+  dAcceleratorLimitStepMax = 0.002;
+  iAcceleratorHitFlag = 1;
+
+}
 GPAcceleratorGeometry::GPAcceleratorGeometry()
 {
   accMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -43,10 +65,16 @@ GPAcceleratorGeometry::GPAcceleratorGeometry()
 
 GPAcceleratorGeometry::~GPAcceleratorGeometry()
 {
+  GPGeometryStore::GetInstance()->EraseItem(sName);
 }
 
 void GPAcceleratorGeometry::Init()
 {
+  dGlobalLength=dAcceleratorTubeLength;
+}
+G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog)
+{
+  return Construct(motherLog,vPosition);
 }
 G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
@@ -54,7 +82,7 @@ G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog,G
   G4cout<<"GP_DEBUG: Enter GPAcceleratorGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
 #endif
 
-  vecPosition = point;
+  vPosition = point;
   Init();
 
   //------------------------------ accelerator tube
@@ -116,62 +144,61 @@ void GPAcceleratorGeometry::Print()
 void GPAcceleratorGeometry::SetParameter(std::string str,std::string strGlobal)
 {
 	std::stringstream ss(str);
-	std::string		  unit;
-	std::string		  key;
+	std::string		  sUnit;
+	std::string		  sKey;
 	G4double   		  dValueNew;
 	G4double   		  dValueOrg;
 	
-	ss>>key>>dValueOrg>>unit;
-    if(unit!="")
-    dValueNew=(dValueOrg*G4UIcommand::ValueOf(unit.c_str()))/m;
+	ss>>sKey>>dValueOrg>>sUnit;
+    if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
     else dValueNew=dValueOrg;
 
-    if(key=="ir")
+    if(sKey=="ir")
     dAcceleratorTubeInnerRadius = dValueNew;
-    else if(key=="or")
+    else if(sKey=="or")
     dAcceleratorTubeOuterRadius = dValueNew;
-    else if(key=="l")
+    else if(sKey=="l")
     dAcceleratorTubeLength = dValueNew;
-    else if(key=="sa")
+    else if(sKey=="sa")
     dAcceleratorTubeStartAngle = dValueNew;
-    else if(key=="ea")
+    else if(sKey=="ea")
     dAcceleratorTubeSpanningAngle = dValueNew;
-    else if(key=="hit.flag")
+    else if(sKey=="hit.flag")
     iAcceleratorHitFlag = dValueNew;
-    else if(key=="limit.step.max")
+    else if(sKey=="limit.step.max")
     dAcceleratorLimitStepMax = dValueNew;
-    else if(key=="limit.step.flag")
+    else if(sKey=="limit.step.flag")
     iAcceleratorLimitStepFlag = dValueNew;
     else 
     {
-  	std::cout<<"the key is not exist."<<std::endl;
+  	std::cout<<"the Key is not exist."<<std::endl;
      	return;
     }
 
     Init();
-    ss.clear();
-    ss.str(strGlobal);
-    ss>>key;
-    std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
+    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
-G4double GPAcceleratorGeometry::GetParameter(std::string name) const
+G4double GPAcceleratorGeometry::GetParameter(std::string sKey, std::string sGlobal) const
 {
-    if(name=="ir")
+    if(sKey=="ir")
     return dAcceleratorTubeInnerRadius;
-    else if(name=="or")
+    else if(sKey=="or")
     return dAcceleratorTubeOuterRadius;
-    else if(name=="l")
+    else if(sKey=="l")
     return dAcceleratorTubeLength;
-    else if(name=="sa")
+    else if(sKey=="length")
+    return dGlobalLength;
+    else if(sKey=="sa")
     return dAcceleratorTubeStartAngle;
-    else if(name=="ea")
+    else if(sKey=="ea")
     return dAcceleratorTubeSpanningAngle;
-    else if(name=="hit.flag")
+    else if(sKey=="hit.flag")
     return iAcceleratorHitFlag;
-    else if(name=="limit.step.max")
+    else if(sKey=="limit.step.max")
     return dAcceleratorLimitStepMax;
-    else if(name=="limit.step.flag")
+    else if(sKey=="limit.step.flag")
     return iAcceleratorLimitStepFlag;
 
     else
@@ -205,10 +232,12 @@ G4VPhysicalVolume* GPAcceleratorGeometry::SetHitAtom(G4LogicalVolume* motherLog,
              acceleratorHitLog,"acceleratorHit",motherLog,false,0);
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* acceleratorMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Accelerator/MultiFunDet");
+  G4MultiFunctionalDetector* acceleratorMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
+  //G4MultiFunctionalDetector* acceleratorMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Accelerator/MultiFunDet");
   if(acceleratorMultiFunDet==NULL)
   {
-    G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Accelerator/MultiFunDet");
+    G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
+    //G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Accelerator/MultiFunDet");
     GPSurfaceParticleScorer* acceleratorParticleScorer = new GPSurfaceParticleScorer("AcceleratorParticleScorerZPlus",1,2);
     acceleratorMultiFunDet->RegisterPrimitive(acceleratorParticleScorer);
     SDman->AddNewDetector(acceleratorMultiFunDet);
@@ -219,11 +248,6 @@ G4VPhysicalVolume* GPAcceleratorGeometry::SetHitAtom(G4LogicalVolume* motherLog,
   return acceleratorHitPhys;
 }
 
-
-void GPAcceleratorGeometry::SetMaterial (G4String strMa)
-{
-  accMaterial = G4NistManager::Instance()->FindOrBuildMaterial(strMa);
-}
 
 void GPAcceleratorGeometry::Print(std::ofstream& fstOutput)
 {

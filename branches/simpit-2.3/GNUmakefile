@@ -6,7 +6,7 @@
 name := simpit
 G4TARGET := $(name)
 G4EXLIB := true
-G4FOTDIR = $(G4WORKDIR)/G4Fot
+G4FOTDIR = $(G4GlobalWorkDir)/G4Fot
 
 
 CPPFLAGS += -I$(G4FOTDIR)/include
@@ -39,4 +39,4 @@ export
 
 #For debug
 #CPPFLAGS += -DGP_DEBUG 
-#CPPFLAGS += -g
+CPPFLAGS += -g

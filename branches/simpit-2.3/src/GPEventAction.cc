@@ -14,6 +14,8 @@
 
 #include "GPEventActionMessenger.hh"
 
+#include "GPEventHandleManager.hh"
+
 #include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4TrajectoryContainer.hh"
@@ -73,6 +75,7 @@ void GPEventAction::BeginOfEventAction(const G4Event* evt)
  dTrackL = 0.;
  iNPositronPerEvt=0;
 // de=0.;
+  GPEventHandleManager::GetInstance()->BeginOfEventAction(evt);
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPEventAction::BeginOfEventAction(const G4Event* )"<<G4endl;
 #endif
@@ -87,6 +90,7 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
 #endif
   //accumulates statistic
   //
+  GPEventHandleManager::GetInstance()->EndOfEventAction(evt);
   G4int evtNb = evt->GetEventID();
   GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
   runAct->FillPerEvent(dEnergyTar, dTrackL,iNPositronPerEvt);

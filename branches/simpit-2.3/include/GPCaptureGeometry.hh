@@ -6,6 +6,7 @@
 #ifndef GPCAPTUREGEOMETRY_H
 #define GPCAPTUREGEOMETRY_H 1
 #include "G4ThreeVector.hh"
+#include "GPGeometry.hh"
 #include <string>
 #include <vector>
 
@@ -16,18 +17,19 @@ class G4Tubs;
 
 //#include "G4VUserDetectorConstruction.hh"
 
-class GPCaptureGeometry
+class GPCaptureGeometry :public GPGeometry
 {
   public:
 
+    GPCaptureGeometry(std::string sFirst, std::string sSecond);
     GPCaptureGeometry();
     ~GPCaptureGeometry();
 
     G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog, G4ThreeVector point);
+    G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog);
 
-    void SetMaterial (G4String strMa);
     void SetParameter(std::string, std::string);
-    G4double GetParameter(std::string) const;
+    G4double GetParameter(std::string,std::string) const;
     void Print();
     void Print(std::ofstream& );
 
@@ -45,7 +47,6 @@ class GPCaptureGeometry
     G4LogicalVolume* captureLog;
     G4VPhysicalVolume* capturePhys;
 
-    G4ThreeVector vecPosition;
     G4double dCaptureTubeInnerRadius;
     G4double dCaptureTubeOuterRadius;
     G4double dCaptureTubeLength;
@@ -54,6 +55,7 @@ class GPCaptureGeometry
     G4double dCaptureLimitStepMax;
     G4double dLithiumTubeLength;
     G4double dLithiumTubeOuterRadius;
+    G4double dGlobalLength;
     G4int    iCaptureLimitStepFlag;
     G4int    iCaptureType;
     G4int    iCaptureHitFlag;

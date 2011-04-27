@@ -29,6 +29,7 @@ GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)
   G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)"<<G4endl;
 #endif
   sParticleName=step->GetTrack()->GetDefinition()->GetParticleName();
+  iPDG = step->GetTrack()->GetDefinition()->GetPDGEncoding();
   iTrackID=step->GetTrack()->GetTrackID();
   G4StepPoint* stepPoint;
   if(iDirection>0) stepPoint=step->GetPreStepPoint();

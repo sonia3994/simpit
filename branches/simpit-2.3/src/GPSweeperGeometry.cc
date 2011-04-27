@@ -5,6 +5,7 @@
 #include "GPSweeperGeometry.hh"
 #include "GPSurfaceParticleScorer.hh"
 #include "GPFieldSetup.hh"
+#include "GPGeometryStore.hh"
 
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -25,6 +26,26 @@
 #include "globals.hh"
 
 #include <sstream>
+GPSweeperGeometry::GPSweeperGeometry(std::string sFirst, std::string sSecond)
+{
+  sName = sFirst;
+  sFatherName = sSecond;
+  iActiveFlag=1;
+  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+
+  swpMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
+  spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
+
+  dSweeperTubeInnerRadius = 0;
+  dSweeperTubeOuterRadius = 20e-3;
+  dSweeperTubeLength = 2.0;
+  dSweeperTubeStartAngle = 0;
+  dSweeperTubeSpanningAngle = 360;
+  iSweeperLimitStepFlag = 0;
+  dSweeperLimitStepMax = 0.002;
+  iSweeperHitFlag = 0;
+
+}
 GPSweeperGeometry::GPSweeperGeometry()
 {
   swpMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -43,10 +64,16 @@ GPSweeperGeometry::GPSweeperGeometry()
 
 GPSweeperGeometry::~GPSweeperGeometry()
 {
+  GPGeometryStore::GetInstance()->EraseItem(sName);
 }
 
 void GPSweeperGeometry::Init()
 {
+  dGlobalLength=dSweeperTubeLength;
+}
+G4VPhysicalVolume* GPSweeperGeometry::Construct(G4LogicalVolume* motherLog)
+{
+  return Construct(motherLog,vPosition);
 }
 G4VPhysicalVolume* GPSweeperGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
@@ -54,7 +81,7 @@ G4VPhysicalVolume* GPSweeperGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
   G4cout<<"GP_DEBUG: Enter GPSweeperGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
 #endif
 
-  vecPosition = point;
+  vPosition = point;
   Init();
 
   //------------------------------ sweeper tube
@@ -68,7 +95,7 @@ G4VPhysicalVolume* GPSweeperGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
 
   sweeperLog = new G4LogicalVolume(sweeperTube,swpMaterial,"sweeperLog");
   sweeperPhys = new G4PVPlacement(0,
-             vecPosition*m,
+             vPosition*m,
              sweeperLog,"sweeper",motherLog,false,0);
 
   sweeperLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager("sweeper"),true);
@@ -116,62 +143,61 @@ void GPSweeperGeometry::Print()
 void GPSweeperGeometry::SetParameter(std::string str,std::string strGlobal)
 {
 	std::stringstream ss(str);
-	std::string		  unit;
-	std::string		  key;
+	std::string		  sUnit;
+	std::string		  sKey;
 	G4double   		  dValueNew;
 	G4double   		  dValueOrg;
 	
-	ss>>key>>dValueOrg>>unit;
-    if(unit!="")
-    dValueNew=(dValueOrg*G4UIcommand::ValueOf(unit.c_str()))/m;
+	ss>>sKey>>dValueOrg>>sUnit;
+    if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
     else dValueNew=dValueOrg;
 
-    if(key=="ir")
+    if(sKey=="ir")
     dSweeperTubeInnerRadius = dValueNew;
-    else if(key=="or")
+    else if(sKey=="or")
     dSweeperTubeOuterRadius = dValueNew;
-    else if(key=="l")
+    else if(sKey=="l")
     dSweeperTubeLength = dValueNew;
-    else if(key=="sa")
+    else if(sKey=="sa")
     dSweeperTubeStartAngle = dValueNew;
-    else if(key=="ea")
+    else if(sKey=="ea")
     dSweeperTubeSpanningAngle = dValueNew;
-    else if(key=="hit.flag")
+    else if(sKey=="hit.flag")
     iSweeperHitFlag = dValueNew;
-    else if(key=="limit.step.max")
+    else if(sKey=="limit.step.max")
     dSweeperLimitStepMax = dValueNew;
-    else if(key=="limit.step.flag")
+    else if(sKey=="limit.step.flag")
     iSweeperLimitStepFlag = dValueNew;
     else 
     {
-  	std::cout<<"the key is not exist."<<std::endl;
+  	std::cout<<"the Key is not exist."<<std::endl;
      	return;
     }
 
     Init();
-    ss.clear();
-    ss.str(strGlobal);
-    ss>>key;
-    std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
+    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
-G4double GPSweeperGeometry::GetParameter(std::string name) const
+G4double GPSweeperGeometry::GetParameter(std::string sKey,std::string sGlobal) const
 {
-    if(name=="ir")
+    if(sKey=="ir")
     return dSweeperTubeInnerRadius;
-    else if(name=="or")
+    else if(sKey=="or")
     return dSweeperTubeOuterRadius;
-    else if(name=="l")
+    else if(sKey=="l")
     return dSweeperTubeLength;
-    else if(name=="sa")
+    else if(sKey=="length")
+    return dGlobalLength;
+    else if(sKey=="sa")
     return dSweeperTubeStartAngle;
-    else if(name=="ea")
+    else if(sKey=="ea")
     return dSweeperTubeSpanningAngle;
-    else if(name=="hit.flag")
+    else if(sKey=="hit.flag")
     return iSweeperHitFlag;
-    else if(name=="limit.step.max")
+    else if(sKey=="limit.step.max")
     return dSweeperLimitStepMax;
-    else if(name=="limit.step.flag")
+    else if(sKey=="limit.step.flag")
     return iSweeperLimitStepFlag;
 
     else
@@ -205,10 +231,12 @@ G4VPhysicalVolume* GPSweeperGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4Th
              sweeperHitLog,"sweeperHit",motherLog,false,0);
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* sweeperMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Sweeper/MultiFunDet");
+  //G4MultiFunctionalDetector* sweeperMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Sweeper/MultiFunDet");
+  G4MultiFunctionalDetector* sweeperMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
   if(sweeperMultiFunDet==NULL)
   {
-    G4MultiFunctionalDetector* sweeperMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Sweeper/MultiFunDet");
+    //G4MultiFunctionalDetector* sweeperMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Sweeper/MultiFunDet");
+    G4MultiFunctionalDetector* sweeperMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
     GPSurfaceParticleScorer* sweeperParticleScorer = new GPSurfaceParticleScorer("SweeperParticleScorerZPlus",1,2);
     sweeperMultiFunDet->RegisterPrimitive(sweeperParticleScorer);
     SDman->AddNewDetector(sweeperMultiFunDet);
@@ -219,11 +247,6 @@ G4VPhysicalVolume* GPSweeperGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4Th
   return sweeperHitPhys;
 }
 
-
-void GPSweeperGeometry::SetMaterial (G4String strMa)
-{
-  swpMaterial = G4NistManager::Instance()->FindOrBuildMaterial(strMa);
-}
 
 void GPSweeperGeometry::Print(std::ofstream& fstOutput)
 {
