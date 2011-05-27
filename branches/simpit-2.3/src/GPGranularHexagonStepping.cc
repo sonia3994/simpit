@@ -1,4 +1,4 @@
-// $Id: GPTargetSteppingAction.cc,v 1.15 2006/06/29 17:49:13 gunter Exp $
+// $Id: GPGranularHexagonStepping.cc,v 1.15 2006/06/29 17:49:13 gunter Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 // 
@@ -6,9 +6,11 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "GPTargetSteppingAction.hh"
+#include "GPGranularHexagonStepping.hh"
+#include "GPSteppingHandleStore.hh"
+#include "GPGeometryStore.hh"
 
-#include "GPDetectorConstruction.hh"
+#include "GPGranularHexagonGeometry.hh"
 #include "GPEventAction.hh"
 #include "GPRunAction.hh"
 
@@ -22,30 +24,34 @@
 using namespace std;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-GPTargetSteppingAction::GPTargetSteppingAction()
+GPGranularHexagonStepping::GPGranularHexagonStepping(std::string sName, std::string sFatherName)
+{ 
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPSteppingHandleStore::GetInstance()->AddSteppingHandle(GetName(),this);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+GPGranularHexagonStepping::~GPGranularHexagonStepping()
 { 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-GPTargetSteppingAction::~GPTargetSteppingAction()
-{ 
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void GPTargetSteppingAction::Init()
+void GPGranularHexagonStepping::Prepare()
 {
-  G4cout<<"-------------------GPTargetSteppingAction----------------- "<<G4endl;
-  GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
+  G4cout<<"-------------------GPGranularHexagonStepping----------------- "<<G4endl;
+  GPGranularHexagonGeometry* targetGeometry = (GPGranularHexagonGeometry*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"/geometry");
   G4PhysicalVolumeStore* phyStore = G4PhysicalVolumeStore::GetInstance();
   G4ThreeVector vecPoint;
   std::vector<G4double>   vecTmp(4,0);
-  if(detector->GetParameter("target.granular.flag"))
+  if(targetGeometry->GetParameter("granular.flag","granular.flag"))
   {
-    G4int iXN = detector->GetParameter("target.granular.x.number");
-    G4int iYN = detector->GetParameter("target.granular.y.number");
-    G4int iZN = detector->GetParameter("target.granular.z.number");
+    G4int iXN = targetGeometry->GetParameter("granular.x.number","");
+    G4int iYN = targetGeometry->GetParameter("granular.y.number","");
+    G4int iZN = targetGeometry->GetParameter("granular.z.number","");
     GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction();
     G4String strFolder = runAct->GetDataPath();
     G4int iRunID = runAct->GetRunID();
@@ -119,18 +125,18 @@ void GPTargetSteppingAction::Init()
   G4cout<<"---------------------------------------------------------- "<<G4endl;
 }
 
-void GPTargetSteppingAction::CleanUp()
+void GPGranularHexagonStepping::CleanUp()
 {
-  GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
+  GPGranularHexagonGeometry* targetGeometry = (GPGranularHexagonGeometry*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"/geometry");
 
-  if(!(detector->GetParameter("target.granular.flag")))
+  if(!(targetGeometry->GetParameter("granular.flag","granular.flag")))
   {
     fstHangle.close();
     return;
   }
-  G4int iXN = detector->GetParameter("target.granular.x.number");
-  G4int iYN = detector->GetParameter("target.granular.y.number");
-  G4int iZN = detector->GetParameter("target.granular.z.number");
+  G4int iXN = targetGeometry->GetParameter("granular.x.number","");
+  G4int iYN = targetGeometry->GetParameter("granular.y.number","");
+  G4int iZN = targetGeometry->GetParameter("granular.z.number","");
   stringstream ss;
   G4String strSuffix;
   G4int iIndex;
@@ -174,7 +180,7 @@ void GPTargetSteppingAction::CleanUp()
   mapSphereEddVec.clear();
 }
 
-void GPTargetSteppingAction::UserSteppingAction(const G4Step* aStep)
+void GPGranularHexagonStepping::UserSteppingAction(const G4Step* aStep)
 {
   G4double dVolume;
   G4String strPrevPhysName= aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
@@ -186,7 +192,10 @@ void GPTargetSteppingAction::UserSteppingAction(const G4Step* aStep)
   }
 }
 
-void GPTargetSteppingAction::Print(std::ofstream fstOutput)
+void GPGranularHexagonStepping::Print(std::ofstream& fstOutput)
+{
+}
+void GPGranularHexagonStepping::Print()
 {
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

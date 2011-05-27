@@ -7,7 +7,7 @@
 #include "GPFieldSetup.hh"
 #include "GPCaptureFieldManager.hh"
 #include "GPSurfaceParticleScorer.hh"
-#include "GPTargetGeometry.hh"
+#include "GPGranularHexagonGeometry.hh"
 #include "GPCaptureGeometry.hh"
 #include "GPAcceleratorGeometry.hh"
 #include "GPSweeperGeometry.hh"
@@ -59,7 +59,7 @@ GPDetectorConstruction::GPDetectorConstruction():
   GPModuleManager::GetInstance()->ConstructModule();
   crystalGeometry = (GPCrystalGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/crystal/geometry/");
   sweeperGeometry = (GPSweeperGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/sweeper/geometry/");
-  targetGeometry  = (GPTargetGeometry*) GPGeometryStore::GetInstance()->FindGeometry("/target/geometry/");
+  targetGeometry  = (GPGranularHexagonGeometry*) GPGeometryStore::GetInstance()->FindGeometry("/target/geometry/");
   captureGeometry = (GPCaptureGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/capture/geometry/");
   acceleratorGeometry = (GPAcceleratorGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/accelerator/geometry/");
 

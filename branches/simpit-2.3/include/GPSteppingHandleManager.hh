@@ -18,7 +18,9 @@ class GPSteppingHandleManager
   public:
     static GPSteppingHandleManager* GetInstance();
     static void Delete();
-    void SteppingAction(const G4Step* aStep);
+    void UserSteppingAction(const G4Step* aStep);
+    void Prepare();
+    void CleanUp();
   protected:
     GPSteppingHandleManager();
     ~GPSteppingHandleManager();

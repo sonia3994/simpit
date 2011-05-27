@@ -1,4 +1,4 @@
-// $Id: GPTargetSteppingAction.hh,v 1.10 2007/07/02 13:22:08 vnivanch Exp $
+// $Id: GPGranularHexagonStepping.hh,v 1.10 2007/07/02 13:22:08 vnivanch Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 // 
@@ -6,8 +6,8 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef GPTargetSteppingAction_h
-#define GPTargetSteppingAction_h 1
+#ifndef GPGRANULARHEXAGONSTEPPING_H 
+#define GPGRANULARHEXAGONSTEPPING_H 1
 
 #include "GPSteppingHandle.hh"
 #include "G4Step.hh"
@@ -16,22 +16,22 @@
 #include <fstream>
 #include <map>
 
-class GPDetectorConstruction;
 class GPEventAction;
 //class G4VPhysicalVolume;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class GPTargetSteppingAction : public GPSteppingHandle
+class GPGranularHexagonStepping : public GPSteppingHandle
 {
 public:
-  GPTargetSteppingAction();
-  virtual ~GPTargetSteppingAction();
+  GPGranularHexagonStepping(std::string, std::string);
+  virtual ~GPGranularHexagonStepping();
 
   void UserSteppingAction(const G4Step*);
-  void Init();
+  void Prepare();
   void CleanUp();
-  void Print(std::ofstream);
+  void Print(std::ofstream&);
+  void Print();
     
 private:
   G4int   verbose;

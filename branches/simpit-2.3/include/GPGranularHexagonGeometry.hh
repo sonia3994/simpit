@@ -1,10 +1,10 @@
 //
-// $Id: GPTargetGeometry.hh,v 1.6 2006/06/29 17:47:13 gunter Granular $
+// $Id: GPGranularHexagonGeometry.hh,v 1.6 2006/06/29 17:47:13 gunter Granular $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 
-#ifndef GPTARGETGEOMETRY_H
-#define GPTARGETGEOMETRY_H 1
+#ifndef GPGRANULARHEXAGONGEOMETRY_H
+#define GPGRANULARHEXAGONGEOMETRY_H 1
 #include "G4ThreeVector.hh"
 #include "GPGeometry.hh"
 #include <string>
@@ -16,13 +16,13 @@ class G4Material;
 
 //#include "G4VUserDetectorConstruction.hh"
 
-class GPTargetGeometry : public GPGeometry
+class GPGranularHexagonGeometry : public GPGeometry
 {
   public:
 
-    GPTargetGeometry(std::string sFirst, std::string sSecond);
-    GPTargetGeometry();
-    ~GPTargetGeometry();
+    GPGranularHexagonGeometry(std::string sFirst, std::string sSecond);
+    GPGranularHexagonGeometry();
+    ~GPGranularHexagonGeometry();
 
     G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog, G4ThreeVector point);
     G4VPhysicalVolume* Construct(G4LogicalVolume* motherLog);
@@ -38,7 +38,7 @@ class GPTargetGeometry : public GPGeometry
     G4VPhysicalVolume* Granular(G4LogicalVolume*);
     G4VPhysicalVolume* GranularCell(G4LogicalVolume*);
     G4VPhysicalVolume* GranularHexagonal(G4LogicalVolume* motherLog,G4ThreeVector point);
-    G4VPhysicalVolume* SetTargetHit(G4LogicalVolume*,G4ThreeVector);
+    void SetTargetHit(G4LogicalVolume*);
     G4VPhysicalVolume* TubularTarget(G4LogicalVolume*,G4ThreeVector);
     void GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeVector point,long iIndex);
     void GranularHexagonalInit();

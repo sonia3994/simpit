@@ -29,7 +29,7 @@ public:
 
   void UserSteppingAction(const G4Step*);
   void SetSelectedParticle(G4String);
-  void Init();
+  void Prepare();
   void CleanUp();
     
 private:

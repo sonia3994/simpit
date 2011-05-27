@@ -8,9 +8,10 @@
 
 #include "GPSteppingAction.hh"
 #include "GPSteppingMessenger.hh"
+#include "GPSteppingHandleManager.hh"
 
 #include "GPDetectorConstruction.hh"
-#include "GPTargetSteppingAction.hh"
+//#include "GPTargetSteppingAction.hh"
 #include "GPEventAction.hh"
 #include "GPRunAction.hh"
 
@@ -27,61 +28,38 @@ GPSteppingAction::GPSteppingAction(GPDetectorConstruction* det,
                                          GPEventAction* evt)
 :detector(det), eventAction(evt)					 
 { 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPSteppingAction::GPSteppingAction(GPDetectorConstruction*)"<<G4endl;
-#endif
   sParticle="e+";
   steppingMessenger = new GPSteppingMessenger(this);
-  targetSteppingAction = new GPTargetSteppingAction();
+  //targetSteppingAction = new GPTargetSteppingAction();
   verbose=0;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPSteppingAction::GPSteppingAction(GPDetectorConstruction*)"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPSteppingAction::~GPSteppingAction()
 { 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPSteppingAction::~GPSteppingAction()"<<G4endl;
-#endif
   delete 	steppingMessenger;
-  delete	targetSteppingAction;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPSteppingAction::~GPSteppingAction()"<<G4endl;
-#endif
+  //delete	targetSteppingAction;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void GPSteppingAction::Init()
+void GPSteppingAction::Prepare()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPSteppingAction::Init()"<<G4endl;
-#endif
-  targetSteppingAction->Init();
+	GPSteppingHandleManager::GetInstance()->Prepare();
+  //targetSteppingAction->Prepare();
   targetPhys = detector->GetPhysicalVolume("target"); 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPSteppingAction::Init()"<<G4endl;
-#endif
 }
 
 void GPSteppingAction::CleanUp()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPSteppingAction::CleanUp()"<<G4endl;
-#endif
-  targetSteppingAction->CleanUp();
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPSteppingAction::CleanUp()"<<G4endl;
-#endif
+	GPSteppingHandleManager::GetInstance()->CleanUp();
+  //targetSteppingAction->CleanUp();
 }
 void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPSteppingAction::UserSteppingAction(const G4Step*)"<<G4endl;
-#endif
+  GPSteppingHandleManager::GetInstance()->UserSteppingAction(aStep);
+
   static G4VPhysicalVolume* 	prevPhys;
   static G4Track*		currentTrack;
   static G4TrackStatus		currentTrackStatus;
@@ -119,10 +97,7 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
     eventAction->AddTargetED(stepE);
     eventAction->AddTargetStep(stepL);
   }
-  targetSteppingAction->UserSteppingAction(aStep);
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPSteppingAction:::UserSteppingAction(const G4Step*)"<<G4endl;
-#endif
+  //targetSteppingAction->UserSteppingAction(aStep);
 }
 
 void GPSteppingAction::SetSelectedParticle(G4String tmpParticle)

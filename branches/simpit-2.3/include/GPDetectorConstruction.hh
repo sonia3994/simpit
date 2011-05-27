@@ -17,7 +17,7 @@ class G4Tubs;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
-class GPTargetGeometry;
+class GPGranularHexagonGeometry;
 class GPCaptureGeometry;
 class GPAcceleratorGeometry;
 class GPSweeperGeometry;
@@ -56,7 +56,7 @@ class GPDetectorConstruction : public G4VUserDetectorConstruction
     
     // Subsytem Objects
     //
-    GPTargetGeometry* targetGeometry;
+    GPGranularHexagonGeometry* targetGeometry;
     GPAcceleratorGeometry* acceleratorGeometry;
     GPSweeperGeometry* sweeperGeometry;
     GPCrystalGeometry* crystalGeometry;

@@ -99,7 +99,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   G4cout<<"\n========================Begin of Run: "<<iRunID<<"==================================\n"
   <<"Prepare run: "<<G4endl;
   GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
-  if(gpSteppingAction) gpSteppingAction->Init();
+  if(gpSteppingAction) gpSteppingAction->Prepare();
 
   GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
   GPPrimaryGeneratorAction* primaryGenerator=(GPPrimaryGeneratorAction*)G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction();

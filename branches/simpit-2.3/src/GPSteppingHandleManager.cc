@@ -32,7 +32,7 @@ GPSteppingHandleManager::GPSteppingHandleManager()
 GPSteppingHandleManager::~GPSteppingHandleManager()
 {}
 
-void GPSteppingHandleManager::SteppingAction(const G4Step* aStep)
+void GPSteppingHandleManager::UserSteppingAction(const G4Step* aStep)
 {
   GPSteppingHandleMap* mSteppingHandle = 
     GPSteppingHandleStore::GetInstance()->GetSteppingHandleMap();
@@ -47,8 +47,44 @@ void GPSteppingHandleManager::SteppingAction(const G4Step* aStep)
     if(module==NULL)
       continue;
     if(module->IsActive()&&steppingHandle->IsActive())
-      steppingHandle->SteppingAction(aStep);
+      steppingHandle->UserSteppingAction(aStep);
   }
 }
 
+void GPSteppingHandleManager::Prepare()
+{
+  GPSteppingHandleMap* mSteppingHandle = 
+    GPSteppingHandleStore::GetInstance()->GetSteppingHandleMap();
+  GPSteppingHandle* steppingHandle;
+  std::string    sModuleName;
+  GPSteppingHandleMap::iterator it;
+  for(it = mSteppingHandle->begin();it!=mSteppingHandle->end();it++)
+  {
+    steppingHandle=it->second;
+    sModuleName=steppingHandle->GetFatherName();
+    GPModule* module = GPModuleStore::GetInstance()->FindModule(sModuleName);
+    if(module==NULL)
+      continue;
+    if(module->IsActive()&&steppingHandle->IsActive())
+      steppingHandle->Prepare();
+  }
+}
+void GPSteppingHandleManager::CleanUp()
+{
+  GPSteppingHandleMap* mSteppingHandle = 
+    GPSteppingHandleStore::GetInstance()->GetSteppingHandleMap();
+  GPSteppingHandle* steppingHandle;
+  std::string    sModuleName;
+  GPSteppingHandleMap::iterator it;
+  for(it = mSteppingHandle->begin();it!=mSteppingHandle->end();it++)
+  {
+    steppingHandle=it->second;
+    sModuleName=steppingHandle->GetFatherName();
+    GPModule* module = GPModuleStore::GetInstance()->FindModule(sModuleName);
+    if(module==NULL)
+      continue;
+    if(module->IsActive()&&steppingHandle->IsActive())
+      steppingHandle->CleanUp();
+  }
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

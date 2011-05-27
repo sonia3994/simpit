@@ -20,7 +20,7 @@
 #include "GPEventHandleCrystal.hh"
 #include "GPCrystalGeometry.hh"
 #include "GPSweeperGeometry.hh"
-#include "GPTargetGeometry.hh"
+#include "GPGranularHexagonGeometry.hh"
 #include "GPCaptureGeometry.hh"
 #include "GPAcceleratorGeometry.hh"
 
@@ -133,7 +133,7 @@ void GPModuleManager::ConstructTarget()
   targetModule->SetPriority(0);
   worldModule->AddChild(targetModule);
 
-  GPTargetGeometry* geometry = new GPTargetGeometry(sName+"geometry/",sName);
+  GPGranularHexagonGeometry* geometry = new GPGranularHexagonGeometry(sName+"geometry/",sName);
   geometry->SetPriority(0);
   targetModule->SetObject("geometry",geometry);
   //GPEventHandleTarget* evtTarget = new GPEventHandleTarget(sName+"event/",sName);

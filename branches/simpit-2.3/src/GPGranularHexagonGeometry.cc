@@ -1,8 +1,8 @@
-// $Id: GPTargetGeometry.cc,v 1.9 2006/06/29 17:47:19 gunter Granular $
+// $Id: GPGranularHexagonGeometry.cc,v 1.9 2006/06/29 17:47:19 gunter Granular $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 
-#include "GPTargetGeometry.hh"
+#include "GPGranularHexagonGeometry.hh"
 #include "GPTargetROGeometry.hh"
 #include "GPTargetROGeometryTubs.hh"
 #include "GPTargetSD.hh"
@@ -27,7 +27,7 @@
 #include "globals.hh"
 
 #include <sstream>
-GPTargetGeometry::GPTargetGeometry(std::string sName, std::string sFatherName)
+GPGranularHexagonGeometry::GPGranularHexagonGeometry(std::string sName, std::string sFatherName)
 {
   SetActive(1);
   SetName(sName);
@@ -62,7 +62,7 @@ GPTargetGeometry::GPTargetGeometry(std::string sName, std::string sFatherName)
 
   vecEddDim = std::vector<G4int>(3,1);
 }
-GPTargetGeometry::GPTargetGeometry()
+GPGranularHexagonGeometry::GPGranularHexagonGeometry()
 {
   targetMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -93,12 +93,12 @@ GPTargetGeometry::GPTargetGeometry()
   vecEddDim = std::vector<G4int>(3,1);
 }
 
-GPTargetGeometry::~GPTargetGeometry()
+GPGranularHexagonGeometry::~GPGranularHexagonGeometry()
 {
   GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
-void GPTargetGeometry::Init()
+void GPGranularHexagonGeometry::Init()
 {
   dTargetSDSolidZ=dTargetSolidZ;
   dTargetSDSolidR=dTargetSolidX/2;
@@ -122,14 +122,14 @@ void GPTargetGeometry::Init()
 
   //GranularHexagonalInit();
 }
-G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog)
+G4VPhysicalVolume* GPGranularHexagonGeometry::Construct(G4LogicalVolume* motherLog)
 {
   return Construct(motherLog,vPosition);
 }
-G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
+G4VPhysicalVolume* GPGranularHexagonGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPGranularHexagonGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
 #endif
 
   Init();
@@ -146,26 +146,26 @@ G4VPhysicalVolume* GPTargetGeometry::Construct(G4LogicalVolume* motherLog,G4Thre
       "targetPhys",
       motherLog,false,0);
 
-  if(iTargetGranularFlag==1)
-  {
+  //if(iTargetGranularFlag==1)
+  //{
     GranularHexagonal(targetLog,G4ThreeVector(0,0,-dIndexPoint/2));
-  }
-  else
-  {
-    TubularTarget(targetLog,G4ThreeVector(0,0,-dIndexPoint/2));
-  }
+  //}
+  //else
+  //{
+    //TubularTarget(targetLog,G4ThreeVector(0,0,-dIndexPoint/2));
+  //}
   
   if(iTargetHitFlag==1)
-  SetTargetHit(targetLog,G4ThreeVector(0,0,dTargetSolidZ/2));
+  SetTargetHit(targetLog);
 
   return targetPhys;
 
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPGranularHexagonGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
 #endif
 }
 
-void GPTargetGeometry::GranularHexagonalInit()
+void GPGranularHexagonGeometry::GranularHexagonalInit()
 {
   dTargetHexagonalSphereRadius = dTargetSolidZ/(2+(iTargetGranularZNumber-0.5)*4*sqrt(6)/3);
   dWidthX = 4*dTargetHexagonalSphereRadius;
@@ -179,7 +179,7 @@ void GPTargetGeometry::GranularHexagonalInit()
   //iTargetGranularYNumber = (dTargetSolidY-2*dTargetHexagonalSphereRadius+0.5*dWidthY)/dWidthY;
 }
 
-void GPTargetGeometry::Print()
+void GPGranularHexagonGeometry::Print()
 {
   G4cout
    <<"\n----------------------------Target construct---------------------------"
@@ -225,7 +225,7 @@ void GPTargetGeometry::Print()
    <<G4endl;
 
 }
-void GPTargetGeometry::PrintSD()
+void GPGranularHexagonGeometry::PrintSD()
 {
   G4cout
    <<"\n------------------------------Target Sensitive --------------------------"
@@ -239,7 +239,7 @@ void GPTargetGeometry::PrintSD()
 
 }
 
-G4VPhysicalVolume* GPTargetGeometry::GranularHexagonal(G4LogicalVolume* motherLog,G4ThreeVector point)
+G4VPhysicalVolume* GPGranularHexagonGeometry::GranularHexagonal(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
   GranularHexagonalInit();
 
@@ -275,7 +275,7 @@ G4VPhysicalVolume* GPTargetGeometry::GranularHexagonal(G4LogicalVolume* motherLo
 
 }
 
-void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeVector vecCenter,long iIndex)
+void GPGranularHexagonGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeVector vecCenter,long iIndex)
 {
   G4ThreeVector sphPoint;
   std::stringstream sstStr;
@@ -447,7 +447,7 @@ void GPTargetGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeV
 
 }
 
-void GPTargetGeometry::SetParameter(std::string str,std::string strGlobal)
+void GPGranularHexagonGeometry::SetParameter(std::string str,std::string strGlobal)
 {
 	std::stringstream ss(str);
 	std::string		  sUnit;
@@ -488,7 +488,7 @@ void GPTargetGeometry::SetParameter(std::string str,std::string strGlobal)
     std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
-G4double GPTargetGeometry::GetParameter(std::string sKey,std::string sGlobal) const
+G4double GPGranularHexagonGeometry::GetParameter(std::string sKey,std::string sGlobal) const
 {
     if(sKey=="x")
     return dTargetSolidX;
@@ -517,7 +517,7 @@ G4double GPTargetGeometry::GetParameter(std::string sKey,std::string sGlobal) co
 }
 
 //*/
-void GPTargetGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
+void GPGranularHexagonGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
 {
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4String targetSDName=GetName()+"edd";
@@ -579,22 +579,21 @@ void GPTargetGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
 
 }
 
-G4VPhysicalVolume* GPTargetGeometry::SetTargetHit(G4LogicalVolume* targetLog,G4ThreeVector point)
+void GPGranularHexagonGeometry::SetTargetHit(G4LogicalVolume* targetLog)
 {
-  //------------------------------ target tube
-  G4Box* targetHitSolid = new G4Box("targetHitSolid",
-      m*dTargetGlobalSolidX/2,
-      m*dTargetGlobalSolidY/2,
-      m*dTargetHitL/2);
+  //G4Box* targetHitSolid = new G4Box("targetHitSolid",
+  //    m*dTargetGlobalSolidX/2,
+  //    m*dTargetGlobalSolidY/2,
+  //    m*dTargetHitL/2);
 
-  G4LogicalVolume* targetHitLog = new G4LogicalVolume(targetHitSolid,spaceMaterial,"targetHitLog");
-  
-  G4VPhysicalVolume* targetHitPhys = new G4PVPlacement(0,
-    point*m,
-    targetHitLog,
-    "targetHitPhys",
-    targetLog,false,0);
-    
+  //G4LogicalVolume* targetHitLog = new G4LogicalVolume(targetHitSolid,spaceMaterial,"targetHitLog");
+  //
+  //G4VPhysicalVolume* targetHitPhys = new G4PVPlacement(0,
+  //  point*m,
+  //  targetHitLog,
+  //  "targetHitPhys",
+  //  targetLog,false,0);
+  //  
 
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
@@ -610,17 +609,18 @@ G4VPhysicalVolume* GPTargetGeometry::SetTargetHit(G4LogicalVolume* targetLog,G4T
     SDman->AddNewDetector(targetMultiFunDet);
   }
 
-  targetHitLog->SetSensitiveDetector(targetMultiFunDet); 
+  //targetHitLog->SetSensitiveDetector(targetMultiFunDet); 
+  targetLog->SetSensitiveDetector(targetMultiFunDet); 
 
-  return targetHitPhys;
+  return;
 }
 
-std::vector<G4int> GPTargetGeometry::GetEddDim()
+std::vector<G4int> GPGranularHexagonGeometry::GetEddDim()
 {
   return vecEddDim;
 }
 
-G4VPhysicalVolume* GPTargetGeometry::TubularTarget(G4LogicalVolume* motherLog, G4ThreeVector point)
+G4VPhysicalVolume* GPGranularHexagonGeometry::TubularTarget(G4LogicalVolume* motherLog, G4ThreeVector point)
 {
   G4Tubs* targetNormalSolid= new G4Tubs("targetNormalSolid",
       0,
@@ -644,7 +644,7 @@ G4VPhysicalVolume* GPTargetGeometry::TubularTarget(G4LogicalVolume* motherLog, G
   return targetNormalPhy;
 }
 
-void GPTargetGeometry::Print(std::ofstream& fstOutput)
+void GPGranularHexagonGeometry::Print(std::ofstream& fstOutput)
 {
   fstOutput
    <<"\nTarget structure:";
