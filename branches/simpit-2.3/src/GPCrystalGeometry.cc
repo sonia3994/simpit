@@ -30,12 +30,12 @@
 #include "globals.hh"
 
 #include <sstream>
-GPCrystalGeometry::GPCrystalGeometry(std::string sFirst, std::string sSecond)
+GPCrystalGeometry::GPCrystalGeometry(std::string sName, std::string sFatherName)
 {
-  sName = sFirst;
-  sFatherName = sSecond;
-  iActiveFlag=1;
-  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPGeometryStore::GetInstance()->AddGeometry(GetName(),this);
 
   cryMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -69,7 +69,7 @@ GPCrystalGeometry::GPCrystalGeometry()
 GPCrystalGeometry::~GPCrystalGeometry()
 {
   GPCrystalManager::GetInstance()->Clear();
-  GPGeometryStore::GetInstance()->EraseItem(sName);
+  GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
 void GPCrystalGeometry::Init()
@@ -103,7 +103,7 @@ G4VPhysicalVolume* GPCrystalGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
              vPosition*m,
              crystalLog,"crystal",motherLog,false,0);
 
-  crystalLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager("crystal"),true);
+  crystalLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
 
   if(iCrystalLimitStepFlag)
     crystalLog->SetUserLimits(new G4UserLimits(dCrystalLimitStepMax*m));
@@ -191,7 +191,7 @@ void GPCrystalGeometry::SetParameter(std::string str,std::string strGlobal)
     }
 
     Init();
-    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
+    std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
 G4double GPCrystalGeometry::GetParameter(std::string sKey, std::string sGlobal) const
@@ -253,10 +253,10 @@ G4VPhysicalVolume* GPCrystalGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4Th
 	     */
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   //G4MultiFunctionalDetector* crystalMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Crystal/MultiFunDet");
-  G4MultiFunctionalDetector* crystalMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
+  G4MultiFunctionalDetector* crystalMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(GetName()+"sd");
   if(crystalMultiFunDet==NULL)
   {
-    G4MultiFunctionalDetector* crystalMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
+    G4MultiFunctionalDetector* crystalMultiFunDet = new G4MultiFunctionalDetector(GetName()+"sd");
     //G4MultiFunctionalDetector* crystalMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Crystal/MultiFunDet");
     GPSurfaceParticleScorer* crystalParticleScorer = new GPSurfaceParticleScorer("Crystal",1,2);
     crystalMultiFunDet->RegisterPrimitive(crystalParticleScorer);

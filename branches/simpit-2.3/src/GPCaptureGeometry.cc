@@ -27,12 +27,12 @@
 #include "globals.hh"
 
 #include <sstream>
-GPCaptureGeometry::GPCaptureGeometry(std::string sFirst, std::string sSecond)
+GPCaptureGeometry::GPCaptureGeometry(std::string sName, std::string sFatherName)
 {
-  sName = sFirst;
-  sFatherName = sSecond;
-  iActiveFlag=1;
-  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPGeometryStore::GetInstance()->AddGeometry(GetName(),this);
 
   capMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -71,7 +71,7 @@ GPCaptureGeometry::GPCaptureGeometry()
 
 GPCaptureGeometry::~GPCaptureGeometry()
 {
-  GPGeometryStore::GetInstance()->EraseItem(sName);
+  GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
 void GPCaptureGeometry::Init()
@@ -103,7 +103,7 @@ G4VPhysicalVolume* GPCaptureGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
       	     point*m,
              captureLog,"capture",motherLog,false,0);
 
-  captureLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager("capture"),true);
+  captureLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
   if(iCaptureType==4) 
   {
     G4ThreeVector vecLithium(0,0,(dCaptureTubeLength+1e-3)/2-dLithiumTubeLength/2-1e-3);
@@ -194,7 +194,7 @@ void GPCaptureGeometry::SetParameter(std::string str,std::string strGlobal)
     }
 
     Init();
-    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
+    std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
 G4double GPCaptureGeometry::GetParameter(std::string sKey, std::string sGlobal) const
@@ -255,13 +255,13 @@ G4VPhysicalVolume* GPCaptureGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4Th
              captureHitLog,"captureHit",motherLog,false,0);
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
+  G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(GetName()+"sd");
   //G4MultiFunctionalDetector* captureMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Capture/MultiFunDet");
   //GPSurfaceParticleScorer* captureParticleScorer=0;
   if(captureMultiFunDet==NULL)
   {
     //G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Capture/MultiFunDet");
-    G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
+    G4MultiFunctionalDetector* captureMultiFunDet = new G4MultiFunctionalDetector(GetName()+"sd");
     GPSurfaceParticleScorer* captureParticleScorer = new GPSurfaceParticleScorer("CaptureParticleScorerZPlus",1,2);
     captureMultiFunDet->RegisterPrimitive(captureParticleScorer);
     SDman->AddNewDetector(captureMultiFunDet);

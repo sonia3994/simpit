@@ -54,6 +54,7 @@ class GPObject
   protected:
     virtual void Init(){;};
   protected:
+  private:
     int iActiveFlag;
     std::string sName;
     std::string sFatherName;

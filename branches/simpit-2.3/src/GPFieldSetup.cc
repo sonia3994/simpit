@@ -134,9 +134,9 @@ void GPFieldSetup::Init()
 //
 G4FieldManager* GPFieldSetup::GetLocalFieldManager(std::string name) 
 { 
-	if(name=="capture")
+	if(name=="/capture/geometry/field/")
 		{return (G4FieldManager*) fCaptureFieldManager ;}
-	else if(name=="accelerator")
+	else if(name=="/accelerator/geometry/field/")
 		{return (G4FieldManager*) fAcceleratorFieldManager ;}
 	else return NULL;
 }

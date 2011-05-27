@@ -403,8 +403,8 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal)
     iFirstDot = strInput.find(".");
     if(iFirstDot!=std::string::npos)
     {
-    strFirstLevel=strInput.substr(0,iFirstDot);
-    strLeft=strInput.substr(iFirstDot+1);
+      strFirstLevel=strInput.substr(0,iFirstDot);
+      strLeft=strInput.substr(iFirstDot+1);
     }
 
     if(strFirstLevel=="HEPEvt")
@@ -478,6 +478,7 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     G4double   		  dValueOrg;
     
     ss>>sKey>>sValueOrg>>sUnit;
+    ss.clear();
     ss.str(sValueOrg);
     ss>>dValueOrg;
 

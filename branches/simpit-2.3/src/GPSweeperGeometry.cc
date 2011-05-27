@@ -26,12 +26,12 @@
 #include "globals.hh"
 
 #include <sstream>
-GPSweeperGeometry::GPSweeperGeometry(std::string sFirst, std::string sSecond)
+GPSweeperGeometry::GPSweeperGeometry(std::string sName, std::string sFatherName)
 {
-  sName = sFirst;
-  sFatherName = sSecond;
-  iActiveFlag=1;
-  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPGeometryStore::GetInstance()->AddGeometry(GetName(),this);
 
   swpMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -64,7 +64,7 @@ GPSweeperGeometry::GPSweeperGeometry()
 
 GPSweeperGeometry::~GPSweeperGeometry()
 {
-  GPGeometryStore::GetInstance()->EraseItem(sName);
+  GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
 void GPSweeperGeometry::Init()
@@ -98,7 +98,7 @@ G4VPhysicalVolume* GPSweeperGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
              vPosition*m,
              sweeperLog,"sweeper",motherLog,false,0);
 
-  sweeperLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager("sweeper"),true);
+  sweeperLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
 
   if(iSweeperLimitStepFlag)
     sweeperLog->SetUserLimits(new G4UserLimits(dSweeperLimitStepMax*m));
@@ -176,7 +176,7 @@ void GPSweeperGeometry::SetParameter(std::string str,std::string strGlobal)
     }
 
     Init();
-    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
+    std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
 G4double GPSweeperGeometry::GetParameter(std::string sKey,std::string sGlobal) const
@@ -232,11 +232,11 @@ G4VPhysicalVolume* GPSweeperGeometry::SetHitAtom(G4LogicalVolume* motherLog,G4Th
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   //G4MultiFunctionalDetector* sweeperMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Sweeper/MultiFunDet");
-  G4MultiFunctionalDetector* sweeperMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
+  G4MultiFunctionalDetector* sweeperMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(GetName()+"sd");
   if(sweeperMultiFunDet==NULL)
   {
     //G4MultiFunctionalDetector* sweeperMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Sweeper/MultiFunDet");
-    G4MultiFunctionalDetector* sweeperMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
+    G4MultiFunctionalDetector* sweeperMultiFunDet = new G4MultiFunctionalDetector(GetName()+"sd");
     GPSurfaceParticleScorer* sweeperParticleScorer = new GPSurfaceParticleScorer("SweeperParticleScorerZPlus",1,2);
     sweeperMultiFunDet->RegisterPrimitive(sweeperParticleScorer);
     SDman->AddNewDetector(sweeperMultiFunDet);

@@ -20,17 +20,17 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-GPEventHandleGeneral::GPEventHandleGeneral(std::string sLocal, std::string sGlobal)
+GPEventHandleGeneral::GPEventHandleGeneral(std::string sName, std::string sFatherName)
 {
-  sName=sLocal;
-  iActiveFlag=1;
-  sFatherName=sGlobal;
-  GPEventHandleStore::GetInstance()->AddEventHandle(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPEventHandleStore::GetInstance()->AddEventHandle(GetName(),this);
 
 }
 GPEventHandleGeneral::~GPEventHandleGeneral()
 {
-  GPEventHandleStore::GetInstance()->EraseItem(sName);
+  GPEventHandleStore::GetInstance()->EraseItem(GetName());
 }
 
 void  GPEventHandleGeneral::BeginOfEventAction(const G4Event* evt)
@@ -42,7 +42,7 @@ void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
   G4SDManager* SDM=G4SDManager::GetSDMpointer();
   GPGeometryGeneral* geometry = 
-    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(sFatherName+"geometry/");
+    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
   MStrStrScorer* mStrStrScorer = geometry->GetMStrStrScorer();
   MStrStrScorer::iterator it;
   for(it=mStrStrScorer->begin();it!=mStrStrScorer->end();it++)

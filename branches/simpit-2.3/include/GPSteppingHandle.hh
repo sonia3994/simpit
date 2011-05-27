@@ -19,7 +19,7 @@ class GPSteppingHandle : public GPObject
 public:
   GPSteppingHandle();
   virtual ~GPSteppingHandle();
-  virtual void  SteppingAction(const G4Step*)=0;
+  virtual void  UserSteppingAction(const G4Step*);
 
 };
 

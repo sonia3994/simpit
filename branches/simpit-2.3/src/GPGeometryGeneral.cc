@@ -27,22 +27,22 @@
 
 #include <sstream>
 #include <algorithm>
-GPGeometryGeneral::GPGeometryGeneral(std::string sFirst, std::string sSecond)
+GPGeometryGeneral::GPGeometryGeneral(std::string sName, std::string sFatherName)
   :solid(0),logicalVolume(0),physicalVolume(0),fieldManager(0),visAttributes(0)
 {
-  sName = sFirst;
-  sFatherName = sSecond;
-  iActiveFlag=1;
-  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPGeometryStore::GetInstance()->AddGeometry(GetName(),this);
 
   std::string   sMaterial = "G4_Galactic" ;
   material = G4NistManager::Instance()->FindOrBuildMaterial(sMaterial);
 
   vPosition = G4ThreeVector(0,0,0) ;
   sSDType = "G4MultiFunctionalDetector";
-  sSDName = sFatherName+"sensitive";
+  sSDName = GetFatherName()+"sensitive";
   sSolidType ="G4Box";
-  sBaseNameChild = "g"+sFatherName;
+  sBaseNameChild = "g"+GetFatherName();
   std::replace(sBaseNameChild.begin(),sBaseNameChild.end(),'/','_');
   dLength = 10e-3;
   dWidth  = 10e-3;
@@ -59,7 +59,7 @@ GPGeometryGeneral::GPGeometryGeneral(std::string sFirst, std::string sSecond)
 
 GPGeometryGeneral::~GPGeometryGeneral()
 {
-  GPGeometryStore::GetInstance()->EraseItem(sName);
+  GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
 void GPGeometryGeneral::Update()
@@ -114,7 +114,7 @@ G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog,G4Thr
              vPosition*m,
              logicalVolume,sBaseNameChild+"physicalVolume",motherLog,false,0);
 
-  logicalVolume->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(sName+"field"),true);
+  logicalVolume->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
 
   if(iStepLimitFlag)
     logicalVolume->SetUserLimits(new G4UserLimits(dStepLimit*m));
@@ -227,7 +227,7 @@ void GPGeometryGeneral::SetParameter(std::string str,std::string strGlobal)
     }
 
     Init();
-    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
+    std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
 G4double GPGeometryGeneral::GetParameter(std::string sKey, std::string sGlobal) const
@@ -310,12 +310,12 @@ void GPGeometryGeneral::SetSolidType(std::string sValue)
   if(sValue=="G4Box")
   {
     sSolidType=sValue;
-    std::cout<<sName+": Set Solid Type: "+sSolidType<<std::endl;
+    std::cout<<GetName()+": Set Solid Type: "+sSolidType<<std::endl;
   }
   else if(sValue=="G4Tubs")
   {
     sSolidType=sValue;
-    std::cout<<sName+": Set Solid Type: "+sSolidType<<std::endl;
+    std::cout<<GetName()+": Set Solid Type: "+sSolidType<<std::endl;
   }
   else
   {
@@ -330,7 +330,7 @@ void GPGeometryGeneral::SetMaterial(std::string sValue)
   if(material)
   {
     sMaterial=sValue;
-    std::cout<<sName+": Set Material: "+sMaterial<<std::endl;
+    std::cout<<GetName()+": Set Material: "+sMaterial<<std::endl;
   }
   else
   {
@@ -343,7 +343,7 @@ void GPGeometryGeneral::SetSensitiveDetector(std::string sValue)
   if(sValue=="G4MultiFunctionalDetector")
   {
     sSDType=sValue;
-    std::cout<<sName+": Set Sensitive detector: "+sSDType<<std::endl;
+    std::cout<<GetName()+": Set Sensitive detector: "+sSDType<<std::endl;
   }
   else
   {
@@ -356,7 +356,7 @@ void GPGeometryGeneral::AddPrimitiveScorer(std::string sValue,std::string sIndex
   if(sValue=="GPSurfaceParticleScorer")
   {
     mStrStrScorer.insert(std::pair<std::string,std::string>(sBaseNameChild+sIndex,"GPSurfaceParticleScorer"));
-    std::cout<<sName+": Add scorer: "+sValue+". Name: "+sBaseNameChild+sIndex<<std::endl;
+    std::cout<<GetName()+": Add scorer: "+sValue+". Name: "+sBaseNameChild+sIndex<<std::endl;
   }
   else
   {

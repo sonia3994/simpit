@@ -8,18 +8,18 @@
 #include "G4Run.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-GPRunHandleGeneral::GPRunHandleGeneral(std::string sLocal, std::string sFather)
+GPRunHandleGeneral::GPRunHandleGeneral(std::string sName, std::string sFatherName)
 {
-  iActiveFlag=1;
-  sName=sLocal;
-  sFatherName=sFather;
-  GPRunHandleStore::GetInstance()->AddRunHandle(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPRunHandleStore::GetInstance()->AddRunHandle(GetName(),this);
 }
 
 
 GPRunHandleGeneral::~GPRunHandleGeneral()
 {
-  GPRunHandleStore::GetInstance()->EraseItem(sName);
+  GPRunHandleStore::GetInstance()->EraseItem(GetName());
 }
 void  GPRunHandleGeneral::BeginOfRunAction(const G4Run* run)
 {

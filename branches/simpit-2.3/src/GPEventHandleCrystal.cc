@@ -17,17 +17,17 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-GPEventHandleCrystal::GPEventHandleCrystal(std::string sLocal, std::string sGlobal)
+GPEventHandleCrystal::GPEventHandleCrystal(std::string sName, std::string sFatherName)
 {
-  sName=sLocal;
-  iActiveFlag=1;
-  sFatherName=sGlobal;
-  GPEventHandleStore::GetInstance()->AddEventHandle(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPEventHandleStore::GetInstance()->AddEventHandle(GetName(),this);
 
 }
 GPEventHandleCrystal::~GPEventHandleCrystal()
 {
-  GPEventHandleStore::GetInstance()->EraseItem(sName);
+  GPEventHandleStore::GetInstance()->EraseItem(GetName());
 }
 
 void  GPEventHandleCrystal::BeginOfEventAction(const G4Event* evt)
@@ -45,7 +45,7 @@ void  GPEventHandleCrystal::EndOfEventAction(const G4Event* evt)
 
   CollectionID=SDM->GetCollectionID(sCollectionName); 
   particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
-  //std::cout<<"Event handle, Name: "<<sName<<std::endl;
+  //std::cout<<"Event handle, Name: "<<GetName()<<std::endl;
   if(particleHitsCollection)
     ProcessParticleHits(particleHitsCollection,sCollectionName);
 }

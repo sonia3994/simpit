@@ -55,8 +55,10 @@ class GPModule : public GPObject
     void AddChild(std::string sValue);
     void DelChild(std::string sValue);
   protected:
+  private:
     int iPriority;
     int iCompactRangerFlag;
+    int iPrintRecursiveFlag;
     GPGeometry*       geometry;
     GPSteppingHandle* steppingHandle;
     GPEventHandle*    eventHandle;

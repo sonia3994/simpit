@@ -27,12 +27,12 @@
 #include "globals.hh"
 
 #include <sstream>
-GPAcceleratorGeometry::GPAcceleratorGeometry(std::string sFirst, std::string sSecond)
+GPAcceleratorGeometry::GPAcceleratorGeometry(std::string sName, std::string sFatherName)
 {
-  sName = sFirst;
-  sFatherName = sSecond;
-  iActiveFlag=1;
-  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPGeometryStore::GetInstance()->AddGeometry(GetName(),this);
 
   accMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -65,7 +65,7 @@ GPAcceleratorGeometry::GPAcceleratorGeometry()
 
 GPAcceleratorGeometry::~GPAcceleratorGeometry()
 {
-  GPGeometryStore::GetInstance()->EraseItem(sName);
+  GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
 void GPAcceleratorGeometry::Init()
@@ -99,7 +99,7 @@ G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog,G
              point*m,
              acceleratorLog,"accelerator",motherLog,false,0);
 
-  acceleratorLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager("accelerator"),true);
+  acceleratorLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
 
   if(iAcceleratorLimitStepFlag)
     acceleratorLog->SetUserLimits(new G4UserLimits(dAcceleratorLimitStepMax*m));
@@ -177,7 +177,7 @@ void GPAcceleratorGeometry::SetParameter(std::string str,std::string strGlobal)
     }
 
     Init();
-    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
+    std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
 G4double GPAcceleratorGeometry::GetParameter(std::string sKey, std::string sGlobal) const
@@ -232,11 +232,11 @@ G4VPhysicalVolume* GPAcceleratorGeometry::SetHitAtom(G4LogicalVolume* motherLog,
              acceleratorHitLog,"acceleratorHit",motherLog,false,0);
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* acceleratorMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
+  G4MultiFunctionalDetector* acceleratorMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(GetName()+"sd");
   //G4MultiFunctionalDetector* acceleratorMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Accelerator/MultiFunDet");
   if(acceleratorMultiFunDet==NULL)
   {
-    G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
+    G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector(GetName()+"sd");
     //G4MultiFunctionalDetector* acceleratorMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Accelerator/MultiFunDet");
     GPSurfaceParticleScorer* acceleratorParticleScorer = new GPSurfaceParticleScorer("AcceleratorParticleScorerZPlus",1,2);
     acceleratorMultiFunDet->RegisterPrimitive(acceleratorParticleScorer);

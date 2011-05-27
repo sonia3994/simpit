@@ -27,7 +27,8 @@
 
   //CLHEP::HepRandomEngine* ranecuEngine=new CLHEP::RanecuEngine;
 CLHEP::RanecuEngine ranecuEngine;
-std::string strProgramVersionNumber="simpit 2.3";
+std::string sProgramName="simpit";
+std::string sProgramVersion="2.3";
 
 int main(int argc,char** argv)
 {

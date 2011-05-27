@@ -9,6 +9,7 @@
 #ifndef GPTargetSteppingAction_h
 #define GPTargetSteppingAction_h 1
 
+#include "GPSteppingHandle.hh"
 #include "G4Step.hh"
 #include "G4ThreeVector.hh"
 #include "globals.hh"
@@ -21,7 +22,7 @@ class GPEventAction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class GPTargetSteppingAction
+class GPTargetSteppingAction : public GPSteppingHandle
 {
 public:
   GPTargetSteppingAction();

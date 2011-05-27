@@ -11,7 +11,7 @@
 
 GPEventHandle::GPEventHandle()
 {
-  iActiveFlag=1;
+  SetActive(1);
 }
 GPEventHandle::~GPEventHandle()
 {}

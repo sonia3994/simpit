@@ -27,12 +27,12 @@
 #include "globals.hh"
 
 #include <sstream>
-GPTargetGeometry::GPTargetGeometry(std::string sFirst, std::string sSecond)
+GPTargetGeometry::GPTargetGeometry(std::string sName, std::string sFatherName)
 {
-  sName = sFirst;
-  sFatherName = sSecond;
-  iActiveFlag=1;
-  GPGeometryStore::GetInstance()->AddGeometry(sName,this);
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+  GPGeometryStore::GetInstance()->AddGeometry(GetName(),this);
 
   targetMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
   spaceMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
@@ -95,7 +95,7 @@ GPTargetGeometry::GPTargetGeometry()
 
 GPTargetGeometry::~GPTargetGeometry()
 {
-  GPGeometryStore::GetInstance()->EraseItem(sName);
+  GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
 void GPTargetGeometry::Init()
@@ -485,7 +485,7 @@ void GPTargetGeometry::SetParameter(std::string str,std::string strGlobal)
     }
 
     Init();
-    std::cout<<sName<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
+    std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
 G4double GPTargetGeometry::GetParameter(std::string sKey,std::string sGlobal) const
@@ -520,7 +520,7 @@ G4double GPTargetGeometry::GetParameter(std::string sKey,std::string sGlobal) co
 void GPTargetGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
 {
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4String targetSDName=sName+"edd";
+  G4String targetSDName=GetName()+"edd";
   //G4String targetSDName="/PositronSource/Target/EddSD";
   G4String targetROName="targetROGeometry";
 
@@ -598,12 +598,12 @@ G4VPhysicalVolume* GPTargetGeometry::SetTargetHit(G4LogicalVolume* targetLog,G4T
 
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sName+"sd");
+  G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(GetName()+"sd");
   //G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Target/MultiFunDet");
   GPSurfaceParticleScorer* targetParticleScorer=0;
   if(targetMultiFunDet==NULL)
   {
-    targetMultiFunDet = new G4MultiFunctionalDetector(sName+"sd");
+    targetMultiFunDet = new G4MultiFunctionalDetector(GetName()+"sd");
     //targetMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Target/MultiFunDet");
     targetParticleScorer = new GPSurfaceParticleScorer("TargetParticleScorerZPlus",1,2);
     targetMultiFunDet->RegisterPrimitive(targetParticleScorer);

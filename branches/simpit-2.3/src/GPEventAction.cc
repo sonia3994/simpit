@@ -196,8 +196,8 @@ void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCo
     {
       iNumElectron++;
     }
-    else if(particleName=="e+")
-    {
+    //else if(particleName=="e+")
+    //{
       iNumPositron++;
       vecPos = particleHit->GetPosition();
       vecMom = particleHit->GetMomentum();
@@ -205,6 +205,7 @@ void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCo
       globalTime = particleHit->GetGlobalTime(); 
 
       vecTrackInf.clear();
+      vecTrackInf.push_back(particleHit->GetPDG());
       vecTrackInf.push_back(iEventID);
       vecTrackInf.push_back(iTrackID);
       vecTrackInf.push_back(vecPos.x()*m/mm);
@@ -217,7 +218,7 @@ void GPEventAction::ProcessParticleHits(GPParticleHitsCollection* particleHitsCo
       vecTrackInf.push_back(globalTime*second/picosecond);
 
       runAct->OutPutData(sVolume,vecTrackInf);
-    }
+    //}
   }
   runAct->AddElectronNumber(sVolume,iNumElectron);
   runAct->AddPositronNumber(sVolume,iNumPositron);

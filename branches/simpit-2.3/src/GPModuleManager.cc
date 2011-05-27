@@ -39,7 +39,8 @@ void GPModuleManager::Delete()
 {
   if(instance)  delete instance;
 }
-GPModuleManager::GPModuleManager()
+GPModuleManager::GPModuleManager():
+  worldModule(0)
 {
   iConstructedFlag=0;
   sRootName="/";

@@ -13,12 +13,9 @@ class GPGeometryManager
   public:
     static GPGeometryManager* GetInstance();
     static void Delete();
-    void ConstructGeometry(G4LogicalVolume* motherLog , G4ThreeVector vPoint);
   protected:
     GPGeometryManager();
     ~GPGeometryManager();
-    void ConstructGeometryCompact(G4LogicalVolume* , G4ThreeVector);
-    void ConstructGeometryNormal(G4LogicalVolume* ,G4ThreeVector );
   protected:
     static GPGeometryManager* instance;
     int iCompactRangerFlag;

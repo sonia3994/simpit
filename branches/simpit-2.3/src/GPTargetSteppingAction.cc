@@ -24,33 +24,18 @@ using namespace std;
 
 GPTargetSteppingAction::GPTargetSteppingAction()
 { 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetSteppingAction::GPTargetSteppingAction(GPDetectorConstruction*)"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetSteppingAction::GPTargetSteppingAction(GPDetectorConstruction*)"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPTargetSteppingAction::~GPTargetSteppingAction()
 { 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetSteppingAction::~GPTargetSteppingAction()"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetSteppingAction::~GPTargetSteppingAction()"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void GPTargetSteppingAction::Init()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetSteppingAction::Init()"<<G4endl;
-#endif
   G4cout<<"-------------------GPTargetSteppingAction----------------- "<<G4endl;
   GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
   G4PhysicalVolumeStore* phyStore = G4PhysicalVolumeStore::GetInstance();
@@ -132,16 +117,10 @@ void GPTargetSteppingAction::Init()
 
   }
   G4cout<<"---------------------------------------------------------- "<<G4endl;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetSteppingAction::Init()"<<G4endl;
-#endif
 }
 
 void GPTargetSteppingAction::CleanUp()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetSteppingAction::CleanUp()"<<G4endl;
-#endif
   GPDetectorConstruction* detector = (GPDetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
 
   if(!(detector->GetParameter("target.granular.flag")))
@@ -193,16 +172,10 @@ void GPTargetSteppingAction::CleanUp()
 
   fstHangle.close();
   mapSphereEddVec.clear();
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetSteppingAction::CleanUp()"<<G4endl;
-#endif
 }
 
 void GPTargetSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetSteppingAction::UserSteppingAction(const G4Step*)"<<G4endl;
-#endif
   G4double dVolume;
   G4String strPrevPhysName= aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
   map<G4String,std::vector<G4double> >::iterator mapEddIt = mapSphereEddVec.find(strPrevPhysName);
@@ -211,9 +184,6 @@ void GPTargetSteppingAction::UserSteppingAction(const G4Step* aStep)
     dVolume = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetSolid()->GetCubicVolume()/mm3;
     (mapSphereEddVec[strPrevPhysName])[3]=(mapSphereEddVec[strPrevPhysName])[3]+aStep->GetTotalEnergyDeposit()/MeV/dVolume;
   }
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetSteppingAction:::UserSteppingAction(const G4Step*)"<<G4endl;
-#endif
 }
 
 void GPTargetSteppingAction::Print(std::ofstream fstOutput)
