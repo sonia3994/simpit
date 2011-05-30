@@ -5,7 +5,7 @@
 
 #include "GPCaptureFieldMessenger.hh"
 
-#include "GPCaptureFieldManager.hh"
+#include "GPCaptureFieldManagerPool.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithAString.hh"
@@ -18,11 +18,11 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield)
+GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManagerPool* pEMfield)
   : fEMfieldManager(pEMfield)
 { 
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* )"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManagerPool* )"<<G4endl;
 #endif
   GPdetDir = new G4UIdirectory("/GP/field/capture/");
   GPdetDir->SetGuidance("Field tracking control.");
@@ -113,7 +113,7 @@ GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* pEMfield
       
 
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManager* )"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPCaptureFieldMessenger::GPCaptureFieldMessenger(GPCaptureFieldManagerPool* )"<<G4endl;
 #endif
 }
 

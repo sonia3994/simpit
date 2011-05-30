@@ -5,7 +5,7 @@
 #include "GPDetectorConstruction.hh"
 #include "GPDetectorMessenger.hh"
 #include "GPFieldSetup.hh"
-#include "GPCaptureFieldManager.hh"
+//#include "GPCaptureFieldManager.hh"
 #include "GPSurfaceParticleScorer.hh"
 #include "GPGranularHexagonGeometry.hh"
 #include "GPCaptureGeometry.hh"
@@ -201,11 +201,11 @@ void GPDetectorConstruction::PrintDetectorParameters()
     <<"\n--------------------Print detector status-------------------"
     <<"\nThe world box: " << dWorldX <<"*"<<dWorldY <<"*" <<dWorldZ<<" m^3" 
     << G4endl;
-  targetGeometry->Print();
-  captureGeometry->Print();
-  acceleratorGeometry->Print();
-  sweeperGeometry->Print();
-  crystalGeometry->Print();
+  //targetGeometry->Print();
+  //captureGeometry->Print();
+  //acceleratorGeometry->Print();
+  //sweeperGeometry->Print();
+  //crystalGeometry->Print();
   G4cout 
     << "\n------------------------------------------------------------"
     << G4endl;
@@ -361,14 +361,14 @@ void GPDetectorConstruction::Print(std::ofstream& fstOuput)
   fstOuput
     <<"\nDetector status:"
     <<"\nWorld box(m):" 
-      <<"\nx, " << dWorldX 
-	  <<"\ny, " << dWorldY 
-		 <<"\nz, " << dWorldZ
-			<< G4endl;
-  targetGeometry->Print(fstOuput);
-  captureGeometry->Print(fstOuput);
-  acceleratorGeometry->Print(fstOuput);
-  sweeperGeometry->Print(fstOuput);
-  crystalGeometry->Print(fstOuput);
+    <<"\nx, " << dWorldX 
+    <<"\ny, " << dWorldY 
+    <<"\nz, " << dWorldZ
+    << G4endl;
+  //targetGeometry->Print(fstOuput);
+  //captureGeometry->Print(fstOuput);
+  //acceleratorGeometry->Print(fstOuput);
+  //sweeperGeometry->Print(fstOuput);
+  //crystalGeometry->Print(fstOuput);
   GPFieldSetup::GetGPFieldSetup()->Print(fstOuput);
 }

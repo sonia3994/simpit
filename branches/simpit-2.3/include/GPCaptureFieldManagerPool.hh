@@ -12,21 +12,21 @@
 #define GPCaptureManagerField_H 1
 
 //#include "G4MagneticField.hh"
-#include "G4FieldManager.hh"
 #include "G4ThreeVector.hh"
 #include "G4ElectroMagneticField.hh"
+#include "GPFieldManagerPool.hh"
 //#include "G4UniformMagField.hh"
 //#include <string>
 
-//class G4FieldManager;
 class G4ChordFinder;
 class G4Mag_UsualEqRhs;
 class G4EqEMFieldWithSpin;
 class G4MagIntegratorStepper;
 class G4MagInt_Driver;
-//class G4PropagatorInField;
+class G4FieldManager;
 
 class GPCaptureFieldMessenger;
+
 class GPCaptureField : public G4ElectroMagneticField
 {
 public:
@@ -81,20 +81,22 @@ private:
 };
 
 //Field manager
-class GPCaptureFieldManager : public G4FieldManager
+class GPCaptureFieldManagerPool : public GPFieldManagerPool
 {
 
 public:
 
-  GPCaptureFieldManager() ;               //  A zero field
- ~GPCaptureFieldManager() ;
+  GPCaptureFieldManagerPool(std::string, std::string) ;               //  A zero field
+ ~GPCaptureFieldManagerPool() ;
       
   void Init();
   void Print(std::ofstream&);
+  void Print(){};
   inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set capture field stepper type: "<<i<<G4endl; };
   inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set  capture field minmum step: "<<s<<" m"<<G4endl; };
   void UpdateField();
   void SetFieldFlag(G4bool) ;
+  G4FieldManager* GetFieldManager(){return fieldManager;}
 
 protected:
   void SetStepper();
@@ -112,6 +114,7 @@ protected:
 
   GPCaptureFieldMessenger*      	fFieldMessenger;
   G4bool					bCaptureFieldFlag;
+  G4FieldManager* 		fieldManager;
 
 };
 

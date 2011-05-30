@@ -10,6 +10,7 @@
 #include "GPDetectorConstruction.hh"
 #include "GPFieldSetup.hh"
 #include "GPSteppingAction.hh"
+#include "GPModuleManager.hh"
 
 #include "GPRunHandleManager.hh"
 
@@ -52,7 +53,7 @@ GPRunAction::GPRunAction()
   replace(tmpStr.begin(),tmpStr.end(),' ','-');
   replace(tmpStr.begin(),tmpStr.end(),':','-');
   sFilePath="./output/"+tmpStr;
-	G4cout<<"Create directory: "<<sFilePath<<G4endl;  
+  G4cout<<"Create directory: "<<sFilePath<<G4endl;  
   //fs::path path(sFilePath);
   bfsWorkPath=fs::path(sFilePath);
   fs::create_directories(bfsWorkPath);
@@ -84,7 +85,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPRunAction::BeginOfRunAction(const G4Run* )"<<G4endl;
 #endif
-//inform the runManager to save random number seed
+  //inform the runManager to save random number seed
   GPRunHandleManager::GetInstance()->BeginOfRunAction(aRun);
   std::pair<std::string,std::ofstream* > pairHandle;
   G4String chrunID;
@@ -97,7 +98,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   G4RunManager::GetRunManager()->SetRandomNumberStore(true);
 
   G4cout<<"\n========================Begin of Run: "<<iRunID<<"==================================\n"
-  <<"Prepare run: "<<G4endl;
+    <<"Prepare run: "<<G4endl;
   GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
   if(gpSteppingAction) gpSteppingAction->Prepare();
 
@@ -142,7 +143,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 
   if(bTargetSDFlag)
   {
-  ofsEddHandle.open((bfsWorkPath/(chrunID+"EddInTar.dat")).string().c_str());
+    ofsEddHandle.open((bfsWorkPath/(chrunID+"EddInTar.dat")).string().c_str());
   }
 
   std::ofstream* ofsTrajectoryHandle = new std::ofstream((bfsWorkPath/(chrunID+"Trajectory.dat")).string().c_str());
@@ -153,14 +154,15 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 
   G4cout<<"Created output files handlers"<<G4endl;
   detector->PrintDetectorParameters();
+  GPModuleManager::GetInstance()->Print();
   primaryGenerator->Print();
 
   G4cout << "Start run: " << iRunID<<G4endl;
 
   ofsParaFile 
-    	<<"\n----Begin of a run----"
-    	<<"\nRUN ID, EVENTS"
-	<<"\n"<<iRunID<<"," <<numEvt;
+    <<"\n----Begin of a run----"
+    <<"\nRUN ID, EVENTS"
+    <<"\n"<<iRunID<<"," <<numEvt;
   primaryGenerator->Print(ofsParaFile);
   detector->Print(ofsParaFile);
   //initialize cumulative quantities
@@ -168,15 +170,15 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
   dSumETar = dSum2ETar = 0.;
   dSumLTrack = dSum2LTrack = 0.; 
   iPositronPerRun=0;
-	iActualG=0;
+  iActualG=0;
   //
   vecDouEdd.clear();
   if(bTargetSDFlag)
   {
-  vecIntEddDim=detector->GetEddDim();
-  vecDouEdd.resize(vecIntEddDim[0]*vecIntEddDim[1]*vecIntEddDim[2]);
-  for(size_t i=0;i!=vecDouEdd.size();i++)
-  {vecDouEdd[i]=0;}
+    vecIntEddDim=detector->GetEddDim();
+    vecDouEdd.resize(vecIntEddDim[0]*vecIntEddDim[1]*vecIntEddDim[2]);
+    for(size_t i=0;i!=vecDouEdd.size();i++)
+    {vecDouEdd[i]=0;}
   }
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPRunAction::BeginOfRunAction(const G4Run* )"<<G4endl;
@@ -199,8 +201,8 @@ void GPRunAction::AddEddHit(G4int x, G4int y, G4int z, G4double e)
 {
   if(bTargetSDFlag)
   {
-  G4int index=x+y*vecIntEddDim[0]+z*vecIntEddDim[0]*vecIntEddDim[1];
-  vecDouEdd[index]=vecDouEdd[index]+e;
+    G4int index=x+y*vecIntEddDim[0]+z*vecIntEddDim[0]*vecIntEddDim[1];
+    vecDouEdd[index]=vecDouEdd[index]+e;
   }
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -216,31 +218,31 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 
   G4int NbOfEvents = aRun->GetNumberOfEvent();
   if (NbOfEvents == 0) return;
-  
+
   //compute statistics: mean and rms
   //
   //dSumETar /= NbOfEvents; dSum2ETar /= NbOfEvents;
   G4double rmsETar = dSum2ETar - dSumETar*dSumETar;
   if (rmsETar >0.) rmsETar = std::sqrt(rmsETar); else rmsETar = 0.;
-  
-  
+
+
   dSumLTrack /= NbOfEvents; dSum2LTrack /= NbOfEvents;
   G4double rmsLTrack = dSum2LTrack - dSumLTrack*dSumLTrack;
   if (rmsLTrack >0.) rmsLTrack = std::sqrt(rmsLTrack);
   else rmsLTrack = 0.;
-  
+
   //print
   //
   G4cout
-     <<"\n--------------------Results------------------------------\n"
-     //<<MacRightAlign<<std::setw(46)<<"The actual gammas impinged target: "<<iActualG <<"\n"
-     //<<MacRightAlign<<std::setw(46)<<"Number of e+ in this run: "<<iPositronPerRun<<"\n"
-     <<MacRightAlign<<std::setw(46)<<"Energy deposited in target in the run: " << G4BestUnit(dSumETar,"Energy")<<"\n"
-     <<MacRightAlign<<std::setw(46)<<"Mean energy deposited in target per event: " << G4BestUnit(dSumETar/NbOfEvents,"Energy") <<" +- "<< G4BestUnit(rmsETar,"Energy")<<"\n"  
-     <<MacRightAlign<<std::setw(46)<<"Mean track length in Target: " << G4BestUnit(dSumLTrack,"Length") <<" +- "<< G4BestUnit(rmsLTrack,"Length")<<"\n"  
-     <<"---------------------End of results-------------------------\n"
-     <<"==================================End of Run ===================================\n"
-     << G4endl;
+    <<"\n--------------------Results------------------------------\n"
+    //<<MacRightAlign<<std::setw(46)<<"The actual gammas impinged target: "<<iActualG <<"\n"
+    //<<MacRightAlign<<std::setw(46)<<"Number of e+ in this run: "<<iPositronPerRun<<"\n"
+    <<MacRightAlign<<std::setw(46)<<"Energy deposited in target in the run: " << G4BestUnit(dSumETar,"Energy")<<"\n"
+    <<MacRightAlign<<std::setw(46)<<"Mean energy deposited in target per event: " << G4BestUnit(dSumETar/NbOfEvents,"Energy") <<" +- "<< G4BestUnit(rmsETar,"Energy")<<"\n"  
+    <<MacRightAlign<<std::setw(46)<<"Mean track length in Target: " << G4BestUnit(dSumLTrack,"Length") <<" +- "<< G4BestUnit(rmsLTrack,"Length")<<"\n"  
+    <<"---------------------End of results-------------------------\n"
+    <<"==================================End of Run ===================================\n"
+    << G4endl;
   ofsParaFile
     <<"\nResult:"
     <<"\nSum E deposited in target, deposited E rms, sum track length in target, track length rms"
@@ -252,38 +254,34 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
     <<"\n----End of a run----"
     << G4endl;
 
-  	ofsParaFile.close();
-	for(std::map<std::string, std::ofstream* >::iterator iter=mapStrOfsOutputHandler.begin();iter!=mapStrOfsOutputHandler.end();iter++)
-	{
-		(iter->second)->close();
-	}
-	 mapStrOfsOutputHandler.clear();
-	
-  //G4double x,y,z;
-  //G4double dx=detector->GetParameter("target.x")/vecIntEddDim[0];
-  //G4double dy=detector->GetParameter("target.y")/vecIntEddDim[1];
-  //G4double dz=detector->GetParameter("target.z")/vecIntEddDim[2];
+  ofsParaFile.close();
+  for(std::map<std::string, std::ofstream* >::iterator iter=mapStrOfsOutputHandler.begin();iter!=mapStrOfsOutputHandler.end();iter++)
+  {
+    (iter->second)->close();
+  }
+  mapStrOfsOutputHandler.clear();
+
   long int index;
   if(bTargetSDFlag)
   {
-	  for(G4int i=0;i!=vecIntEddDim[0];i++)
-	  {
-		//x=i*dx-(vecIntEddDim[0]-1)*dx*0.5;
-	     for(G4int j=0;j!=vecIntEddDim[1];j++)
-	     {
-		//y=j*dy-(vecIntEddDim[1]-1)*dy*0.5;
-	
-	        for(G4int k=0;k!=vecIntEddDim[2];k++)
-			{
-				//z=k*dz-(vecIntEddDim[2]-1)*dz*0.5;
-				index=k*vecIntEddDim[0]*vecIntEddDim[1]+j*vecIntEddDim[0]+i;
-				ofsEddHandle<<i<<" "<<j<<" "<<k<<" "<<vecDouEdd[index]<<"\n";
-				//ofsEddHandle<<x<<" "<<y<<" "<<z<<" "<<vecDouEdd[k*vecIntEddDim[0]*vecIntEddDim[1]+j*vecIntEddDim[0]+i]<<"\n";
-			}
-	     }
-	  } 
-	  ofsEddHandle<<G4endl;
-	  ofsEddHandle.close();
+    for(G4int i=0;i!=vecIntEddDim[0];i++)
+    {
+      //x=i*dx-(vecIntEddDim[0]-1)*dx*0.5;
+      for(G4int j=0;j!=vecIntEddDim[1];j++)
+      {
+	//y=j*dy-(vecIntEddDim[1]-1)*dy*0.5;
+
+	for(G4int k=0;k!=vecIntEddDim[2];k++)
+	{
+	  //z=k*dz-(vecIntEddDim[2]-1)*dz*0.5;
+	  index=k*vecIntEddDim[0]*vecIntEddDim[1]+j*vecIntEddDim[0]+i;
+	  ofsEddHandle<<i<<" "<<j<<" "<<k<<" "<<vecDouEdd[index]<<"\n";
+	  //ofsEddHandle<<x<<" "<<y<<" "<<z<<" "<<vecDouEdd[k*vecIntEddDim[0]*vecIntEddDim[1]+j*vecIntEddDim[0]+i]<<"\n";
+	}
+      }
+    } 
+    ofsEddHandle<<G4endl;
+    ofsEddHandle.close();
   }
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Exit GPRunAction::EndOfRunAction(const G4Run* aRun)"<<G4endl;
@@ -292,27 +290,27 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 
 void GPRunAction::OutPutData(std::string name,std::vector<G4double> value) 
 {
-	std::map<std::string, std::ofstream* >::iterator iter=mapStrOfsOutputHandler.find(name);
-	if(iter!=mapStrOfsOutputHandler.end())
-	{
-		OutPut(iter,value);
-	}
-	else
-	{
-    	G4cout<<"Wrong output key!"<<G4endl;
-	}
-	
+  std::map<std::string, std::ofstream* >::iterator iter=mapStrOfsOutputHandler.find(name);
+  if(iter!=mapStrOfsOutputHandler.end())
+  {
+    OutPut(iter,value);
+  }
+  else
+  {
+    G4cout<<"Wrong output key!"<<G4endl;
+  }
+
 
 }
 void GPRunAction::OutPut(std::map<std::string, std::ofstream* >::iterator iter,std::vector<G4double> value) 
 {
 
-   	for(size_t j=0;j!=value.size();j++)
-	{
-		*(iter->second)<<value[j]<<" ";
-	}
+  for(size_t j=0;j!=value.size();j++)
+  {
+    *(iter->second)<<value[j]<<" ";
+  }
 
-	*(iter->second)<<G4endl;
+  *(iter->second)<<G4endl;
 
 }
 void GPRunAction::AddElectronNumber(G4String key, G4int value) 
@@ -334,11 +332,11 @@ void GPRunAction::AddPositronNumber(G4String key, G4int value)
 
 G4int GPRunAction::GetRunID()
 {
-   return iRunID;
+  return iRunID;
 }
 
 G4String GPRunAction::GetDataPath()
 {
-   return bfsWorkPath.string();
+  return bfsWorkPath.string();
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

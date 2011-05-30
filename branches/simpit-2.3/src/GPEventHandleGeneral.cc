@@ -7,6 +7,8 @@
 #include "GPGeometryStore.hh"
 #include "GPGeometryGeneral.hh"
 #include "GPEventHandleStore.hh"
+#include "GPRunHandleGeneral.hh"
+#include "GPRunHandleStore.hh"
 
 #include "GPParticleHit.hh"
 #include "GPEventAction.hh"
@@ -39,6 +41,8 @@ void  GPEventHandleGeneral::BeginOfEventAction(const G4Event* evt)
 }
 void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
 {
+  GPRunHandleGeneral* runHandle = (GPRunHandleGeneral*) GPRunHandleStore::GetInstance()
+    ->FindRunHandle(GetFatherName()+"run/");
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
   G4SDManager* SDM=G4SDManager::GetSDMpointer();
   GPGeometryGeneral* geometry = 
@@ -56,6 +60,18 @@ void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
       particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
       if(particleHitsCollection)
 	ProcessParticleHits(particleHitsCollection,it->first);
+    }
+    if(runHandle)
+    {
+      if(it->second=="G4PSEnergyDeposit")
+      {
+	int iCollID = SDM->GetCollectionID(it->first);
+	G4THitsMap<G4double>* pEnergyDepositMap
+	  = (G4THitsMap<G4double>* )(HCE->GetHC(iCollID));
+	runHandle
+	  ->RecordPerEvent("G4PSEnergyDeposit",pEnergyDepositMap);
+      }
+      //else if(it->second=="G4PSEnergyDeposit")
     }
   }
 

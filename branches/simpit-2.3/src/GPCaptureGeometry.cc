@@ -5,8 +5,10 @@
 #include "GPCaptureGeometry.hh"
 #include "GPSurfaceParticleScorer.hh"
 #include "GPFieldSetup.hh"
+#include "GPFieldManagerPool.hh"
 
 #include "GPGeometryStore.hh"
+#include "GPObject.hh"
 
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -71,6 +73,12 @@ GPCaptureGeometry::GPCaptureGeometry()
 
 GPCaptureGeometry::~GPCaptureGeometry()
 {
+ //GPObject* object = (GPObject*)GPFieldSetup::GetGPFieldSetup()->FindFieldManagerPool(GetName()+"field/");
+  //if(object)
+    //object->SetActive(0);
+    //((GPObject*)fieldManagerPool)->SetActive(0);
+    fieldManagerPool->SetActive(0);
+
   GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
@@ -103,7 +111,8 @@ G4VPhysicalVolume* GPCaptureGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
       	     point*m,
              captureLog,"capture",motherLog,false,0);
 
-  captureLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
+  fieldManagerPool = GPFieldSetup::GetGPFieldSetup()->FindFieldManagerPool(GetName()+"field/");
+  captureLog->SetFieldManager(fieldManagerPool->GetFieldManager(),true);
   if(iCaptureType==4) 
   {
     G4ThreeVector vecLithium(0,0,(dCaptureTubeLength+1e-3)/2-dLithiumTubeLength/2-1e-3);
@@ -226,7 +235,7 @@ G4double GPCaptureGeometry::GetParameter(std::string sKey, std::string sGlobal) 
 
     else
     {
-      std::cout<<"Key does not exist.\n"<<std::endl;
+      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return -1;
     }
 }

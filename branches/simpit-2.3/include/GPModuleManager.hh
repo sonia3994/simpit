@@ -28,6 +28,7 @@ class GPModuleManager
     void Print(std::ofstream&);
     void Update();
     void SetParameter(std::string);
+    double GetParameter(std::string);
     inline std::string GetRootName(){return sRootName;};
   protected:
     GPModuleManager();

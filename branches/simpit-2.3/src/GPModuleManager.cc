@@ -179,18 +179,6 @@ void GPModuleManager::Update()
 }
 void GPModuleManager::SetParameter(std::string sGlobal)
 {
-  /*
-    std::string sLocal=sGlobal;
-    std::string sObjectName;
-    std::string sPoolKeyValueUnit;
-    size_t iFirstDot;
-    iFirstDot = sLocal.find(".");
-    if(iFirstDot!=std::string::npos)
-    {
-    sObjectName=sLocal.substr(0,iFirstDot);
-    sPoolKeyValueUnit=sLocal.substr(iFirstDot+1);
-    }
-    */
 
     std::string sLocal=sGlobal;
     std::stringstream sstr(sLocal);
@@ -200,38 +188,80 @@ void GPModuleManager::SetParameter(std::string sGlobal)
     size_t iFirstDot = sLocal.find(sObjectName);
     if(iFirstDot!=std::string::npos)
     {
-    sPoolKeyValueUnit=sLocal.substr(iFirstDot+sObjectName.size());
+      sPoolKeyValueUnit=sLocal.substr(iFirstDot+sObjectName.size());
     }
 
-    if(GPModuleStore::GetInstance()->FindModule(sObjectName))
+
+    GPModule* module = GPModuleStore::GetInstance()->FindModule(sObjectName);
+    GPGeometry* geometry= GPGeometryStore::GetInstance()->FindGeometry(sObjectName);
+    GPSteppingHandle* steppingHandle = GPSteppingHandleStore::GetInstance()->FindSteppingHandle(sObjectName);
+    GPEventHandle* eventHandle = GPEventHandleStore::GetInstance()->FindEventHandle(sObjectName);
+    GPRunHandle* runHandle = GPRunHandleStore::GetInstance()->FindRunHandle(sObjectName);
+    if(module)
     {
-      GPModuleStore::GetInstance()->FindModule(sObjectName)
-	->SetParameter(sPoolKeyValueUnit,sGlobal);
+      module->SetParameter(sPoolKeyValueUnit,sGlobal);
     }
-    else if(GPGeometryStore::GetInstance()->FindGeometry(sObjectName))
+    else if(geometry)
     {
-      GPGeometryStore::GetInstance()->FindGeometry(sObjectName)
-	->SetParameter(sPoolKeyValueUnit,sGlobal);
+      geometry->SetParameter(sPoolKeyValueUnit,sGlobal);
     }
-    else if(GPSteppingHandleStore::GetInstance()->FindSteppingHandle(sObjectName))
+    else if(steppingHandle)
     {
-      GPSteppingHandleStore::GetInstance()->FindSteppingHandle(sObjectName)
-	->SetParameter(sPoolKeyValueUnit,sGlobal);
+      steppingHandle->SetParameter(sPoolKeyValueUnit,sGlobal);
     }
-    else if(GPEventHandleStore::GetInstance()->FindEventHandle(sObjectName))
+    else if(eventHandle)
     {
-      GPEventHandleStore::GetInstance()->FindEventHandle(sObjectName)
-	->SetParameter(sPoolKeyValueUnit,sGlobal);
+      eventHandle->SetParameter(sPoolKeyValueUnit,sGlobal);
     }
-    else if(GPRunHandleStore::GetInstance()->FindRunHandle(sObjectName))
+    else if(runHandle)
     {
-      GPRunHandleStore::GetInstance()->FindRunHandle(sObjectName)
-	->SetParameter(sPoolKeyValueUnit,sGlobal);
+      runHandle->SetParameter(sPoolKeyValueUnit,sGlobal);
     }
     else
     {
       std::cout<<"Can't find the Object: "<<sObjectName<<std::endl;
     }
+}
+double GPModuleManager::GetParameter(std::string sGlobal)
+{
+
+    std::string sLocal=sGlobal;
+    std::stringstream sstr(sLocal);
+    std::string sObjectName;
+    std::string sKey;
+    sstr>>sObjectName>>sKey;
+
+    GPModule* module = GPModuleStore::GetInstance()->FindModule(sObjectName);
+    GPGeometry* geometry= GPGeometryStore::GetInstance()->FindGeometry(sObjectName);
+    GPSteppingHandle* steppingHandle = GPSteppingHandleStore::GetInstance()->FindSteppingHandle(sObjectName);
+    GPEventHandle* eventHandle = GPEventHandleStore::GetInstance()->FindEventHandle(sObjectName);
+    GPRunHandle* runHandle = GPRunHandleStore::GetInstance()->FindRunHandle(sObjectName);
+    if(module)
+    {
+      return module->GetParameter(sKey,sGlobal);
+    }
+    else if(geometry)
+    {
+      return geometry->GetParameter(sKey,sGlobal);
+    }
+    else if(steppingHandle)
+    {
+      return steppingHandle->GetParameter(sKey,sGlobal);
+    }
+    else if(eventHandle)
+    {
+      return eventHandle->GetParameter(sKey,sGlobal);
+    }
+    else if(runHandle)
+    {
+      return runHandle->GetParameter(sKey,sGlobal);
+    }
+    else
+    {
+      std::cout<<"Can't find the Object: "<<sObjectName<<std::endl;
+      return -1;
+    }
+    return -1;
 
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

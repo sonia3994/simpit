@@ -1,4 +1,4 @@
-// $Id: GPAcceleratorFieldManager.hh,v 1.2 2006/06/29 17:18:51 gunter Exp $
+// $Id: GPAcceleratorFieldManagerPool.hh,v 1.2 2006/06/29 17:18:51 gunter Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 //  A class for setting up the Magnetic Field of the setup, and 
@@ -12,18 +12,18 @@
 #define GPAcceleratorFieldManager_H
 
 //#include "G4MagneticField.hh"
-#include "G4FieldManager.hh"
 #include "G4ElectroMagneticField.hh"
+#include "GPFieldManagerPool.hh"
+#include "globals.hh"
 //#include "G4UniformMagField.hh"
 //#include <string>
 
-//class G4FieldManager;
 class G4ChordFinder;
 class G4Mag_UsualEqRhs;
 class G4EqEMFieldWithSpin;
 class G4MagIntegratorStepper;
 class G4MagInt_Driver;
-//class G4PropagatorInField;
+class G4FieldManager;
 
 class GPAcceleratorFieldMessenger;
 
@@ -54,20 +54,22 @@ protected:
 
 };
 
-class GPAcceleratorFieldManager : public G4FieldManager
+class GPAcceleratorFieldManagerPool : public GPFieldManagerPool
 {
 
 public:
 
-  GPAcceleratorFieldManager() ;
- ~GPAcceleratorFieldManager() ;
+  GPAcceleratorFieldManagerPool(std::string, std::string) ;
+ ~GPAcceleratorFieldManagerPool() ;
       
   void Init();
   void Print(std::ofstream&);
+  void Print(){};
   inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set accelerator field stepper type: "<<i<<G4endl; };
   inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set accelerator field  minmum step: "<<s<<" m"<<G4endl; };
   void UpdateField();
   void SetFieldFlag(G4bool) ;
+  G4FieldManager* GetFieldManager(){return fieldManager;}
 
 protected:
   void SetStepper();
@@ -86,6 +88,7 @@ protected:
 
   GPAcceleratorFieldMessenger*      	fFieldMessenger;
   G4bool					bAcceleratorFieldFlag;
+  G4FieldManager* fieldManager;
 
 };
 

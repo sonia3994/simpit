@@ -12,7 +12,7 @@
 #include "globals.hh"
 #include "G4UImessenger.hh"
 
-class GPCaptureFieldManager;
+class GPCaptureFieldManagerPool;
 class GPCaptureField;
 class G4UIdirectory;
 class G4UIcmdWithAString;
@@ -26,7 +26,7 @@ class G4UIcmdWithABool;
 class GPCaptureFieldMessenger: public G4UImessenger
 {
   public:
-    GPCaptureFieldMessenger(GPCaptureFieldManager* );
+    GPCaptureFieldMessenger(GPCaptureFieldManagerPool* );
    ~GPCaptureFieldMessenger();
     
     void SetNewValue(G4UIcommand*, G4String);
@@ -35,7 +35,7 @@ class GPCaptureFieldMessenger: public G4UImessenger
     
   private:
 
-    GPCaptureFieldManager*             	 fEMfieldManager;
+    GPCaptureFieldManagerPool*             	 fEMfieldManager;
     GPCaptureField*           	 fieldPoint;
     
     G4UIdirectory*            	 GPdetDir;

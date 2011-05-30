@@ -212,65 +212,76 @@ void GPModule::ConstructGeometryCompact(G4LogicalVolume* motherLog )
 }
 void GPModule::Print()
 {
-  std::string sGeoName;
-  std::string sSteppingName;
-  std::string sEventName;
-  std::string sRunName;
-  if(geometry)
-    sGeoName=geometry->GetName();
-  else 
-    sGeoName="Not set";
-
-  if(steppingHandle)
-    sSteppingName=steppingHandle->GetName();
-  else 
-    sSteppingName="Not set";
-
-  if(eventHandle)
-    sEventName=eventHandle->GetName();
-  else 
-    sEventName="Not set";
+  std::cout<<"[Module: "+GetName()+"]"<<std::endl;
   if(runHandle)
-    sRunName=runHandle->GetName();
-  else 
-    sRunName="Not set";
-
-  if(GetName()==GPModuleManager::GetInstance()->GetRootName())
-  {
-  std::cout
-    <<"\n--------------------Begin Module tree-----------------------"
-    <<std::endl;
-  }
-  std::cout
-    <<"\nModule: "<<GetName()
-    <<"\nGeometry Name: "<<sGeoName
-    <<"\nStepping Handle: "<<sSteppingName
-    <<"\nEvent Handle: "<<sEventName
-    <<"\nRun Handle: "<<sRunName
-    <<std::endl;
+    runHandle->Print();
+  else
+    std::cout<<"[Run Handle: Not Set]"<<std::endl;
+  if(eventHandle)
+    eventHandle->Print();
+  else
+    std::cout<<"[Event Handle: Not Set]"<<std::endl;
+  if(steppingHandle)
+    steppingHandle->Print();
+  else
+    std::cout<<"[Stepping Handle: Not Set]"<<std::endl;
+  if(geometry)
+    geometry->Print();
+  else
+    std::cout<<"[Geometry: Not Set]"<<std::endl;
   if(mChildModule.size()>0)
   {
     std::cout
-      <<"\nSub Module:" 
-      <<std::endl;
+      <<"\n[Start Sub Module:]"<<std::endl;
     GPModuleMap::iterator it;
     for(it=mChildModule.begin();it!=mChildModule.end();it++)
     {
       if(int(iPrintRecursiveFlag)!=0)
 	(it->second)->Print();
       else
-	std::cout<<it->first<<"\n";
+	std::cout<<"["<<it->first<<"]\n";
     }
+    std::cout
+      <<"\n[End Sub Module:]"<<std::endl;
   }
-  if(GetName()==GPModuleManager::GetInstance()->GetRootName())
-  {
-  std::cout
-    <<"\n--------------------End Module tree-----------------------"
-    <<std::endl;
-  }
+  std::cout<<"["+GetName()+"]"<<std::endl;
 }
 void GPModule::Print(std::ofstream &ofs)
 {
+  ofs<<"[Module: "+GetName()+"]"<<std::endl;
+  if(runHandle)
+    runHandle->Print();
+  else
+    ofs<<"[Run Handle: Not Set]"<<std::endl;
+  if(eventHandle)
+    eventHandle->Print();
+  else
+    ofs<<"[Event Handle: Not Set]"<<std::endl;
+  if(steppingHandle)
+    steppingHandle->Print();
+  else
+    ofs<<"[Stepping Handle: Not Set]"<<std::endl;
+  if(geometry)
+    geometry->Print();
+  else
+    ofs<<"[Geometry: Not Set]"<<std::endl;
+  if(mChildModule.size()>0)
+  {
+    ofs
+      <<"\n[Start Sub Module:]"<<std::endl;
+    GPModuleMap::iterator it;
+    for(it=mChildModule.begin();it!=mChildModule.end();it++)
+    {
+      if(int(iPrintRecursiveFlag)!=0)
+	(it->second)->Print();
+      else
+	ofs<<"["<<it->first<<"]\n";
+    }
+    ofs
+      <<"\n[End Sub Module:]"<<std::endl;
+  }
+  ofs<<"["+GetName()+"]"<<std::endl;
+  /*
   std::string sGeoName;
   std::string sSteppingName;
   std::string sEventName;
@@ -327,6 +338,7 @@ void GPModule::Print(std::ofstream &ofs)
     <<"\n--------------------End Module tree-----------------------"
     <<std::endl;
   }
+  */
 }
 void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
 {

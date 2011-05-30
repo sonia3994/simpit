@@ -3,11 +3,14 @@
 //
 
 #include "GPAcceleratorGeometry.hh"
+#include "GPFieldManagerPool.hh"
 #include "GPSurfaceParticleScorer.hh"
 #include "GPFieldSetup.hh"
 
 #include "GPGeometryStore.hh"
+#include "GPObject.hh"
 
+#include "G4FieldManager.hh"
 #include "G4Material.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
@@ -65,6 +68,11 @@ GPAcceleratorGeometry::GPAcceleratorGeometry()
 
 GPAcceleratorGeometry::~GPAcceleratorGeometry()
 {
+ //GPObject* object = (GPObject*)GPFieldSetup::GetGPFieldSetup()->FindFieldManagerPool(GetName()+"field/");
+ //if(object)
+    //((GPObject*)fieldManagerPool)->SetActive(0);
+    fieldManagerPool->SetActive(0);
+
   GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
@@ -99,7 +107,8 @@ G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog,G
              point*m,
              acceleratorLog,"accelerator",motherLog,false,0);
 
-  acceleratorLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
+  fieldManagerPool = GPFieldSetup::GetGPFieldSetup()->FindFieldManagerPool(GetName()+"field/");
+  acceleratorLog->SetFieldManager(fieldManagerPool->GetFieldManager(),true);
 
   if(iAcceleratorLimitStepFlag)
     acceleratorLog->SetUserLimits(new G4UserLimits(dAcceleratorLimitStepMax*m));
@@ -203,7 +212,7 @@ G4double GPAcceleratorGeometry::GetParameter(std::string sKey, std::string sGlob
 
     else
     {
-      std::cout<<"key does not exist.\n"<<std::endl;
+      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return -1;
     }
 }

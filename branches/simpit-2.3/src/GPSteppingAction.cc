@@ -10,11 +10,6 @@
 #include "GPSteppingMessenger.hh"
 #include "GPSteppingHandleManager.hh"
 
-#include "GPDetectorConstruction.hh"
-//#include "GPTargetSteppingAction.hh"
-#include "GPEventAction.hh"
-#include "GPRunAction.hh"
-
 #include "G4ThreeVector.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
@@ -24,13 +19,10 @@
 using namespace std;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-GPSteppingAction::GPSteppingAction(GPDetectorConstruction* det,
-                                         GPEventAction* evt)
-:detector(det), eventAction(evt)					 
+GPSteppingAction::GPSteppingAction()
 { 
   sParticle="e+";
   steppingMessenger = new GPSteppingMessenger(this);
-  //targetSteppingAction = new GPTargetSteppingAction();
   verbose=0;
 }
 
@@ -48,7 +40,6 @@ void GPSteppingAction::Prepare()
 {
 	GPSteppingHandleManager::GetInstance()->Prepare();
   //targetSteppingAction->Prepare();
-  targetPhys = detector->GetPhysicalVolume("target"); 
 }
 
 void GPSteppingAction::CleanUp()
@@ -92,12 +83,6 @@ void GPSteppingAction::UserSteppingAction(const G4Step* aStep)
   else 
   { stopFlag=0; }
 
-  if (prevPhys==targetPhys) 
-  {
-    eventAction->AddTargetED(stepE);
-    eventAction->AddTargetStep(stepL);
-  }
-  //targetSteppingAction->UserSteppingAction(aStep);
 }
 
 void GPSteppingAction::SetSelectedParticle(G4String tmpParticle)

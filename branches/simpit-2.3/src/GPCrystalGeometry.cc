@@ -103,7 +103,7 @@ G4VPhysicalVolume* GPCrystalGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
              vPosition*m,
              crystalLog,"crystal",motherLog,false,0);
 
-  crystalLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
+  //crystalLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
 
   if(iCrystalLimitStepFlag)
     crystalLog->SetUserLimits(new G4UserLimits(dCrystalLimitStepMax*m));
@@ -221,7 +221,7 @@ G4double GPCrystalGeometry::GetParameter(std::string sKey, std::string sGlobal) 
 
     else
     {
-      std::cout<<"key does not exist.\n"<<std::endl;
+      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return -1;
     }
 }

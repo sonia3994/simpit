@@ -27,6 +27,23 @@ void  GPRunHandleGeneral::BeginOfRunAction(const G4Run* run)
 }
 void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
 {
+  std::map<std::string,G4THitsMap<G4double> >::iterator itStrTHit;
+  for(itStrTHit = mStrG4THitsMap.begin();itStrTHit!=mStrG4THitsMap.end();itStrTHit++)
+  {
+    std::cout<<"Value Type: "<<itStrTHit->first<<std::endl;
+    std::cout<<"Key	Value"<<std::endl;
+    std::map<G4int,G4double*>::iterator itTHit 
+      = (itStrTHit->second).GetMap()->begin();
+    for(;itTHit!=(itStrTHit->second).GetMap()->end();itTHit++)
+    {
+      std::cout<<itTHit->first<<"	"<<*(itTHit->second)<<std::endl;
+    }
+  }
+
+}
+void  GPRunHandleGeneral::RecordPerEvent(std::string sKey,G4THitsMap<G4double>* pMap)
+{
+  mStrG4THitsMap[sKey]+=*pMap;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

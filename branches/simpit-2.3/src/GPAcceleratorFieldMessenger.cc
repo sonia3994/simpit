@@ -5,7 +5,7 @@
 
 #include "GPAcceleratorFieldMessenger.hh"
 
-#include "GPAcceleratorFieldManager.hh"
+#include "GPAcceleratorFieldManagerPool.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithAString.hh"
@@ -16,11 +16,11 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManager* pEMfield)
+GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManagerPool* pEMfield)
   : fEMfieldManager(pEMfield)
 { 
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManager*)"<<G4endl;
+  G4cout<<"GP_DEBUG: Enter GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManagerPool*)"<<G4endl;
 #endif
   GPdetDir = new G4UIdirectory("/GP/field/accelerator/");
   GPdetDir->SetGuidance("Field tracking control.");
@@ -79,7 +79,7 @@ GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManag
 
 
 #ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManager*)"<<G4endl;
+  G4cout<<"GP_DEBUG: Exit GPAcceleratorFieldMessenger::GPAcceleratorFieldMessenger(GPAcceleratorFieldManagerPool*)"<<G4endl;
 #endif
 }
 

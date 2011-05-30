@@ -34,7 +34,7 @@ class GPGranularHexagonGeometry : public GPGeometry
     void Print(std::ofstream& );
 
 
-  private:
+  protected:
     G4VPhysicalVolume* Granular(G4LogicalVolume*);
     G4VPhysicalVolume* GranularCell(G4LogicalVolume*);
     G4VPhysicalVolume* GranularHexagonal(G4LogicalVolume* motherLog,G4ThreeVector point);
@@ -43,6 +43,7 @@ class GPGranularHexagonGeometry : public GPGeometry
     void GranularHexagonalCell(G4LogicalVolume* motherLog,G4ThreeVector point,long iIndex);
     void GranularHexagonalInit();
     void SetTargetSD(G4LogicalVolume*);
+    void SetMaterial(std::string );
     void PrintSD();
     void Init();
 

@@ -12,7 +12,7 @@
 #include "globals.hh"
 #include "G4UImessenger.hh"
 
-class GPAcceleratorFieldManager;
+class GPAcceleratorFieldManagerPool;
 class GPAcceleratorField;
 class G4UIdirectory;
 class G4UIcmdWithAString;
@@ -27,7 +27,7 @@ class G4UIcmdWithABool;
 class GPAcceleratorFieldMessenger: public G4UImessenger
 {
   public:
-    GPAcceleratorFieldMessenger(GPAcceleratorFieldManager* );
+    GPAcceleratorFieldMessenger(GPAcceleratorFieldManagerPool* );
    ~GPAcceleratorFieldMessenger();
     
     void SetNewValue(G4UIcommand*, G4String);
@@ -36,7 +36,7 @@ class GPAcceleratorFieldMessenger: public G4UImessenger
     
   private:
 
-    GPAcceleratorFieldManager*             	 fEMfieldManager;
+    GPAcceleratorFieldManagerPool*             	 fEMfieldManager;
     GPAcceleratorField*           	 fieldPoint;
     
     G4UIdirectory*            	 GPdetDir;

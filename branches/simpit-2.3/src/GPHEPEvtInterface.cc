@@ -12,7 +12,6 @@
 #include "G4PrimaryParticle.hh"
 #include "G4HEPEvtParticle.hh"
 #include "G4Event.hh"
-#include "GPDetectorConstruction.hh"
 
 //#include "G4UIcommand.hh"
 
@@ -154,10 +153,6 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 
         G4double 	x1=0;
 	G4double	y1=0;
-
-   	//const GPDetectorConstruction * detector =  
-     	//dynamic_cast<const GPDetectorConstruction *>((G4RunManager::GetRunManager())->GetUserDetectorConstruction()) ;
-    //G4double tarThick=detector->GetParameter("target.gz");
 
 	G4PrimaryParticle* 	particle; 
 	G4PrimaryParticle* 	mother;

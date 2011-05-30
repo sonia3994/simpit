@@ -14,6 +14,7 @@ class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
 class G4Tubs;
+class GPFieldManagerPool;
 
 //#include "G4VUserDetectorConstruction.hh"
 
@@ -58,6 +59,7 @@ class GPAcceleratorGeometry : public GPGeometry
     G4Material* accMaterial;
     G4Material* spaceMaterial;
 
+    GPFieldManagerPool* fieldManagerPool;
 
 };
 

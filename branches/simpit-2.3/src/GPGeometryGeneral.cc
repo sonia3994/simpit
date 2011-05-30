@@ -114,7 +114,7 @@ G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog,G4Thr
              vPosition*m,
              logicalVolume,sBaseNameChild+"physicalVolume",motherLog,false,0);
 
-  logicalVolume->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
+  //logicalVolume->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
 
   if(iStepLimitFlag)
     logicalVolume->SetUserLimits(new G4UserLimits(dStepLimit*m));
@@ -139,23 +139,18 @@ G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog,G4Thr
 void GPGeometryGeneral::Print()
 {
   G4cout
-   <<"\n----------------------------Geometry construct---------------------------"
-   <<G4endl;
-  G4cout
-    <<"Geometry type: "<<sSolidType
+    <<"[Geometry: "+GetName()+"]"
+    <<"\nSolid: "+sSolidType
     <<"\nWidth of Geometry: "<<dWidth*m/mm<<" mm"
     <<"\nLength of Geometry: "<<dLength*m/mm<<" mm"
     <<"\nHeight of Geometry: "<<dHeight*m/mm<<" mm"
     <<"\nStep Limit Flag of Geometry: "<<iStepLimitFlag
     <<"\nStep Limit of Geometry: "<<dStepLimit*m/mm<<" mm"
     <<"\nHit Flag of Geometry: "<<iHitFlag
+    <<"\n["+GetName()+"]"
     <<G4endl;
   
    
-  G4cout
-   <<"\n------------------------------------------------------------------------"
-   <<G4endl;
-
 }
 
 void GPGeometryGeneral::SetParameter(std::string str,std::string strGlobal)
@@ -222,7 +217,7 @@ void GPGeometryGeneral::SetParameter(std::string str,std::string strGlobal)
     }
     else 
     {
-      std::cout<<"the Key is not exist."<<std::endl;
+      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return;
     }
 
@@ -256,7 +251,7 @@ G4double GPGeometryGeneral::GetParameter(std::string sKey, std::string sGlobal) 
   //  return sMaterial;
   else
     {
-      std::cout<<"Key does not exist:"<<sKey<<std::endl;
+      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return -1;
     }
 }
@@ -292,18 +287,16 @@ G4VPhysicalVolume* GPGeometryGeneral::SetHit(G4LogicalVolume* motherLog)
 void GPGeometryGeneral::Print(std::ofstream& fstOutput)
 {
   fstOutput
-   <<"\nCrystal structure:";
-
-  fstOutput
-    <<"Geometry type: "<<sSolidType
+    <<"[Geometry: "+GetName()+"]"
+    <<"\nSolid: "+sSolidType
     <<"\nWidth of Geometry: "<<dWidth*m/mm<<" mm"
     <<"\nLength of Geometry: "<<dLength*m/mm<<" mm"
     <<"\nHeight of Geometry: "<<dHeight*m/mm<<" mm"
     <<"\nStep Limit Flag of Geometry: "<<iStepLimitFlag
     <<"\nStep Limit of Geometry: "<<dStepLimit*m/mm<<" mm"
     <<"\nHit Flag of Geometry: "<<iHitFlag
+    <<"\n["+GetName()+"]"
     <<G4endl;
-  
 }
 void GPGeometryGeneral::SetSolidType(std::string sValue)
 {

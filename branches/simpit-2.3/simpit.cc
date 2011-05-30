@@ -64,7 +64,7 @@ int main(int argc,char** argv)
   runManager->SetUserAction(tracking_Action);
 
   G4UserSteppingAction* stepping_action =
-                    new GPSteppingAction(detector, event_action);
+                    new GPSteppingAction();
   runManager->SetUserAction(stepping_action);
 
   // Initialize G4 kernel

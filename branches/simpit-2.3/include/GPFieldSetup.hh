@@ -17,8 +17,9 @@
 #include <string>
 
 class G4FieldManager;
-class GPCaptureFieldManager;
-class GPAcceleratorFieldManager;
+//class GPCaptureFieldManagerPool;
+//class GPAcceleratorFieldManagerPool;
+class GPFieldManagerPool;
 
 class G4ChordFinder;
 class G4Mag_UsualEqRhs;
@@ -46,7 +47,7 @@ public:
   inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set global field  minmum step: "<<s/mm<<" mm"<<G4endl; };
   void SetFieldFlag(G4bool) ;
   void UpdateField();
-  G4FieldManager*  GetLocalFieldManager(std::string name);
+  GPFieldManagerPool*  FindFieldManagerPool(std::string name);
 
 protected:
   void SetStepper();
@@ -58,8 +59,8 @@ protected:
 
   G4FieldManager*        	GetGlobalFieldManager() ;
   G4FieldManager*        	fGlobalFieldManager ;
-  GPCaptureFieldManager*  	fCaptureFieldManager ;
-  GPAcceleratorFieldManager*	fAcceleratorFieldManager ;
+  GPFieldManagerPool*  	fCaptureFieldManagerPool ;
+  GPFieldManagerPool*	fAcceleratorFieldManagerPool ;
 
   G4MagneticField*       	fGlobalMagnetic ; 
   G4ChordFinder*         	fGlobalChordFinder ;

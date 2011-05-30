@@ -98,7 +98,7 @@ G4VPhysicalVolume* GPSweeperGeometry::Construct(G4LogicalVolume* motherLog,G4Thr
              vPosition*m,
              sweeperLog,"sweeper",motherLog,false,0);
 
-  sweeperLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->GetLocalFieldManager(GetName()+"field/"),true);
+  //sweeperLog->SetFieldManager(GPFieldSetup::GetGPFieldSetup()->FindFieldManagerPool(GetName()+"field/"),true);
 
   if(iSweeperLimitStepFlag)
     sweeperLog->SetUserLimits(new G4UserLimits(dSweeperLimitStepMax*m));
@@ -171,7 +171,7 @@ void GPSweeperGeometry::SetParameter(std::string str,std::string strGlobal)
     iSweeperLimitStepFlag = dValueNew;
     else 
     {
-  	std::cout<<"the Key is not exist."<<std::endl;
+      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
      	return;
     }
 
@@ -202,7 +202,7 @@ G4double GPSweeperGeometry::GetParameter(std::string sKey,std::string sGlobal) c
 
     else
     {
-      std::cout<<"key does not exist.\n"<<std::endl;
+      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return -1;
     }
 }

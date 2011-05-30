@@ -10,6 +10,9 @@
 #define GPRUNHANDLEGENERAL_H 1
 
 #include "GPRunHandle.hh"
+#include "G4THitsMap.hh"
+#include <string>
+#include <map>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
@@ -21,8 +24,10 @@ class GPRunHandleGeneral : public GPRunHandle
 
     virtual void  BeginOfRunAction(const G4Run*);
     virtual void  EndOfRunAction(const G4Run*);
+    virtual void  RecordPerEvent(std::string,G4THitsMap<G4double>*);
   protected:
     int iRunID;
+    std::map<std::string,G4THitsMap<G4double> > mStrG4THitsMap;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

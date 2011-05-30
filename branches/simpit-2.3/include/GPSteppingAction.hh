@@ -14,17 +14,13 @@
 #include "globals.hh"
 
 class GPSteppingMessenger;
-class GPDetectorConstruction;
-class GPTargetSteppingAction;
-class GPEventAction;
-class G4VPhysicalVolume;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class GPSteppingAction : public G4UserSteppingAction
 {
 public:
-  GPSteppingAction(GPDetectorConstruction*, GPEventAction*);
+  GPSteppingAction();
   virtual ~GPSteppingAction();
 
   void UserSteppingAction(const G4Step*);
@@ -33,11 +29,7 @@ public:
   void CleanUp();
     
 private:
-  GPDetectorConstruction* detector;
-  GPTargetSteppingAction* targetSteppingAction;
-  GPEventAction*          eventAction;
   GPSteppingMessenger*	  steppingMessenger;
-  const G4VPhysicalVolume* targetPhys;
 
   G4String 		sParticle;
   G4int   verbose;

@@ -5,7 +5,7 @@
 // --------------------------------------------------------------------
 #include "GPCrystalPrimaryGA.hh"
 
-#include "GPDetectorConstruction.hh"
+#include "GPModuleManager.hh"
 #include "GPCrystalManager.hh"
 
 #include "Crystal.h"
@@ -90,12 +90,11 @@ void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
   G4cout<<"GP_DEBUG: Enter GPCrystalPrimaryGA::GeneratePrimaryVertex()"<<G4endl;
 #endif
     //G4double	dECharge=CLHEP::electron_charge;
-  GPDetectorConstruction* detector =
-    (GPDetectorConstruction*) G4RunManager::GetRunManager()->GetUserDetectorConstruction();
+  GPModuleManager* moduleManager = GPModuleManager::GetInstance();
   G4double dCoordinateZG4FotCrystalToWorld =
-    detector->GetParameter("crystal.coordG4FotToGeant4.z");
+    moduleManager->GetParameter("/crystal/geometry/ coordG4FotToGeant4.z");
   G4double dCrystalBorderPositionZPositive =
-    detector->GetParameter("crystal.border.z.positive");
+    moduleManager->GetParameter("/crystal/geometry/ border.z.positive");
   G4double	dECharge=-1.0;
   G4double	dGamma;
 

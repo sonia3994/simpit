@@ -51,7 +51,7 @@ GPGranularHexagonGeometry::GPGranularHexagonGeometry(std::string sName, std::str
   dTargetGlobalSolidX = dTargetSolidX+0.01;
   dTargetGlobalSolidY = dTargetSolidY+0.01;
   dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
-    
+
   dTargetSDSolidZ=dTargetSolidZ;
   dTargetSDSolidR=dTargetSolidX/2;
   dTargetSDSolidAngle=360;
@@ -81,7 +81,7 @@ GPGranularHexagonGeometry::GPGranularHexagonGeometry()
   dTargetGlobalSolidX = dTargetSolidX+0.01;
   dTargetGlobalSolidY = dTargetSolidY+0.01;
   dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
-    
+
   dTargetSDSolidZ=dTargetSolidZ;
   dTargetSDSolidR=dTargetSolidX/2;
   dTargetSDSolidAngle=360;
@@ -102,12 +102,6 @@ void GPGranularHexagonGeometry::Init()
 {
   dTargetSDSolidZ=dTargetSolidZ;
   dTargetSDSolidR=dTargetSolidX/2;
-  dTargetSDSolidAngle=360;
-
-  dTargetSDCellZ=0.001;
-  dTargetSDCellR=0.001;
-  dTargetSDCellPhi = 360;
-
   if(iTargetHitFlag==1)
   {
     dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
@@ -146,18 +140,17 @@ G4VPhysicalVolume* GPGranularHexagonGeometry::Construct(G4LogicalVolume* motherL
       "targetPhys",
       motherLog,false,0);
 
-  //if(iTargetGranularFlag==1)
-  //{
+  if(iTargetGranularFlag==1)
+  {
     GranularHexagonal(targetLog,G4ThreeVector(0,0,-dIndexPoint/2));
-  //}
-  //else
-  //{
-    //TubularTarget(targetLog,G4ThreeVector(0,0,-dIndexPoint/2));
-  //}
-  
-  if(iTargetHitFlag==1)
-  SetTargetHit(targetLog);
+  }
+  else
+  {
+    TubularTarget(targetLog,G4ThreeVector(0,0,-dIndexPoint/2));
+  }
 
+  if(iTargetHitFlag==1)
+    SetTargetHit(targetLog);
   return targetPhys;
 
 #ifdef GP_DEBUG
@@ -182,60 +175,60 @@ void GPGranularHexagonGeometry::GranularHexagonalInit()
 void GPGranularHexagonGeometry::Print()
 {
   G4cout
-   <<"\n----------------------------Target construct---------------------------"
-   <<G4endl;
+    <<"\n----------------------------Target construct---------------------------"
+    <<G4endl;
   if(iTargetGranularFlag==1)
   {
-  G4cout
-   <<"Target type: Hexagonal granular construct."
-   <<"\nX of target: "<<dTargetSolidX*m/mm<<" mm"
-   <<"\nY of target: "<<dTargetSolidY*m/mm<<" mm"
-   <<"\nZ of target: "<<dTargetSolidZ*m/mm<<" mm"
-   <<"\nRadius of sphere: "<<dTargetHexagonalSphereRadius*m/mm<<" mm"
-   <<"\nZ axis Cell width: "<<dWidthZ*m/mm<< " mm"
-   <<"\nNumber of X cell: "<<iTargetGranularXNumber
-   <<"\nNumber of Y cell: "<<iTargetGranularYNumber
-   <<"\nNumber of Z cell: "<<iTargetGranularZNumber
-   <<G4endl;
+    G4cout
+      <<"Target type: Hexagonal granular construct."
+      <<"\nX of target: "<<dTargetSolidX*m/mm<<" mm"
+      <<"\nY of target: "<<dTargetSolidY*m/mm<<" mm"
+      <<"\nZ of target: "<<dTargetSolidZ*m/mm<<" mm"
+      <<"\nRadius of sphere: "<<dTargetHexagonalSphereRadius*m/mm<<" mm"
+      <<"\nZ axis Cell width: "<<dWidthZ*m/mm<< " mm"
+      <<"\nNumber of X cell: "<<iTargetGranularXNumber
+      <<"\nNumber of Y cell: "<<iTargetGranularYNumber
+      <<"\nNumber of Z cell: "<<iTargetGranularZNumber
+      <<G4endl;
   }
   else if(iTargetGranularFlag==0)
   {
-  G4cout
-    <<"Target type: Tubs construct."
-    <<"\nRadius of target: "<<dTargetSolidX*m/mm/2<<" mm"
-    <<"\nLength of target: "<<dTargetSolidZ*m/mm<<" mm"
-    <<G4endl;
+    G4cout
+      <<"Target type: Tubs construct."
+      <<"\nRadius of target: "<<dTargetSolidX*m/mm/2<<" mm"
+      <<"\nLength of target: "<<dTargetSolidZ*m/mm<<" mm"
+      <<G4endl;
   }
-   
+
   if(iTargetEddFlag==1&&iReadOutCylinderFlag==1) PrintSD();
   if(iTargetEddFlag==1&&iReadOutCylinderFlag!=1) 
   {
-  G4cout
-   <<"\nTarget Sensitive detector:"
-   <<"\nX Cell width: "<<dTargetSDCellR*m/mm<<" mm"
-   <<"\nY Cell width: "<<dTargetSDCellR*m/mm<<" mm"
-   <<"\nZ Cell width: "<<dTargetSDCellZ*m/mm<<" mm"
-   <<"\nX Cell Number: "<<dTargetSolidX/dTargetSDCellR
-   <<"\nY Cell Number: "<<dTargetSolidX/dTargetSDCellR
-   <<"\nZ Cell Number: "<<dTargetSolidZ/dTargetSDCellZ
-   <<G4endl;
+    G4cout
+      <<"\nTarget Sensitive detector:"
+      <<"\nX Cell width: "<<dTargetSDCellR*m/mm<<" mm"
+      <<"\nY Cell width: "<<dTargetSDCellR*m/mm<<" mm"
+      <<"\nZ Cell width: "<<dTargetSDCellZ*m/mm<<" mm"
+      <<"\nX Cell Number: "<<dTargetSolidX/dTargetSDCellR
+      <<"\nY Cell Number: "<<dTargetSolidX/dTargetSDCellR
+      <<"\nZ Cell Number: "<<dTargetSolidZ/dTargetSDCellZ
+      <<G4endl;
   }
   G4cout
-   <<"\n------------------------------------------------------------------------"
-   <<G4endl;
+    <<"\n------------------------------------------------------------------------"
+    <<G4endl;
 
 }
 void GPGranularHexagonGeometry::PrintSD()
 {
   G4cout
-   <<"\n------------------------------Target Sensitive --------------------------"
-   <<"\nZ Cell width: "<<dTargetSDCellZ*m/mm<<" mm"
-   <<"\nR Cell width: "<<dTargetSDCellR*m/mm<<" mm"
-   <<"\nPhi Cell width: "<<dTargetSDCellPhi<<" degree"
-   <<"\nZ Cell Number: "<<vecEddDim[0]
-   <<"\nR Cell Number: "<<vecEddDim[1]
-   <<"\nPhi Cell Number: "<<vecEddDim[2]
-   <<G4endl;
+    <<"\n------------------------------Target Sensitive --------------------------"
+    <<"\nZ Cell width: "<<dTargetSDCellZ*m/mm<<" mm"
+    <<"\nR Cell width: "<<dTargetSDCellR*m/mm<<" mm"
+    <<"\nPhi Cell width: "<<dTargetSDCellPhi<<" degree"
+    <<"\nZ Cell Number: "<<vecEddDim[0]
+    <<"\nR Cell Number: "<<vecEddDim[1]
+    <<"\nPhi Cell Number: "<<vecEddDim[2]
+    <<G4endl;
 
 }
 
@@ -266,10 +259,9 @@ G4VPhysicalVolume* GPGranularHexagonGeometry::GranularHexagonal(G4LogicalVolume*
 	    i+j*iTargetGranularXNumber+k*iTargetGranularXNumber*iTargetGranularYNumber);
       }
     }
-  
+
   }
 
-  if(iTargetEddFlag==1) SetTargetSD(hexagonalLog);
 
   return hexagonalPhy;
 
@@ -286,7 +278,7 @@ void GPGranularHexagonGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog
 
   sstStr<<iIndex;
   sstStr>>strSuffix;
-  
+
   strSolid="sphOrbA_"+strSuffix;
   strLog="sphLogA_"+strSuffix;
   strPhy="sphPhyA_"+strSuffix;
@@ -449,71 +441,82 @@ void GPGranularHexagonGeometry::GranularHexagonalCell(G4LogicalVolume* motherLog
 
 void GPGranularHexagonGeometry::SetParameter(std::string str,std::string strGlobal)
 {
-	std::stringstream ss(str);
-	std::string		  sUnit;
-	std::string		  sKey;
-	G4double   		  dValueNew;
-	G4double   		  dValueOrg;
-	
-	ss>>sKey>>dValueOrg>>sUnit;
-    if(sUnit!="")
+  std::stringstream ss(str);
+  std::string		  sUnit;
+  std::string		  sKey;
+  std::string		  sValueOrg;
+  G4double   		  dValueNew;
+  G4double   		  dValueOrg;
+
+  ss>>sKey>>sValueOrg>>sUnit;
+  ss.clear();
+  ss.str(sValueOrg);
+  ss>>dValueOrg;
+  if(sUnit!="")
     dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
-    else dValueNew=dValueOrg;
+  else dValueNew=dValueOrg;
 
-    if(sKey=="x")
+  if(sKey=="x")
     dTargetSolidX = dValueNew;
-    else if(sKey=="y")
+  else if(sKey=="y")
     dTargetSolidY = dValueNew;
-    else if(sKey=="z")
-    {
-      dTargetSolidZ = dValueNew;
-      dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
-    }
-    else if(sKey=="granular.flag")
+  else if(sKey=="z")
+  {
+    dTargetSolidZ = dValueNew;
+    dTargetGlobalSolidZ = dTargetSolidZ+dTargetHitL;
+  }
+  else if(sKey=="granular.flag")
     iTargetGranularFlag = dValueNew;
-    else if(sKey=="granular.radius")
+  else if(sKey=="granular.radius")
     dTargetHexagonalSphereRadius = dValueNew;
-    else if(sKey=="granular.z.number")
+  else if(sKey=="granular.z.number")
     iTargetGranularZNumber = dValueNew;
-    else if(sKey=="hit.flag")
+  else if(sKey=="hit.flag")
     iTargetHitFlag = dValueNew;
+  else if(sKey=="cell.dr")
+    dTargetSDCellR = dValueNew;
+  else if(sKey=="cell.dz")
+    dTargetSDCellZ = dValueNew;
+  else if(sKey=="material")
+    SetMaterial(sValueOrg);
 
-    else 
-    {
-  	std::cout<<"the Key is not exist."<<std::endl;
-     	return;
-    }
 
-    Init();
-    std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
+  else 
+  {
+    std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
+    return;
+  }
+
+  Init();
+  std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
 }
 
 G4double GPGranularHexagonGeometry::GetParameter(std::string sKey,std::string sGlobal) const
 {
-    if(sKey=="x")
+  if(sKey=="x")
     return dTargetSolidX;
-    else if(sKey=="gz")
+  else if(sKey=="gz")
     return dTargetGlobalSolidZ;
-    else if(sKey=="y")
+  else if(sKey=="y")
     return dTargetSolidY;
-    else if(sKey=="z")
+  else if(sKey=="z")
     return dTargetSolidZ;
-    else if(sKey=="length")
+  else if(sKey=="length")
     return dGlobalLength;
-    else if(sKey=="granular.flag")
+  else if(sKey=="granular.flag")
     return iTargetGranularFlag;
-    else if(sKey=="granular.z.number")
+  else if(sKey=="granular.z.number")
     return iTargetGranularZNumber;
-    else if(sKey=="granular.y.number")
+  else if(sKey=="granular.y.number")
     return iTargetGranularYNumber;
-    else if(sKey=="granular.x.number")
+  else if(sKey=="granular.x.number")
     return iTargetGranularXNumber;
 
-    else
-    {
-      std::cout<<"key does not exist.\n"<<std::endl;
-      return -1;
-    }
+  else
+  {
+    std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
+    return -1;
+  }
 }
 
 //*/
@@ -542,10 +545,10 @@ void GPGranularHexagonGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
       delete targetROTubs;
     }
     targetROTubs=new GPTargetROGeometryTubs(targetROName,
-        0,
-        dTargetSDSolidR,
-        dTargetSDSolidZ,
-        vecEddDim);
+	0,
+	dTargetSDSolidR,
+	dTargetSDSolidZ,
+	vecEddDim);
 
     targetROTubs->BuildROGeometry();
     targetSD->SetROgeometry(targetROTubs);  
@@ -564,13 +567,13 @@ void GPGranularHexagonGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
       delete targetRO;
     }
     targetRO=new GPTargetROGeometry(targetROName,
-        dTargetSolidX,
-        dTargetSolidY,
-        dTargetSolidZ,
-        vecEddDim);
+	dTargetSolidX,
+	dTargetSolidY,
+	dTargetSolidZ,
+	vecEddDim);
 
     targetRO->BuildROGeometry();
-    
+
     targetSD->SetROgeometry(targetRO);  
   }
 
@@ -634,12 +637,16 @@ G4VPhysicalVolume* GPGranularHexagonGeometry::TubularTarget(G4LogicalVolume* mot
       targetNormalLog,
       "targetNormalPhys",
       motherLog,false,0);
-  if(iTargetEddFlag==1) SetTargetSD(targetNormalLog); 
-  
+  if(iTargetEddFlag==1) 
+    SetTargetSD(targetNormalLog); 
+
   G4VisAttributes* targetNormalLogVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0,0.3));
   targetNormalLogVisAtt->SetVisibility(true);
   targetNormalLogVisAtt->SetForceSolid(true);
   targetNormalLog->SetVisAttributes(targetNormalLogVisAtt);
+
+  if(iTargetEddFlag==1) 
+    SetTargetSD(targetNormalLog);
 
   return targetNormalPhy;
 }
@@ -647,52 +654,56 @@ G4VPhysicalVolume* GPGranularHexagonGeometry::TubularTarget(G4LogicalVolume* mot
 void GPGranularHexagonGeometry::Print(std::ofstream& fstOutput)
 {
   fstOutput
-   <<"\nTarget structure:";
+    <<"\nTarget structure:";
 
   if(iTargetGranularFlag==1)
   {
-  fstOutput
-   <<"\nTarget type, Hexagonal granular construct."
-   <<"\nX of target, "<<dTargetSolidX*m/mm<<" mm"
-   <<"\nY of target, "<<dTargetSolidY*m/mm<<" mm"
-   <<"\nZ of target, "<<dTargetSolidZ*m/mm<<" mm"
-   <<"\nRadius of sphere, "<<dTargetHexagonalSphereRadius*m/mm<<" mm"
-   <<"\nZ axis Cell width, "<<dWidthZ*m/mm<< " mm"
-   <<"\nNumber of X cell, "<<iTargetGranularXNumber
-   <<"\nNumber of Y cell, "<<iTargetGranularYNumber
-   <<"\nNumber of Z cell, "<<iTargetGranularZNumber
-   <<G4endl;
+    fstOutput
+      <<"\nTarget type, Hexagonal granular construct."
+      <<"\nX of target, "<<dTargetSolidX*m/mm<<" mm"
+      <<"\nY of target, "<<dTargetSolidY*m/mm<<" mm"
+      <<"\nZ of target, "<<dTargetSolidZ*m/mm<<" mm"
+      <<"\nRadius of sphere, "<<dTargetHexagonalSphereRadius*m/mm<<" mm"
+      <<"\nZ axis Cell width, "<<dWidthZ*m/mm<< " mm"
+      <<"\nNumber of X cell, "<<iTargetGranularXNumber
+      <<"\nNumber of Y cell, "<<iTargetGranularYNumber
+      <<"\nNumber of Z cell, "<<iTargetGranularZNumber
+      <<G4endl;
   }
   else if(iTargetGranularFlag==0)
   {
-  fstOutput
-    <<"\nTarget type, Tubs construct."
-    <<"\nRadius of target, "<<dTargetSolidX*m/mm/2<<" mm"
-    <<"\nLength of target, "<<dTargetSolidZ*m/mm<<" mm"
-    <<G4endl;
+    fstOutput
+      <<"\nTarget type, Tubs construct."
+      <<"\nRadius of target, "<<dTargetSolidX*m/mm/2<<" mm"
+      <<"\nLength of target, "<<dTargetSolidZ*m/mm<<" mm"
+      <<G4endl;
   }
   if(iTargetEddFlag==1&&iReadOutCylinderFlag==1) 
   {
-  fstOutput
-   <<"\nTarget Sensitive detector:"
-   <<"\nZ Cell width, "<<dTargetSDCellZ*m/mm<<" mm"
-   <<"\nR Cell width, "<<dTargetSDCellR*m/mm<<" mm"
-   <<"\nPhi Cell width, "<<dTargetSDCellPhi<<" degree"
-   <<"\nZ Cell Number, "<<vecEddDim[0]
-   <<"\nR Cell Number, "<<vecEddDim[1]
-   <<"\nPhi Cell Number, "<<vecEddDim[2]
-   <<G4endl;
+    fstOutput
+      <<"\nTarget Sensitive detector:"
+      <<"\nZ Cell width, "<<dTargetSDCellZ*m/mm<<" mm"
+      <<"\nR Cell width, "<<dTargetSDCellR*m/mm<<" mm"
+      <<"\nPhi Cell width, "<<dTargetSDCellPhi<<" degree"
+      <<"\nZ Cell Number, "<<vecEddDim[0]
+      <<"\nR Cell Number, "<<vecEddDim[1]
+      <<"\nPhi Cell Number, "<<vecEddDim[2]
+      <<G4endl;
   }
   if(iTargetEddFlag==1&&iReadOutCylinderFlag!=1) 
   {
-  fstOutput
-   <<"\nTarget Sensitive detector:"
-   <<"\nX Cell width, "<<dTargetSDCellR*m/mm<<" mm"
-   <<"\nY Cell width, "<<dTargetSDCellR*m/mm<<" mm"
-   <<"\nZ Cell width, "<<dTargetSDCellZ*m/mm<<" mm"
-   <<"\nX Cell Number, "<<dTargetSolidX/dTargetSDCellR
-   <<"\nY Cell Number, "<<dTargetSolidX/dTargetSDCellR
-   <<"\nZ Cell Number, "<<dTargetSolidZ/dTargetSDCellZ
-   <<G4endl;
+    fstOutput
+      <<"\nTarget Sensitive detector:"
+      <<"\nX Cell width, "<<dTargetSDCellR*m/mm<<" mm"
+      <<"\nY Cell width, "<<dTargetSDCellR*m/mm<<" mm"
+      <<"\nZ Cell width, "<<dTargetSDCellZ*m/mm<<" mm"
+      <<"\nX Cell Number, "<<dTargetSolidX/dTargetSDCellR
+      <<"\nY Cell Number, "<<dTargetSolidX/dTargetSDCellR
+      <<"\nZ Cell Number, "<<dTargetSolidZ/dTargetSDCellZ
+      <<G4endl;
   }
+}
+void GPGranularHexagonGeometry::SetMaterial(std::string sValue)
+{
+  targetMaterial = G4NistManager::Instance()->FindOrBuildMaterial(sValue);
 }
