@@ -19,6 +19,7 @@ class G4VisAttributes;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4FieldManager;
+class GPSensitiveHandle;
 
 class GPGeometryGeneral : public GPGeometry
 {
@@ -32,34 +33,27 @@ class GPGeometryGeneral : public GPGeometry
 
     void SetParameter(std::string, std::string);
     double GetParameter(std::string, std::string) const;
-    inline std::map<std::string,std::string>* 
-      GetMStrStrScorer(){return &mStrStrScorer;};
     void Print();
+    GPSensitiveHandle* GetSensitiveHandle() const;
     void Print(std::ofstream& );
     void Update();
   protected:
     G4VSolid* ConstructSolid();
     void SetSolidType(std::string);
     void SetMaterial(std::string);
-    void SetSensitiveDetector(std::string);
-    void AddPrimitiveScorer(std::string,std::string);
-
-
   protected:
-    G4VPhysicalVolume* SetHit(G4LogicalVolume*);
     void Init();
+  private:
+    GPSensitiveHandle* sdHandle;
     G4VSolid* solid;
     G4LogicalVolume* logicalVolume;
     G4VPhysicalVolume* physicalVolume;
     G4Material* material;
     G4FieldManager* fieldManager;
     G4VisAttributes* visAttributes;
-    std::string   sSDType;
-    std::string   sSDName;
     std::string   sSolidType;
     std::string   sBaseNameChild;
     std::string   sMaterial;
-    std::map<std::string,std::string> mStrStrScorer;
     double dLength;
     double dWidth;
     double dHeight;
@@ -71,7 +65,6 @@ class GPGeometryGeneral : public GPGeometry
     int iHitFlag;
 
 };
-typedef std::map<std::string,std::string> MStrStrScorer;
 
 #endif
 

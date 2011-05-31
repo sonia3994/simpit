@@ -25,9 +25,11 @@ class GPRunHandleGeneral : public GPRunHandle
     virtual void  BeginOfRunAction(const G4Run*);
     virtual void  EndOfRunAction(const G4Run*);
     virtual void  RecordPerEvent(std::string,G4THitsMap<G4double>*);
+    virtual void  Add3dHit(int, int, int, double);
   protected:
     int iRunID;
-    std::map<std::string,G4THitsMap<G4double> > mStrG4THitsMap;
+    std::map<std::string,G4THitsMap<G4double>* > mStrG4THitsMap;
+    std::vector<double> vDouble;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

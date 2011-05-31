@@ -25,18 +25,18 @@ class GPObject
     virtual double GetParameter(std::string, std::string)const;
 
     // Set or get object's name.
-    std::string GetName();
+    std::string GetName()const;
     void SetName(std::string sValue);
 
     // Set or get object's father name.
-    std::string GetFatherName();
+    std::string GetFatherName()const;
     void SetFatherName(std::string sValue);
     
     // Set or get object's active flag.
-    int IsActive();
+    int IsActive()const;
     void SetActive(int i);
 
-    int GetVerbose();
+    int GetVerbose()const;
     void SetVerbose(int i);
 
     // For manager class.

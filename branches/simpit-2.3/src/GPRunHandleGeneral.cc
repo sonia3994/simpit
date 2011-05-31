@@ -5,7 +5,12 @@
 
 #include "GPRunHandleGeneral.hh"
 #include "GPRunHandleStore.hh"
+#include "GPGeometryGeneral.hh"
+#include "GPGeometryStore.hh"
+#include "GPSensitiveHandle.hh"
+#include "GPTargetSD.hh"
 #include "G4Run.hh"
+#include "G4SDManager.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPRunHandleGeneral::GPRunHandleGeneral(std::string sName, std::string sFatherName)
@@ -24,26 +29,106 @@ GPRunHandleGeneral::~GPRunHandleGeneral()
 void  GPRunHandleGeneral::BeginOfRunAction(const G4Run* run)
 {
   iRunID=run->GetRunID();
+  GPGeometryGeneral* geometry = 
+    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
+  if(geometry==NULL)
+    return;
+
+  GPSensitiveHandle* sdHandle = geometry->GetSensitiveHandle();
+  std::string sSDType = sdHandle->GetSDType();
+  std::string sSDName = sdHandle->GetSDName();
+  if(sSDType=="GPTargetSD")
+  {
+    GPTargetSD* targetSD = (GPTargetSD*)G4SDManager::GetSDMpointer()->FindSensitiveDetector(sSDName);
+    if(targetSD)
+    {
+      int x = targetSD->GetCellNumber("x");
+      int y = targetSD->GetCellNumber("y");
+      int z = targetSD->GetCellNumber("z");
+      vDouble.resize(x*y*z);
+    }
+  }
+
+  MStrStrScorer* mStrStrScorer = sdHandle->GetMStrStrScorer();
+  MStrStrScorer::iterator it;
+  G4THitsMap<G4double>* oHitsMap;
+  for(it=mStrStrScorer->begin();it!=mStrStrScorer->end();it++)
+  {
+    oHitsMap = new G4THitsMap<G4double>();  
+    mStrG4THitsMap.insert(std::pair<std::string,G4THitsMap<G4double>* >(it->second,oHitsMap)) ;
+  }
+  
 }
 void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
 {
-  std::map<std::string,G4THitsMap<G4double> >::iterator itStrTHit;
+  iRunID=run->GetRunID();
+  GPGeometryGeneral* geometry = 
+    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
+  if(geometry==NULL)
+    return;
+
+  std::cout<<"End of run: "<<GetName()<<std::endl;
+  GPSensitiveHandle* sdHandle = geometry->GetSensitiveHandle();
+  std::string sSDType = sdHandle->GetSDType();
+  std::string sSDName = sdHandle->GetSDName();
+  if(sSDType=="GPTargetSD")
+  {
+    GPTargetSD* targetSD = (GPTargetSD*)G4SDManager::GetSDMpointer()->FindSensitiveDetector(sSDName);
+    size_t iCellNumX,  iCellNumY, iCellNumZ, iIndex;
+
+    iCellNumX = targetSD->GetCellNumber("x");
+    iCellNumY = targetSD->GetCellNumber("y");
+    iCellNumZ = targetSD->GetCellNumber("z");
+    for(size_t i=0;i!=iCellNumX;i++)
+    {
+      for(size_t j=0;j!=iCellNumY;j++)
+      {
+	for(size_t k=0;k!=iCellNumZ;k++)
+	{
+	  iIndex=k*iCellNumX*iCellNumY+j*iCellNumX+i;
+	  std::cout<<i<<" "<<j<<" "<<k<<" "<<vDouble[iIndex]<<"\n";
+	}
+      }
+    }
+  }
+  vDouble.resize(0);
+
+  std::map<std::string,G4THitsMap<G4double>* >::iterator itStrTHit;
   for(itStrTHit = mStrG4THitsMap.begin();itStrTHit!=mStrG4THitsMap.end();itStrTHit++)
   {
     std::cout<<"Value Type: "<<itStrTHit->first<<std::endl;
     std::cout<<"Key	Value"<<std::endl;
     std::map<G4int,G4double*>::iterator itTHit 
-      = (itStrTHit->second).GetMap()->begin();
-    for(;itTHit!=(itStrTHit->second).GetMap()->end();itTHit++)
+      = (itStrTHit->second)->GetMap()->begin();
+    for(;itTHit!=(itStrTHit->second)->GetMap()->end();itTHit++)
     {
       std::cout<<itTHit->first<<"	"<<*(itTHit->second)<<std::endl;
     }
+    delete itStrTHit->second;
   }
-
+  mStrG4THitsMap.clear();
 }
 void  GPRunHandleGeneral::RecordPerEvent(std::string sKey,G4THitsMap<G4double>* pMap)
 {
-  mStrG4THitsMap[sKey]+=*pMap;
+  (*(mStrG4THitsMap[sKey]))+=*pMap;
+}
+void  GPRunHandleGeneral::Add3dHit(G4int x, G4int y, G4int z, G4double e)
+{
+  GPGeometryGeneral* geometry = 
+    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
+  if(geometry==NULL)
+    return;
+
+  GPSensitiveHandle* sdHandle = geometry->GetSensitiveHandle();
+  std::string sSDName = sdHandle->GetSDName();
+  GPTargetSD* targetSD = (GPTargetSD*)G4SDManager::GetSDMpointer()->FindSensitiveDetector(sSDName);
+
+  size_t iCellNumX, iCellNumY, iCellNumZ;
+  iCellNumX = targetSD->GetCellNumber("x");
+  iCellNumY = targetSD->GetCellNumber("y");
+  iCellNumZ = targetSD->GetCellNumber("z");
+  size_t iIndex = x+y*iCellNumX+z*iCellNumX*iCellNumY; 
+  vDouble[iIndex] +=e;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

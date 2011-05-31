@@ -4,6 +4,7 @@
 #include "GPGeometryGeneral.hh"
 #include "GPSurfaceParticleScorer.hh"
 #include "GPFieldSetup.hh"
+#include "GPSensitiveHandle.hh"
 
 #include "GPGeometryStore.hh"
 
@@ -38,11 +39,10 @@ GPGeometryGeneral::GPGeometryGeneral(std::string sName, std::string sFatherName)
   std::string   sMaterial = "G4_Galactic" ;
   material = G4NistManager::Instance()->FindOrBuildMaterial(sMaterial);
 
+  sdHandle = new GPSensitiveHandle(GetName()+"sd/",GetName());
   vPosition = G4ThreeVector(0,0,0) ;
-  sSDType = "G4MultiFunctionalDetector";
-  sSDName = GetFatherName()+"sensitive";
   sSolidType ="G4Box";
-  sBaseNameChild = "g"+GetFatherName();
+  sBaseNameChild = "-"+GetName();
   std::replace(sBaseNameChild.begin(),sBaseNameChild.end(),'/','_');
   dLength = 10e-3;
   dWidth  = 10e-3;
@@ -54,12 +54,12 @@ GPGeometryGeneral::GPGeometryGeneral(std::string sName, std::string sFatherName)
   iStepLimitFlag =0;
   iCompactRangerFlag =1;
   iPriority = 0;
-  iHitFlag  = 1;
 }
 
 GPGeometryGeneral::~GPGeometryGeneral()
 {
   GPGeometryStore::GetInstance()->EraseItem(GetName());
+  delete sdHandle;
 }
 
 void GPGeometryGeneral::Update()
@@ -91,6 +91,24 @@ G4VSolid* GPGeometryGeneral::ConstructSolid()
 }
 void GPGeometryGeneral::Init()
 {
+  std::stringstream ss;
+  std::string sValueX;
+  std::string sValueY;
+  std::string sValueZ;
+  ss<<dWidth;
+  ss>>sValueX;
+
+  ss.clear();
+  ss<<dHeight;
+  ss>>sValueY;
+
+  ss.clear();
+  ss<<dLength;
+  ss>>sValueZ;
+  
+  sdHandle->SetParameter("readout.x "+sValueX+" m",GetName());
+  sdHandle->SetParameter("readout.y "+sValueY+" m",GetName());
+  sdHandle->SetParameter("readout.z "+sValueZ+" m",GetName());
 }
 G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog)
 {
@@ -126,8 +144,7 @@ G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog,G4Thr
   logicalVolume->SetVisAttributes(visAttributes);
   */
 
-  if(iHitFlag==1)
-    SetHit(logicalVolume);
+  sdHandle->SetSensitiveDet(logicalVolume);
 
   return physicalVolume;
 
@@ -146,14 +163,14 @@ void GPGeometryGeneral::Print()
     <<"\nHeight of Geometry: "<<dHeight*m/mm<<" mm"
     <<"\nStep Limit Flag of Geometry: "<<iStepLimitFlag
     <<"\nStep Limit of Geometry: "<<dStepLimit*m/mm<<" mm"
-    <<"\nHit Flag of Geometry: "<<iHitFlag
     <<"\n["+GetName()+"]"
     <<G4endl;
+  sdHandle->Print();
   
    
 }
 
-void GPGeometryGeneral::SetParameter(std::string str,std::string strGlobal)
+void GPGeometryGeneral::SetParameter(std::string str,std::string sGlobal)
 {
     std::stringstream ss(str);
     std::string		  sUnit;
@@ -189,8 +206,6 @@ void GPGeometryGeneral::SetParameter(std::string str,std::string strGlobal)
       dAngleStart = dValueNew;
     else if(sKey=="angle.end")
       dAngleEnd = dValueNew;
-    else if(sKey=="hit.flag")
-      iHitFlag = dValueNew;
     else if(sKey=="limit.step.max")
       dStepLimit = dValueNew;
     else if(sKey=="limit.step.flag")
@@ -205,24 +220,47 @@ void GPGeometryGeneral::SetParameter(std::string str,std::string strGlobal)
       SetMaterial(sValue);
       return;
     }
-    else if(sKey=="sensitive")
+    else if(sKey=="sd.active")
     {
-      SetSensitiveDetector(sValue);
+      sdHandle->SetActive(1);
+    }
+    else if(sKey=="sd.inactive")
+    {
+      sdHandle->SetActive(0);
+    }
+    else if(sKey=="sd.type")
+    {
+      sdHandle->SetParameter(sKey+" "+sValue+" "+sUnit,sGlobal);
       return;
     }
-    else if(sKey=="scorer")
+    else if(sKey=="sd.scorer")
     {
-      AddPrimitiveScorer(sValue,sUnit);
+      sdHandle->SetParameter(sKey+" "+sValue+" "+sUnit,sGlobal);
+      return;
+    }
+    else if(sKey=="readout.cell.x")
+    {
+      sdHandle->SetParameter(sKey+" "+sValue+" "+sUnit,sGlobal);
+      return;
+    }
+    else if(sKey=="readout.cell.y")
+    {
+      sdHandle->SetParameter(sKey+" "+sValue+" "+sUnit,sGlobal);
+      return;
+    }
+    else if(sKey=="readout.cell.z")
+    {
+      sdHandle->SetParameter(sKey+" "+sValue+" "+sUnit,sGlobal);
       return;
     }
     else 
     {
-      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
+      //std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
+      std::cout<<GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return;
     }
 
-    Init();
-    std::cout<<GetName()<<": Set "<<sKey<<": "<< dValueOrg<<" "<<sUnit<<std::endl;
+    std::cout<<GetName()<<": Set "<<sKey<<": "<< sValue<<" "<<sUnit<<std::endl;
 }
 
 G4double GPGeometryGeneral::GetParameter(std::string sKey, std::string sGlobal) const
@@ -239,8 +277,6 @@ G4double GPGeometryGeneral::GetParameter(std::string sKey, std::string sGlobal) 
     return dAngleStart; 
   else if(sKey=="angle.end")
     return dAngleEnd; 
-  else if(sKey=="hit.flag")
-    return iHitFlag; 
   else if(sKey=="limit.step.max")
     return dStepLimit; 
   else if(sKey=="limit.step.flag")
@@ -251,38 +287,11 @@ G4double GPGeometryGeneral::GetParameter(std::string sKey, std::string sGlobal) 
   //  return sMaterial;
   else
     {
-      std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
+      std::cout<<GetName()<<": "+sKey+": Key does not exist."<<std::endl;
+      //std::cout<<((GPObject*) this)->GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return -1;
     }
 }
-
-//*/
-G4VPhysicalVolume* GPGeometryGeneral::SetHit(G4LogicalVolume* motherLog)
-{
-  G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  if(sSDType=="G4MultiFunctionalDetector")
-  {
-    G4MultiFunctionalDetector* multiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(sSDName);
-    if(multiFunDet==NULL)
-    {
-      G4MultiFunctionalDetector* multiFunDet = new G4MultiFunctionalDetector(sSDName);
-      MStrStrScorer::iterator it;
-      for(it=mStrStrScorer.begin();it!=mStrStrScorer.end();it++)
-      {
-	if(it->second=="GPSurfaceParticleScorer")
-	{
-	  GPSurfaceParticleScorer* particleScorer = new GPSurfaceParticleScorer(it->first,1,2);
-	  multiFunDet->RegisterPrimitive(particleScorer);
-	}
-      }
-      SDman->AddNewDetector(multiFunDet);
-    }
-  motherLog->SetSensitiveDetector(multiFunDet); 
-  }
- 
-  return NULL;
-}
-
 
 void GPGeometryGeneral::Print(std::ofstream& fstOutput)
 {
@@ -294,9 +303,9 @@ void GPGeometryGeneral::Print(std::ofstream& fstOutput)
     <<"\nHeight of Geometry: "<<dHeight*m/mm<<" mm"
     <<"\nStep Limit Flag of Geometry: "<<iStepLimitFlag
     <<"\nStep Limit of Geometry: "<<dStepLimit*m/mm<<" mm"
-    <<"\nHit Flag of Geometry: "<<iHitFlag
     <<"\n["+GetName()+"]"
     <<G4endl;
+  sdHandle->Print(fstOutput);
 }
 void GPGeometryGeneral::SetSolidType(std::string sValue)
 {
@@ -331,29 +340,8 @@ void GPGeometryGeneral::SetMaterial(std::string sValue)
   }
 
 }
-void GPGeometryGeneral::SetSensitiveDetector(std::string sValue)
-{
-  if(sValue=="G4MultiFunctionalDetector")
-  {
-    sSDType=sValue;
-    std::cout<<GetName()+": Set Sensitive detector: "+sSDType<<std::endl;
-  }
-  else
-  {
-    std::cout<<"This Sensitive detector is not support: "<<sValue<<std::endl;
-  }
 
-}
-void GPGeometryGeneral::AddPrimitiveScorer(std::string sValue,std::string sIndex)
+GPSensitiveHandle* GPGeometryGeneral::GetSensitiveHandle()const
 {
-  if(sValue=="GPSurfaceParticleScorer")
-  {
-    mStrStrScorer.insert(std::pair<std::string,std::string>(sBaseNameChild+sIndex,"GPSurfaceParticleScorer"));
-    std::cout<<GetName()+": Add scorer: "+sValue+". Name: "+sBaseNameChild+sIndex<<std::endl;
-  }
-  else
-  {
-    std::cout<<"This scorer is not support: "<<sValue<<std::endl;
-  }
-
+  return sdHandle;
 }

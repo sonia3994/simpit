@@ -212,7 +212,7 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
 #ifdef GP_DEBUG
   G4cout<<"GP_DEBUG: Enter GPRunAction::EndOfRunAction(const G4Run* )"<<G4endl;
 #endif
-  GPRunHandleManager::GetInstance()->BeginOfRunAction(aRun);
+  GPRunHandleManager::GetInstance()->EndOfRunAction(aRun);
   GPSteppingAction* gpSteppingAction=(GPSteppingAction*)G4RunManager::GetRunManager()->GetUserSteppingAction();
   if(gpSteppingAction) gpSteppingAction->CleanUp();
 

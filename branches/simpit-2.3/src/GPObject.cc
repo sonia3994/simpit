@@ -19,7 +19,7 @@ double GPObject::GetParameter(std::string, std::string)const
 }
 
 // Set or get object's name.
-std::string GPObject::GetName()
+std::string GPObject::GetName()const
 {
   return sName;
 }
@@ -29,7 +29,7 @@ void GPObject::SetName(std::string sValue)
 }
 
 // Set or get object's father name.
-std::string GPObject::GetFatherName()
+std::string GPObject::GetFatherName()const
 {
   return sFatherName;
 }
@@ -39,7 +39,7 @@ void GPObject::SetFatherName(std::string sValue)
 }
 
 // Set or get object's active flag.
-int GPObject::IsActive()
+int GPObject::IsActive()const
 {
   return iActiveFlag;
 }
@@ -73,7 +73,7 @@ void GPObject::Update()
 {}
 void GPObject::Init()
 {}
-int GPObject::GetVerbose()
+int GPObject::GetVerbose()const
 {
 }
 void GPObject::SetVerbose(int i)

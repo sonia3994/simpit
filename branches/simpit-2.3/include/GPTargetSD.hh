@@ -19,6 +19,8 @@ class GPTargetSD : public G4VSensitiveDetector
       void Initialize(G4HCofThisEvent* HCE);
       G4bool ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist);
       inline void SetEddDim(std::vector<G4int> t){iNumberOfCellsInX=t[0];iNumberOfCellsInY=t[1];iNumberOfCellsInZ=t[2];}; 
+      int GetCellNumber(std::string); 
+      void SetCollectionName(std::string); 
       void EndOfEvent(G4HCofThisEvent* HCE);
       void clear();
       void DrawAll();

@@ -45,7 +45,7 @@ GPGranularHexagonGeometry::GPGranularHexagonGeometry(std::string sName, std::str
   iTargetGranularZNumber = 3;
   iTargetGranularFlag = 1;
   iTargetHitFlag = 1;
-  iTargetEddFlag = 1;
+  iTargetEddFlag = 0;
   iReadOutCylinderFlag = 0;
 
   dTargetGlobalSolidX = dTargetSolidX+0.01;
@@ -523,7 +523,7 @@ G4double GPGranularHexagonGeometry::GetParameter(std::string sKey,std::string sG
 void GPGranularHexagonGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
 {
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4String targetSDName=GetName()+"edd";
+  G4String targetSDName="/f_target_sd";
   //G4String targetSDName="/PositronSource/Target/EddSD";
   G4String targetROName="targetROGeometry";
 
@@ -533,7 +533,11 @@ void GPGranularHexagonGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
 
   GPTargetSD* targetSD = (GPTargetSD*)SDman->FindSensitiveDetector(targetSDName);
   if(targetSD==NULL)
+  {
     targetSD =new GPTargetSD(targetSDName,vecEddDim);
+    targetSD->SetCollectionName("TargetSD");
+    SDman->AddNewDetector(targetSD);
+  }
 
   if(iReadOutCylinderFlag)
   {
@@ -577,7 +581,7 @@ void GPGranularHexagonGeometry::SetTargetSD(G4LogicalVolume* logicalVolume)
     targetSD->SetROgeometry(targetRO);  
   }
 
-  SDman->AddNewDetector(targetSD);
+  //SDman->AddNewDetector(targetSD);
   logicalVolume->SetSensitiveDetector(targetSD); 
 
 }
@@ -599,13 +603,14 @@ void GPGranularHexagonGeometry::SetTargetHit(G4LogicalVolume* targetLog)
   //  
 
 
+  G4String targetSDName="/f_target_sd";
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(GetName()+"sd");
+  G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector(targetSDName);
   //G4MultiFunctionalDetector* targetMultiFunDet=(G4MultiFunctionalDetector*)SDman->FindSensitiveDetector("/PositronSource/Target/MultiFunDet");
   GPSurfaceParticleScorer* targetParticleScorer=0;
   if(targetMultiFunDet==NULL)
   {
-    targetMultiFunDet = new G4MultiFunctionalDetector(GetName()+"sd");
+    targetMultiFunDet = new G4MultiFunctionalDetector(targetSDName);
     //targetMultiFunDet = new G4MultiFunctionalDetector("/PositronSource/Target/MultiFunDet");
     targetParticleScorer = new GPSurfaceParticleScorer("TargetParticleScorerZPlus",1,2);
     targetMultiFunDet->RegisterPrimitive(targetParticleScorer);
@@ -644,9 +649,6 @@ G4VPhysicalVolume* GPGranularHexagonGeometry::TubularTarget(G4LogicalVolume* mot
   targetNormalLogVisAtt->SetVisibility(true);
   targetNormalLogVisAtt->SetForceSolid(true);
   targetNormalLog->SetVisAttributes(targetNormalLogVisAtt);
-
-  if(iTargetEddFlag==1) 
-    SetTargetSD(targetNormalLog);
 
   return targetNormalPhy;
 }

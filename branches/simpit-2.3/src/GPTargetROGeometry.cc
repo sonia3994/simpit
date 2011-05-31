@@ -81,9 +81,6 @@ void GPTargetROGeometry::Init()
 
 G4VPhysicalVolume* GPTargetROGeometry::Build()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetROGeometry::Build()"<<G4endl;
-#endif
   Init();
   // A dummy material is used to fill the volumes of the readout geometry.
   // ( It will be allowed to set a NULL pointer in volumes of such virtual
@@ -91,38 +88,38 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
   dummyMat  = new G4Material(name="dummyMat", 1., 1.*g/mole, 1.*g/cm3);
 
   //Builds the ReadOut World:
-  G4Box *ROWorldBox = new G4Box("ROWorldBox",
+  G4Box *ROWorldBox = new G4Box(name+"_ROWorldBox",
 		 m*dExpHall_x/2,
 		 m*dExpHall_y/2,
 		 m*dExpHall_z/2);
 
   G4LogicalVolume *ROWorldLog = new G4LogicalVolume(ROWorldBox,
 		  dummyMat,
-		  "ROWorldLogical",
+		  name+"_ROWorldLogical",
 		  0, 0, 0);
 
   ROWorldLog->SetVisAttributes(G4VisAttributes::Invisible);
 
   G4PVPlacement *ROWorldPhys = new G4PVPlacement(0,
 		  G4ThreeVector(),
-		  "ROWorldPhysical",
+		  name+"_ROWorldPhysical",
 		  ROWorldLog,
 		  0,false,0);
   // Target volume:
 
-  G4Box *targetROBox = new G4Box("TargetROBox",
+  G4Box *targetROBox = new G4Box(name+"_TargetROBox",
 		  m*dTargetBox_x/2,
 		  m*dTargetBox_y/2,
 		  m*dTargetBox_z/2);
 
   G4LogicalVolume *targetROLog = new G4LogicalVolume(targetROBox,
 		  dummyMat,
-		  "targetROLogical",
+		  name+"_targetROLogical",
 		  0, 0, 0);
 
   G4PVPlacement *targetROPhys = new G4PVPlacement(0,
 		  G4ThreeVector(),
-		  "targetROPhysical",
+		  name+"_targetROPhysical",
 		  targetROLog,
 		  ROWorldPhys,
 		  false,0);
@@ -130,17 +127,17 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
   // Target readout division:
   // -------------------------------
   // x division first: 48 sectors
-  G4Box *targetROXDivBox = new G4Box("TargetROXDivBox",
+  G4Box *targetROXDivBox = new G4Box(name+"_TargetROXDivBox",
 		  m*dTargetBoxXCell_x/2,
 		  m*dTargetBoxXCell_y/2,
 		  m*dTargetBoxXCell_z/2);
 
   G4LogicalVolume *targetROXDivLog = new G4LogicalVolume(targetROXDivBox,
 		  dummyMat,
-		  "targetROXDivisionLogical",
+		  name+"_targetROXDivisionLogical",
 		  0, 0, 0);
 
-  G4VPhysicalVolume * targetROXDivPhys = new G4PVReplica("targetROXDivisionPhysical",
+  G4VPhysicalVolume * targetROXDivPhys = new G4PVReplica(name+"_targetROXDivisionPhysical",
 		  targetROXDivLog,
 		  targetROPhys,
 		  kXAxis,
@@ -148,17 +145,17 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 		  m*dTargetBox_dx);
 
   // y division first: 48 sectors
-  G4Box *targetROYDivBox = new G4Box("TargetROYDivBox",
+  G4Box *targetROYDivBox = new G4Box(name+"_TargetROYDivBox",
 		  m*dTargetBoxYCell_x/2,
 		  m*dTargetBoxYCell_y/2,
 		  m*dTargetBoxYCell_z/2);
 
   G4LogicalVolume *targetROYDivLog = new G4LogicalVolume(targetROYDivBox,
 		  dummyMat,
-		  "targetROYDivisionLogical",
+		  name+"_targetROYDivisionLogical",
 		  0, 0, 0);
 
-  G4VPhysicalVolume * targetROYDivPhys = new G4PVReplica("targetROYDivisionPhysical",
+  G4VPhysicalVolume * targetROYDivPhys = new G4PVReplica(name+"_targetROYDivisionPhysical",
 		  targetROYDivLog,
 		  targetROXDivPhys,
 		  kYAxis,
@@ -166,17 +163,17 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 		  m*dTargetBox_dy);
 
   // z division first: 20 sectors
-  G4Box *targetROZDivBox = new G4Box("TargetROZBox",
+  G4Box *targetROZDivBox = new G4Box(name+"_TargetROZBox",
 		  m*dTargetBoxZCell_x/2,
 		  m*dTargetBoxZCell_y/2,
 		  m*dTargetBoxZCell_z/2);
 
   G4LogicalVolume *targetROZDivLog = new G4LogicalVolume(targetROZDivBox, 
 		  dummyMat,
-		  "targetROZDivisionLogical",
+		  name+"_targetROZDivisionLogical",
 		  0, 0, 0);
 
-  G4VPhysicalVolume * targetROZDivPhys = new G4PVReplica("targetROZDivisionPhysical",
+  G4VPhysicalVolume * targetROZDivPhys = new G4PVReplica(name+"_targetROZDivisionPhysical",
 		  targetROZDivLog,
 		  targetROYDivPhys,
 		  kZAxis,
@@ -190,9 +187,6 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
   GPDummySD* dummySensi = new GPDummySD();
   targetROZDivLog->SetSensitiveDetector(dummySensi);
 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetROGeometry::Build()"<<G4endl;
-#endif
   return ROWorldPhys;
   
 }

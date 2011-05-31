@@ -6,6 +6,7 @@
 #include "GPEventHandleGeneral.hh"
 #include "GPGeometryStore.hh"
 #include "GPGeometryGeneral.hh"
+#include "GPSensitiveHandle.hh"
 #include "GPEventHandleStore.hh"
 #include "GPRunHandleGeneral.hh"
 #include "GPRunHandleStore.hh"
@@ -41,37 +42,66 @@ void  GPEventHandleGeneral::BeginOfEventAction(const G4Event* evt)
 }
 void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
 {
+  GPGeometryGeneral* geometry = 
+    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
+  if(geometry==NULL)
+    return;
+  GPSensitiveHandle* sdHandle = geometry->GetSensitiveHandle();
+  if(sdHandle->IsActive()==0)
+    return;
+
   GPRunHandleGeneral* runHandle = (GPRunHandleGeneral*) GPRunHandleStore::GetInstance()
     ->FindRunHandle(GetFatherName()+"run/");
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
   G4SDManager* SDM=G4SDManager::GetSDMpointer();
-  GPGeometryGeneral* geometry = 
-    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
-  MStrStrScorer* mStrStrScorer = geometry->GetMStrStrScorer();
+
+  MStrStrScorer* mStrStrScorer = sdHandle->GetMStrStrScorer();
+  std::string sSDName = sdHandle->GetSDName();
+  std::string sSDType = sdHandle->GetSDType();
+  G4int iCollectionID;
+
+  if(sSDType=="GPTargetSD")
+  {
+    GPTargetHitsCollection* eddCollection;
+    GPTargetHit* eddHit;
+
+    iCollectionID=SDM->GetCollectionID(sSDName+"/GPTargetSD"); 
+    eddCollection =(GPTargetHitsCollection*)(HCE->GetHC(iCollectionID));
+    if(eddCollection!=NULL)
+    {
+      size_t iNum = eddCollection->GetSize();
+      for(size_t i =0;i!=iNum;i++)
+      {
+	eddHit=(GPTargetHit*) eddCollection->GetHit(i);
+     	runHandle->Add3dHit(eddHit->GetX(),eddHit->GetY(),eddHit->GetZ(),eddHit->GetEdep());
+      }
+    }
+    return;
+  }
+
   MStrStrScorer::iterator it;
   for(it=mStrStrScorer->begin();it!=mStrStrScorer->end();it++)
   {
-    if(it->second=="GPSurfaceParticleScorer")
+    if(it->first=="GPSurfaceParticleScorer")
     {
       GPParticleHitsCollection* particleHitsCollection;
 
-      G4int CollectionID;
-      CollectionID=SDM->GetCollectionID(it->first); 
-      particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
+      iCollectionID=SDM->GetCollectionID(sSDName+"/"+it->second); 
+      particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(iCollectionID));
       if(particleHitsCollection)
-	ProcessParticleHits(particleHitsCollection,it->first);
+	ProcessParticleHits(particleHitsCollection,it->second);
     }
     if(runHandle)
     {
-      if(it->second=="G4PSEnergyDeposit")
+      if(it->first=="G4PSEnergyDeposit")
       {
-	int iCollID = SDM->GetCollectionID(it->first);
+	int iCollID = SDM->GetCollectionID(sSDName+"/"+it->second);
 	G4THitsMap<G4double>* pEnergyDepositMap
 	  = (G4THitsMap<G4double>* )(HCE->GetHC(iCollID));
-	runHandle
-	  ->RecordPerEvent("G4PSEnergyDeposit",pEnergyDepositMap);
+	if(pEnergyDepositMap)
+	  runHandle
+	    ->RecordPerEvent("G4PSEnergyDeposit",pEnergyDepositMap);
       }
-      //else if(it->second=="G4PSEnergyDeposit")
     }
   }
 

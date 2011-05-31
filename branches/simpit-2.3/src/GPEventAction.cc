@@ -102,12 +102,12 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
   GPParticleHitsCollection* particleHitsCollection;
 
   G4int CollectionID;
-  ///*
-  CollectionID=SDM->GetCollectionID("EddCollection"); 
+  /*
+  CollectionID=SDM->GetCollectionID("/f_target_sd/TargetSD"); 
   EddCollection =static_cast<GPTargetHitsCollection*>(HCE->GetHC(CollectionID));
   if(EddCollection)
     ProcessEdd(EddCollection);
-  //*/
+  */
   
   CollectionID=SDM->GetCollectionID("TargetParticleScorerZPlus"); 
   particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
