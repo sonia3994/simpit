@@ -41,20 +41,18 @@ GPSensitiveHandle::~GPSensitiveHandle()
 void GPSensitiveHandle::Print()
 {
   G4cout
-    <<"[Sensitive Detector: "+GetName()+"]"
+    <<"\n[Begin Sensitive Detector: "+GetName()+"]"
     <<"\nSensitive status: "<<IsActive()
     <<"\nSensitive type: "+sSDType
-    <<"\nSensitive name: "+sSDName
-    <<G4endl;
+    <<"\nSensitive name: "+sSDName;
     MStrStrScorer::iterator it;
     for(it=mStrStrScorer.begin();it!=mStrStrScorer.end();it++)
     {
   G4cout
-    <<"Scorer type: "+(it->first)+"; Scorer name: "+(it->second)
-    <<G4endl;
+    <<"\nScorer type: "+(it->first)+"; Scorer name: "+(it->second);
     }
   G4cout
-    <<"["+GetName()+"]"
+    <<"\n[End Sensitive Detector: "+GetName()+"]"
     <<G4endl;
   
    
@@ -191,20 +189,18 @@ void GPSensitiveHandle::SetBoxCellSD(G4LogicalVolume* motherLog)
 void GPSensitiveHandle::Print(std::ofstream& fstOutput)
 {
   fstOutput
-    <<"[Sensitive Detector: "+GetName()+"]"
+    <<"\n[Begin Sensitive Detector: "+GetName()+"]"
     <<"\nSensitive status: "<<IsActive()
     <<"\nSensitive type: "+sSDType
-    <<"\nSensitive name: "+sSDName
-    <<G4endl;
+    <<"\nSensitive name: "+sSDName;
     MStrStrScorer::iterator it;
     for(it=mStrStrScorer.begin();it!=mStrStrScorer.end();it++)
     {
   fstOutput
-    <<"Scorer type: "+(it->first)+"; Scorer name: "+(it->second)
-    <<G4endl;
+    <<"\nScorer type: "+(it->first)+"; Scorer name: "+(it->second);
     }
   fstOutput
-    <<"["+GetName()+"]"
+    <<"\n[End Sensitive Detector: "+GetName()+"]"
     <<G4endl;
   
 }

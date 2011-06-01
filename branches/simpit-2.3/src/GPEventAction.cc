@@ -32,114 +32,93 @@
 GPEventAction::GPEventAction()
 :iPrintModel(1)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPEventAction::GPEventAction()"<<G4endl;
-#endif
   eventMessenger = new GPEventActionMessenger(this);
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPEventAction::GPEventAction()"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPEventAction::~GPEventAction()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPEventAction::~GPEventAction()"<<G4endl;
-#endif
   if(eventMessenger)    delete eventMessenger;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPEventAction::~GPEventAction()"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void GPEventAction::BeginOfEventAction(const G4Event* evt)
 {  
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPEventAction::BeginOfEventAction(const G4Event* )"<<G4endl;
-#endif
-  G4int evtNb = evt->GetEventID();
-	iEventID=evtNb;
-//  if (evtNb%iPrintModel == 0) 
-  if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
-  { 
-    G4cout << "\n------------------> Begin of event: " << evtNb<<" <--------------------" << G4endl;
-    CLHEP::HepRandom::showEngineStatus();
-  }
- 
-// initialisation per event
- dEnergyTar = 0.;
- dTrackL = 0.;
- iNPositronPerEvt=0;
-// de=0.;
   GPEventHandleManager::GetInstance()->BeginOfEventAction(evt);
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPEventAction::BeginOfEventAction(const G4Event* )"<<G4endl;
-#endif
+//  G4int evtNb = evt->GetEventID();
+//	iEventID=evtNb;
+////  if (evtNb%iPrintModel == 0) 
+//  if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
+//  { 
+//    G4cout << "\n------------------> Begin of event: " << evtNb<<" <--------------------" << G4endl;
+//    CLHEP::HepRandom::showEngineStatus();
+//  }
+// 
+//// initialisation per event
+// dEnergyTar = 0.;
+// dTrackL = 0.;
+// iNPositronPerEvt=0;
+//// de=0.;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void GPEventAction::EndOfEventAction(const G4Event* evt)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPEventAction::EndOfEventAction(const G4Event* )"<<G4endl;
-#endif
   //accumulates statistic
   //
   GPEventHandleManager::GetInstance()->EndOfEventAction(evt);
   G4int evtNb = evt->GetEventID();
-  GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
-  runAct->FillPerEvent(dEnergyTar, dTrackL,iNPositronPerEvt);
- // PEDD
-  G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
-  G4SDManager* SDM=G4SDManager::GetSDMpointer();
-
-  GPTargetHitsCollection* EddCollection;
-  GPParticleHitsCollection* particleHitsCollection;
-
-  G4int CollectionID;
-  /*
-  CollectionID=SDM->GetCollectionID("/f_target_sd/TargetSD"); 
-  EddCollection =static_cast<GPTargetHitsCollection*>(HCE->GetHC(CollectionID));
-  if(EddCollection)
-    ProcessEdd(EddCollection);
-  */
-  
-  CollectionID=SDM->GetCollectionID("TargetParticleScorerZPlus"); 
-  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
-  if(particleHitsCollection)
-    ProcessParticleHits(particleHitsCollection,"target");
-
-  ///*
-  CollectionID=SDM->GetCollectionID("CaptureParticleScorerZPlus"); 
-  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
-  if(particleHitsCollection)
-    ProcessParticleHits(particleHitsCollection,"capture");
-
-  CollectionID=SDM->GetCollectionID("AcceleratorParticleScorerZPlus"); 
-  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
-  if(particleHitsCollection)
-    ProcessParticleHits(particleHitsCollection,"accelerator");
-   //*/
-
-  //print per event (modulo n)
-  //
-//  if (evtNb%iPrintModel == 0) 
-    if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
-    {
-    G4cout << "number of positron in this Event:"<<iNPositronPerEvt<<"\n"
-           << "Target: total energy: " << std::setw(7)<< G4BestUnit(dEnergyTar,"Energy")<<"\n"
-           << "total track length: " << std::setw(7)<< G4BestUnit(dTrackL,"Length")
-           << G4endl;
-    G4cout << "---------------> End of event: " << evtNb << " <--------------"<<G4endl;	
-
-	  
-    }
-
+//  GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
+//  runAct->FillPerEvent(dEnergyTar, dTrackL,iNPositronPerEvt);
+// // PEDD
+//  G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
+//  G4SDManager* SDM=G4SDManager::GetSDMpointer();
+//
+//  GPTargetHitsCollection* EddCollection;
+//  GPParticleHitsCollection* particleHitsCollection;
+//
+//  G4int CollectionID;
+//  /*
+//  CollectionID=SDM->GetCollectionID("/f_target_sd/TargetSD"); 
+//  EddCollection =static_cast<GPTargetHitsCollection*>(HCE->GetHC(CollectionID));
+//  if(EddCollection)
+//    ProcessEdd(EddCollection);
+//  */
+//  
+//  CollectionID=SDM->GetCollectionID("TargetParticleScorerZPlus"); 
+//  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
+//  if(particleHitsCollection)
+//    ProcessParticleHits(particleHitsCollection,"target");
+//
+//  ///*
+//  CollectionID=SDM->GetCollectionID("CaptureParticleScorerZPlus"); 
+//  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
+//  if(particleHitsCollection)
+//    ProcessParticleHits(particleHitsCollection,"capture");
+//
+//  CollectionID=SDM->GetCollectionID("AcceleratorParticleScorerZPlus"); 
+//  particleHitsCollection =static_cast<GPParticleHitsCollection*>(HCE->GetHC(CollectionID));
+//  if(particleHitsCollection)
+//    ProcessParticleHits(particleHitsCollection,"accelerator");
+//   //*/
+//
+//  //print per event (modulo n)
+//  //
+////  if (evtNb%iPrintModel == 0) 
+//    if (G4EventManager::GetEventManager()->GetVerboseLevel()>=1)
+//    {
+//    G4cout << "number of positron in this Event:"<<iNPositronPerEvt<<"\n"
+//           << "Target: total energy: " << std::setw(7)<< G4BestUnit(dEnergyTar,"Energy")<<"\n"
+//           << "total track length: " << std::setw(7)<< G4BestUnit(dTrackL,"Length")
+//           << G4endl;
+//    G4cout << "---------------> End of event: " << evtNb << " <--------------"<<G4endl;	
+//
+//	  
+//    }
+//
   //get number of stored trajectories
   G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
   if (trajectoryContainer) 
@@ -149,9 +128,6 @@ void GPEventAction::EndOfEventAction(const G4Event* evt)
     else if(evtNb<iTrajectoryFlag)
     GPTrajectoryAction::GetGPTrajectoryAction()->ProcessTrajectory(trajectoryContainer);
   }
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPEventAction::EndOfEventAction(const G4Event* )"<<G4endl;
-#endif
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

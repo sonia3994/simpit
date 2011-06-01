@@ -91,9 +91,9 @@ void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
       if(particleHitsCollection)
 	ProcessParticleHits(particleHitsCollection,it->second);
     }
-    if(runHandle)
+    else if(it->first=="G4PSEnergyDeposit")
     {
-      if(it->first=="G4PSEnergyDeposit")
+      if(runHandle)
       {
 	int iCollID = SDM->GetCollectionID(sSDName+"/"+it->second);
 	G4THitsMap<G4double>* pEnergyDepositMap
@@ -108,16 +108,21 @@ void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
 }
 void GPEventHandleGeneral::ProcessParticleHits(GPParticleHitsCollection* particleHitsCollection,std::string sCollectionName)
 {
-  GPRunAction* runAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
-  std::string sPath = runAct->GetDataPath();
-  int runID=runAct->GetRunID();
-  GPParticleHit* particleHit;
+  GPGeometryGeneral* geometry = 
+    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
+  GPSensitiveHandle* sdHandle = geometry->GetSensitiveHandle();
+  std::string sSDName = sdHandle->GetSDName();
+
+  GPRunAction* pRunAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
+  std::string sPath = pRunAct->GetDataPath();
+  int iRunID=pRunAct->GetRunID();
+  GPParticleHit* pParticleHit;
   std::stringstream ss;
-  std::string sFileName=sCollectionName;
-  std::string sRun;
-  ss<<runID;
-  ss>>sRun;
-  sFileName=sPath+"/"+sRun+sFileName+".dat";
+  std::string sFileName;
+  std::string sRunID;
+  ss<<iRunID;
+  ss>>sRunID;
+  sFileName=sPath+"/"+sRunID+sSDName+"_"+sCollectionName+".dat";
   std::ofstream ofs;
   ofs.open(sFileName.c_str(),std::ios::ate|std::ios::app);
   
@@ -139,21 +144,21 @@ void GPEventHandleGeneral::ProcessParticleHits(GPParticleHitsCollection* particl
   //std::cout<<"size: "<<numHit<<std::endl;
   for(size_t i=0;i!=numHit;i++)
   {
-    particleHit=static_cast<GPParticleHit*>(particleHitsCollection->GetHit(i));
-    iTrackID = particleHit->GetTrackID();
+    pParticleHit=static_cast<GPParticleHit*>(particleHitsCollection->GetHit(i));
+    iTrackID = pParticleHit->GetTrackID();
     if(iTrackID==iLastTrackID)	
     {
       continue;
     }
     iLastTrackID=iTrackID;
-    particleName = particleHit->GetParticleName();
-    vecPos = particleHit->GetPosition();
-    vecMom = particleHit->GetMomentum();
-    totalE = particleHit->GetTotalEnergy(); 
-    globalTime = particleHit->GetGlobalTime(); 
+    particleName = pParticleHit->GetParticleName();
+    vecPos = pParticleHit->GetPosition();
+    vecMom = pParticleHit->GetMomentum();
+    totalE = pParticleHit->GetTotalEnergy(); 
+    globalTime = pParticleHit->GetGlobalTime(); 
 
     vecTrackInf.clear();
-    vecTrackInf.push_back(particleHit->GetPDG());
+    vecTrackInf.push_back(pParticleHit->GetPDG());
     vecTrackInf.push_back(iEvtID);
     vecTrackInf.push_back(iTrackID);
     vecTrackInf.push_back(vecPos.x()*m/mm);

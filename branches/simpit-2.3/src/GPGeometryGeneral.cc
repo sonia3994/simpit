@@ -156,14 +156,15 @@ G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog,G4Thr
 void GPGeometryGeneral::Print()
 {
   G4cout
-    <<"[Geometry: "+GetName()+"]"
+    <<"\n[Begin Geometry: "+GetName()+"]"
     <<"\nSolid: "+sSolidType
-    <<"\nWidth of Geometry: "<<dWidth*m/mm<<" mm"
+    <<"\nMaterial: "+sMaterial
     <<"\nLength of Geometry: "<<dLength*m/mm<<" mm"
+    <<"\nWidth of Geometry: "<<dWidth*m/mm<<" mm"
     <<"\nHeight of Geometry: "<<dHeight*m/mm<<" mm"
     <<"\nStep Limit Flag of Geometry: "<<iStepLimitFlag
     <<"\nStep Limit of Geometry: "<<dStepLimit*m/mm<<" mm"
-    <<"\n["+GetName()+"]"
+    <<"\n[End Geometry: "+GetName()+"]"
     <<G4endl;
   sdHandle->Print();
   
@@ -296,14 +297,15 @@ G4double GPGeometryGeneral::GetParameter(std::string sKey, std::string sGlobal) 
 void GPGeometryGeneral::Print(std::ofstream& fstOutput)
 {
   fstOutput
-    <<"[Geometry: "+GetName()+"]"
+    <<"\n[Begin Geometry: "+GetName()+"]"
     <<"\nSolid: "+sSolidType
-    <<"\nWidth of Geometry: "<<dWidth*m/mm<<" mm"
+    <<"\nMaterial: "+sMaterial
     <<"\nLength of Geometry: "<<dLength*m/mm<<" mm"
+    <<"\nWidth of Geometry: "<<dWidth*m/mm<<" mm"
     <<"\nHeight of Geometry: "<<dHeight*m/mm<<" mm"
     <<"\nStep Limit Flag of Geometry: "<<iStepLimitFlag
     <<"\nStep Limit of Geometry: "<<dStepLimit*m/mm<<" mm"
-    <<"\n["+GetName()+"]"
+    <<"\n[End Geometry: "+GetName()+"]"
     <<G4endl;
   sdHandle->Print(fstOutput);
 }

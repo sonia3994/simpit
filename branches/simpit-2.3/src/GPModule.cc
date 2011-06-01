@@ -212,133 +212,75 @@ void GPModule::ConstructGeometryCompact(G4LogicalVolume* motherLog )
 }
 void GPModule::Print()
 {
-  std::cout<<"[Module: "+GetName()+"]"<<std::endl;
+  std::cout<<"\n[Begin Module: "+GetName()+"]";
   if(runHandle)
     runHandle->Print();
   else
-    std::cout<<"[Run Handle: Not Set]"<<std::endl;
+    std::cout<<"\n[Run Handle: Not Set]";
   if(eventHandle)
     eventHandle->Print();
   else
-    std::cout<<"[Event Handle: Not Set]"<<std::endl;
+    std::cout<<"\n[Event Handle: Not Set]";
   if(steppingHandle)
     steppingHandle->Print();
   else
-    std::cout<<"[Stepping Handle: Not Set]"<<std::endl;
+    std::cout<<"\n[Stepping Handle: Not Set]";
   if(geometry)
     geometry->Print();
   else
-    std::cout<<"[Geometry: Not Set]"<<std::endl;
+    std::cout<<"\n[Geometry: Not Set]";
   if(mChildModule.size()>0)
   {
     std::cout
-      <<"\n[Start Sub Module:]"<<std::endl;
+      <<"\n[Begin Sub Module: "+GetName()+"]";
     GPModuleMap::iterator it;
     for(it=mChildModule.begin();it!=mChildModule.end();it++)
     {
       if(int(iPrintRecursiveFlag)!=0)
 	(it->second)->Print();
       else
-	std::cout<<"["<<it->first<<"]\n";
+	std::cout<<"\n["<<it->first<<"]";
     }
     std::cout
-      <<"\n[End Sub Module:]"<<std::endl;
+      <<"\n[End Sub Module: "+GetName()+"]";
   }
-  std::cout<<"["+GetName()+"]"<<std::endl;
+  std::cout<<"\n[End Module: "+GetName()+"]"<<std::endl;
 }
 void GPModule::Print(std::ofstream &ofs)
 {
-  ofs<<"[Module: "+GetName()+"]"<<std::endl;
+  ofs<<"\n[Begin Module: "+GetName()+"]";
   if(runHandle)
-    runHandle->Print();
+    runHandle->Print(ofs);
   else
-    ofs<<"[Run Handle: Not Set]"<<std::endl;
+    ofs<<"\n[Run Handle: Not Set]";
   if(eventHandle)
-    eventHandle->Print();
+    eventHandle->Print(ofs);
   else
-    ofs<<"[Event Handle: Not Set]"<<std::endl;
+    ofs<<"\n[Event Handle: Not Set]";
   if(steppingHandle)
-    steppingHandle->Print();
+    steppingHandle->Print(ofs);
   else
-    ofs<<"[Stepping Handle: Not Set]"<<std::endl;
+    ofs<<"\n[Stepping Handle: Not Set]";
   if(geometry)
-    geometry->Print();
+    geometry->Print(ofs);
   else
-    ofs<<"[Geometry: Not Set]"<<std::endl;
+    ofs<<"\n[Geometry: Not Set]";
   if(mChildModule.size()>0)
   {
     ofs
-      <<"\n[Start Sub Module:]"<<std::endl;
-    GPModuleMap::iterator it;
-    for(it=mChildModule.begin();it!=mChildModule.end();it++)
-    {
-      if(int(iPrintRecursiveFlag)!=0)
-	(it->second)->Print();
-      else
-	ofs<<"["<<it->first<<"]\n";
-    }
-    ofs
-      <<"\n[End Sub Module:]"<<std::endl;
-  }
-  ofs<<"["+GetName()+"]"<<std::endl;
-  /*
-  std::string sGeoName;
-  std::string sSteppingName;
-  std::string sEventName;
-  std::string sRunName;
-  if(geometry)
-    sGeoName=geometry->GetName();
-  else 
-    sGeoName="Not set";
-
-  if(steppingHandle)
-    sSteppingName=steppingHandle->GetName();
-  else 
-    sSteppingName="Not set";
-
-  if(eventHandle)
-    sEventName=eventHandle->GetName();
-  else 
-    sEventName="Not set";
-  if(runHandle)
-    sRunName=runHandle->GetName();
-  else 
-    sRunName="Not set";
-
-  if(GetName()==GPModuleManager::GetInstance()->GetRootName())
-  {
-  ofs
-    <<"\n--------------------Begin Module tree-----------------------"
-    <<std::endl;
-  }
-  ofs
-    <<"\nModule: "<<GetName()
-    <<"\nGeometry Name: "<<sGeoName
-    <<"\nStepping Handle: "<<sSteppingName
-    <<"\nEvent Handle: "<<sEventName
-    <<"\nRun Handle: "<<sRunName
-    <<std::endl;
-  if(mChildModule.size()>0)
-  {
-    ofs
-      <<"\nSub Module:" 
-      <<std::endl;
+      <<"\n[Begin Sub Module:]";
     GPModuleMap::iterator it;
     for(it=mChildModule.begin();it!=mChildModule.end();it++)
     {
       if(int(iPrintRecursiveFlag)!=0)
 	(it->second)->Print(ofs);
       else
-	ofs<<it->first<<"\n";
+	ofs<<"\n["<<it->first<<"]";
     }
+    ofs
+      <<"\n[End Sub Module:]";
   }
-  if(GetName()==GPModuleManager::GetInstance()->GetRootName())
-  {
-  ofs
-    <<"\n--------------------End Module tree-----------------------"
-    <<std::endl;
-  }
-  */
+  ofs<<"\n[End Module: "+GetName()+"]"<<std::endl;
 }
 void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
 {
@@ -369,11 +311,13 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
     Print();
     return;
   }
+  else if(sKey=="print.recursive.flag")
+  {
+    iPrintRecursiveFlag=dValueNew;
+  }
   else if(sKey=="priority")
   {
     iPriority=dValueNew;
-    std::cout<<GetName()+": Set "+sKey<<": "<<dValueOrg<<std::endl;
-    return;
   }
   else if(sKey=="center.z")
   {
@@ -437,31 +381,30 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
   }
 
   Update();
-  ss.clear();
-  ss.str(sGlobal);
-  ss>>sKey;
-  std::cout<<"Set "<<sKey<<" to "<< dValueOrg<<" "<<sUnit<<std::endl;
+  std::cout<<GetName()<<": Set "<<sKey<<": "<< sValueOrg<<" "<<sUnit<<std::endl;
 }
 void GPModule::SetGeometry()
 {
+  std::string sChildName=GetName()+"geometry/";
   if(geometry)
   {
-    std::cout<<GetName()+"geometry/ has exist in: "+GetName()+". just return."<<std::endl; 
+    std::cout<<GetName()+": Add geometry handle: [Fatal; geometry handle has exist]"<<std::endl; 
     return;
   }
-  std::cout<<GetName()+"geometry/ to be added to: "+GetName()<<std::endl; 
-  std::string sChildName=GetName()+"geometry/";
+  std::cout<<GetName()+": Add geometry handle: "+sChildName<<std::endl; 
   geometry = new GPGeometryGeneral(sChildName,GetName());
 }
 void GPModule::DelGeometry()
 {
+  std::string sChildName=GetName()+"geometry/";
   if(geometry)
   {
-    std::cout<<GetName()+"geometry/ to be delete."<<std::endl; 
+    std::cout<<GetName()+": Delete geometry handle: "+sChildName<<std::endl; 
     delete geometry;
+    geometry=NULL;
     return;
   }
-  std::cout<<GetName()+"geometry/ does not exist in: "+GetName()<<std::endl; 
+  std::cout<<GetName()+": Delete geometry handle: [Fatal; geometry handle does not exsit]"<<std::endl; 
 }
 void GPModule::SetSteppingHandle()
 {
@@ -471,45 +414,49 @@ void GPModule::DelSteppingHandle()
 }
 void GPModule::SetEventHandle()
 {
+  std::string sChildName=GetName()+"event/";
   if(eventHandle)
   {
-    std::cout<<GetName()+"event/ has exist in: "+GetName()+". just return."<<std::endl; 
+    std::cout<<GetName()+": Add event handle: [Fatal; event handle has exist]"<<std::endl; 
     return;
   }
-  std::cout<<GetName()+"event/ to be added to: "+GetName()<<std::endl; 
-  std::string sChildName=GetName()+"event/";
+  std::cout<<GetName()+": Add event handle: "+sChildName<<std::endl; 
   eventHandle = new GPEventHandleGeneral(sChildName,GetName());
 }
 void GPModule::DelEventHandle()
 {
+  std::string sChildName=GetName()+"event/";
   if(eventHandle)
   {
-    std::cout<<GetName()+"event/ to be delete."<<std::endl; 
+    std::cout<<GetName()+": Delete event handle: "+sChildName<<std::endl; 
     delete eventHandle;
+    eventHandle=NULL;
     return;
   }
-  std::cout<<GetName()+"event/ does not exist in: "+GetName()<<std::endl; 
+  std::cout<<GetName()+": Delete event handle: [Fatal; event handle does not exsit]"<<std::endl; 
 }
 void GPModule::SetRunHandle()
 {
+  std::string sChildName=GetName()+"run/";
   if(runHandle)
   {
-    std::cout<<GetName()+"run/ has exist in: "+GetName()+". just return."<<std::endl; 
+    std::cout<<GetName()+": Add run handle: [Fatal; run handle has exist]"<<std::endl; 
     return;
   }
-  std::cout<<GetName()+"run/ to be added to: "+GetName()<<std::endl; 
-  std::string sChildName=GetName()+"run/";
+  std::cout<<GetName()+": Add run handle: "+sChildName<<std::endl; 
   runHandle = new GPRunHandleGeneral(sChildName,GetName());
 }
 void GPModule::DelRunHandle()
 {
+  std::string sChildName=GetName()+"run/";
   if(runHandle)
   {
-    std::cout<<GetName()+"run/ to be delete."<<std::endl; 
+    std::cout<<GetName()+": Delete run handle: "+sChildName<<std::endl; 
     delete runHandle;
+    runHandle=NULL;
     return;
   }
-  std::cout<<GetName()+"run/ does not exist in: "+GetName()<<std::endl; 
+  std::cout<<GetName()+": Delete run handle: [Fatal; run handle does not exsit]"<<std::endl; 
 }
 void GPModule::AddChild(std::string sValue)
 {
@@ -517,10 +464,10 @@ void GPModule::AddChild(std::string sValue)
   GPModuleMap::iterator it= mChildModule.find(sChildName);
   if(it!=mChildModule.end()) 
   {
-    std::cout<<sChildName+" has exist in: "+GetName()+". just return."<<std::endl; 
+    std::cout<<GetName()+": Add child: [Fatal; this child has exist]"<<std::endl; 
     return;
   }
-  std::cout<<sChildName+": to be added to: "+GetName()<<std::endl; 
+  std::cout<<GetName()+": Add child: "+sChildName<<std::endl; 
   GPModule* modu = new GPModule(sChildName,GetName());
   AddChild(modu);
 }
@@ -530,11 +477,12 @@ void GPModule::DelChild(std::string sValue)
   GPModuleMap::iterator it= mChildModule.find(sChildName);
   if(it!=mChildModule.end())
   {
-    std::cout<<sChildName+": to be delete."<<std::endl; 
+    std::cout<<GetName()+": Delete child: "+sChildName<<std::endl; 
     delete it->second;
+    it->second=NULL;
     mChildModule.erase(sChildName);
     return;
   }
-  std::cout<<sChildName+" does not exist in: "+GetName()<<std::endl; 
+  std::cout<<GetName()+": Delete child: [Fatal; this child does not exsit]"<<std::endl; 
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
