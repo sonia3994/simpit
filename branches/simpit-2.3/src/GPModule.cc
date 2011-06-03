@@ -113,11 +113,12 @@ G4VPhysicalVolume* GPModule::ConstructGeometry(G4LogicalVolume* motherLog)
 void GPModule::ConstructGeometryNormal(G4LogicalVolume* motherLog)
 {
   GPModuleMap::iterator itMod;
-  GPGeometry* geometry;
+  GPGeometry* pDautherGeometry;
   for(itMod=mChildModule.begin();itMod!=mChildModule.end();itMod++)
   {
-    geometry=(GPGeometry*)(itMod->second)->FindObject("geometry");
-    if((itMod->second)->IsActive()&&geometry!=NULL)
+    pDautherGeometry=(GPGeometry*)(itMod->second)->FindObject("geometry");
+    if((itMod->second)->IsActive()&&pDautherGeometry!=NULL)
+      pDautherGeometry->SetMotherPositionInGlobalFrame(geometry->GetPositionInGlobalFrame());
       (itMod->second)->ConstructGeometry(motherLog);
   }
 }
@@ -125,7 +126,7 @@ void GPModule::ConstructGeometryCompact(G4LogicalVolume* motherLog )
 {
   GPModuleMap::iterator itMod;
   GPModule* module;
-  GPGeometry* geometry;
+  GPGeometry* pDautherGeometry;
   GPModule* moduleCenter=NULL;
   std::multimap<int,GPModule*> mIntGPModulePos;
   std::multimap<int,GPModule*>::iterator mIntModIt;
@@ -136,8 +137,8 @@ void GPModule::ConstructGeometryCompact(G4LogicalVolume* motherLog )
   for(itMod=mChildModule.begin();itMod!=mChildModule.end();itMod++)
   {
     module=itMod->second;
-    geometry=(GPGeometry*)module->FindObject("geometry");
-    if(module->IsActive()&&geometry!=NULL)
+    pDautherGeometry=(GPGeometry*)module->FindObject("geometry");
+    if(module->IsActive()&&pDautherGeometry!=NULL)
     {
       iPriTmp=module->GetPriority();
       if(iPriTmp>0)
@@ -177,8 +178,9 @@ void GPModule::ConstructGeometryCompact(G4LogicalVolume* motherLog )
     }
   }
 
-  ((GPGeometry*) moduleCenter->FindObject("geometry"))
-    ->SetPosition(vCenterChildPosition);
+  pDautherGeometry=(GPGeometry*)moduleCenter->FindObject("geometry");
+  pDautherGeometry->SetPosition(vCenterChildPosition);
+  pDautherGeometry->SetMotherPositionInGlobalFrame(geometry->GetPositionInGlobalFrame());
   moduleCenter->ConstructGeometry(motherLog);
 
   G4ThreeVector vItPoint=vCenterChildPosition;
@@ -190,8 +192,9 @@ void GPModule::ConstructGeometryCompact(G4LogicalVolume* motherLog )
     dCurGeoHalfLength=module->FindObject("geometry")->GetParameter("length","length")/2;
     vItPoint.setZ(vItPoint.z()+dPreGeoHalfLength+dCurGeoHalfLength);
     dPreGeoHalfLength=dCurGeoHalfLength;
-    ((GPGeometry*) module->FindObject("geometry"))
-      ->SetPosition(vItPoint);
+    pDautherGeometry=(GPGeometry*)module->FindObject("geometry");
+    pDautherGeometry->SetPosition(vItPoint);
+    pDautherGeometry->SetMotherPositionInGlobalFrame(geometry->GetPositionInGlobalFrame());
     module->ConstructGeometry(motherLog);
   }
 
@@ -204,8 +207,9 @@ void GPModule::ConstructGeometryCompact(G4LogicalVolume* motherLog )
     dCurGeoHalfLength=-(module->FindObject("geometry")->GetParameter("length","length")/2);
     vItPoint.setZ(vItPoint.z()+dPreGeoHalfLength+dCurGeoHalfLength);
     dPreGeoHalfLength=dCurGeoHalfLength;
-    ((GPGeometry*) module->FindObject("geometry"))
-      ->SetPosition(vItPoint);
+    pDautherGeometry=(GPGeometry*)module->FindObject("geometry");
+    pDautherGeometry->SetPosition(vItPoint);
+    pDautherGeometry->SetMotherPositionInGlobalFrame(geometry->GetPositionInGlobalFrame());
     module->ConstructGeometry(motherLog);
   }
   //G4cout<<"GP_DEBUG: Exit GPModule::ConstructGeometryCompact(G4LogicalVolume*): Object Name: "<<GetName()<<G4endl;

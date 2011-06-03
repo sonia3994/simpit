@@ -10,3 +10,15 @@ GPGeometry::GPGeometry()
 {}
 GPGeometry::~GPGeometry()
 {}
+void GPGeometry::SetPosition(G4ThreeVector pos)
+{
+  vPosition = pos;
+}
+void GPGeometry::SetMotherPositionInGlobalFrame(G4ThreeVector pos)
+{
+  vPositionInGlobalFrame=pos+vPosition;
+}
+G4ThreeVector GPGeometry::GetPositionInGlobalFrame()
+{
+  return vPositionInGlobalFrame;
+}

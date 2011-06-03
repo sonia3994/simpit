@@ -49,9 +49,9 @@ GPTargetROGeometry::~GPTargetROGeometry()
 void GPTargetROGeometry::Init()
 {
 
-  dExpHall_x = 120.e-3;
-  dExpHall_y = 120.e-3;
-  dExpHall_z = 120.e-3;
+  dExpHall_x = 10.0;
+  dExpHall_y = 10.0;
+  dExpHall_z = 10.0;
 
   //dTargetBox_x=25e-3;
   //dTargetBox_y=25e-3;
@@ -118,7 +118,7 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 		  0, 0, 0);
 
   G4PVPlacement *targetROPhys = new G4PVPlacement(0,
-		  G4ThreeVector(),
+		  vPos*m,
 		  name+"_targetROPhysical",
 		  targetROLog,
 		  ROWorldPhys,
@@ -189,4 +189,8 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 
   return ROWorldPhys;
   
+}
+void GPTargetROGeometry::SetPosition(G4ThreeVector pos)
+{
+  vPos = pos;
 }

@@ -4,6 +4,7 @@
 #include "GPSensitiveHandle.hh"
 #include "GPSurfaceParticleScorer.hh"
 #include "GPGeometryStore.hh"
+#include "GPGeometry.hh"
 #include "GPTargetSD.hh"
 #include "GPTargetROGeometry.hh"
 
@@ -155,6 +156,9 @@ void GPSensitiveHandle::SetSensitiveDet(G4LogicalVolume* motherLog)
          
 void GPSensitiveHandle::SetBoxCellSD(G4LogicalVolume* motherLog)
 {
+  GPGeometry* geometry = 
+    (GPGeometry*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName());
+
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   std::string  targetROName=GetName()+"readout/";
   std::replace(targetROName.begin(),targetROName.end(),'/','_');
@@ -179,6 +183,7 @@ void GPSensitiveHandle::SetBoxCellSD(G4LogicalVolume* motherLog)
     delete targetRO;
 
   targetRO=new GPTargetROGeometry(targetROName, dReadOutX, dReadOutY, dReadOutZ, vDim);
+  targetRO->SetPosition(geometry->GetPositionInGlobalFrame());
 
   targetRO->BuildROGeometry();
   targetSD->SetROgeometry(targetRO);  

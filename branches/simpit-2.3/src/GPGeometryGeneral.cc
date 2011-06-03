@@ -41,6 +41,7 @@ GPGeometryGeneral::GPGeometryGeneral(std::string sName, std::string sFatherName)
 
   sdHandle = new GPSensitiveHandle(GetName()+"sd/",GetName());
   vPosition = G4ThreeVector(0,0,0) ;
+  vPositionInGlobalFrame = G4ThreeVector(0,0,0) ;
   sSolidType ="G4Box";
   sBaseNameChild = "-"+GetName();
   std::replace(sBaseNameChild.begin(),sBaseNameChild.end(),'/','_');
@@ -159,6 +160,8 @@ void GPGeometryGeneral::Print()
     <<"\n[Begin Geometry: "+GetName()+"]"
     <<"\nSolid: "+sSolidType
     <<"\nMaterial: "+sMaterial
+    <<"\nLocal Position(m): "<<vPosition
+    <<"\nGlobal Position(m): "<<vPositionInGlobalFrame
     <<"\nLength of Geometry: "<<dLength*m/mm<<" mm"
     <<"\nWidth of Geometry: "<<dWidth*m/mm<<" mm"
     <<"\nHeight of Geometry: "<<dHeight*m/mm<<" mm"
@@ -300,6 +303,8 @@ void GPGeometryGeneral::Print(std::ofstream& fstOutput)
     <<"\n[Begin Geometry: "+GetName()+"]"
     <<"\nSolid: "+sSolidType
     <<"\nMaterial: "+sMaterial
+    <<"\nLocal Position(m): "<<vPosition
+    <<"\nGlobal Position(m): "<<vPositionInGlobalFrame
     <<"\nLength of Geometry: "<<dLength*m/mm<<" mm"
     <<"\nWidth of Geometry: "<<dWidth*m/mm<<" mm"
     <<"\nHeight of Geometry: "<<dHeight*m/mm<<" mm"

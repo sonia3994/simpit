@@ -25,12 +25,15 @@ class GPGeometry : public GPObject
     virtual G4VPhysicalVolume* Construct(G4LogicalVolume*){return NULL;};
     int GetPriority(){return iPriority;};
     void SetPriority(int i){iPriority=i;};
-    void SetPosition(G4ThreeVector pos){vPosition=pos;};
+    void SetPosition(G4ThreeVector);
+    G4ThreeVector GetPositionInGlobalFrame();
+    void SetMotherPositionInGlobalFrame(G4ThreeVector);
     void SetCompactRanger(int i){iCompactRangerFlag=i;};
     int GetCompactRanger(){return iCompactRangerFlag;};
   protected:
 
     G4ThreeVector vPosition;
+    G4ThreeVector vPositionInGlobalFrame;
     int iCompactRangerFlag;
     int iPriority;
 
