@@ -122,9 +122,6 @@ G4VPhysicalVolume* GPGranularHexagonGeometry::Construct(G4LogicalVolume* motherL
 }
 G4VPhysicalVolume* GPGranularHexagonGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPGranularHexagonGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
-#endif
 
   Init();
 
@@ -153,9 +150,6 @@ G4VPhysicalVolume* GPGranularHexagonGeometry::Construct(G4LogicalVolume* motherL
     SetTargetHit(targetLog);
   return targetPhys;
 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPGranularHexagonGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
-#endif
 }
 
 void GPGranularHexagonGeometry::GranularHexagonalInit()

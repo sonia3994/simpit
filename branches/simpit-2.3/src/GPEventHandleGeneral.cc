@@ -108,21 +108,20 @@ void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
 }
 void GPEventHandleGeneral::ProcessParticleHits(GPParticleHitsCollection* particleHitsCollection,std::string sCollectionName)
 {
-  GPGeometryGeneral* geometry = 
-    (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
-  GPSensitiveHandle* sdHandle = geometry->GetSensitiveHandle();
-  std::string sSDName = sdHandle->GetSDName();
 
   GPRunAction* pRunAct = (GPRunAction*)G4RunManager::GetRunManager()->GetUserRunAction(); 
   std::string sPath = pRunAct->GetDataPath();
   int iRunID=pRunAct->GetRunID();
   GPParticleHit* pParticleHit;
+
+  std::string sFatherName = GetFatherName();
+  replace(sFatherName.begin(),sFatherName.end(),'/','-');
   std::stringstream ss;
-  std::string sFileName;
   std::string sRunID;
+  std::string sFileName;
   ss<<iRunID;
   ss>>sRunID;
-  sFileName=sPath+"/"+sRunID+sSDName+"_"+sCollectionName+".dat";
+  sFileName=sPath+"/"+sRunID+sFatherName+"GPSurfaceParticleScorer.dat";
   std::ofstream ofs;
   ofs.open(sFileName.c_str(),std::ios::ate|std::ios::app);
   

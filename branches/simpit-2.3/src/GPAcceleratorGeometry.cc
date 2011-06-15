@@ -71,8 +71,7 @@ GPAcceleratorGeometry::~GPAcceleratorGeometry()
  //GPObject* object = (GPObject*)GPFieldSetup::GetGPFieldSetup()->FindFieldManagerPool(GetName()+"field/");
  //if(object)
     //((GPObject*)fieldManagerPool)->SetActive(0);
-    fieldManagerPool->SetActive(0);
-
+    fieldManagerPool->SetActive(0); 
   GPGeometryStore::GetInstance()->EraseItem(GetName());
 }
 
@@ -86,9 +85,6 @@ G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog)
 }
 G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog,G4ThreeVector point)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPAcceleratorGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
-#endif
 
   vPosition = point;
   Init();
@@ -123,9 +119,6 @@ G4VPhysicalVolume* GPAcceleratorGeometry::Construct(G4LogicalVolume* motherLog,G
 
   return acceleratorPhys;
 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPAcceleratorGeometry::Construct(G4LogicalVolume,G4ThreeVector)"<<G4endl;
-#endif
 }
 
 

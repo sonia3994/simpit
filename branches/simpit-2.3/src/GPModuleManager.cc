@@ -95,9 +95,9 @@ void GPModuleManager::ConstructRoot()
   worldModule = new GPModule(sRootName,"");
   worldModule->SetPriority(0);
   GPGeometryGeneral* geometry = new GPGeometryGeneral(sRootName+"geometry/",sRootName);
-  geometry->SetParameter("width 2 m","width 2 m");
-  geometry->SetParameter("length 10 m","length 10 m");
-  geometry->SetParameter("height 2 m","height 2 m");
+  geometry->SetParameter("solid.width 2 m","solid.width 2 m");
+  geometry->SetParameter("solid.length 10 m","solid.length 10 m");
+  geometry->SetParameter("solid.height 2 m","solid.height 2 m");
   worldModule ->SetObject("geometry",geometry);
 }
 void GPModuleManager::ConstructCrystal()

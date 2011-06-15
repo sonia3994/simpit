@@ -9,8 +9,13 @@
 #include "GPGeometryStore.hh"
 #include "GPSensitiveHandle.hh"
 #include "GPTargetSD.hh"
+#include "GPRunAction.hh"
+
 #include "G4Run.hh"
 #include "G4SDManager.hh"
+#include "G4RunManager.hh"
+
+#include <algorithm>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPRunHandleGeneral::GPRunHandleGeneral(std::string sName, std::string sFatherName)
@@ -68,6 +73,16 @@ void  GPRunHandleGeneral::BeginOfRunAction(const G4Run* run)
 void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
 {
   iRunID=run->GetRunID();
+  GPRunAction* pRunAct = (GPRunAction*) G4RunManager::GetRunManager()->GetUserRunAction();
+  std::string sPath = pRunAct->GetDataPath();
+  std::string sFatherName=GetFatherName();
+  replace(sFatherName.begin(),sFatherName.end(),'/','-');
+  std::stringstream ss;
+  std::string sRunID;
+  std::ofstream ofs;
+  ss<<iRunID;
+  ss>>sRunID;
+
   GPGeometryGeneral* geometry = 
     (GPGeometryGeneral*)GPGeometryStore::GetInstance()->FindGeometry(GetFatherName()+"geometry/");
   if(geometry==NULL)
@@ -79,6 +94,7 @@ void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
   std::string sSDName = sdHandle->GetSDName();
   if(sSDType=="GPTargetSD")
   {
+    ofs.open((sPath+"/"+sRunID+sFatherName+"GPTargetSD.dat").c_str());
     GPTargetSD* targetSD = (GPTargetSD*)G4SDManager::GetSDMpointer()->FindSensitiveDetector(sSDName);
     size_t iCellNumX,  iCellNumY, iCellNumZ, iIndex;
 
@@ -92,6 +108,7 @@ void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
 	for(size_t k=0;k!=iCellNumZ;k++)
 	{
 	  iIndex=k*iCellNumX*iCellNumY+j*iCellNumX+i;
+	  ofs<<" "<<j<<" "<<k<<" "<<vDouble[iIndex]<<"\n";
 	  std::cout<<i<<" "<<j<<" "<<k<<" "<<vDouble[iIndex]<<"\n";
 	}
       }
@@ -102,21 +119,26 @@ void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
 
   else if(sSDType=="G4MultiFunctionalDetector")
   {
+    ofs.open((sPath+"/"+sRunID+sFatherName+"G4MultiFunctional.dat").c_str());
     std::map<std::string,G4THitsMap<G4double>* >::iterator itStrTHit;
     for(itStrTHit = mStrG4THitsMap.begin();itStrTHit!=mStrG4THitsMap.end();itStrTHit++)
     {
+      ofs<<"Value Type: "<<itStrTHit->first<<std::endl;
+      ofs<<"Key	Value"<<std::endl;
       std::cout<<"Value Type: "<<itStrTHit->first<<std::endl;
       std::cout<<"Key	Value"<<std::endl;
       std::map<G4int,G4double*>::iterator itTHit 
 	= (itStrTHit->second)->GetMap()->begin();
       for(;itTHit!=(itStrTHit->second)->GetMap()->end();itTHit++)
       {
+	ofs<<itTHit->first<<"	"<<*(itTHit->second)<<std::endl;
 	std::cout<<itTHit->first<<"	"<<*(itTHit->second)<<std::endl;
       }
       delete itStrTHit->second;
     }
     mStrG4THitsMap.clear();
   }
+  ofs.close();
 }
 void  GPRunHandleGeneral::RecordPerEvent(std::string sKey,G4THitsMap<G4double>* pMap)
 {

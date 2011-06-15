@@ -34,7 +34,7 @@ GPModuleManagerMessenger::GPModuleManagerMessenger()
   setParameterCmd->SetParameterName("choice",false);
   setParameterCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
-  updateCmd = new G4UIcmdWithoutParameter("/GP/Module/update",this);
+  updateCmd = new G4UIcmdWithoutParameter("/GP/Module/Update",this);
   updateCmd->SetGuidance("Update Module");
   updateCmd->SetGuidance("This command MUST be applied before \"/run/beamOn\" ");
   updateCmd->SetGuidance("if you changed geometrical value(s).");

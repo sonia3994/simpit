@@ -77,7 +77,11 @@ void GPSensitiveHandle::SetParameter(std::string str,std::string strGlobal)
       dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
     else dValueNew=dValueOrg;
 
-    if(sKey=="readout.x")
+    if(sKey=="active")
+      SetActive(1);
+    else if(sKey=="inactive")
+      SetActive(0);
+    else if(sKey=="readout.x")
       dReadOutX = dValueNew;
     else if(sKey=="readout.y")
       dReadOutY = dValueNew;
@@ -89,12 +93,12 @@ void GPSensitiveHandle::SetParameter(std::string str,std::string strGlobal)
       dCellY = dValueNew;
     else if(sKey=="readout.cell.z")
       dCellZ = dValueNew;
-    else if(sKey=="sd.type")
+    else if(sKey=="type")
     {
       SetSensitiveDetType(sValue);
       return;
     }
-    else if(sKey=="sd.scorer")
+    else if(sKey=="scorer")
     {
       AddPrimitiveScorer(sValue,sUnit);
       return;

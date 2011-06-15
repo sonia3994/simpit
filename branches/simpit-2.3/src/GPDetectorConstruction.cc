@@ -52,9 +52,6 @@ GPDetectorConstruction::GPDetectorConstruction():
   sweeperPhys(0),
   worldBox(0),worldLog(0),worldPhys(0)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::GPDetectorConstruction()"<<G4endl;
-#endif
   GPFieldSetup* fieldSetup = GPFieldSetup::GetGPFieldSetup();
   GPModuleManager::GetInstance()->ConstructModule();
   crystalGeometry = (GPCrystalGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/crystal/geometry/");
@@ -71,25 +68,16 @@ GPDetectorConstruction::GPDetectorConstruction():
   SetWorldMaterial ("G4_Galactic");
 
   detectorMessenger = new GPDetectorMessenger(this);
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::GPDetectorConstruction()"<<G4endl;
-#endif
 
 }
 
 GPDetectorConstruction::~GPDetectorConstruction()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::~GPDetectorConstruction()"<<G4endl;
-#endif
   if(detectorMessenger) 	delete detectorMessenger;
   GPFieldSetup::DestroyGPFieldSetup();
   if(Vacuum) 				delete Vacuum;
   if(W) 					delete W;
   GPModuleManager::GetInstance()->Delete();
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::~GPDetectorConstruction()"<<G4endl;
-#endif
 }
 
 G4VPhysicalVolume* GPDetectorConstruction::Construct()
@@ -99,48 +87,12 @@ G4VPhysicalVolume* GPDetectorConstruction::Construct()
 
 G4VPhysicalVolume* GPDetectorConstruction::ConstructPositronResource()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPDetectorConstruction::ConstructPositronResource()"<<G4endl;
-#endif
   G4GeometryManager::GetInstance()->OpenGeometry();
   G4PhysicalVolumeStore::GetInstance()->Clean();
   G4LogicalVolumeStore::GetInstance()->Clean();
   G4SolidStore::GetInstance()->Clean();
 
-  //------------------------------ world
-  //worldBox = new G4Box("worldBox",m*dWorldX/2,m*dWorldY/2,m*dWorldZ/2);
-  //worldLog = new G4LogicalVolume(worldBox,worldMaterial,"worldLog");
-  //worldPhys = new G4PVPlacement(0,G4ThreeVector(),worldLog,"world",0,false,0);
-  //GPGeometryManager::GetInstance()->ConstructGeometry(worldLog,G4ThreeVector(0,0,0));
-  //GPModuleStore::GetInstance()->FindModule(GPModuleManager::GetInstance()->GetRootName())
-  //->ConstructGeometry(worldLog,G4ThreeVector(0,0,0));
   worldPhys = GPModuleManager::GetInstance()->ConstructGeometry();
-  //GPModuleManager::GetInstance()->Print();
-  //ConstructTarget();
-  /*
-     G4double pz;
-     G4ThreeVector vecTarPosition(0,0,0);
-     pz = vecTarPosition.z()+targetGeometry->GetParameter("gz","")/2+captureGeometry->GetParameter("l","")/2;
-     G4ThreeVector vecCapPosition(0,0,pz);
-     pz = vecCapPosition.z()+captureGeometry->GetParameter("l","")/2+acceleratorGeometry->GetParameter("l","")/2;
-     G4ThreeVector vecAccPosition(0,0,pz);
-
-     pz = vecTarPosition.z()-targetGeometry->GetParameter("gz","")/2-sweeperGeometry->GetParameter("l","")/2;
-     G4ThreeVector vecSwpPosition(0,0,pz);
-     pz = vecSwpPosition.z()-sweeperGeometry->GetParameter("l","")/2-crystalGeometry->GetParameter("l","")/2;
-     G4ThreeVector vecCryPosition(0,0,pz);
-
-     targetPhys = targetGeometry->Construct(worldLog,vecTarPosition);
-     capturePhys = captureGeometry->Construct(worldLog,vecCapPosition);
-     acceleratorPhys = acceleratorGeometry->Construct(worldLog,vecAccPosition);
-     sweeperPhys = sweeperGeometry->Construct(worldLog,vecSwpPosition);
-     crystalGeometry->Construct(worldLog,vecCryPosition);
-     */
-  //always return the physical World
-  //
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPDetectorConstruction::ConstructPositronResource()"<<G4endl;
-#endif
 
   return worldPhys;
 }

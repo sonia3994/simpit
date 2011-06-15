@@ -26,9 +26,6 @@
 
 GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()"<<G4endl;
-#endif
 
   dPositionMean=0.0e-3;
   dPositionRMS=2.0e-3;
@@ -66,32 +63,20 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
   crystalGenerator = new GPCrystalPrimaryGA();
   bHEPEvtFlag = false;
   iGeneratorType = 0;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()"<<G4endl;
-#endif
 }
 
 GPPrimaryGeneratorAction::~GPPrimaryGeneratorAction()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPPrimaryGeneratorAction::~GPPrimaryGeneratorAction()"<<G4endl;
-#endif
   if(particleGun) delete particleGun;
 //  if(randGauss) delete randGauss;// we should not free randGausss, but why????
 //  if(randFlat) delete randFlat;
   if(primaryMessenger) delete primaryMessenger;
   if(HEPEvt) delete HEPEvt;
   if(crystalGenerator) delete crystalGenerator;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::~GPPrimaryGeneratorAction()"<<G4endl;
-#endif
 }
 
 void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPPrimaryGeneratorAction::GeneratePrimaries(G4Event*)"<<G4endl;
-#endif
   //if(bHEPEvtFlag)
   if(iGeneratorType==0)
     { 
@@ -144,9 +129,6 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     
   particleGun->GeneratePrimaryVertex(anEvent);
 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorAction::GeneratePrimaries(G4Event*)"<<G4endl;
-#endif
 }
 
 void GPPrimaryGeneratorAction::GeneratePrimariesFixedParticleGun(G4Event* anEvent)

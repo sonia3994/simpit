@@ -1,0 +1,62 @@
+//
+// $Id: GPHexagonalSolid.hh,v 1.6 2006/06/29 17:47:13 gunter Granular $
+// GEANT4 tag $Name: geant4-09-02 $
+//
+
+#ifndef GPHEXAGONALSOLID_H
+#define GPHEXAGONALSOLID_H 1
+#include "G4ThreeVector.hh"
+#include "GPComplexSolid.hh"
+#include <string>
+#include <vector>
+
+class G4LogicalVolume;
+class G4VPhysicalVolume;
+class G4Material;
+class GPSolidManager;
+
+
+class GPHexagonalSolid : public GPComplexSolid
+{
+  public:
+
+    GPHexagonalSolid(std::string sFirst, std::string sSecond);
+    ~GPHexagonalSolid();
+
+    void Construct(G4LogicalVolume*, GPSolidManager*, G4ThreeVector vPoint = G4ThreeVector());
+
+    void SetParameter(std::string, std::string);
+    G4double GetParameter(std::string,std::string) const;
+    void Print();
+    void Print(std::ofstream&);
+
+
+  protected:
+    void GranularHexagonal(G4LogicalVolume*);
+    void GranularHexagonalCell(G4LogicalVolume* ,G4ThreeVector ,long );
+    void SetMaterial(std::string);
+    void Init();
+
+  private:
+    
+    G4Material* pMaterial;
+    std::string  sMaterial;
+    std::string  sBaseName;
+    G4ThreeVector vPosition;
+    G4double dSphereRadius;
+    G4double dGlobalSolidX;
+    G4double dGlobalSolidY;
+    G4double dGlobalSolidZ;
+    G4double dCellWidthX;
+    G4double dCellWidthY;
+    G4double dCellWidthZ;
+    G4int    iCellNumberX;
+    G4int    iCellNumberY;
+    G4int    iCellNumberZ;
+
+    G4double dIndexPoint;
+
+};
+
+#endif
+

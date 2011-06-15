@@ -18,8 +18,10 @@ class G4Material;
 class G4VisAttributes;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
-class G4FieldManager;
+class GPFieldManagerPool;
+class GPSolidManager;
 class GPSensitiveHandle;
+class GPComplexSolid;
 
 class GPGeometryGeneral : public GPGeometry
 {
@@ -35,31 +37,27 @@ class GPGeometryGeneral : public GPGeometry
     double GetParameter(std::string, std::string) const;
     void Print();
     GPSensitiveHandle* GetSensitiveHandle() const;
+    GPSolidManager* GetSolidManager() const;
     void Print(std::ofstream& );
     void Update();
   protected:
-    G4VSolid* ConstructSolid();
-    void SetSolidType(std::string);
     void SetMaterial(std::string);
   protected:
     void Init();
   private:
-    GPSensitiveHandle* sdHandle;
-    G4VSolid* solid;
-    G4LogicalVolume* logicalVolume;
-    G4VPhysicalVolume* physicalVolume;
-    G4Material* material;
-    G4FieldManager* fieldManager;
-    G4VisAttributes* visAttributes;
-    std::string   sSolidType;
+    GPSensitiveHandle* pSdHandle;
+    GPSolidManager* pSolidManager;
+    GPFieldManagerPool* pFieldManagerPool;
+    GPComplexSolid* pComplexSolid;
+
+    G4VSolid* pSolid;
+    G4LogicalVolume* pLogicalVolume;
+    G4VPhysicalVolume* pPhysicalVolume;
+    G4Material* pMaterial;
+    G4VisAttributes* pVisAttributes;
+
     std::string   sBaseNameChild;
     std::string   sMaterial;
-    double dLength;
-    double dWidth;
-    double dHeight;
-    double dRadiusInner;
-    double dAngleStart;
-    double dAngleEnd;
     double dStepLimit;
     int iStepLimitFlag;
     int iHitFlag;
