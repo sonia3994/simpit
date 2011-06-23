@@ -22,6 +22,7 @@ class GPModuleManager
     static GPModuleManager* GetInstance();
     static void Delete();
     void ConstructModule();
+    GPModule* FindAndBuildModule(std::string,std::string,std::string);
     G4VPhysicalVolume* ConstructGeometry();
     void ClearModule();
     void Print();

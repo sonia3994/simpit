@@ -6,6 +6,7 @@
 #include "GPRunHandleManager.hh"
 #include "GPRunHandleStore.hh"
 #include "GPRunHandle.hh"
+#include "GPRunHandleGeneral.hh"
 #include "GPModuleStore.hh"
 #include "GPModule.hh"
 #include "G4Run.hh"
@@ -64,6 +65,16 @@ void GPRunHandleManager::EndOfRunAction(const G4Run* run)
     if(module->IsActive()&&runHandle->IsActive())
       runHandle->EndOfRunAction(run);
   }
+}
+GPRunHandle* GPRunHandleManager::FindAndBuildRunHandle(std::string sType,std::string sName,std::string sFather)
+{
+  GPRunHandle* pRunHandle;
+  if(sType=="GPRunHandleGeneral")
+    pRunHandle = new GPRunHandleGeneral(sName,sFather);
+  else
+    pRunHandle = NULL;
+
+  return pRunHandle;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

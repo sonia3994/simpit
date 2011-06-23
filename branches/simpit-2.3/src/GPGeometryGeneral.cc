@@ -314,6 +314,10 @@ GPSensitiveHandle* GPGeometryGeneral::GetSensitiveHandle()const
 {
   return pSdHandle;
 }
+GPComplexSolid* GPGeometryGeneral::GetComplexSolid()const
+{
+  return pComplexSolid;
+}
 GPSolidManager* GPGeometryGeneral::GetSolidManager() const
 {
   return pSolidManager;

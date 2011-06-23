@@ -9,7 +9,9 @@
 #ifndef GPEVENTHANDLEMANAGER_H
 #define GPEVENTHANDLEMANAGER_H 1
 
+#include <string>
 class G4Event;
+class GPEventHandle;
 class GPEventHandleManager
 {
   protected:
@@ -19,6 +21,7 @@ class GPEventHandleManager
   public:
     static GPEventHandleManager* GetInstance();
     static void Delete();
+    GPEventHandle* FindAndBuildEventHandle(std::string ,std::string ,std::string );
     void BeginOfEventAction(const G4Event*);
     void EndOfEventAction(const G4Event*);
   protected:

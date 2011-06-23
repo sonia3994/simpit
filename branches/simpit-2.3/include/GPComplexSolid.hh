@@ -28,13 +28,14 @@ class GPComplexSolid : public GPObject
 
     virtual void SetParameter(std::string, std::string);
     virtual G4double GetParameter(std::string,std::string) const;
+    std::vector<G4VPhysicalVolume*>* GetPhysicalVector();
     virtual void Print();
     virtual void Print(std::ofstream&);
 
-  protected:
     virtual void Init();
     virtual void SetMaterial(std::string);
-  private:
+  protected:
+    std::vector<G4VPhysicalVolume*> vsPhysicalVector;
     
 };
 

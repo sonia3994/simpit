@@ -9,6 +9,7 @@
 #include "GPSteppingHandleManager.hh"
 #include "GPSteppingHandleStore.hh"
 #include "GPSteppingHandle.hh"
+#include "GPHexagonalSteppingHandle.hh"
 #include "GPModuleStore.hh"
 #include "GPModule.hh"
 #include "G4Step.hh"
@@ -86,5 +87,16 @@ void GPSteppingHandleManager::CleanUp()
     if(module->IsActive()&&steppingHandle->IsActive())
       steppingHandle->CleanUp();
   }
+}
+GPSteppingHandle* GPSteppingHandleManager::FindAndBuildSteppingHandle(std::string sType,std::string sName,std::string sFather)
+{
+  GPSteppingHandle* pSteppingHandle;
+  if(sType=="GPHexagonalSteppingHandle")
+    pSteppingHandle = new GPHexagonalSteppingHandle(sName,sFather);
+  else 
+    pSteppingHandle = NULL;
+
+  return pSteppingHandle;
+
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

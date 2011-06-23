@@ -44,16 +44,16 @@ class GPModule : public GPObject
   protected:
     void ConstructGeometryCompact(G4LogicalVolume*);
     void ConstructGeometryNormal(G4LogicalVolume*);
-    void SetGeometry();
+    void SetGeometry(std::string);
     void DelGeometry();
-    void SetSteppingHandle();
+    void SetSteppingHandle(std::string);
     void DelSteppingHandle();
-    void SetEventHandle();
+    void SetEventHandle(std::string);
     void DelEventHandle();
-    void SetRunHandle();
+    void SetRunHandle(std::string);
     void DelRunHandle();
-    void AddChild(std::string sValue);
-    void DelChild(std::string sValue);
+    void AddChild(std::string,std::string);
+    void DelChild(std::string);
   protected:
   private:
     int iPriority;

@@ -4,6 +4,7 @@
 #include "GPGeometryManager.hh"
 #include "GPGeometryStore.hh"
 #include "GPGeometry.hh"
+#include "GPGeometryGeneral.hh"
 
 #include "GPModule.hh"
 #include "GPModuleStore.hh"
@@ -31,3 +32,12 @@ GPGeometryManager::GPGeometryManager()
 GPGeometryManager::~GPGeometryManager()
 {}
 
+GPGeometry* GPGeometryManager::FindAndBuildGeometry(std::string sType,std::string sName,std::string sFather)
+{
+  GPGeometry* pGeometry;
+  if(sType=="GPGeometryGeneral")
+    pGeometry = new GPGeometryGeneral(sName,sFather);
+  else 
+    pGeometry = NULL;
+  return pGeometry;
+}

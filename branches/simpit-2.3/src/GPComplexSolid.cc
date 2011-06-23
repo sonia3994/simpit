@@ -61,3 +61,7 @@ void GPComplexSolid::Print(std::ofstream& fstOutput)
 void GPComplexSolid::SetMaterial(std::string sValue)
 {
 }
+std::vector<G4VPhysicalVolume*>* GPComplexSolid::GetPhysicalVector()
+{
+  return &vsPhysicalVector;
+}

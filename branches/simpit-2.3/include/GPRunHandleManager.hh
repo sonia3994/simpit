@@ -9,14 +9,17 @@
 #ifndef GPRUNHANDLEMANAGER_H
 #define GPRUNHANDLEMANAGER_H 1
 
+#include <string>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
+class GPRunHandle;
 class GPRunHandleManager 
 {
   public:
     static GPRunHandleManager* GetInstance();
     static void Delete();
+    GPRunHandle* FindAndBuildRunHandle(std::string,std::string,std::string);
     void BeginOfRunAction(const G4Run*);
     void EndOfRunAction(const G4Run*);
   protected:

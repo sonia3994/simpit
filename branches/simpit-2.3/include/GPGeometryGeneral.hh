@@ -38,6 +38,7 @@ class GPGeometryGeneral : public GPGeometry
     void Print();
     GPSensitiveHandle* GetSensitiveHandle() const;
     GPSolidManager* GetSolidManager() const;
+    GPComplexSolid* GetComplexSolid() const;
     void Print(std::ofstream& );
     void Update();
   protected:

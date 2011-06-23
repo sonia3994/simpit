@@ -8,12 +8,16 @@
 
 #include "GPGeometryGeneral.hh"
 #include "GPGeometryStore.hh"
+#include "GPGeometryManager.hh"
 #include "GPSteppingHandle.hh"
 #include "GPSteppingHandleStore.hh"
+#include "GPSteppingHandleManager.hh"
 #include "GPEventHandleGeneral.hh"
 #include "GPEventHandleStore.hh"
+#include "GPEventHandleManager.hh"
 #include "GPRunHandleGeneral.hh"
 #include "GPRunHandleStore.hh"
+#include "GPRunHandleManager.hh"
 
 #include "GPModuleStore.hh"
 #include "G4VPhysicalVolume.hh"
@@ -330,7 +334,7 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
   }
   else if(sKey=="set.geometry")
   {
-    SetGeometry();
+    SetGeometry(sValueOrg);
     return;
   }
   else if(sKey=="delete.geometry")
@@ -340,7 +344,7 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
   }
   else if(sKey=="set.stepping")
   {
-    SetSteppingHandle();
+    SetSteppingHandle(sValueOrg);
     return;
   }
   else if(sKey=="delete.stepping")
@@ -350,7 +354,7 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
   }
   else if(sKey=="set.event")
   {
-    SetEventHandle();
+    SetEventHandle(sValueOrg);
     return;
   }
   else if(sKey=="delete.event")
@@ -360,7 +364,7 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
   }
   else if(sKey=="set.run")
   {
-    SetRunHandle();
+    SetRunHandle(sValueOrg);
     return;
   }
   else if(sKey=="delete.run")
@@ -370,7 +374,7 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
   }
   else if(sKey=="new.child")
   {
-    AddChild(sValueOrg);
+    AddChild(sValueOrg,sUnit);
     return;
   }
   else if(sKey=="delete.child")
@@ -387,7 +391,7 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
   Update();
   std::cout<<GetName()<<": Set "<<sKey<<": "<< sValueOrg<<" "<<sUnit<<std::endl;
 }
-void GPModule::SetGeometry()
+void GPModule::SetGeometry(std::string sType)
 {
   std::string sChildName=GetName()+"geometry/";
   if(geometry)
@@ -395,8 +399,12 @@ void GPModule::SetGeometry()
     std::cout<<GetName()+": Add geometry handle: [Fatal; geometry handle has exist]"<<std::endl; 
     return;
   }
-  std::cout<<GetName()+": Add geometry handle: "+sChildName<<std::endl; 
-  geometry = new GPGeometryGeneral(sChildName,GetName());
+  geometry = 
+    GPGeometryManager::GetInstance()->FindAndBuildGeometry(sType,sChildName,GetName());
+  if(geometry)
+    std::cout<<GetName()+": Add geometry handle: "+sChildName<<std::endl; 
+  else
+    std::cout<<GetName()+": Add geometry handle: [Fatal; geometry type does not exist]"<<std::endl; 
 }
 void GPModule::DelGeometry()
 {
@@ -410,13 +418,34 @@ void GPModule::DelGeometry()
   }
   std::cout<<GetName()+": Delete geometry handle: [Fatal; geometry handle does not exsit]"<<std::endl; 
 }
-void GPModule::SetSteppingHandle()
+void GPModule::SetSteppingHandle(std::string sType)
 {
+  std::string sChildName=GetName()+"stepping/";
+  if(steppingHandle)
+  {
+    std::cout<<GetName()+": Add stepping handle: [Fatal; stepping handle has exist]"<<std::endl; 
+    return;
+  }
+  steppingHandle = 
+    GPSteppingHandleManager::GetInstance()->FindAndBuildSteppingHandle(sType,sChildName,GetName());
+  if(steppingHandle)
+    std::cout<<GetName()+": Add stepping handle: "+sChildName<<std::endl; 
+  else
+    std::cout<<GetName()+": Add stepping handle: [Fatal; stepping handle type does not exist]"<<std::endl; 
 }
 void GPModule::DelSteppingHandle()
 {
+  std::string sChildName=GetName()+"stepping/";
+  if(steppingHandle)
+  {
+    std::cout<<GetName()+": Delete stepping handle: "+sChildName<<std::endl; 
+    delete steppingHandle;
+    steppingHandle=NULL;
+    return;
+  }
+  std::cout<<GetName()+": Delete stepping handle: [Fatal; stepping handle does not exsit]"<<std::endl; 
 }
-void GPModule::SetEventHandle()
+void GPModule::SetEventHandle(std::string sType)
 {
   std::string sChildName=GetName()+"event/";
   if(eventHandle)
@@ -424,8 +453,12 @@ void GPModule::SetEventHandle()
     std::cout<<GetName()+": Add event handle: [Fatal; event handle has exist]"<<std::endl; 
     return;
   }
-  std::cout<<GetName()+": Add event handle: "+sChildName<<std::endl; 
-  eventHandle = new GPEventHandleGeneral(sChildName,GetName());
+  eventHandle = 
+    GPEventHandleManager::GetInstance()->FindAndBuildEventHandle(sType,sChildName,GetName());
+  if(eventHandle)
+    std::cout<<GetName()+": Add event handle: "+sChildName<<std::endl; 
+  else
+    std::cout<<GetName()+": Add event handle: [Fatal; event handle type does not exist]"<<std::endl; 
 }
 void GPModule::DelEventHandle()
 {
@@ -439,7 +472,7 @@ void GPModule::DelEventHandle()
   }
   std::cout<<GetName()+": Delete event handle: [Fatal; event handle does not exsit]"<<std::endl; 
 }
-void GPModule::SetRunHandle()
+void GPModule::SetRunHandle(std::string sType)
 {
   std::string sChildName=GetName()+"run/";
   if(runHandle)
@@ -447,8 +480,12 @@ void GPModule::SetRunHandle()
     std::cout<<GetName()+": Add run handle: [Fatal; run handle has exist]"<<std::endl; 
     return;
   }
-  std::cout<<GetName()+": Add run handle: "+sChildName<<std::endl; 
-  runHandle = new GPRunHandleGeneral(sChildName,GetName());
+  runHandle = 
+    GPRunHandleManager::GetInstance()->FindAndBuildRunHandle(sType,sChildName,GetName());
+  if(runHandle)
+    std::cout<<GetName()+": Add run handle: "+sChildName<<std::endl; 
+  else
+    std::cout<<GetName()+": Add run handle: [Fatal; run handle type does not exist]"<<std::endl; 
 }
 void GPModule::DelRunHandle()
 {
@@ -462,18 +499,24 @@ void GPModule::DelRunHandle()
   }
   std::cout<<GetName()+": Delete run handle: [Fatal; run handle does not exsit]"<<std::endl; 
 }
-void GPModule::AddChild(std::string sValue)
+void GPModule::AddChild(std::string sName,std::string sType)
 {
-  std::string sChildName=GetName()+sValue;
+  std::string sChildName=GetName()+sName;
   GPModuleMap::iterator it= mChildModule.find(sChildName);
   if(it!=mChildModule.end()) 
   {
     std::cout<<GetName()+": Add child: [Fatal; this child has exist]"<<std::endl; 
     return;
   }
-  std::cout<<GetName()+": Add child: "+sChildName<<std::endl; 
-  GPModule* modu = new GPModule(sChildName,GetName());
-  AddChild(modu);
+  GPModule* modu = 
+    GPModuleManager::GetInstance()->FindAndBuildModule(sType,sChildName,GetName());
+  if(modu)
+  {
+    std::cout<<GetName()+": Add child: "+sChildName<<std::endl; 
+    AddChild(modu);
+  }
+  else
+    std::cout<<GetName()+": Add child: [Fatal; child module type does not exist]"<<std::endl; 
 }
 void GPModule::DelChild(std::string sValue)
 {

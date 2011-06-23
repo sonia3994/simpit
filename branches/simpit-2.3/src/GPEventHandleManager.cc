@@ -6,6 +6,7 @@
 #include "GPEventHandleManager.hh"
 #include "GPEventHandleStore.hh"
 #include "GPEventHandle.hh"
+#include "GPEventHandleGeneral.hh"
 #include "GPModuleStore.hh"
 #include "GPModule.hh"
 
@@ -68,4 +69,15 @@ void GPEventHandleManager::EndOfEventAction(const G4Event* evt)
   }
 }
 
+GPEventHandle* GPEventHandleManager::FindAndBuildEventHandle(std::string sType,std::string sName,std::string sFather)
+{
+  GPEventHandle* pEventHandle;
+  if(sType=="GPEventHandleGeneral")
+    pEventHandle = new GPEventHandleGeneral(sName,sFather);
+  else 
+    pEventHandle = NULL;
+
+  return pEventHandle;
+
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

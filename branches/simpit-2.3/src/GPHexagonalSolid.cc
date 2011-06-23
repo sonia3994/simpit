@@ -85,6 +85,7 @@ void GPHexagonalSolid::Print()
 void GPHexagonalSolid::GranularHexagonal(G4LogicalVolume* pMotherLog)
 {
 
+  vsPhysicalVector.clear();
   for(G4int k=0;k<iCellNumberZ;k++)
   {
     for(G4int j=0;j<iCellNumberY;j++)
@@ -128,7 +129,7 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       pMaterial,
       sSphLog,
       0,0,0);
-  new G4PVPlacement(0,
+  G4VPhysicalVolume* sphPhyA = new G4PVPlacement(0,
       vSphPoint,
       sphLogA,
       sSphPhy,
@@ -146,7 +147,7 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       pMaterial,
       sSphLog,
       0,0,0);
-  new G4PVPlacement(0,
+  G4VPhysicalVolume* sphPhyB = new G4PVPlacement(0,
       vSphPoint,
       sphLogB,
       sSphPhy,
@@ -164,7 +165,7 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       pMaterial,
       sSphLog,
       0,0,0);
-  new G4PVPlacement(0,
+  G4VPhysicalVolume* sphPhyC = new G4PVPlacement(0,
       vSphPoint,
       sphLogC,
       sSphPhy,
@@ -182,7 +183,7 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       pMaterial,
       sSphLog,
       0,0,0);
-  new G4PVPlacement(0,
+  G4VPhysicalVolume* sphPhyD = new G4PVPlacement(0,
       vSphPoint,
       sphLogD,
       sSphPhy,
@@ -200,7 +201,7 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       pMaterial,
       sSphLog,
       0,0,0);
-  new G4PVPlacement(0,
+  G4VPhysicalVolume* sphPhyE = new G4PVPlacement(0,
       vSphPoint,
       sphLogE,
       sSphPhy,
@@ -218,7 +219,7 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       pMaterial,
       sSphLog,
       0,0,0);
-  new G4PVPlacement(0,
+  G4VPhysicalVolume* sphPhyF = new G4PVPlacement(0,
       vSphPoint,
       sphLogF,
       sSphPhy,
@@ -236,7 +237,7 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       pMaterial,
       sSphLog,
       0,0,0);
-  new G4PVPlacement(0,
+  G4VPhysicalVolume* sphPhyG = new G4PVPlacement(0,
       vSphPoint,
       sphLogG,
       sSphPhy,
@@ -254,7 +255,7 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       pMaterial,
       sSphLog,
       0,0,0);
-  new G4PVPlacement(0,
+  G4VPhysicalVolume* sphPhyH = new G4PVPlacement(0,
       vSphPoint,
       sphLogH,
       sSphPhy,
@@ -274,6 +275,14 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
   sphLogF->SetVisAttributes(sphereLogVisAtt);
   sphLogG->SetVisAttributes(sphereLogVisAtt);
   sphLogH->SetVisAttributes(sphereLogVisAtt);
+  vsPhysicalVector.push_back(sphPhyA);
+  vsPhysicalVector.push_back(sphPhyB);
+  vsPhysicalVector.push_back(sphPhyC);
+  vsPhysicalVector.push_back(sphPhyD);
+  vsPhysicalVector.push_back(sphPhyE);
+  vsPhysicalVector.push_back(sphPhyF);
+  vsPhysicalVector.push_back(sphPhyG);
+  vsPhysicalVector.push_back(sphPhyH);
 
 
 }
