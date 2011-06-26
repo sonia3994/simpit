@@ -176,6 +176,7 @@ void GPModuleManager::Print(std::ofstream& ofs)
 }
 void GPModuleManager::Update()
 {
+  worldModule->Update();
 }
 void GPModuleManager::SetParameter(std::string sGlobal)
 {

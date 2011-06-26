@@ -28,12 +28,13 @@ class GPHexagonalSolid : public GPComplexSolid
     void SetParameter(std::string, std::string);
     G4double GetParameter(std::string,std::string) const;
     void Print();
+    void Update();
     void Print(std::ofstream&);
 
 
   protected:
     void GranularHexagonal(G4LogicalVolume*);
-    void GranularHexagonalCell(G4LogicalVolume* ,G4ThreeVector ,long );
+    void GranularHexagonalCell(G4LogicalVolume* ,G4ThreeVector ,int, int, int);
     void SetMaterial(std::string);
     void Init();
 

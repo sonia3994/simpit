@@ -58,6 +58,12 @@ GPModule::~GPModule()
 }
 void GPModule::Update()
 {
+  geometry->Update();
+  std::map<std::string,GPModule* >::iterator it;
+  for(it=mChildModule.begin();it!=mChildModule.end();it++)
+  {
+    it->second->Update();
+  }
 }
 void GPModule::AddChild(GPModule* child)
 {
@@ -388,7 +394,7 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
     return;
   }
 
-  Update();
+  //Update();
   std::cout<<GetName()<<": Set "<<sKey<<": "<< sValueOrg<<" "<<sUnit<<std::endl;
 }
 void GPModule::SetGeometry(std::string sType)

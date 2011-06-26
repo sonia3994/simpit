@@ -28,16 +28,17 @@ public:
   virtual ~GPHexagonalSteppingHandle();
 
   void UserSteppingAction(const G4Step*);
-  void Init();
+  void Prepare();
   void CleanUp();
   void Print(std::ofstream);
   void Print();
     
+protected:
+  void Init();
 private:
   G4int   verbose;
   std::ofstream fstHangle;
-  std::map<G4String,G4double>	mapSphereEDD;
-  std::map<G4String,std::vector<G4double> >	mapSphereEddVec;
+  std::map<std::string,std::vector<double>* >	msvdHexagonalEdd;
   
 };
 

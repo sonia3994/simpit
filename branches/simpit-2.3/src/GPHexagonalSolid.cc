@@ -52,10 +52,13 @@ void GPHexagonalSolid::Construct(G4LogicalVolume* pMotherLog, GPSolidManager* pS
   dGlobalSolidZ = pSolidManager->GetParameter("length","length");
   */
 
-  Init();
   GranularHexagonal(pMotherLog);
 }
 
+void GPHexagonalSolid::Update()
+{
+  Init();
+}
 void GPHexagonalSolid::Init()
 {
   /*dSphereRadius = dGlobalSolidZ/(2+(iCellNumberZ-0.5)*4*sqrt(6)/3);
@@ -72,7 +75,7 @@ void GPHexagonalSolid::Init()
   dCellWidthY = 2*sqrt(3.0)*dSphereRadius;
   dCellWidthZ = 4*sqrt(6.0)*dSphereRadius/3;
 
-  dGlobalSolidX = iCellNumberX*dCellWidthX+2*dSphereRadius-0.5*dCellWidthX;
+  dGlobalSolidX = iCellNumberX*dCellWidthX+4*dSphereRadius-0.5*dCellWidthX;
   dGlobalSolidY = iCellNumberY*dCellWidthY+2*dSphereRadius-0.5*dCellWidthY;
   dGlobalSolidZ = iCellNumberZ*dCellWidthZ+2*dSphereRadius-0.5*dCellWidthZ;
 }
@@ -103,12 +106,12 @@ void GPHexagonalSolid::GranularHexagonal(G4LogicalVolume* pMotherLog)
       for(G4int i=0;i<iCellNumberX;i++)
       {
 	G4ThreeVector vCenter
-	  =G4ThreeVector(i*dCellWidthX+0.25*dCellWidthX+dSphereRadius-0.5*dGlobalSolidX,
+	  =G4ThreeVector(i*dCellWidthX+0.25*dCellWidthX+2*dSphereRadius-0.5*dGlobalSolidX,
 	      j*dCellWidthY+0.25*dCellWidthY+dSphereRadius-0.5*dGlobalSolidY,
 	      k*dCellWidthZ+0.25*dCellWidthZ+dSphereRadius-0.5*dGlobalSolidZ);
 	GranularHexagonalCell(pMotherLog,
 	    vCenter,
-	    i+j*iCellNumberX+k*iCellNumberX*iCellNumberY);
+	    i,j,k);
       }
     }
 
@@ -116,7 +119,9 @@ void GPHexagonalSolid::GranularHexagonal(G4LogicalVolume* pMotherLog)
 
 }
 
-void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4ThreeVector vCenter,long iIndex)
+void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,
+    G4ThreeVector vCenter,
+    int iX,int iY,int iZ)
 {
   G4ThreeVector vSphPoint;
   std::stringstream ssInCell;
@@ -124,14 +129,30 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
   std::string sSphSolid;
   std::string sSphLog;
   std::string sSphPhy;
+  std::string sX;
+  std::string sY;
+  std::string sZ;
 
-  ssInCell<<iIndex;
-  ssInCell>>sSphSuffix;
+  ssInCell.clear();
+  ssInCell.width(6);
+  ssInCell.fill('0');
+  ssInCell<<iX;
+  ssInCell>>sX;
+  ssInCell.clear();
+  ssInCell.width(6);
+  ssInCell.fill('0');
+  ssInCell<<iY;
+  ssInCell>>sY;
+  ssInCell.clear();
+  ssInCell.width(6);
+  ssInCell.fill('0');
+  ssInCell<<iZ;
+  ssInCell>>sZ;
 
-  sSphSuffix += sBaseName;
-  sSphSolid="sphOrbA_"+sSphSuffix;
-  sSphLog="sphLogA_"+sSphSuffix;
-  sSphPhy="sphPhyA_"+sSphSuffix;
+  sSphSuffix = sX+"-"+sY+"-"+sZ;
+  sSphSolid=sSphSuffix+"-1-"+"sphOrbA"+sBaseName;
+  sSphLog=sSphSuffix+"-1-"+"sphLogA"+sBaseName;
+  sSphPhy=sSphSuffix+"-1-"+"sphPhyA"+sBaseName;
   vSphPoint= G4ThreeVector(-2*dSphereRadius*m,-2*sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m);
   vSphPoint=vSphPoint+vCenter*m;
   G4Orb* sphOrbA = new G4Orb(sSphSolid,dSphereRadius*m);
@@ -147,9 +168,9 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       false,
       0);
 
-  sSphSolid="sphOrbB_"+sSphSuffix;
-  sSphLog="sphLogB_"+sSphSuffix;
-  sSphPhy="sphPhyB_"+sSphSuffix;
+  sSphSolid=sSphSuffix+"-2-"+"sphOrbB"+sBaseName;
+  sSphLog=sSphSuffix+"-2-"+"sphLogB"+sBaseName;
+  sSphPhy=sSphSuffix+"-2-"+"sphPhyB"+sBaseName;
   vSphPoint= G4ThreeVector(0,-2.0*sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m); 
   vSphPoint=vSphPoint+vCenter*m;
   G4Orb* sphOrbB = new G4Orb(sSphSolid,dSphereRadius*m);
@@ -165,9 +186,9 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       false,
       0);
 
-  sSphSolid="sphOrbC_"+sSphSuffix;
-  sSphLog="sphLogC_"+sSphSuffix;
-  sSphPhy="sphPhyC_"+sSphSuffix;
+  sSphSolid=sSphSuffix+"-3-"+"sphOrbC"+sBaseName;
+  sSphLog=sSphSuffix+"-3-"+"sphLogC"+sBaseName;
+  sSphPhy=sSphSuffix+"-3-"+"sphPhyC"+sBaseName;
   vSphPoint= G4ThreeVector(dSphereRadius*m,-sqrt(3.0)*dSphereRadius/3*m,sqrt(6.0)*dSphereRadius/3*m); 
   vSphPoint=vSphPoint+vCenter*m;
   G4Orb* sphOrbC = new G4Orb(sSphSolid,dSphereRadius*m);
@@ -183,9 +204,9 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       false,
       0);
 
-  sSphSolid="sphOrbD_"+sSphSuffix;
-  sSphLog="sphLogD_"+sSphSuffix;
-  sSphPhy="sphPhyD_"+sSphSuffix;
+  sSphSolid=sSphSuffix+"-4-"+"sphOrbD"+sBaseName;
+  sSphLog=sSphSuffix+"-4-"+"sphLogD"+sBaseName;
+  sSphPhy=sSphSuffix+"-4-"+"sphPhyD"+sBaseName;
   vSphPoint= G4ThreeVector(-dSphereRadius*m,-sqrt(3.0)*dSphereRadius/3*m,sqrt(6.0)*dSphereRadius/3*m); 
   vSphPoint=vSphPoint+vCenter*m;
   G4Orb* sphOrbD = new G4Orb(sSphSolid,dSphereRadius*m);
@@ -201,9 +222,9 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       false,
       0);
 
-  sSphSolid="sphOrbE_"+sSphSuffix;
-  sSphLog="sphLogE_"+sSphSuffix;
-  sSphPhy="sphPhyE_"+sSphSuffix;
+  sSphSolid=sSphSuffix+"-5-"+"sphOrbE"+sBaseName;
+  sSphLog=sSphSuffix+"-5-"+"sphLogE"+sBaseName;
+  sSphPhy=sSphSuffix+"-5-"+"sphPhyE"+sBaseName;
   vSphPoint= G4ThreeVector(-dSphereRadius*m,sqrt(3.0)*dSphereRadius/3*m,-sqrt(6.0)*dSphereRadius/3*m); 
   vSphPoint=vSphPoint+vCenter*m;
   G4Orb* sphOrbE = new G4Orb(sSphSolid,dSphereRadius*m);
@@ -219,9 +240,9 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       false,
       0);
 
-  sSphSolid="sphOrbF_"+sSphSuffix;
-  sSphLog="sphLogF_"+sSphSuffix;
-  sSphPhy="sphPhyF_"+sSphSuffix;
+  sSphSolid=sSphSuffix+"-6-"+"sphOrbF"+sBaseName;
+  sSphLog=sSphSuffix+"-6-"+"sphLogF"+sBaseName;
+  sSphPhy=sSphSuffix+"-6-"+"sphPhyF"+sBaseName;
   vSphPoint= G4ThreeVector(dSphereRadius*m,sqrt(3.0)*dSphereRadius*m/3,-sqrt(6.0)*dSphereRadius*m/3); 
   vSphPoint=vSphPoint+vCenter*m;
   G4Orb* sphOrbF = new G4Orb(sSphSolid,dSphereRadius*m);
@@ -237,9 +258,9 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       false,
       0);
 
-  sSphSolid="sphOrbG_"+sSphSuffix;
-  sSphLog="sphLogG_"+sSphSuffix;
-  sSphPhy="sphPhyG_"+sSphSuffix;
+  sSphSolid=sSphSuffix+"-7-"+"sphOrbG"+sBaseName;
+  sSphLog=sSphSuffix+"-7-"+"sphLogG"+sBaseName;
+  sSphPhy=sSphSuffix+"-7-"+"sphPhyG"+sBaseName;
   vSphPoint= G4ThreeVector(2*dSphereRadius*m,2*sqrt(3.0)*dSphereRadius*m/3,sqrt(6.0)*dSphereRadius*m/3); 
   vSphPoint=vSphPoint+vCenter*m;
   G4Orb* sphOrbG = new G4Orb(sSphSolid,dSphereRadius*m);
@@ -255,9 +276,9 @@ void GPHexagonalSolid::GranularHexagonalCell(G4LogicalVolume* pMotherLog,G4Three
       false,
       0);
 
-  sSphSolid="sphOrbH_"+sSphSuffix;
-  sSphLog="sphLogH_"+sSphSuffix;
-  sSphPhy="sphPhyH_"+sSphSuffix;
+  sSphSolid=sSphSuffix+"-8-"+"sphOrbH"+sBaseName;
+  sSphLog=sSphSuffix+"-8-"+"sphLogH"+sBaseName;
+  sSphPhy=sSphSuffix+"-8-"+"sphPhyH"+sBaseName;
   vSphPoint= G4ThreeVector(0,2*sqrt(3.0)*dSphereRadius*m/3,sqrt(6.0)*dSphereRadius*m/3); 
   vSphPoint=vSphPoint+vCenter*m;
   G4Orb* sphOrbH = new G4Orb(sSphSolid,dSphereRadius*m);
@@ -335,7 +356,7 @@ void GPHexagonalSolid::SetParameter(std::string str,std::string strGlobal)
     return;
   }
 
-  Init();
+  //Init();
   std::cout<<GetName()<<": Set "<<sKey<<": "<< sValueOrg<<" "<<sUnit<<std::endl;
 }
 

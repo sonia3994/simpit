@@ -70,6 +70,27 @@ GPGeometryGeneral::~GPGeometryGeneral()
 
 void GPGeometryGeneral::Update()
 {
+
+  if(pComplexSolid)
+  {
+    pComplexSolid->Update();
+  }
+  if(pFieldManagerPool)
+  {
+    pFieldManagerPool->Update();
+  }
+  if(pSolidManager)
+  {
+    pSolidManager->Update();
+  }
+
+  /*
+  if(pVisAttributes)
+  {
+    pVisAttributes->Update();
+  }
+  */
+  Init();
 }
 void GPGeometryGeneral::Init()
 {
@@ -108,9 +129,9 @@ void GPGeometryGeneral::Init()
   pSdHandle->SetParameter("readout.z "+sValueZ+" m",GetName());
   if(pComplexSolid)
   {
-    pSolidManager->SetParameter("length "+sValueX+" m",GetName());
-    pSolidManager->SetParameter("width "+sValueY+" m",GetName());
-    pSolidManager->SetParameter("height "+sValueZ+" m",GetName());
+    pSolidManager->SetParameter("width "+sValueX+" m",GetName());
+    pSolidManager->SetParameter("height "+sValueY+" m",GetName());
+    pSolidManager->SetParameter("length "+sValueZ+" m",GetName());
   }
 }
 G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog)
@@ -121,7 +142,7 @@ G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog,G4Thr
 {
 
   vPosition = point;
-  Init();
+  //Init();
 
   //------------------------------ Geometry tube
 
@@ -256,7 +277,7 @@ void GPGeometryGeneral::SetParameter(std::string str,std::string sGlobal)
       std::cout<<GetName()<<": "+sKey+": Key does not exist."<<std::endl;
       return;
     }
-    Init();
+    //Init();
 
     std::cout<<GetName()<<": Set "<<sKey<<": "<< sValue<<" "<<sUnit<<std::endl;
 }

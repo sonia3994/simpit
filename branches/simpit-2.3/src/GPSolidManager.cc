@@ -34,6 +34,7 @@ GPSolidManager::~GPSolidManager()
 
 void GPSolidManager::Update()
 {
+  Init();
 }
 G4VSolid* GPSolidManager::ConstructSolid()
 {
