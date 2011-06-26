@@ -267,7 +267,7 @@ double GPModuleManager::GetParameter(std::string sGlobal)
 GPModule* GPModuleManager::FindAndBuildModule(std::string sType,std::string sName,std::string sFather)
 {
   GPModule* pModule;
-  if(sType=="GPModule")
+  if(sType=="GPModule"||sType==""||sType=="default")
     pModule = new GPModule(sName,sFather);
   else 
     pModule = NULL;

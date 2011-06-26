@@ -30,12 +30,9 @@ GPComplexSolidManager::~GPComplexSolidManager()
 GPComplexSolid* GPComplexSolidManager::FindAndBuildComplexSolid(std::string sType,std::string sName,std::string sFatherName)
 {
   GPComplexSolid* pComplexSolid=NULL;
-  if(sType=="GPHexagonalSolid")
+  if(sType=="GPHexagonalSolid"||sType==""||sType=="default")
     pComplexSolid = new GPHexagonalSolid(sName,sFatherName);
       
-  else if(sType=="GPHexagonalSolid")
-    pComplexSolid = new GPComplexSolid(sName,sFatherName);
-  
   else
   {
     std::cout<<"GPComplexSolidManager: "+sType+" does not exist."<<std::endl;

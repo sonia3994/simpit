@@ -61,21 +61,6 @@ G4VSolid* GPSolidManager::ConstructSolid()
 }
 void GPSolidManager::Init()
 {
-  std::stringstream ss;
-  std::string sValueX;
-  std::string sValueY;
-  std::string sValueZ;
-  ss<<dWidth;
-  ss>>sValueX;
-
-  ss.clear();
-  ss<<dHeight;
-  ss>>sValueY;
-
-  ss.clear();
-  ss<<dLength;
-  ss>>sValueZ;
-  
 }
 
 void GPSolidManager::Print()

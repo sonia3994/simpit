@@ -91,7 +91,7 @@ void GPSteppingHandleManager::CleanUp()
 GPSteppingHandle* GPSteppingHandleManager::FindAndBuildSteppingHandle(std::string sType,std::string sName,std::string sFather)
 {
   GPSteppingHandle* pSteppingHandle;
-  if(sType=="GPHexagonalSteppingHandle")
+  if(sType=="GPHexagonalSteppingHandle"||sType==""||sType=="default")
     pSteppingHandle = new GPHexagonalSteppingHandle(sName,sFather);
   else 
     pSteppingHandle = NULL;

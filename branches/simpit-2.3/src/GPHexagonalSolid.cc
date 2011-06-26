@@ -31,10 +31,10 @@ GPHexagonalSolid::GPHexagonalSolid(std::string sName, std::string sFatherName)
   pMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
 
   dSphereRadius=0.02;
-  dGlobalSolidX = 0.025;
-  dGlobalSolidY = 0.025;
-  dGlobalSolidZ = 0.01;
-  iCellNumberZ = 3;
+  iCellNumberX = 5;
+  iCellNumberY = 5;
+  iCellNumberZ = 5;
+  Init();
 
 }
 
@@ -46,9 +46,11 @@ void GPHexagonalSolid::Construct(G4LogicalVolume* pMotherLog, GPSolidManager* pS
 {
 
   vPosition = vPoint;
+  /*
   dGlobalSolidX = pSolidManager->GetParameter("width","width");
   dGlobalSolidY = pSolidManager->GetParameter("height","height");
   dGlobalSolidZ = pSolidManager->GetParameter("length","length");
+  */
 
   Init();
   GranularHexagonal(pMotherLog);
@@ -56,7 +58,7 @@ void GPHexagonalSolid::Construct(G4LogicalVolume* pMotherLog, GPSolidManager* pS
 
 void GPHexagonalSolid::Init()
 {
-  dSphereRadius = dGlobalSolidZ/(2+(iCellNumberZ-0.5)*4*sqrt(6)/3);
+  /*dSphereRadius = dGlobalSolidZ/(2+(iCellNumberZ-0.5)*4*sqrt(6)/3);
   dCellWidthX = 4*dSphereRadius;
   dCellWidthY = 2*sqrt(3.0)*dSphereRadius;
   dCellWidthZ = 4*sqrt(6.0)*dSphereRadius/3;
@@ -65,6 +67,14 @@ void GPHexagonalSolid::Init()
   dGlobalSolidX = iCellNumberX*dCellWidthX+2*dSphereRadius-0.5*dCellWidthX;
   iCellNumberY = iCellNumberX;
   dGlobalSolidY = iCellNumberY*dCellWidthY+2*dSphereRadius-0.5*dCellWidthY;
+  */
+  dCellWidthX = 4*dSphereRadius;
+  dCellWidthY = 2*sqrt(3.0)*dSphereRadius;
+  dCellWidthZ = 4*sqrt(6.0)*dSphereRadius/3;
+
+  dGlobalSolidX = iCellNumberX*dCellWidthX+2*dSphereRadius-0.5*dCellWidthX;
+  dGlobalSolidY = iCellNumberY*dCellWidthY+2*dSphereRadius-0.5*dCellWidthY;
+  dGlobalSolidZ = iCellNumberZ*dCellWidthZ+2*dSphereRadius-0.5*dCellWidthZ;
 }
 
 void GPHexagonalSolid::Print()
@@ -308,12 +318,10 @@ void GPHexagonalSolid::SetParameter(std::string str,std::string strGlobal)
     dSphereRadius = dValueNew;
   else if(sKey=="cell.number.z")
     iCellNumberZ = dValueNew;
-  else if(sKey=="width")
-    dGlobalSolidX = dValueNew;
-  else if(sKey=="height")
-    dGlobalSolidY = dValueNew;
-  else if(sKey=="length")
-    dGlobalSolidZ = dValueNew;
+  else if(sKey=="cell.number.y")
+    iCellNumberY = dValueNew;
+  else if(sKey=="cell.number.x")
+    iCellNumberX = dValueNew;
   else if(sKey=="material")
   {
     SetMaterial(sValueOrg);
@@ -339,6 +347,12 @@ G4double GPHexagonalSolid::GetParameter(std::string sKey,std::string sGlobal) co
     return iCellNumberY;
   else if(sKey=="cell.number.x")
     return iCellNumberX;
+  else if(sKey=="length")
+    return dGlobalSolidZ;
+  else if(sKey=="height")
+    return dGlobalSolidY;
+  else if(sKey=="width")
+    return dGlobalSolidX;
 
   else
   {

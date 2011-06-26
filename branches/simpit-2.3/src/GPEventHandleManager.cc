@@ -72,7 +72,7 @@ void GPEventHandleManager::EndOfEventAction(const G4Event* evt)
 GPEventHandle* GPEventHandleManager::FindAndBuildEventHandle(std::string sType,std::string sName,std::string sFather)
 {
   GPEventHandle* pEventHandle;
-  if(sType=="GPEventHandleGeneral")
+  if(sType=="GPEventHandleGeneral"||sType==""||sType=="default")
     pEventHandle = new GPEventHandleGeneral(sName,sFather);
   else 
     pEventHandle = NULL;

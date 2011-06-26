@@ -77,9 +77,21 @@ void GPGeometryGeneral::Init()
   std::string sValueX;
   std::string sValueY;
   std::string sValueZ;
-  double dWidth = pSolidManager->GetParameter("width","width");
-  double dHeight= pSolidManager->GetParameter("height","height");
-  double dLength= pSolidManager->GetParameter("length","length");
+  double dWidth; 
+  double dHeight;
+  double dLength;
+  if(pComplexSolid)
+  {
+	  dWidth = pComplexSolid->GetParameter("width","width");
+	  dHeight= pComplexSolid->GetParameter("height","height");
+	  dLength= pComplexSolid->GetParameter("length","length");
+  }
+  else
+  {
+	  dWidth = pSolidManager->GetParameter("width","width");
+	  dHeight= pSolidManager->GetParameter("height","height");
+	  dLength= pSolidManager->GetParameter("length","length");
+  }
   ss<<dWidth;
   ss>>sValueX;
 
@@ -96,9 +108,9 @@ void GPGeometryGeneral::Init()
   pSdHandle->SetParameter("readout.z "+sValueZ+" m",GetName());
   if(pComplexSolid)
   {
-    pComplexSolid->SetParameter("length "+sValueX+" m",GetName());
-    pComplexSolid->SetParameter("width "+sValueY+" m",GetName());
-    pComplexSolid->SetParameter("height "+sValueZ+" m",GetName());
+    pSolidManager->SetParameter("length "+sValueX+" m",GetName());
+    pSolidManager->SetParameter("width "+sValueY+" m",GetName());
+    pSolidManager->SetParameter("height "+sValueZ+" m",GetName());
   }
 }
 G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog)

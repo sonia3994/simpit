@@ -35,7 +35,7 @@ GPGeometryManager::~GPGeometryManager()
 GPGeometry* GPGeometryManager::FindAndBuildGeometry(std::string sType,std::string sName,std::string sFather)
 {
   GPGeometry* pGeometry;
-  if(sType=="GPGeometryGeneral")
+  if(sType=="GPGeometryGeneral"||sType==""||sType=="default")
     pGeometry = new GPGeometryGeneral(sName,sFather);
   else 
     pGeometry = NULL;

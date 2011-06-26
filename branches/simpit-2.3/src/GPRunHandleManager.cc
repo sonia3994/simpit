@@ -69,7 +69,7 @@ void GPRunHandleManager::EndOfRunAction(const G4Run* run)
 GPRunHandle* GPRunHandleManager::FindAndBuildRunHandle(std::string sType,std::string sName,std::string sFather)
 {
   GPRunHandle* pRunHandle;
-  if(sType=="GPRunHandleGeneral")
+  if(sType=="GPRunHandleGeneral"||sType==""||sType=="default")
     pRunHandle = new GPRunHandleGeneral(sName,sFather);
   else
     pRunHandle = NULL;
