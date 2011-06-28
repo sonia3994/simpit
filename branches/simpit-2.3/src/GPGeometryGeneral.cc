@@ -157,7 +157,7 @@ G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog,G4Thr
   if(pFieldManagerPool)
     pLogicalVolume->SetFieldManager(pFieldManagerPool->GetFieldManager(),true);
   if(pComplexSolid)
-    pComplexSolid->Construct(pLogicalVolume,pSolidManager);
+    pComplexSolid->Construct(pLogicalVolume);
 
   if(iStepLimitFlag)
     pLogicalVolume->SetUserLimits(new G4UserLimits(dStepLimit*m));

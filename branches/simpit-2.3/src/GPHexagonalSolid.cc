@@ -14,6 +14,7 @@
 #include "G4PVReplica.hh"
 #include "G4VisAttributes.hh"
 #include "G4Orb.hh"
+#include "G4Box.hh"
 #include "G4UIcommand.hh"
 
 #include "globals.hh"
@@ -21,14 +22,16 @@
 #include <sstream>
 #include <algorithm>
 GPHexagonalSolid::GPHexagonalSolid(std::string sName, std::string sFatherName)
+  :pSolid(0),pLogicalVolume(0),pPhysicalVolume(0)
 {
   SetActive(1);
   SetName(sName);
   SetFatherName(sFatherName);
-  sBaseName = sFatherName;
+  sBaseName = sName;
   replace(sBaseName.begin(),sBaseName.end(),'/','_');
 
   pMaterial = G4NistManager::Instance()->FindOrBuildMaterial("G4_W");
+  pMaterialSpace = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
 
   dSphereRadius=0.02;
   iCellNumberX = 5;
@@ -42,17 +45,27 @@ GPHexagonalSolid::~GPHexagonalSolid()
 {
 }
 
-void GPHexagonalSolid::Construct(G4LogicalVolume* pMotherLog, GPSolidManager* pSolidManager,G4ThreeVector vPoint)
+void GPHexagonalSolid::Construct(G4LogicalVolume* pMotherLog,G4ThreeVector vPoint)
 {
 
   vPosition = vPoint;
+  pSolid = new G4Box(sBaseName+"solid",
+	m*dGlobalSolidX/2,
+	m*dGlobalSolidY/2,
+	m*dGlobalSolidZ/2);
+
+  pLogicalVolume = new G4LogicalVolume(pSolid,pMaterial,sBaseName+"logicalVolume");
+  pPhysicalVolume = new G4PVPlacement(0,
+             vPosition*m,
+             pLogicalVolume,sBaseName+"physicalVolume",pMotherLog,false,0);
   /*
   dGlobalSolidX = pSolidManager->GetParameter("width","width");
   dGlobalSolidY = pSolidManager->GetParameter("height","height");
   dGlobalSolidZ = pSolidManager->GetParameter("length","length");
   */
 
-  GranularHexagonal(pMotherLog);
+  GranularHexagonal(pLogicalVolume);
+  //GranularHexagonal(pMotherLog);
 }
 
 void GPHexagonalSolid::Update()

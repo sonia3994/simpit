@@ -13,8 +13,6 @@
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
-class GPSolidManager;
-
 
 class GPComplexSolid : public GPObject
 {
@@ -24,7 +22,7 @@ class GPComplexSolid : public GPObject
     GPComplexSolid();
     ~GPComplexSolid();
 
-    virtual void Construct(G4LogicalVolume*, GPSolidManager*, G4ThreeVector vPoint = G4ThreeVector());
+    virtual void Construct(G4LogicalVolume*,G4ThreeVector vPoint = G4ThreeVector());
 
     virtual void SetParameter(std::string, std::string);
     virtual G4double GetParameter(std::string,std::string) const;

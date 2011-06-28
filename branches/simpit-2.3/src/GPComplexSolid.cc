@@ -34,7 +34,7 @@ GPComplexSolid::~GPComplexSolid()
 {
 }
 
-void GPComplexSolid::Construct(G4LogicalVolume* pMotherLog, GPSolidManager* pSolidManager,G4ThreeVector vPoint)
+void GPComplexSolid::Construct(G4LogicalVolume* pMotherLog, G4ThreeVector vPoint)
 {
 }
 

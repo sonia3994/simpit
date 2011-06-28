@@ -112,14 +112,15 @@ void GPHexagonalSteppingHandle::CleanUp()
 
 void GPHexagonalSteppingHandle::UserSteppingAction(const G4Step* aStep)
 {
-  double dVolume;
-  std::string strPrevPhysName= aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
-  map<std::string,std::vector<double>* >::iterator mapEddIt = msvdHexagonalEdd.find(strPrevPhysName);
+  //double dVolume;
+  std::string sPrevPhysName= aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+  map<std::string,std::vector<double>* >::iterator mapEddIt = msvdHexagonalEdd.find(sPrevPhysName);
   if(mapEddIt!=msvdHexagonalEdd.end())
   {
-    dVolume = 
-      aStep->GetPreStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetSolid()->GetCubicVolume()/mm3;
-    (*(msvdHexagonalEdd[strPrevPhysName]))[3]+=aStep->GetTotalEnergyDeposit()/MeV/dVolume;
+    //dVolume = 
+      //aStep->GetPreStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetSolid()->GetCubicVolume()/mm3;
+    //(*(msvdHexagonalEdd[sPrevPhysName]))[3]+=aStep->GetTotalEnergyDeposit()/MeV/dVolume;
+    (*(msvdHexagonalEdd[sPrevPhysName]))[3]+=aStep->GetTotalEnergyDeposit()/MeV;
   }
 }
 

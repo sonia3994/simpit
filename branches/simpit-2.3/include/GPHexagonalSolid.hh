@@ -12,8 +12,8 @@
 
 class G4LogicalVolume;
 class G4VPhysicalVolume;
+class G4VSolid;
 class G4Material;
-class GPSolidManager;
 
 
 class GPHexagonalSolid : public GPComplexSolid
@@ -23,7 +23,7 @@ class GPHexagonalSolid : public GPComplexSolid
     GPHexagonalSolid(std::string sFirst, std::string sSecond);
     ~GPHexagonalSolid();
 
-    void Construct(G4LogicalVolume*, GPSolidManager*, G4ThreeVector vPoint = G4ThreeVector());
+    void Construct(G4LogicalVolume*,G4ThreeVector vPoint = G4ThreeVector());
 
     void SetParameter(std::string, std::string);
     G4double GetParameter(std::string,std::string) const;
@@ -40,7 +40,12 @@ class GPHexagonalSolid : public GPComplexSolid
 
   private:
     
+    G4VSolid* pSolid;
+    G4LogicalVolume* pLogicalVolume;
+    G4VPhysicalVolume* pPhysicalVolume;
+
     G4Material* pMaterial;
+    G4Material* pMaterialSpace;
     std::string  sMaterial;
     std::string  sBaseName;
     G4ThreeVector vPosition;
