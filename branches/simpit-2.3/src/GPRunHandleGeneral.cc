@@ -90,6 +90,9 @@ void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
 
   std::cout<<"End of run: "<<GetName()<<std::endl;
   GPSensitiveHandle* sdHandle = geometry->GetSensitiveHandle();
+  if(!sdHandle->IsActive())
+    return;
+
   std::string sSDType = sdHandle->GetSDType();
   std::string sSDName = sdHandle->GetSDName();
   if(sSDType=="GPTargetSD")

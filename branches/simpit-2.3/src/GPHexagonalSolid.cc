@@ -97,6 +97,7 @@ void GPHexagonalSolid::Print()
 {
   G4cout
     <<"\n[Begin Hexagonal Solid: "+GetName()+"]"
+    <<"\nMaterial: "+sMaterial
     <<"\nRadius of sphere: "<<dSphereRadius*m/mm<<" mm"
     <<"\nX axis Cell width: "<<dCellWidthX*m/mm<< " mm"
     <<"\nY axis Cell width: "<<dCellWidthY*m/mm<< " mm"
@@ -400,6 +401,7 @@ void GPHexagonalSolid::Print(std::ofstream& fstOutput)
 {
   fstOutput
     <<"\n[Begin Hexagonal Solid: "+GetName()+"]"
+    <<"\nMaterial: "+sMaterial
     <<"\nRadius of sphere, "<<dSphereRadius*m/mm<<" mm"
     <<"\nX axis Cell width: "<<dCellWidthX*m/mm<< " mm"
     <<"\nY axis Cell width: "<<dCellWidthY*m/mm<< " mm"

@@ -9,6 +9,7 @@
 #include "GPTargetROGeometry.hh"
 
 #include "G4PSEnergyDeposit.hh"
+#include "G4SDParticleFilter.hh"
 #include "G4LogicalVolume.hh"
 #include "G4SDManager.hh"
 #include "G4UIcommand.hh"
@@ -103,6 +104,11 @@ void GPSensitiveHandle::SetParameter(std::string str,std::string strGlobal)
       AddPrimitiveScorer(sValue,sUnit);
       return;
     }
+    else if(sKey=="filter")
+    {
+      SetSDFilter(sValue,sUnit);
+      return;
+    }
     else 
     {
       std::cout<<GetName()<<": "+sKey+": Key does not exist."<<std::endl;
@@ -134,17 +140,25 @@ void GPSensitiveHandle::SetSensitiveDet(G4LogicalVolume* motherLog)
       G4MultiFunctionalDetector* multiFunDet = new G4MultiFunctionalDetector(sSDName);
       SDman->AddNewDetector(multiFunDet);
       MStrStrScorer::iterator it;
+
+      std::map<std::string,G4SDParticleFilter*>::iterator itSD;
       for(it=mStrStrScorer.begin();it!=mStrStrScorer.end();it++)
       {
 	if(it->first=="GPSurfaceParticleScorer")
 	{
 	  GPSurfaceParticleScorer* particleScorer = new GPSurfaceParticleScorer(it->second,1,2);
 	  multiFunDet->RegisterPrimitive(particleScorer);
+	  itSD=mStrSDFilter.find("GPSurfaceParticleScorer");
+	  if(itSD!=mStrSDFilter.end())
+	    particleScorer->SetFilter(itSD->second);
 	}
 	else if(it->first=="G4PSEnergyDeposit")
 	{
 	  G4PSEnergyDeposit* pEnergyDeposit = new G4PSEnergyDeposit(it->second);
 	  multiFunDet->RegisterPrimitive(pEnergyDeposit);
+	  itSD=mStrSDFilter.find("G4PSEnergyDeposit");
+	  if(itSD!=mStrSDFilter.end())
+	    pEnergyDeposit->SetFilter(itSD->second);
 	}
       }
     }
@@ -261,4 +275,27 @@ std::string GPSensitiveHandle:: GetSDName()const
 std::string GPSensitiveHandle:: GetSDType()const
 {
   return sSDType;
+}
+void GPSensitiveHandle::SetSDFilter(std::string sValue,std::string sParticleName)
+{
+  MStrStrScorer::iterator it;
+  it=mStrStrScorer.find(sValue);
+  G4SDParticleFilter* pSDFilter ;
+  if(it==mStrStrScorer.end())
+  {
+    std::cout<<GetName()+": This G4VPrimitiveScorer: "+sValue+", has not yet been created."<<std::endl;
+    return;
+  }
+  std::map<std::string,G4SDParticleFilter*>::iterator itSD;
+  itSD=mStrSDFilter.find(sValue);
+  if(itSD==mStrSDFilter.end())
+  {
+    pSDFilter = new G4SDParticleFilter(sBaseNameChild+sValue);
+    mStrSDFilter.insert(std::pair<std::string,G4SDParticleFilter*>(sValue,pSDFilter));
+  }
+  else
+    pSDFilter=itSD->second;
+
+  pSDFilter->add(sParticleName);
+
 }

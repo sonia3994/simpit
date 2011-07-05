@@ -14,6 +14,7 @@
 //#include "G4VUserDetectorConstruction.hh"
 
 class G4LogicalVolume;
+class G4SDParticleFilter;
 
 class GPSensitiveHandle : public GPObject
 {
@@ -33,6 +34,7 @@ class GPSensitiveHandle : public GPObject
     void SetSensitiveDet(G4LogicalVolume*);
   protected:
     void AddPrimitiveScorer(std::string,std::string);
+    void SetSDFilter(std::string,std::string);
     void SetSensitiveDetType(std::string);
     void SetBoxCellSD(G4LogicalVolume*);
 
@@ -42,6 +44,7 @@ class GPSensitiveHandle : public GPObject
     std::string   sSDName;
     std::string   sBaseNameChild;
     std::map<std::string,std::string> mStrStrScorer;
+    std::map<std::string,G4SDParticleFilter*> mStrSDFilter;
     double dReadOutX;
     double dReadOutY;
     double dReadOutZ;
