@@ -26,29 +26,14 @@ GPTrajectoryAction* GPTrajectoryAction::GetGPTrajectoryAction()
 
 GPTrajectoryAction::GPTrajectoryAction()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectoryAction::GPTrajectoryAction()"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectoryAction::GPTrajectoryAction()"<<G4endl;
-#endif
 }
 
 GPTrajectoryAction::~GPTrajectoryAction()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectoryAction::~GPTrajectoryAction()"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectoryAction::~GPTrajectoryAction()"<<G4endl;
-#endif
 }
 
 void GPTrajectoryAction::ProcessTrajectory(G4TrajectoryContainer* trajectoryContainer)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectoryAction::PreUserTrackingAction(const G4Track*)"<<G4endl;
-#endif
   G4int iTrajectories = trajectoryContainer->entries();
   //extract the trajectories and process. 
   for(G4int i=0; i<iTrajectories; i++) 
@@ -60,9 +45,6 @@ void GPTrajectoryAction::ProcessTrajectory(G4TrajectoryContainer* trajectoryCont
       trj->SaveAs(ofstream);
     }
   }
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectoryAction::PreUserTrackingAction(const G4Track*)"<<G4endl;
-#endif
 }
 
 G4bool GPTrajectoryAction::TrajectoryFilter(GPTrajectory* trajectory)

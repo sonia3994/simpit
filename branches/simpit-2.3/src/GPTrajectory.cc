@@ -27,9 +27,6 @@ G4Allocator<GPTrajectory> GPTrajectoryAllocator;
 GPTrajectory::GPTrajectory()
 :G4VTrajectory()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectory::GPTrajectory()"<<G4endl;
-#endif
   fpParticleDefinition = 0;
   sParticleName = "";
   dPDGCharge = 0;
@@ -44,17 +41,11 @@ GPTrajectory::GPTrajectory()
   dTrackLength = 0.;
   dZLength = 0.;
   vecFullInfor = new std::vector<std::vector<G4double>* >();
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectory::GPTrajectory()"<<G4endl;
-#endif
 }
 
 GPTrajectory::GPTrajectory(const G4Track* aTrack)
 :G4VTrajectory()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectory::GPTrajectory(const G4Track*)"<<G4endl;
-#endif
   fpParticleDefinition = aTrack->GetDefinition();
   sParticleName = fpParticleDefinition->GetParticleName();
   dPDGCharge = fpParticleDefinition->GetPDGCharge();
@@ -101,17 +92,11 @@ GPTrajectory::GPTrajectory(const G4Track* aTrack)
   vecItem->push_back(vecMomentum.y());
   vecItem->push_back(vecMomentum.z());
   vecFullInfor->push_back(vecItem);
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectory::GPTrajectory(const G4Track*)"<<G4endl;
-#endif
 }
 
 GPTrajectory::GPTrajectory(GPTrajectory & right)
 :G4VTrajectory()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectory::GPTrajectory(GPTrajectory&)"<<G4endl;
-#endif
   sParticleName = right.sParticleName;
   fpParticleDefinition = right.fpParticleDefinition;
   dPDGCharge = right.dPDGCharge;
@@ -143,16 +128,10 @@ GPTrajectory::GPTrajectory(GPTrajectory & right)
     vecFullInfor->push_back(vecItem);
   }
 //*/
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectory::GPTrajectory(GPTrajectory&)"<<G4endl;
-#endif
 }
 
 GPTrajectory::~GPTrajectory()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectory::~GPTrajectory()"<<G4endl;
-#endif
   size_t i;
   for(i=0;i<positionRecord->size();i++){
     delete  (*positionRecord)[i];
@@ -165,9 +144,6 @@ GPTrajectory::~GPTrajectory()
       delete (*vecFullInfor)[i];
    }
    delete vecFullInfor;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectory::~GPTrajectory()"<<G4endl;
-#endif
 }
 
 void GPTrajectory::ProcessTrajectory(G4int code)
@@ -379,9 +355,6 @@ std::vector<G4AttValue>* GPTrajectory::CreateAttValues() const
 
 void GPTrajectory::AppendStep(const G4Step* aStep)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrajectory::AppendStep(const G4Step*)"<<G4endl;
-#endif
    G4ThreeVector pos=aStep->GetPostStepPoint()->GetPosition();
    G4ThreeVector mom=aStep->GetPostStepPoint()->GetMomentum();
    G4double      time=aStep->GetPostStepPoint()->GetGlobalTime();
@@ -401,9 +374,6 @@ void GPTrajectory::AppendStep(const G4Step* aStep)
    vecItem->push_back(mom.y());
    vecItem->push_back(mom.z());
    vecFullInfor->push_back(vecItem);
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrajectory::AppendStep(const G4Step*)"<<G4endl;
-#endif
 }
   
 G4ParticleDefinition* GPTrajectory::GetParticleDefinition()

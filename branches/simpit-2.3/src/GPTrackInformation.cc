@@ -10,9 +10,6 @@ G4Allocator<GPTrackInformation> GPTrackInformationAllocator;
 
 GPTrackInformation::GPTrackInformation()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrackInformation::GPTrackInformation()"<<G4endl;
-#endif
     iOriginalTrackID = 0;
     particleDefinition = 0;
     vecOriginalPosition = G4ThreeVector(0.,0.,0.);
@@ -27,16 +24,10 @@ GPTrackInformation::GPTrackInformation()
     vecSourceMomentum = G4ThreeVector(0.,0.,0.);
     dSourceEnergy = 0.;
     dSourceTime = 0.;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrackInformation::GPTrackInformation()"<<G4endl;
-#endif
 }
 
 GPTrackInformation::GPTrackInformation(const G4Track* aTrack)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrackInformation::GPTrackInformation(const G4Track*)"<<G4endl;
-#endif
     iOriginalTrackID = aTrack->GetTrackID();
     particleDefinition = aTrack->GetDefinition();
     vecOriginalPosition = aTrack->GetPosition();
@@ -50,16 +41,10 @@ GPTrackInformation::GPTrackInformation(const G4Track* aTrack)
     vecSourceMomentum = G4ThreeVector(0.,0.,0.);
     dSourceEnergy = 0.;
     dSourceTime = 0.;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrackInformation::GPTrackInformation(const G4Track*)"<<G4endl;
-#endif
 }
 
 GPTrackInformation::GPTrackInformation(const GPTrackInformation* aTrackInfo)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrackInformation::GPTrackInformation(const GPTrackInformation*)"<<G4endl;
-#endif
     iOriginalTrackID = aTrackInfo->iOriginalTrackID;
     particleDefinition = aTrackInfo->particleDefinition;
     vecOriginalPosition = aTrackInfo->vecOriginalPosition;
@@ -73,19 +58,10 @@ GPTrackInformation::GPTrackInformation(const GPTrackInformation* aTrackInfo)
     vecSourceMomentum = aTrackInfo->vecSourceMomentum;
     dSourceEnergy = aTrackInfo->dSourceEnergy;
     dSourceTime = aTrackInfo->dSourceTime;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrackInformation::GPTrackInformation(const GPTrackInformation*)"<<G4endl;
-#endif
 }
 
 GPTrackInformation::~GPTrackInformation()
 { 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTrackInformation::~GPTrackInformation()"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTrackInformation::~GPTrackInformation()"<<G4endl;
-#endif
 }
 
 GPTrackInformation& GPTrackInformation::operator =(const GPTrackInformation& aTrackInfo)
