@@ -54,7 +54,7 @@ void GPHexagonalSolid::Construct(G4LogicalVolume* pMotherLog,G4ThreeVector vPoin
 	m*dGlobalSolidY/2,
 	m*dGlobalSolidZ/2);
 
-  pLogicalVolume = new G4LogicalVolume(pSolid,pMaterial,sBaseName+"logicalVolume");
+  pLogicalVolume = new G4LogicalVolume(pSolid,pMaterialSpace,sBaseName+"logicalVolume");
   pPhysicalVolume = new G4PVPlacement(0,
              vPosition*m,
              pLogicalVolume,sBaseName+"physicalVolume",pMotherLog,false,0);

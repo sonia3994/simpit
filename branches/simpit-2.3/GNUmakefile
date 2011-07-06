@@ -31,8 +31,8 @@ G4BIN = ./bin
 G4BINDIR = ./bin
 G4LIB = ./lib
 G4TMP = ./tmp
-#LDFLAGS += -lboost_filesystem -lboost_system
-LDFLAGS += -lboost_filesystem
+LDFLAGS += -lboost_filesystem -lboost_system
+#LDFLAGS += -lboost_filesystem
 #For debug
 #CPPFLAGS += -DGP_DEBUG 
 CPPFLAGS += -g
