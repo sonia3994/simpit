@@ -333,6 +333,10 @@ void GPModule::SetParameter(std::string sPoolKeyValueUnit,std::string sGlobal)
   {
     iPriority=dValueNew;
   }
+  else if(sKey=="compact.flag")
+  {
+    iCompactRangerFlag=dValueNew;
+  }
   else if(sKey=="center.z")
   {
     vCenterChildPosition.setZ(dValueNew);
