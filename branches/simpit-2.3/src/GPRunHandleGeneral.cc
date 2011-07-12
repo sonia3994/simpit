@@ -111,8 +111,8 @@ void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
 	for(size_t k=0;k!=iCellNumZ;k++)
 	{
 	  iIndex=k*iCellNumX*iCellNumY+j*iCellNumX+i;
-	  ofs<<" "<<j<<" "<<k<<" "<<vDouble[iIndex]<<"\n";
-	  std::cout<<i<<" "<<j<<" "<<k<<" "<<vDouble[iIndex]<<"\n";
+	  ofs<<i<<" "<<j<<" "<<k<<" "<<vDouble[iIndex]<<"\n";
+	  //std::cout<<i<<" "<<j<<" "<<k<<" "<<vDouble[iIndex]<<"\n";
 	}
       }
     }

@@ -3,6 +3,7 @@
 
 #include "G4VReadOutGeometry.hh"
 #include <vector> 
+#include <fstream> 
 
 class G4Material;
 
@@ -14,6 +15,7 @@ class GPTargetROGeometry : public G4VReadOutGeometry
     ~GPTargetROGeometry();
 
     void SetPosition(G4ThreeVector);
+    void Print(std::ofstream&);
 
   private:
     G4VPhysicalVolume* Build();

@@ -33,6 +33,7 @@ class GPTargetSD : public G4VSensitiveDetector
       G4int iNumberOfCellsInX;
       G4int iNumberOfCellsInY;
       G4int iNumberOfCellsInZ;
+      G4int iCollectionID;
 };
 
 

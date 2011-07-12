@@ -112,6 +112,7 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
     <<G4endl;
   GPModuleManager::GetInstance()->Print();
   primaryGenerator->Print();
+  G4SDManager::GetSDMpointer()->ListTree();
 
   ofsParaFile 
     <<"\n------Begin Of Run: "<<iRunID<<"------"

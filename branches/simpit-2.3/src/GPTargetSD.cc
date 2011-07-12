@@ -37,7 +37,8 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
 {
   if(!ROhist) return false;
   G4double edep = aStep->GetTotalEnergyDeposit();
-  if(verboseLevel>1) G4cout << "Deposite energy of this step: " << edep/MeV<<" MeV" << G4endl;
+  //if(verboseLevel>1) 
+    //G4cout << SensitiveDetectorName<< " :Deposite energy of this step: " << edep/MeV<<" MeV" << G4endl;
   if(edep==0.) return false;
 
   G4VPhysicalVolume* physVol = ROhist->GetVolume();
@@ -70,13 +71,25 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
     G4int icell = EddCollection->insert( calHit );
     vecIntCellID[cellIndex]= icell - 1;
     if(verboseLevel>1)
-    { G4cout << " New Calorimeter Hit on vecIntCellID " << copyIDinX << " " << copyIDinY <<" "<<copyIDinZ<< G4endl; }
+    { 
+      G4cout 
+	<< SensitiveDetectorName<< " New Calorimeter Hit on vecIntCellID " 
+	<< copyIDinX << " " << copyIDinY <<" "<<copyIDinZ
+	<< " Energy: "<<edep/MeV<<" MeV"
+	<< G4endl; 
+    }
   }
   else
   { 
     (*EddCollection)[vecIntCellID[cellIndex]]->AddEdep(edep);
     if(verboseLevel>1)
-    { G4cout << " Energy added to vecIntCellID " << copyIDinX << " " << copyIDinY <<" "<<copyIDinZ<< G4endl; }
+    { 
+      G4cout 
+	<< SensitiveDetectorName<< " Energy added to vecIntCellID " 
+	<< copyIDinX << " " << copyIDinY <<" "<<copyIDinZ
+	<< " Energy: "<<edep/MeV<<" MeV"
+	<< G4endl; 
+    }
   }
 
   return true;
@@ -84,10 +97,17 @@ G4bool GPTargetSD::ProcessHits(G4Step* aStep,G4TouchableHistory* ROhist)
 
 void GPTargetSD::EndOfEvent(G4HCofThisEvent* HCE)
 {
-  static G4int HCID = -1;
-  if(HCID<0)
-  { HCID = GetCollectionID(0); }
-  HCE->AddHitsCollection( HCID, EddCollection );
+  //static G4int HCID = -1;
+  //if(HCID<0)
+  //{ HCID = GetCollectionID(0); }
+  iCollectionID = GetCollectionID(0);
+  HCE->AddHitsCollection( iCollectionID, EddCollection );
+  /*
+  std::cout
+    <<SensitiveDetectorName<<": Add Collection: "<<collectionName[0]
+    <<": Collection ID: "<<iCollectionID
+    <<std::endl;
+    */
 }
 
 void GPTargetSD::clear()

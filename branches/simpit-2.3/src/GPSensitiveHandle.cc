@@ -216,9 +216,20 @@ void GPSensitiveHandle::Print(std::ofstream& fstOutput)
     <<"\nSensitive status: "<<IsActive()
     <<"\nSensitive type: "+sSDType
     <<"\nSensitive name: "+sSDName;
-    MStrStrScorer::iterator it;
-    for(it=mStrStrScorer.begin();it!=mStrStrScorer.end();it++)
+  if(sSDType=="GPTargetSD")
+  {
+    G4SDManager* SDman = G4SDManager::GetSDMpointer();
+    GPTargetSD* targetSD = (GPTargetSD*)SDman->FindSensitiveDetector(sSDName);
+    if(targetSD)
     {
+      GPTargetROGeometry* targetRO = (GPTargetROGeometry*)targetSD->GetROgeometry(); 
+      if(targetRO)
+	targetRO->Print(fstOutput);
+    }
+  }
+  MStrStrScorer::iterator it;
+  for(it=mStrStrScorer.begin();it!=mStrStrScorer.end();it++)
+  {
   fstOutput
     <<"\nScorer type: "+(it->first)+"; Scorer name: "+(it->second);
     }

@@ -66,6 +66,13 @@ void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
     GPTargetHit* eddHit;
 
     iCollectionID=SDM->GetCollectionID(sSDName+"/GPTargetSD"); 
+    /*
+    std::cout
+      <<"GPEventHandleGeneral::EndOfEventAction: "
+      <<GetName()<<"Get Collection ID: "<<iCollectionID
+      <<std::endl;
+      */
+
     eddCollection =(GPTargetHitsCollection*)(HCE->GetHC(iCollectionID));
     if(eddCollection!=NULL)
     {
@@ -104,7 +111,6 @@ void  GPEventHandleGeneral::EndOfEventAction(const G4Event* evt)
       }
     }
   }
-
 }
 void GPEventHandleGeneral::ProcessParticleHits(GPParticleHitsCollection* particleHitsCollection,std::string sCollectionName)
 {

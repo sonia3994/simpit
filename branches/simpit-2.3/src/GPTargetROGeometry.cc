@@ -15,35 +15,17 @@
 GPTargetROGeometry::GPTargetROGeometry()
   : G4VReadOutGeometry()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetROGeometry::GPTargetROGeometry()"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetROGeometry::GPTargetROGeometry()"<<G4endl;
-#endif
 }
 
 
 GPTargetROGeometry:: GPTargetROGeometry(G4String name, G4double x, G4double y, G4double z,std::vector<G4int> n)
   : G4VReadOutGeometry(name), dummyMat(0),dTargetBox_x(x),dTargetBox_y(y),dTargetBox_z(z),iTargetBox_RepX(n[0]),iTargetBox_RepY(n[1]),iTargetBox_RepZ(n[2])
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetROGeometry::GPTargetROGeometry(G4String, G4double, G4double, G4double,std::vector<G4int>)"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetROGeometry::GPTargetROGeometry(G4String, G4double, G4double, G4double,std::vector<G4int>)"<<G4endl;
-#endif
 }
 
 GPTargetROGeometry::~GPTargetROGeometry()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPTargetROGeometry::~GPTargetROGeometry()"<<G4endl;
-#endif
   delete dummyMat;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPTargetROGeometry::~GPTargetROGeometry()"<<G4endl;
-#endif
 }
 
 void GPTargetROGeometry::Init()
@@ -193,4 +175,21 @@ G4VPhysicalVolume* GPTargetROGeometry::Build()
 void GPTargetROGeometry::SetPosition(G4ThreeVector pos)
 {
   vPos = pos;
+}
+void GPTargetROGeometry::Print(std::ofstream& ofsPrint)
+{
+  ofsPrint
+    <<"\nReadout Geometry:"
+    <<"\nName: "<<name
+    <<"\nPosition: "<<vPos<<" m"
+    <<"\nlength: "<<dTargetBox_z<<" m"
+    <<"\nwidth: "<<dTargetBox_x<<" m"
+    <<"\nheight: "<<dTargetBox_y<<" m"
+    <<"\ncell width of length: "<<dTargetBox_dz<<" m"
+    <<"\ncell width of width: "<<dTargetBox_dx<<" m"
+    <<"\ncell width of height: "<<dTargetBox_dy<<" m"
+    <<"\ncell number of length: "<<iTargetBox_RepZ
+    <<"\ncell number of width: "<<iTargetBox_RepX
+    <<"\ncell number of height: "<<iTargetBox_RepY
+    <<std::endl;
 }
