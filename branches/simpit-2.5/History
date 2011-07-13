@@ -1,0 +1,42 @@
+$Id: History,v 1.12 2010/07/09 10:24:40 $
+-------------------------------------------------------------------
+
+     =========================================================
+                          Simpit
+     =========================================================
+
+                    Simpit History file
+                    ------------------------
+
+     ----------------------------------------------------------
+     * Reverse chronological order (last date on top), please *
+     ----------------------------------------------------------
+     
+----------------------------------------------------------
+Wed Apr 27 16:27:36 CEST 2011
+Add following classes(files) for module control, adopt tree structure to mannage the modules 
+   GPEventHandle.cc
+   GPEventHandleCrystal.cc
+   GPEventHandleGeneral.cc
+   GPEventHandleManager.cc
+   GPEventHandleStore.cc
+   GPGeometry.cc
+   GPGeometryGeneral.cc
+   GPGeometryManager.cc
+   GPGeometryStore.cc
+   GPModule.cc
+   GPModuleManager.cc
+   GPModuleManagerMessenger.cc
+   GPModuleStore.cc
+   GPObject.cc
+   GPRunHandle.cc
+   GPRunHandleGeneral.cc
+   GPRunHandleManager.cc
+   GPRunHandleStore.cc
+   GPSteppingHandle.cc
+   GPSteppingHandleManager.cc
+   GPSteppingHandleStore.cc
+
+----------------------------------------------------------
+Thu Jan 27 15:39:11 CET 2011
+	Target sensitive detector seems does not work right if target is hexagonal granular target(which has lots of daugther), but if target is a normalsolid without daugther, it work right.
