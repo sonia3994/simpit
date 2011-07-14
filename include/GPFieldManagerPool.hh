@@ -12,22 +12,38 @@
 #define GPFIELDMANAGERPOOL_H 1
 
 #include "GPObject.hh"
+#include "G4ThreeVector.hh"
+#include <string>
 
 
+class GPField;
+class G4ChordFinder;
+class G4EqEMFieldWithSpin; 
+class G4MagIntegratorStepper;
+class G4MagInt_Driver;
 class G4FieldManager;
+
 class GPFieldManagerPool : public GPObject
 {
 
 public:
 
-  GPFieldManagerPool() ;
+  GPFieldManagerPool(std::string sName, std::string sFatherName);
  ~GPFieldManagerPool() ;
       
-  virtual void UpdateField();
+  virtual void Update();
   virtual G4FieldManager* GetFieldManager();
   virtual void Init();
 
 protected:
+  GPField* pGPField;
+  G4FieldManager* pFieldManager;
+  G4ChordFinder*         	pChordFinder ;
+  G4EqEMFieldWithSpin*      pEquation; 
+  G4MagIntegratorStepper*	pIntegratorStepper ;
+  G4MagInt_Driver*			pIntDriver;
+  G4int                  	iStepperType ;
+  G4double               	dMinStep ;
 
 };
 

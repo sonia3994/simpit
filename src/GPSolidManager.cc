@@ -9,6 +9,7 @@
 #include "globals.hh"
 
 #include <sstream>
+#include <cmath>
 #include <algorithm>
 GPSolidManager::GPSolidManager(std::string sName, std::string sFatherName)
   :solid(0)
@@ -176,3 +177,9 @@ void GPSolidManager::SetSolidType(std::string sValue)
 
 }
 
+bool GPSolidManager::IsInThisSolid(G4ThreeVector vLocal)
+{
+  if(abs(vLocal.x())<=dWidth/2&&abs(vLocal.y())<=dHeight/2&&abs(vLocal.z())<=dLength/2)
+    return true;
+  else return false;
+}

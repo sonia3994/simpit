@@ -36,6 +36,7 @@ class GPGeometryGeneral : public GPGeometry
     void SetParameter(std::string, std::string);
     double GetParameter(std::string, std::string) const;
     void Print();
+    bool IsInThisGeometry(G4ThreeVector);
     GPSensitiveHandle* GetSensitiveHandle() const;
     GPSolidManager* GetSolidManager() const;
     GPComplexSolid* GetComplexSolid() const;

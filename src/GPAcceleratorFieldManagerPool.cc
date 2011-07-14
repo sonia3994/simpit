@@ -6,56 +6,77 @@
 //
 
 #include "GPAcceleratorFieldManagerPool.hh"
-#include "GPAcceleratorFieldMessenger.hh"   
+#include "GPGeometry.hh"
+#include "GPGeometryStore.hh"
 #include "GPModuleManager.hh"     
 
-//#include "G4UniformMagField.hh"
-//#include "G4MagneticField.hh"
 #include "G4FieldManager.hh"
 #include "G4Mag_UsualEqRhs.hh"
 #include "G4EqEMFieldWithSpin.hh"
 #include "G4MagIntegratorStepper.hh"
 #include "G4MagIntegratorDriver.hh"
 #include "G4ChordFinder.hh"
-//#include "G4TransportationManager.hh"
-//#include "G4PropagatorInField.hh"
 
+#include "G4UIcommand.hh"
 #include "G4RunManager.hh"
-//#include "G4ExplicitEuler.hh"
-//#include "G4ImplicitEuler.hh"
 #include "G4SimpleRunge.hh"
 #include "G4SimpleHeum.hh"
 #include "G4ClassicalRK4.hh"
-//#include "G4HelixExplicitEuler.hh"
-//#include "G4HelixImplicitEuler.hh"
-//#include "G4HelixSimpleRunge.hh"
 #include "G4CashKarpRKF45.hh"
-//#include "G4RKG3_Stepper.hh"
 #include <fstream>
 #include <sstream>
 //////////////////////////////////////////////////////////////////////////
-GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()
+//GPAcceleratorField::GPAcceleratorField():G4ElectroMagneticField()
+GPAcceleratorField::GPAcceleratorField():GPField()
 {
   dB0=0.5;
   dB1=0.5;
   dE0=15e+6;
   dE1=15e+6;
+  iVerbose=1;
 }
 
 GPAcceleratorField::~GPAcceleratorField()
 {
 }
 
+void GPAcceleratorField::SetParameter(std::string sLocal, std::string sGlobal)
+{
+    std::stringstream ss(sLocal);
+    std::string		  sUnit;
+    std::string		  sKey;
+    std::string		  sValue;
+    G4double   		  dValueNew;
+    G4double   		  dValueOrg;
+    
+    ss>>sKey>>sValue>>sUnit;
+    ss.clear();
+    ss.str(sValue);
+    ss>>dValueOrg;
+
+    if(sUnit!="")
+      dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
+    else dValueNew=dValueOrg;
+
+    if(sKey=="B0")
+      dB0 = dValueNew;
+    else if(sKey=="E0")
+      dE0 = dValueNew;
+    else if(sKey=="verbose")
+      iVerbose = dValueNew;
+    else 
+    {
+      std::cout<<sGeometryName+"field_mananger/field/: "+sKey+": Key does not exist."<<std::endl;
+      return;
+    }
+    std::cout<<sGeometryName+"field_mananger/field/: Set "+sKey+": "+sValue+" "+sUnit<<std::endl;
+}
+double GPAcceleratorField::GetParameter(std::string sLocal, std::string sGlobal)const
+{
+  return -1;
+}
 void GPAcceleratorField::Init()
 {
-  GPModuleManager* moduleManager = GPModuleManager::GetInstance();
-  dTarL=moduleManager->GetParameter("/target/geometry/ gz");
-  dCapL=moduleManager->GetParameter("/capture/geometry/ l");
-  dAccL=moduleManager->GetParameter("/accelerator/geometry/ l");
-  dAccR=moduleManager->GetParameter("/accelerator/geometry/ or");
-
-
-  dDelta=dAccL/20;
   G4cout<<"\nAccelerator field:\n"
     <<std::setw(8)<<"B0: "<<dB0<<" tesla\n"
     <<std::setw(8)<<"E0: "<<dE0<<" volt/m"
@@ -66,46 +87,16 @@ void GPAcceleratorField::Init()
 
 void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield) const
 {
-  static G4ThreeVector local;
-  static G4ThreeVector global;
-  static G4double		 localR2;
+  static G4ThreeVector vLocal;
+  static G4ThreeVector vGlobal;
   //unit transform
-  global[0]=Point[0]/m;global[1]=Point[1]/m;global[2]=Point[2]/m;
+  vGlobal[0]=Point[0]/m;vGlobal[1]=Point[1]/m;vGlobal[2]=Point[2]/m;
 
-  //global to local transform
-  local[0]=global[0];
-  local[1]=global[1];
-  local[2]=global[2]-dTarL/2-dCapL-dAccL/2;
-  localR2=local[0]*local[0]+local[1]*local[1];
-
-  /*
-     if(localR2<dAccR*dAccR&&local[2]>-dAccL/2&&local[2]<=(-dAccL/2+dDelta))
-     {
-     static G4double		 B;
-     static G4double		 E;
-     B=(local[2]+dAccL/2)*(dB1-dB0)/dDelta+dB0;
-     E=(local[2]+dAccL/2)*(dE1-dE0)/dDelta+dE0;
-     Bfield[0]=0;
-     Bfield[1]=0;
-     Bfield[2]=B*tesla;
-     Bfield[3]=0;
-     Bfield[4]=0;
-     Bfield[5]=E*volt/m;
-     }
-     */
-  //else if(localR2<dAccR*dAccR&&local[2]<dAccL/2&&local[2]>=(-dAccL/2+dDelta))
-  if(localR2<dAccR*dAccR&&local[2]>-dAccL/2&&local[2]<=dAccL/2)
-  {
-    Bfield[0]=0;
-    Bfield[1]=0;
-    Bfield[2]=dB1*tesla;
-    Bfield[3]=0;
-    Bfield[4]=0;
-    Bfield[5]=dE1*volt/m;
-    //G4cout<<"x: "<<Point[0]<<" y: "<<Point[1]<<" z: "<<Point[2]<<G4endl;
-    //G4cout<<"Bx: "<<Bfield[0]<<" By: "<<Bfield[1]<<" Bz: "<<Bfield[2]<<G4endl;
-  }
-  else
+  static GPGeometry* geometry =NULL;
+  if(geometry==NULL)
+    geometry = GPGeometryStore::GetInstance()->FindGeometry(sGeometryName);
+  //if it's in the right geometry
+  if(geometry->IsInThisGeometry(vGlobal)==false)
   {
     Bfield[0]=0;
     Bfield[1]=0;
@@ -113,12 +104,40 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
     Bfield[3]=0;
     Bfield[4]=0;
     Bfield[5]=0;
+    return;
+  }
+  //local position in this geometry
+  vLocal=geometry->TransferToLocalFrame(vGlobal);
+
+  Bfield[0]=0;
+  Bfield[1]=0;
+  Bfield[2]=dB1*tesla;
+  Bfield[3]=0;
+  Bfield[4]=0;
+  Bfield[5]=dE1*volt/m;
+  if(iVerbose>1)
+  {
+    G4ThreeVector vB( Bfield[0]/tesla, Bfield[1]/tesla, Bfield[2]/tesla);
+    G4ThreeVector vE( Bfield[3]*m/volt, Bfield[5]*m/volt, Bfield[5]*m/volt);
+    std::cout
+      <<"Global position (m): "<<vGlobal<<"; Local position (m): "<<vLocal
+      <<"\nB (tesla): "<<vB<<";  E (volt/m): "<<vE
+      <<std::endl;
   }
 }
 
 void GPAcceleratorField::Print(std::ofstream& ofsOutput)
 {
-  ofsOutput<<"\nAccelerator field:"
+  ofsOutput
+    <<"\nAccelerator field:"
+    <<"\nB0,"<<dB0<<" tesla"
+    <<"\nE0,"<<dE0<<" volt/m"
+    <<G4endl;
+}
+void GPAcceleratorField::Print()
+{
+  std::cout
+    <<"\nAccelerator field:"
     <<"\nB0,"<<dB0<<" tesla"
     <<"\nE0,"<<dE0<<" volt/m"
     <<G4endl;
@@ -126,20 +145,14 @@ void GPAcceleratorField::Print(std::ofstream& ofsOutput)
 //
 //  Constructors:
 
-  GPAcceleratorFieldManagerPool::GPAcceleratorFieldManagerPool(std::string sName, std::string sFatherName)
-:fAcceleratorChordFinder(0), fAcceleratorStepper(0)  
+GPAcceleratorFieldManagerPool::GPAcceleratorFieldManagerPool(std::string sName, std::string sFatherName):
+  GPFieldManagerPool(sName,sFatherName)
 {
-  SetActive(1);
-  SetName(sName);
-  SetFatherName(sFatherName);
+  pGPField = new GPAcceleratorField();
+  pEquation = new G4EqEMFieldWithSpin(pGPField); 
 
-  fieldManager = new G4FieldManager();
-  fAcceleratorField = new GPAcceleratorField();
-  fAcceleratorEquation = new G4EqEMFieldWithSpin(fAcceleratorField); 
+  pGPField->SetGeometryName(sFatherName);
 
-
-  fFieldMessenger = new GPAcceleratorFieldMessenger(this) ;  
-  fFieldMessenger->SetFieldPoint(fAcceleratorField) ;  
 
   dMinStep     = 1e-3 ; // minimal step of 1 m is default
   G4cout<<"The Accelerator field minimal step: "<<dMinStep<<" m"<<G4endl ;
@@ -147,11 +160,11 @@ void GPAcceleratorField::Print(std::ofstream& ofsOutput)
 
   SetStepper();
 
-  fAcceleratorIntegratorDriver = new G4MagInt_Driver(dMinStep*m,fAcceleratorStepper,fAcceleratorStepper->GetNumberOfVariables());
-  fAcceleratorChordFinder = new G4ChordFinder(fAcceleratorIntegratorDriver);
-  //fAcceleratorChordFinder = new G4ChordFinder((G4MagneticField*)fAcceleratorField,dMinStep,fAcceleratorStepper);
+  pIntDriver = new G4MagInt_Driver(dMinStep*m,pIntegratorStepper,pIntegratorStepper->GetNumberOfVariables());
+  pChordFinder = new G4ChordFinder(pIntDriver);
+  //pChordFinder = new G4ChordFinder((G4MagneticField*)pGPField,dMinStep,pIntegratorStepper);
 
-  fieldManager->SetChordFinder( fAcceleratorChordFinder );
+  pFieldManager->SetChordFinder( pChordFinder );
 
   //UpdateField();
 }
@@ -160,45 +173,40 @@ void GPAcceleratorField::Print(std::ofstream& ofsOutput)
 
 GPAcceleratorFieldManagerPool::~GPAcceleratorFieldManagerPool()
 {
-  if(fAcceleratorField) 		delete fAcceleratorField;
-  if(fAcceleratorChordFinder)	delete fAcceleratorChordFinder;
-  if(fAcceleratorStepper)      	delete fAcceleratorStepper;
-  if(fAcceleratorEquation)		delete fAcceleratorEquation; 
-  if(fieldManager)		delete fieldManager; 
+  if(pGPField) 		delete pGPField;
+  if(pChordFinder)	delete pChordFinder;
+  if(pIntegratorStepper)      	delete pIntegratorStepper;
+  if(pEquation)		delete pEquation; 
 
-  //if(fAcceleratorIntegratorDriver)		delete fAcceleratorIntegratorDriver; 
-
-  if(fFieldMessenger)     delete fFieldMessenger;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //
 void GPAcceleratorFieldManagerPool::Init()
 {
-  if(IsActive())
-    UpdateField();
+    Update();
 }
 /////////////////////////////////////////////////////////////////////////////
 // Update field
-void GPAcceleratorFieldManagerPool::UpdateField()
+void GPAcceleratorFieldManagerPool::Update()
 {
 
   if(IsActive())
   {
-    fieldManager->SetDetectorField(fAcceleratorField );
+    pFieldManager->SetDetectorField(pGPField );
     ///*
-    fieldManager->GetChordFinder()->SetDeltaChord(1e-9*m);
-    fieldManager->SetDeltaIntersection(1e-9*m);
-    fieldManager->SetDeltaOneStep(1e-9*m);
-    fieldManager->SetMaximumEpsilonStep(1e-6*m); 
-    fieldManager->SetMinimumEpsilonStep(1e-9*m);
+    pFieldManager->GetChordFinder()->SetDeltaChord(1e-9*m);
+    pFieldManager->SetDeltaIntersection(1e-9*m);
+    pFieldManager->SetDeltaOneStep(1e-9*m);
+    pFieldManager->SetMaximumEpsilonStep(1e-6*m); 
+    pFieldManager->SetMinimumEpsilonStep(1e-9*m);
     //*/
-    fAcceleratorField->Init();
+    pGPField->Init();
 
   }
   else
   {
-    fieldManager->SetDetectorField(NULL );
+    pFieldManager->SetDetectorField(NULL );
     G4cout<<"The Accelerator Field is inactive."<<G4endl;
   }
 
@@ -211,51 +219,100 @@ void GPAcceleratorFieldManagerPool::UpdateField()
 void GPAcceleratorFieldManagerPool::SetStepper()
 {
   G4int nvar=12;
-  if(fAcceleratorStepper) delete fAcceleratorStepper;
+  if(pIntegratorStepper) delete pIntegratorStepper;
   switch ( iStepperType )
   {
     case 0:  
       //  2nd  order, for less smooth fields
-      fAcceleratorStepper = new G4SimpleRunge( fAcceleratorEquation, nvar );    
+      pIntegratorStepper = new G4SimpleRunge( pEquation, nvar );    
       G4cout<<"G4SimpleRunge is called"<<G4endl;    
       break;
     case 1:  
       //3rd  order, a good alternative to ClassicalRK
-      fAcceleratorStepper = new G4SimpleHeum( fAcceleratorEquation, nvar );    
+      pIntegratorStepper = new G4SimpleHeum( pEquation, nvar );    
       G4cout<<"G4SimpleHeum is called"<<G4endl;    
       break;
     case 2:  
       //4th order, classical  Runge-Kutta stepper, which is general purpose and robust.
-      fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation, nvar );    
+      pIntegratorStepper = new G4ClassicalRK4( pEquation, nvar );    
       G4cout<<"G4ClassicalRK4 (default,nvar ) is called"<<G4endl;    
       break;
     case 3:
       //4/5th order for very smooth fields 
-      fAcceleratorStepper = new G4CashKarpRKF45( fAcceleratorEquation, nvar );
+      pIntegratorStepper = new G4CashKarpRKF45( pEquation, nvar );
       G4cout<<"G4CashKarpRKF45 is called"<<G4endl;
       break;
-    default: fAcceleratorStepper = new G4ClassicalRK4( fAcceleratorEquation, nvar );
+    default: pIntegratorStepper = new G4ClassicalRK4( pEquation, nvar );
   }
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void GPAcceleratorFieldManagerPool::SetFieldFlag(G4bool t)
-{
-  SetActive(t);
-  if(IsActive())
-  {
-    fieldManager->SetDetectorField(fAcceleratorField );
-    G4cout<<"Active the Accelerator field!"<<G4endl;
-  }
-  else
-  {
-    fieldManager->SetDetectorField(NULL );
-    G4cout<<"Inative the Accelerator field!"<<G4endl;
-  }
-}
 
 void GPAcceleratorFieldManagerPool::Print(std::ofstream& ofsOutput)
 {
-  fAcceleratorField->Print(ofsOutput);
+  ofsOutput
+    <<"\n[Begin Field: "+GetName()+"]"
+    <<"\nState:"<<IsActive() ;
+  if(IsActive()) pGPField->Print(ofsOutput);
+  ofsOutput
+    <<"\n[End Field: "+GetName()+"]" ;
 }
 
+void GPAcceleratorFieldManagerPool::Print()
+{
+  std::cout
+    <<"\n[Begin Field: "+GetName()+"]"
+    <<"\nState:"<<IsActive() ;
+  if(IsActive()) pGPField->Print();
+  std::cout
+    <<"\n[End Field: "+GetName()+"]" ;
+}
+void GPAcceleratorFieldManagerPool::SetParameter(std::string sLocal, std::string sGlobal)
+{
+    std::stringstream ss(sLocal);
+    std::string		  sUnit;
+    std::string		  sKey;
+    std::string		  sValue;
+    G4double   		  dValueNew;
+    G4double   		  dValueOrg;
+    
+    ss>>sKey>>sValue>>sUnit;
+    ss.clear();
+    ss.str(sValue);
+    ss>>dValueOrg;
+
+    if(sUnit!="")
+      dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
+    else dValueNew=dValueOrg;
+
+    std::string sTotalKey=sKey;
+    std::string sFirstKey;
+    std::string sLeftKey;
+    size_t iFirstDot;
+    iFirstDot = sTotalKey.find(".");
+    if(iFirstDot!=std::string::npos)
+    {
+      sFirstKey=sTotalKey.substr(0,iFirstDot);
+      sLeftKey=sTotalKey.substr(iFirstDot+1);
+    }
+    if(sFirstKey=="field")
+    {
+      pGPField->SetParameter(sLeftKey+" "+sValue+" "+sUnit,sGlobal);
+      return;
+    }
+    else if(sKey=="active")
+      SetActive(1);
+    else if(sKey=="inactive")
+      SetActive(0);
+    else 
+    {
+      std::cout<<GetName()<<": "+sKey+": Key does not exist."<<std::endl;
+      return;
+    }
+
+    std::cout<<GetName()<<": Set "<<sKey<<": "<< sValue<<" "<<sUnit<<std::endl;
+}
+double GPAcceleratorFieldManagerPool::GetParameter(std::string sLocal, std::string sGlobal) const
+{
+  return -1;
+}

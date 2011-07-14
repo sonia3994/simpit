@@ -39,6 +39,13 @@
 //  Constructors:
 
 GPFieldSetup* GPFieldSetup::instance = NULL;
+GPFieldSetup* GPFieldSetup::GetInstance()
+{
+  if(instance==NULL)
+    instance = new GPFieldSetup();
+  return instance;
+}
+
 GPFieldSetup* GPFieldSetup::GetGPFieldSetup()
 {
   if(instance==NULL)
@@ -53,8 +60,6 @@ void GPFieldSetup::DestroyGPFieldSetup()
 GPFieldSetup::GPFieldSetup():
   propInField(0),
   fGlobalFieldManager(0),
-  fCaptureFieldManagerPool(0),
-  fAcceleratorFieldManagerPool(0),
   fGlobalMagnetic(0), 
   fGlobalChordFinder(0),
   fGlobalEquation(0), 
@@ -66,8 +71,6 @@ GPFieldSetup::GPFieldSetup():
   fGlobalEquation = new G4EqEMFieldWithSpin(fGlobalMagnetic); 
 
   fGlobalFieldManager = GetGlobalFieldManager();
-  fCaptureFieldManagerPool = new GPCaptureFieldManagerPool("/capture/geometry/field/","/capture/geometry/");
-  fAcceleratorFieldManagerPool = new GPAcceleratorFieldManagerPool("/accelerator/geometry/field/","/accelerator/geometry/");
 
 
   fFieldMessenger = new GPFieldMessenger(this) ;  
@@ -103,34 +106,17 @@ GPFieldSetup::~GPFieldSetup()
   if(fGlobalEquation)			delete fGlobalEquation; 
   //if(fGlobalIntegratorDriver)		delete fGlobalIntegratorDriver; 
   if(fFieldMessenger)     delete fFieldMessenger;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPFieldSetup::~GPFieldSetup()"<<G4endl;
-#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //
 void GPFieldSetup::Init()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPFieldSetup::Init()"<<G4endl;
-#endif
   UpdateField();
-  fCaptureFieldManagerPool->Init();
-  fAcceleratorFieldManagerPool->Init();
-
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPFieldSetup::Init()"<<G4endl;
-#endif
 }
 //
 GPFieldManagerPool* GPFieldSetup::FindFieldManagerPool(std::string name) 
 { 
-  if(name=="/capture/geometry/field/")
-  {return fCaptureFieldManagerPool ;}
-  else if(name=="/accelerator/geometry/field/")
-  {return fAcceleratorFieldManagerPool ;}
-  else return NULL;
 }
 
 // Update field
@@ -212,6 +198,20 @@ G4FieldManager*  GPFieldSetup::GetGlobalFieldManager()
 
 void GPFieldSetup::Print(std::ofstream& ofsOutput)
 {
-  fCaptureFieldManagerPool->Print(ofsOutput);
-  fAcceleratorFieldManagerPool->Print(ofsOutput);
 }
+GPFieldManagerPool* GPFieldSetup::FindAndBuildFieldManagerPool(std::string sType,std::string sFatherName) 
+{ 
+  GPFieldManagerPool* pFieldManagerPool;
+  if(sType=="capture")
+    pFieldManagerPool  = new GPCaptureFieldManagerPool(sFatherName+"field_manager/",sFatherName);
+
+  else if(sType=="accelerator")
+    pFieldManagerPool  = new GPAcceleratorFieldManagerPool(sFatherName+"field_manager/",sFatherName);
+  else 
+  {
+    G4cout<<"This type of field does not exsit: "+sType<<G4endl;
+    pFieldManagerPool = NULL;
+  }
+  return pFieldManagerPool;
+}
+

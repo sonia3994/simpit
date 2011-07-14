@@ -28,6 +28,7 @@ class GPSolidManager : public GPObject
     void Print();
     void Print(std::ofstream& );
     void Update();
+    bool IsInThisSolid(G4ThreeVector);
   protected:
     void SetSolidType(std::string);
   protected:

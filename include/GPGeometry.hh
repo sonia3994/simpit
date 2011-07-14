@@ -23,6 +23,8 @@ class GPGeometry : public GPObject
     virtual ~GPGeometry();
     virtual G4VPhysicalVolume* Construct(G4LogicalVolume* , G4ThreeVector )=0;
     virtual G4VPhysicalVolume* Construct(G4LogicalVolume*){return NULL;};
+    virtual bool IsInThisGeometry(G4ThreeVector){return false;};
+    virtual G4ThreeVector TransferToLocalFrame(G4ThreeVector);
     int GetPriority(){return iPriority;};
     void SetPriority(int i){iPriority=i;};
     void SetPosition(G4ThreeVector);

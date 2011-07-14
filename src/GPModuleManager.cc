@@ -74,11 +74,11 @@ void GPModuleManager::ConstructModule()
     GPModuleStore::GetInstance()->Clear();
   }
   ConstructRoot();
-  ConstructCrystal();
-  ConstructSweeper();
-  ConstructTarget();
-  ConstructCapture();
-  ConstructAccelerator();
+  //ConstructCrystal();
+  //ConstructSweeper();
+  //ConstructTarget();
+  //ConstructCapture();
+  //ConstructAccelerator();
   iConstructedFlag=1;              
   //GPModuleStore::GetInstance()->Print();
 }
