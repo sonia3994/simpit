@@ -148,6 +148,7 @@ GPCaptureFieldMessenger::~GPCaptureFieldMessenger()
 
 void GPCaptureFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
 { 
+  /*
   if( command == StepperCmd )
   { 
     fEMfieldManager->SetStepperType(StepperCmd->GetNewIntValue(newValue));
@@ -208,6 +209,7 @@ void GPCaptureFieldMessenger::SetNewValue( G4UIcommand* command, G4String newVal
   { 
     fEMfieldManager->SetFieldFlag(FieldFlag->GetNewBoolValue(newValue));
   }
+  */
 
 }
 

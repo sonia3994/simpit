@@ -12,8 +12,9 @@
 #define GPAcceleratorFieldManager_H
 
 //#include "G4MagneticField.hh"
-#include "G4ElectroMagneticField.hh"
+//#include "G4ElectroMagneticField.hh"
 #include "GPFieldManagerPool.hh"
+#include "GPField.hh"
 #include "globals.hh"
 //#include "G4UniformMagField.hh"
 //#include <string>
@@ -23,72 +24,51 @@ class G4Mag_UsualEqRhs;
 class G4EqEMFieldWithSpin;
 class G4MagIntegratorStepper;
 class G4MagInt_Driver;
-class G4FieldManager;
 
-class GPAcceleratorFieldMessenger;
 
-class GPAcceleratorField : public G4ElectroMagneticField
+//class GPAcceleratorField : public G4ElectroMagneticField
+class GPAcceleratorField : public GPField
 {
-public:
-  	GPAcceleratorField();
-  	~GPAcceleratorField();
-	void Init();
-	void Print(std::ofstream&);
-  	void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
-  	inline void SetFieldValueB0(G4double t){dB0=t;G4cout<<"Set accelerator field  B0: "<<t<<" tesla"<<G4endl;};
-  	inline void SetFieldValueE0(G4double t){dE0=t;G4cout<<"Set accelerator field  E0: "<<t<<" volt/m"<<G4endl;};
-  	inline void SetFieldType(G4int t){iFieldType=t;G4cout<<"Set accelerator field  type: "<<t<<G4endl;};
-	G4bool	DoesFieldChangeEnergy() const {return true;};
+  public:
+    GPAcceleratorField();
+    ~GPAcceleratorField();
+    void Init();
+    void Print(std::ofstream&);
+    void Print();
+    void SetParameter(std::string, std::string);
+    double GetParameter(std::string, std::string)const;
+    void GetFieldValue(const G4double Point[3], G4double *Bfield) const;
+    G4bool	DoesFieldChangeEnergy() const {return true;};
 
-protected:
-  	G4double 		dB0;
-  	G4double 		dB1;
-  	G4double 		dE0;
-  	G4double 		dE1;
-   	G4double 	 	dTarL;
-   	G4double 	 	dCapL;
-   	G4double 	 	dAccL;
-   	G4double 	 	dAccR;
-  	G4double 		dDelta;
-	G4int			iFieldType;
+  protected:
+    G4double 		dB0;
+    G4double 		dB1;
+    G4double 		dE0;
+    G4double 		dE1;
+    G4int		iFieldType;
 
 };
 
 class GPAcceleratorFieldManagerPool : public GPFieldManagerPool
 {
 
-public:
+  public:
 
-  GPAcceleratorFieldManagerPool(std::string, std::string) ;
- ~GPAcceleratorFieldManagerPool() ;
-      
-  void Init();
-  void Print(std::ofstream&);
-  void Print(){};
-  inline void SetStepperType( G4int i) { iStepperType = i ;G4cout<<"Set accelerator field stepper type: "<<i<<G4endl; };
-  inline void SetMinStep(G4double s) { dMinStep = s ;G4cout<<"Set accelerator field  minmum step: "<<s<<" m"<<G4endl; };
-  void UpdateField();
-  void SetFieldFlag(G4bool) ;
-  G4FieldManager* GetFieldManager(){return fieldManager;}
+    GPAcceleratorFieldManagerPool(std::string, std::string) ;
+    ~GPAcceleratorFieldManagerPool() ;
 
-protected:
-  void SetStepper();
+    void Init();
+    void Print(std::ofstream&);
+    void Print();
+    void SetParameter(std::string, std::string);
+    double GetParameter(std::string, std::string) const;
+    void Update();
 
-protected:
-  //G4PropagatorInField*    	propInField;
+  protected:
+    void SetStepper();
 
-  GPAcceleratorField*       fAcceleratorField ; 
-  G4ChordFinder*         	fAcceleratorChordFinder ;
-  G4EqEMFieldWithSpin*      	fAcceleratorEquation ; 
-  G4MagIntegratorStepper*	fAcceleratorStepper ;
-  G4MagInt_Driver*			fAcceleratorIntegratorDriver;
-
-  G4int                  	iStepperType ;
-  G4double               	dMinStep ;
-
-  GPAcceleratorFieldMessenger*      	fFieldMessenger;
-  G4bool					bAcceleratorFieldFlag;
-  G4FieldManager* fieldManager;
+  protected:
+    //G4PropagatorInField*    	propInField;
 
 };
 

@@ -54,11 +54,11 @@ GPDetectorConstruction::GPDetectorConstruction():
 {
   GPFieldSetup* fieldSetup = GPFieldSetup::GetGPFieldSetup();
   GPModuleManager::GetInstance()->ConstructModule();
-  crystalGeometry = (GPCrystalGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/crystal/geometry/");
-  sweeperGeometry = (GPSweeperGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/sweeper/geometry/");
-  targetGeometry  = (GPGranularHexagonGeometry*) GPGeometryStore::GetInstance()->FindGeometry("/target/geometry/");
-  captureGeometry = (GPCaptureGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/capture/geometry/");
-  acceleratorGeometry = (GPAcceleratorGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/accelerator/geometry/");
+  //crystalGeometry = (GPCrystalGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/crystal/geometry/");
+  //sweeperGeometry = (GPSweeperGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/sweeper/geometry/");
+  //targetGeometry  = (GPGranularHexagonGeometry*) GPGeometryStore::GetInstance()->FindGeometry("/target/geometry/");
+  //captureGeometry = (GPCaptureGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/capture/geometry/");
+  //acceleratorGeometry = (GPAcceleratorGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/accelerator/geometry/");
 
   dWorldX = 500.0e-3;
   dWorldY = 500.0e-3;

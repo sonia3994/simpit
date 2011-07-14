@@ -39,6 +39,7 @@ class GPFieldSetup
 public:
 
  static GPFieldSetup* GetGPFieldSetup();
+ static GPFieldSetup* GetInstance();
  static void DestroyGPFieldSetup();
       
   void Init();
@@ -48,6 +49,7 @@ public:
   void SetFieldFlag(G4bool) ;
   void UpdateField();
   GPFieldManagerPool*  FindFieldManagerPool(std::string name);
+  GPFieldManagerPool*  FindAndBuildFieldManagerPool(std::string,std::string);
 
 protected:
   void SetStepper();

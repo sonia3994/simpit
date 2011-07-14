@@ -109,6 +109,7 @@ GPAcceleratorFieldMessenger::~GPAcceleratorFieldMessenger()
 
 void GPAcceleratorFieldMessenger::SetNewValue( G4UIcommand* command, G4String newValue)
 { 
+  /*
   if( command == StepperCmd )
   { 
     fEMfieldManager->SetStepperType(StepperCmd->GetNewIntValue(newValue));
@@ -147,6 +148,7 @@ void GPAcceleratorFieldMessenger::SetNewValue( G4UIcommand* command, G4String ne
     //wait for writing
   }
 
+  */
 }
 
 //

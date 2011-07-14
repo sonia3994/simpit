@@ -22,3 +22,7 @@ G4ThreeVector GPGeometry::GetPositionInGlobalFrame()
 {
   return vPositionInGlobalFrame;
 }
+G4ThreeVector GPGeometry::TransferToLocalFrame(G4ThreeVector vGlobal)
+{
+  return (vGlobal-vPositionInGlobalFrame);
+}

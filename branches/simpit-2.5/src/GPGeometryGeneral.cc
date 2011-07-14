@@ -65,7 +65,7 @@ GPGeometryGeneral::~GPGeometryGeneral()
   delete pSdHandle;
   delete pSolidManager;
   if(pComplexSolid) delete pComplexSolid;
-  //pFieldManagerPool->SetActive(0);
+  if(pFieldManagerPool) delete pFieldManagerPool;
 }
 
 void GPGeometryGeneral::Update()
@@ -153,9 +153,10 @@ G4VPhysicalVolume* GPGeometryGeneral::Construct(G4LogicalVolume* motherLog,G4Thr
              vPosition*m,
              pLogicalVolume,sBaseNameChild+"physicalVolume",motherLog,false,0);
 
-  pFieldManagerPool = GPFieldSetup::GetGPFieldSetup()->FindFieldManagerPool(GetName()+"field/");
   if(pFieldManagerPool)
+  {
     pLogicalVolume->SetFieldManager(pFieldManagerPool->GetFieldManager(),true);
+  }
   if(pComplexSolid)
     pComplexSolid->Construct(pLogicalVolume);
 
@@ -185,6 +186,7 @@ void GPGeometryGeneral::Print()
     <<"\nStep Limit Flag of Geometry: "<<iStepLimitFlag
     <<"\nStep Limit of Geometry: "<<dStepLimit*m/mm<<" mm";
   pSolidManager->Print();
+  if(pFieldManagerPool) pFieldManagerPool->Print();
   if(pComplexSolid) pComplexSolid->Print();
   pSdHandle->Print();
   G4cout
@@ -194,9 +196,9 @@ void GPGeometryGeneral::Print()
    
 }
 
-void GPGeometryGeneral::SetParameter(std::string str,std::string sGlobal)
+void GPGeometryGeneral::SetParameter(std::string sLocal,std::string sGlobal)
 {
-    std::stringstream ss(str);
+    std::stringstream ss(sLocal);
     std::string		  sUnit;
     std::string		  sKey;
     std::string		  sValue;
@@ -233,6 +235,11 @@ void GPGeometryGeneral::SetParameter(std::string str,std::string sGlobal)
       pSdHandle->SetParameter(sLeftKey+" "+sValue+" "+sUnit,sGlobal);
       return;
     }
+    else if(sFirstKey=="field_manager"&&pFieldManagerPool!=NULL)
+    {
+      pFieldManagerPool->SetParameter(sLeftKey+" "+sValue+" "+sUnit,sGlobal);
+      return;
+    }
     else if(sFirstKey=="cs")
     {
       if(pComplexSolid)
@@ -264,13 +271,19 @@ void GPGeometryGeneral::SetParameter(std::string str,std::string sGlobal)
     }
     else if(sKey=="set.cs")
     {
-      if (pComplexSolid)
-	delete pComplexSolid;
+      if (pComplexSolid) delete pComplexSolid;
       pComplexSolid = GPComplexSolidManager::GetInstance()
 	->FindAndBuildComplexSolid(sValue,GetName()+"cs/",GetName());
 
       if (pComplexSolid==NULL)
       return;
+    }
+    else if(sKey=="set.field_manager")
+    {
+      if(pFieldManagerPool) delete pFieldManagerPool;
+      pFieldManagerPool = GPFieldSetup::GetInstance()
+	->FindAndBuildFieldManagerPool(sValue,GetName());
+      if (pFieldManagerPool==NULL) return;
     }
     else 
     {
@@ -321,6 +334,7 @@ void GPGeometryGeneral::Print(std::ofstream& fstOutput)
     <<"\nStep Limit Flag of Geometry: "<<iStepLimitFlag
     <<"\nStep Limit of Geometry: "<<dStepLimit*m/mm<<" mm";
   pSolidManager->Print(fstOutput);
+  if(pFieldManagerPool) pFieldManagerPool->Print(fstOutput);
   if(pComplexSolid) pComplexSolid->Print(fstOutput);
   pSdHandle->Print(fstOutput);
   fstOutput
@@ -354,4 +368,9 @@ GPComplexSolid* GPGeometryGeneral::GetComplexSolid()const
 GPSolidManager* GPGeometryGeneral::GetSolidManager() const
 {
   return pSolidManager;
+}
+bool GPGeometryGeneral::IsInThisGeometry(G4ThreeVector vGlobal)
+{
+  G4ThreeVector vLocal=vGlobal-vPositionInGlobalFrame;
+  return pSolidManager->IsInThisSolid(vLocal);
 }

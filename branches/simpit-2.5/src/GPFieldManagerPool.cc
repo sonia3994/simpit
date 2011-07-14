@@ -6,22 +6,39 @@
 //
 
 #include "GPFieldManagerPool.hh"
+#include "GPField.hh"
 #include "G4FieldManager.hh"
 
-GPFieldManagerPool::GPFieldManagerPool()
+#include "G4EqEMFieldWithSpin.hh"
+#include "G4MagIntegratorStepper.hh"
+#include "G4MagIntegratorDriver.hh"
+#include "G4ChordFinder.hh"
+GPFieldManagerPool::GPFieldManagerPool(std::string sName, std::string sFatherName):
+  pGPField(0),
+  pChordFinder(0),
+  pEquation(0), 
+  pIntegratorStepper(0),
+  pIntDriver(0)
 {
+  SetActive(1);
+  SetName(sName);
+  SetFatherName(sFatherName);
+
+  pFieldManager = new G4FieldManager();
 }
 GPFieldManagerPool::~GPFieldManagerPool()
 {
+  if(pFieldManager)		delete pFieldManager; 
 }
 
-void GPFieldManagerPool::UpdateField()
+void GPFieldManagerPool::Update()
 {
 }
 G4FieldManager*  GPFieldManagerPool::GetFieldManager()
 {
-  return NULL;
+  return pFieldManager;
 }
 void GPFieldManagerPool::Init()
 {
+  Update();
 }
