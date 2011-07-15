@@ -32,13 +32,8 @@ public:
   void  EndOfEventAction(const G4Event*);
   inline  G4int GetEventID() const {return iEventID;};
   inline void  SetPrintModulo(G4int    val)  {iPrintModel = val;};
-  inline void AddTargetED(G4double de) {dEnergyTar+=de;};
-  inline void AddTargetStep(G4double TargetStep) {dTrackL+=TargetStep;}; 
-  void  AddPositron(G4ThreeVector,G4ThreeVector,G4double);                  
   void  SetTrajectoryFlag(G4int i){iTrajectoryFlag=i;};                  
-  void ProcessParticleHits(GPParticleHitsCollection*,G4String);
-  void ProcessEdd(GPTargetHitsCollection* );
-    
+   
 private:
    G4double  dEnergyTar;
    G4double  dTrackL;

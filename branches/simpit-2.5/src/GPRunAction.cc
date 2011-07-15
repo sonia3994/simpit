@@ -120,35 +120,16 @@ void GPRunAction::BeginOfRunAction(const G4Run* aRun)
     <<"\nRun ID: "<<iRunID
     <<"\nEvents Number:"<<numEvt
     <<G4endl;
+  G4cout<<"Init Field."<<G4endl;
+  GPFieldSetup::GetGPFieldSetup()->Init();
   GPModuleManager::GetInstance()->Print(ofsParaFile);
   primaryGenerator->Print(ofsParaFile);
 
-  G4cout<<"Init Field."<<G4endl;
-  GPFieldSetup::GetGPFieldSetup()->Init();
 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void GPRunAction::FillPerEvent(G4double ETar,G4double LTrack,G4int positronPerEvt)
-{
-  //accumulate statistic
-  //
-  dSumETar += ETar;  dSum2ETar += ETar*ETar;
-  dSumLTrack += LTrack;  dSum2LTrack += LTrack*LTrack;
-  iPositronPerRun +=positronPerEvt;  
-}
-
-//
-void GPRunAction::AddEddHit(G4int x, G4int y, G4int z, G4double e)
-{
-  if(bTargetSDFlag)
-  {
-    G4int index=x+y*vecIntEddDim[0]+z*vecIntEddDim[0]*vecIntEddDim[1];
-    vecDouEdd[index]=vecDouEdd[index]+e;
-  }
-}
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void GPRunAction::EndOfRunAction(const G4Run* aRun)
 {
@@ -163,47 +144,6 @@ void GPRunAction::EndOfRunAction(const G4Run* aRun)
     << G4endl;
 }
 
-void GPRunAction::OutPutData(std::string name,std::vector<G4double> value) 
-{
-  std::map<std::string, std::ofstream* >::iterator iter=mapStrOfsOutputHandler.find(name);
-  if(iter!=mapStrOfsOutputHandler.end())
-  {
-    OutPut(iter,value);
-  }
-  else
-  {
-    G4cout<<"Wrong output key!"<<G4endl;
-  }
-
-
-}
-void GPRunAction::OutPut(std::map<std::string, std::ofstream* >::iterator iter,std::vector<G4double> value) 
-{
-
-  for(size_t j=0;j!=value.size();j++)
-  {
-    *(iter->second)<<value[j]<<" ";
-  }
-
-  *(iter->second)<<G4endl;
-
-}
-void GPRunAction::AddElectronNumber(G4String key, G4int value) 
-{
-  std::map<G4String, G4int>::iterator iter=mapElectron.find(key);
-  if(iter!=mapElectron.end())
-  {
-    mapElectron[key] += value;
-  }
-}
-void GPRunAction::AddPositronNumber(G4String key, G4int value) 
-{
-  std::map<G4String, G4int>::iterator iter=mapPositron.find(key);
-  if(iter!=mapPositron.end())
-  {
-    mapPositron[key] += value;
-  }
-}
 
 G4int GPRunAction::GetRunID()
 {
