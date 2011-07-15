@@ -33,17 +33,9 @@ public:
   void  BeginOfRunAction(const G4Run*);
   void  EndOfRunAction(const G4Run*);
     
-  void OutPutData(std::string,std::vector<G4double>); 
-  void FillPerEvent(G4double,G4double,G4int); 
-  void AddEddHit(G4int, G4int, G4int, G4double);
-  void AddActualG(G4int t){iActualG+=t;};
-  void AddElectronNumber(G4String,G4int);
-  void AddPositronNumber(G4String,G4int);
   G4String GetDataPath();
   G4int    GetRunID();
 
-private:
-  void OutPut(std::map<std::string, std::ofstream* >::iterator,std::vector<G4double>); 
 
 private:
   G4String sFilePath;

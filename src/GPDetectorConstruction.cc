@@ -4,8 +4,6 @@
 
 #include "GPDetectorConstruction.hh"
 #include "GPDetectorMessenger.hh"
-#include "GPFieldSetup.hh"
-//#include "GPCaptureFieldManager.hh"
 #include "GPSurfaceParticleScorer.hh"
 #include "GPGranularHexagonGeometry.hh"
 #include "GPCaptureGeometry.hh"
@@ -52,13 +50,7 @@ GPDetectorConstruction::GPDetectorConstruction():
   sweeperPhys(0),
   worldBox(0),worldLog(0),worldPhys(0)
 {
-  GPFieldSetup* fieldSetup = GPFieldSetup::GetGPFieldSetup();
   GPModuleManager::GetInstance()->ConstructModule();
-  //crystalGeometry = (GPCrystalGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/crystal/geometry/");
-  //sweeperGeometry = (GPSweeperGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/sweeper/geometry/");
-  //targetGeometry  = (GPGranularHexagonGeometry*) GPGeometryStore::GetInstance()->FindGeometry("/target/geometry/");
-  //captureGeometry = (GPCaptureGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/capture/geometry/");
-  //acceleratorGeometry = (GPAcceleratorGeometry*)GPGeometryStore::GetInstance()->FindGeometry("/accelerator/geometry/");
 
   dWorldX = 500.0e-3;
   dWorldY = 500.0e-3;
@@ -74,7 +66,6 @@ GPDetectorConstruction::GPDetectorConstruction():
 GPDetectorConstruction::~GPDetectorConstruction()
 {
   if(detectorMessenger) 	delete detectorMessenger;
-  GPFieldSetup::DestroyGPFieldSetup();
   if(Vacuum) 				delete Vacuum;
   if(W) 					delete W;
   GPModuleManager::GetInstance()->Delete();
@@ -256,37 +247,7 @@ void GPDetectorConstruction::SetParameter(std::string str)
     strLeft=strInput.substr(iFirstDot+1);
   }
 
-  if(strFirstLevel=="target")
-  {
-    targetGeometry->SetParameter(strLeft,str);
-    return;
-  }
-
-  if(strFirstLevel=="capture")
-  {
-    captureGeometry->SetParameter(strLeft,str);
-    return;
-  }
-
-  if(strFirstLevel=="accelerator")
-  {
-    acceleratorGeometry->SetParameter(strLeft,str);
-    return;
-  }
-
-  if(strFirstLevel=="sweeper")
-  {
-    sweeperGeometry->SetParameter(strLeft,str);
-    return;
-  }
-
-  if(strFirstLevel=="crystal")
-  {
-    crystalGeometry->SetParameter(strLeft,str);
-    return;
-  }
-
-  else if(key=="world.x")
+  if(key=="world.x")
     dWorldX = dValueNew;
   else if(key=="world.y")
     dWorldY = dValueNew;
@@ -317,10 +278,4 @@ void GPDetectorConstruction::Print(std::ofstream& fstOuput)
     <<"\ny, " << dWorldY 
     <<"\nz, " << dWorldZ
     << G4endl;
-  //targetGeometry->Print(fstOuput);
-  //captureGeometry->Print(fstOuput);
-  //acceleratorGeometry->Print(fstOuput);
-  //sweeperGeometry->Print(fstOuput);
-  //crystalGeometry->Print(fstOuput);
-  GPFieldSetup::GetGPFieldSetup()->Print(fstOuput);
 }

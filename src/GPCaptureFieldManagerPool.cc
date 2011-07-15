@@ -119,49 +119,7 @@ void GPCaptureField::Init()
   dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*2*dSolidHalfLength)));
   dQwtFermiCoef0=dB1-0.5*dQwtFermiCoef1;
 
-  if(iFieldType==0)
-  {
-    G4cout<<"\nCapture field Active AMD\n"
-      <<MacRightAlign<<std::setw(16)<<"Alpha: "<<dAmdAlpha<<" m^(-1)\n"
-      <<MacRightAlign<<std::setw(16)<<"B0: "<<dB0<<" tesla\n"
-      <<MacRightAlign<<std::setw(16)<<"B1: "<<dB1<<" tesla"
-      <<G4endl;
-  }
-  else if(iFieldType==1)
-  {
-    G4cout<<"\nCapture field Active QWT, Fermi Distribution approximation:\n"
-      <<MacRightAlign<<std::setw(16)<<"Formula: "<<"B=A1+A2/(1+exp(A3*(Z-Z1)))\n"
-      <<MacRightAlign<<std::setw(16)<<"A1: "<<dQwtFermiCoef0<<" \n"
-      <<MacRightAlign<<std::setw(16)<<"A2: "<<dQwtFermiCoef1<<" \n"
-      <<MacRightAlign<<std::setw(16)<<"A3: "<<dQwtFermiAlpha<<" \n"
-      <<MacRightAlign<<std::setw(16)<<"B0: "<<dB0<<" tesla\n"
-      <<MacRightAlign<<std::setw(16)<<"B1: "<<dB1<<" tesla"
-      <<G4endl;
-  }
-  else if(iFieldType==2)
-  {
-    G4cout<<"\nCapture field Active QWT, Negative Quadratic approximation:\n"
-      <<MacRightAlign<<std::setw(16)<<"Alpha: "<<dQwtNegaSqrAlpha<<" m^(-2)\n"
-      <<MacRightAlign<<std::setw(16)<<"B0: "<<dB0<<" tesla\n"
-      <<MacRightAlign<<std::setw(16)<<"B1: "<<dB1<<" tesla"
-      <<G4endl;
-  }
-  else if(iFieldType==3)
-  {
-    G4cout<<"\nCapture field Active QWT,Abrupt field.\n"
-      <<MacRightAlign<<std::setw(16)<<"B0: "<<dB0<<" tesla\n"
-      <<MacRightAlign<<std::setw(16)<<"B1: "<<dB1<<" tesla"
-      <<G4endl;
-  }
-  else if(iFieldType==4)
-  {
-    G4cout<<"\nCapture field Active Lithium.\n"
-      <<MacRightAlign<<std::setw(24)<<"Lithium lens length: "<<2*dSolidHalfLength<<" m\n"
-      <<MacRightAlign<<std::setw(24)<<"Lithium lens radius: "<<dSolidRadius<<" m\n"
-      <<MacRightAlign<<std::setw(24)<<"Focal length: "<<dFocalLength<<" m\n"
-      <<MacRightAlign<<std::setw(24)<<"Current: "<<dCurrentI<<" A\n"
-      <<G4endl;
-  }
+  Print();
 
 }
 
@@ -316,21 +274,23 @@ void GPCaptureField::Print()
   if(iFieldType==0)
   {
     std::cout<<"\nCapture field type, AMD"
-      <<"\nFormula, B=B0/(1+z*Alpha)"
+      <<"\nFormula, B=B0/(1+Alpha*(Z+Z0))"
       <<"\nAlpha, "<<dAmdAlpha<<" m^(-1)"
       <<"\nB0, "<<dB0<<" tesla"
       <<"\nB1, "<<dB1<<" tesla"
+      <<"\nZ0, "<<dSolidHalfLength<<" m"
       <<G4endl;
   }
   else if(iFieldType==1)
   {
     std::cout<<"\nCapture field type, QWT(Fermi Distribution approximation)"
-      <<"\nFormula, B=A1+A2/(1+exp(A3*(Z-Z1)))"
+      <<"\nFormula, B=A1+A2/(1+exp(A3*(Z-Z0)))"
       <<"\nA1, "<<dQwtFermiCoef0
       <<"\nA2, "<<dQwtFermiCoef1
       <<"\nA3, "<<dQwtFermiAlpha
       <<"\nB0, "<<dB0<<" tesla"
       <<"\nB1, "<<dB1<<" tesla"
+      <<"\nZ0, "<<dSolidHalfLength<<" m"
       <<G4endl;
   }
   else if(iFieldType==2)
@@ -368,10 +328,11 @@ void GPCaptureField::Print(std::ofstream& ofsOutput)
   if(iFieldType==0)
   {
     ofsOutput<<"\nCapture field type, AMD"
-      <<"\nFormula, B=B0/(1+z*Alpha)"
+      <<"\nFormula, B=B0/(1+Alpha*(Z+Z0))"
       <<"\nAlpha, "<<dAmdAlpha<<" m^(-1)"
       <<"\nB0, "<<dB0<<" tesla"
       <<"\nB1, "<<dB1<<" tesla"
+      <<"\nZ0, "<<dSolidHalfLength<<" m"
       <<G4endl;
   }
   else if(iFieldType==1)
@@ -524,11 +485,21 @@ void GPCaptureFieldManagerPool::SetStepper()
 
 void GPCaptureFieldManagerPool::Print(std::ofstream& ofsOutput)
 {
-  pGPField->Print(ofsOutput);
+  ofsOutput
+    <<"\n[Begin Field: "+GetName()+"]"
+    <<"\nState:"<<IsActive() ;
+  if(IsActive()) pGPField->Print(ofsOutput);
+  ofsOutput
+    <<"\n[End Field: "+GetName()+"]" ;
 }
 void GPCaptureFieldManagerPool::Print()
 {
-  pGPField->Print();
+  std::cout
+    <<"\n[Begin Field: "+GetName()+"]"
+    <<"\nState:"<<IsActive() ;
+  if(IsActive()) pGPField->Print();
+  std::cout
+    <<"\n[End Field: "+GetName()+"]" ;
 }
 void GPCaptureFieldManagerPool::SetParameter(std::string sLocal, std::string sGlobal)
 {
