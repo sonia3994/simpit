@@ -118,10 +118,10 @@ void GPAcceleratorField::GetFieldValue(const G4double Point[3], G4double *Bfield
   if(iVerbose>1)
   {
     G4ThreeVector vB( Bfield[0]/tesla, Bfield[1]/tesla, Bfield[2]/tesla);
-    G4ThreeVector vE( Bfield[3]*m/volt, Bfield[5]*m/volt, Bfield[5]*m/volt);
+    G4ThreeVector vE( Bfield[3]*m/volt, Bfield[4]*m/volt, Bfield[5]*m/volt);
     std::cout
-      <<"Global position (m): "<<vGlobal<<"; Local position (m): "<<vLocal
-      <<"\nB (tesla): "<<vB<<";  E (volt/m): "<<vE
+      <<"; Local position (m): "<<vLocal
+      <<"; B (tesla): "<<vB<<";  E (volt/m): "<<vE
       <<std::endl;
   }
 }

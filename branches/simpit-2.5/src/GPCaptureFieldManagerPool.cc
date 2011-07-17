@@ -108,18 +108,20 @@ double GPCaptureField::GetParameter(std::string sLocal, std::string sGlobal) con
 void GPCaptureField::Init()
 {
 
-  GPGeometry* geometry =NULL;
-  if(geometry==NULL)
-    geometry = GPGeometryStore::GetInstance()->FindGeometry(sGeometryName);
-  dSolidRadius = geometry->GetParameter("width","width")/2;
-  dSolidHalfLength = geometry->GetParameter("length","length")/2;
-  dSqrCapR=dSolidRadius*dSolidRadius;
-  dAmdAlpha=(dB0/dB1-1)/(2*dSolidHalfLength); //unit m^(-1)
-  dQwtNegaSqrAlpha=(dB0/dB1-1)/(2*dSolidHalfLength*2*dSolidHalfLength);//unit m^(-2)
-  dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*2*dSolidHalfLength)));
-  dQwtFermiCoef0=dB1-0.5*dQwtFermiCoef1;
+	GPGeometry* geometry =NULL;
+	geometry = GPGeometryStore::GetInstance()->FindGeometry(sGeometryName);
+	if(geometry!=NULL)
+	{
+		dSolidRadius = geometry->GetParameter("width","width")/2;
+		dSolidHalfLength = geometry->GetParameter("length","length")/2;
+		dSqrCapR=dSolidRadius*dSolidRadius;
+		dAmdAlpha=(dB0/dB1-1)/(2*dSolidHalfLength); //unit m^(-1)
+		dQwtNegaSqrAlpha=(dB0/dB1-1)/(2*dSolidHalfLength*2*dSolidHalfLength);//unit m^(-2)
+		dQwtFermiCoef1=(dB0-dB1)/(-0.5+1/(1+exp(-dQwtFermiAlpha*2*dSolidHalfLength)));
+		dQwtFermiCoef0=dB1-0.5*dQwtFermiCoef1;
+	}
 
-  Print();
+	Print();
 
 }
 
@@ -169,10 +171,10 @@ void GPCaptureField::GetFieldValue(const G4double Point[3], G4double *Bfield) co
   if(iVerbose>1)
   {
     G4ThreeVector vB( Bfield[0]/tesla, Bfield[1]/tesla, Bfield[2]/tesla);
-    G4ThreeVector vE( Bfield[3]*m/volt, Bfield[5]*m/volt, Bfield[5]*m/volt);
+    G4ThreeVector vE( Bfield[3]*m/volt, Bfield[4]*m/volt, Bfield[5]*m/volt);
     std::cout
-      <<"Global position (m): "<<vGlobal<<"; Local position (m): "<<vLocal
-      <<"\nB (tesla): "<<vB<<";  E (volt/m): "<<vE
+      <<"Local position (m): "<<vLocal
+      <<"; B (tesla): "<<vB<<";  E (volt/m): "<<vE
       <<std::endl;
   }
 

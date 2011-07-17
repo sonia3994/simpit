@@ -120,7 +120,7 @@ void  GPRunHandleGeneral::EndOfRunAction(const G4Run* run)
     return;
   }
 
-  else if(sSDType=="G4MultiFunctionalDetector")
+  else if(sSDType=="G4MultiFunctionalDetector"&&mStrG4THitsMap.size()!=0)
   {
     ofs.open((sPath+"/"+sRunID+sFatherName+"G4MultiFunctional.dat").c_str());
     std::map<std::string,G4THitsMap<G4double>* >::iterator itStrTHit;
