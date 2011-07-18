@@ -139,22 +139,20 @@ void GPEventHandleGeneral::ProcessParticleHits(GPParticleHitsCollection* particl
   static G4double	globalTime; 
   static G4int iTrackID=0;
   static G4int iLastTrackID=-1;
-  static G4int iNumElectron=0;
-  static G4int iNumPositron=0;
   static size_t numHit; 
 
-  iNumPositron=0;
-  iNumElectron=0;
   numHit=particleHitsCollection->GetSize(); 
   //std::cout<<"size: "<<numHit<<std::endl;
   for(size_t i=0;i!=numHit;i++)
   {
     pParticleHit=static_cast<GPParticleHit*>(particleHitsCollection->GetHit(i));
     iTrackID = pParticleHit->GetTrackID();
+    /*
     if(iTrackID==iLastTrackID)	
     {
       continue;
     }
+    */
     iLastTrackID=iTrackID;
     particleName = pParticleHit->GetParticleName();
     vecPos = pParticleHit->GetPosition();

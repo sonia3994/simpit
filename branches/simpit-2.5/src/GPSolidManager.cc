@@ -179,7 +179,7 @@ void GPSolidManager::SetSolidType(std::string sValue)
 
 bool GPSolidManager::IsInThisSolid(G4ThreeVector vLocal)
 {
-  if(abs(vLocal.x())<=dWidth/2&&abs(vLocal.y())<=dHeight/2&&abs(vLocal.z())<=dLength/2)
+  if(fabs(vLocal.x())<=dWidth/2&&fabs(vLocal.y())<=dHeight/2&&fabs(vLocal.z())<=dLength/2)
     return true;
   else return false;
 }
