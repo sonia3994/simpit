@@ -492,7 +492,7 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     */
     else if(sKey=="bunch.rms")
     dBunchLength=dValueNew/picosecond;
-    else if(sKey=="random.flag")
+    else if(sKey=="fixed.flag")
     bFixedParticleGun=dValueNew;
 
    else 

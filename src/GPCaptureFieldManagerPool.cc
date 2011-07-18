@@ -74,6 +74,7 @@ void GPCaptureField::SetParameter(std::string sLocal, std::string sGlobal)
     ss.str(sValue);
     ss>>dValueOrg;
 
+    //TODO: units transform
     if(sUnit!="")
       dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
     else dValueNew=dValueOrg;
