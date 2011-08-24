@@ -158,11 +158,18 @@ void GPPrimaryGeneratorAction::GeneratePrimariesFixedParticleGun(G4Event* anEven
 
 void GPPrimaryGeneratorAction::SetParticleStyle(G4String tmpParticleStyle)
 {
-  sParticleStyle = tmpParticleStyle;
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  G4ParticleDefinition* particle = particleTable->FindParticle(sParticleStyle);
-  particleGun->SetParticleDefinition(particle);
-  G4cout<<"\nThe initial Particle is :"<<sParticleStyle<<"\n"<<G4endl;
+  G4ParticleDefinition* particle = particleTable->FindParticle(tmpParticleStyle);
+  if(particle)
+  {
+	  particleGun->SetParticleDefinition(particle);
+	  sParticleStyle = tmpParticleStyle;
+	  G4cout<<"\nSet primary partilce successed: "<<sParticleStyle<<"\n"<<G4endl;
+  }
+  else
+  {
+	  G4cout<<"\nSet primary partilce failed: "<<tmpParticleStyle<<"\n"<<G4endl;
+  }
 }
 
 void GPPrimaryGeneratorAction::SetParticleMomentumDirection(G4ThreeVector t)
@@ -472,8 +479,6 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     verbose = dValueNew;
     else if(sKey=="number")
     iNParticles=dValueNew;
-    else if(sKey=="particle.type")
-    sParticleStyle=sValueOrg;
     else if(sKey=="position.z")
     dParticlePosZ=dValueNew/m;
     else if(sKey=="position.mean")
@@ -484,6 +489,11 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     dEnergyMean=dValueNew/MeV;
     else if(sKey=="energy.rms")
     dEnergyRMS=dValueNew/MeV;
+    else if(sKey=="particle.type")
+	{
+		SetParticleStyle(sValueOrg);
+		return;
+	}
     /*
     else if(sKey=="momentum.mean")
     dMommentumMean=dValueNew/MeV;
@@ -501,7 +511,7 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
      return;
    }
 
-   std::cout<<"Set: "<<sKey<<" to "<< dValueOrg<<" "<<sUnit<<std::endl;
+   std::cout<<"Set: "<<sKey<<" to "<< sValueOrg<<" "<<sUnit<<std::endl;
 
 }
 

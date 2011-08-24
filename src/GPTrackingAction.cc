@@ -29,6 +29,7 @@ void GPTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
   G4String particleName=aTrack->GetDefinition()->GetParticleName();
 
   
+  /*
   // Create trajectory only for track in tracking region
   //if((particleName=="e+"||particleName=="e-"||particleName=="gamma")&&trackInfo->GetTrackingStatus() > 0)
   if((particleName=="e+"||particleName=="e-")&&trackInfo->GetTrackingStatus() > 0)
@@ -41,6 +42,7 @@ void GPTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
   { 
     fpTrackingManager->SetStoreTrajectory(false); 
   }
+  */
   
 }
 
