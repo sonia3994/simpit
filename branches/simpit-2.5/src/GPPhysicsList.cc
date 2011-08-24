@@ -12,32 +12,17 @@
 
 GPPhysicsList::GPPhysicsList()
 {	
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPPhysicsList::GPPhysicsList()"<<G4endl;
-#endif
-dCutGamma=1*um;
-dCutElectron=1*um;
-dCutPositron=1*um;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPhysicsList::GPPhysicsList()"<<G4endl;
-#endif
+dCutGamma=1*mm;
+dCutElectron=1*mm;
+dCutPositron=1*mm;
 }
 
 GPPhysicsList::~GPPhysicsList()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPPhysicsList::~GPPhysicsList()"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPhysicsList::~GPPhysicsList()"<<G4endl;
-#endif
 }
 
 void GPPhysicsList::ConstructParticle()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPPhysicsList::ConstructParticle()"<<G4endl;
-#endif
   // In this method, static member functions should be called
   // for all particles which you want to use.
   // This ensures that objects of these particle types will be
@@ -48,9 +33,6 @@ void GPPhysicsList::ConstructParticle()
   ConstructMesons();
   ConstructBaryons();
   ConstructIons();
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPhysicsList::ConstructParticle()"<<G4endl;
-#endif
 }
 
 #include "G4BosonConstructor.hh"
@@ -146,9 +128,6 @@ void GPPhysicsList::ConstructIons()
 
 void GPPhysicsList::ConstructProcess()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPPhysicsList::ConstructProcess()"<<G4endl;
-#endif
   // Define transportation process
   AddTransportation();
 
@@ -156,9 +135,6 @@ void GPPhysicsList::ConstructProcess()
   ConstructDecay();
 
   AddStepMax();
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPhysicsList::ConstructProcess()"<<G4endl;
-#endif
 }
 
 #include "G4ComptonScattering.hh"
