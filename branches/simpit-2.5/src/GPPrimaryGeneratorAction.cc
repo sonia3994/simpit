@@ -100,7 +100,7 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double 	x0=randGauss->shoot(dPositionMean,dPositionRMS);
   G4double 	y0=randGauss->shoot(dPositionMean,dPositionRMS);
   G4double 	px0=randGauss->shoot(dMommentumMean,dMommentumRMS);
-  G4double 	px0=randGauss->shoot(dMommentumMean,dMommentumRMS);
+  G4double 	py0=randGauss->shoot(dMommentumMean,dMommentumRMS);
   G4double 	pz0=sqrt(1.0-(px0*px0+py0*py0));
 
   if(verbose>=1)
@@ -123,7 +123,7 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 void GPPrimaryGeneratorAction::GeneratePrimariesFixedParticleGun(G4Event* anEvent)
 {
   G4double 	x0=dPositionMean;
-  G4double 	y0=dPositionMean
+  G4double 	y0=dPositionMean;
 
   G4double 	energy=std::abs(dEnergyMean);
 
