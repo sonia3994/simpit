@@ -31,8 +31,8 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
   dPositionRMS=2.0e-3;
   dEnergyMean=30.0;
   dEnergyRMS=10.0;
-  dMommentumMean=0.1;
-  dMommentumRMS=0.1;
+  dMommentumMean=0.0;
+  dMommentumRMS=0.0;
   dParticlePosZ=-3.0e-3;
   dBunchLength=6;
   bFixedParticleGun=true;
@@ -446,59 +446,58 @@ G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey)
 
 void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlobal)
 {
-    std::stringstream ss(sLocal);
-    std::string		  sUnit;
-    std::string		  sKey;
-    std::string		  sValueOrg;
-    G4double   		  dValueNew;
-    G4double   		  dValueOrg;
-    
-    ss>>sKey>>sValueOrg>>sUnit;
-    ss.clear();
-    ss.str(sValueOrg);
-    ss>>dValueOrg;
+  std::stringstream ss(sLocal);
+  std::string		  sUnit;
+  std::string		  sKey;
+  std::string		  sValueOrg;
+  G4double   		  dValueNew;
+  G4double   		  dValueOrg;
 
-    if(sUnit!="")
+  ss>>sKey>>sValueOrg>>sUnit;
+  ss.clear();
+  ss.str(sValueOrg);
+  ss>>dValueOrg;
+
+  if(sUnit!="")
     dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()));
-    else dValueNew=dValueOrg;
-    
-    if(sKey=="verbose")
+  else dValueNew=dValueOrg;
+
+  if(sKey=="verbose")
     verbose = dValueNew;
-    else if(sKey=="number")
+  else if(sKey=="number")
     iNParticles=dValueNew;
-    else if(sKey=="position.z")
+  else if(sKey=="position.z")
     dParticlePosZ=dValueNew/m;
-    else if(sKey=="position.mean")
+  else if(sKey=="position.mean")
     dPositionMean=dValueNew/m;
-    else if(sKey=="position.tr.rms")
+  else if(sKey=="position.tr.rms")
     dPositionRMS=dValueNew/m;
-    else if(sKey=="energy.mean")
+  else if(sKey=="energy.mean")
     dEnergyMean=dValueNew/MeV;
-    else if(sKey=="energy.rms")
+  else if(sKey=="energy.rms")
     dEnergyRMS=dValueNew/MeV;
-    else if(sKey=="particle.type")
-	{
-		SetParticleStyle(sValueOrg);
-		return;
-	}
-    /*
-    else if(sKey=="momentum.mean")
-    dMommentumMean=dValueNew/MeV;
-    else if(sKey=="momentum.rms")
-    dMommentumRMS=dValueNew/MeV;
-    */
-    else if(sKey=="bunch.rms")
+  else if(sKey=="particle.type")
+  {
+    SetParticleStyle(sValueOrg);
+    return;
+  }
+  else if(sKey=="momentum.mean")
+    dMommentumMean=dValueNew;
+  else if(sKey=="momentum.rms")
+    dMommentumRMS=dValueNew;
+
+  else if(sKey=="bunch.rms")
     dBunchLength=dValueNew/picosecond;
-    else if(sKey=="fixed.flag")
+  else if(sKey=="fixed.flag")
     bFixedParticleGun=dValueNew;
 
-   else 
-   {
-     std::cout<<"The sKey: "<<sKey<<" is not exist."<<std::endl;
-     return;
-   }
+  else 
+  {
+    std::cout<<"The sKey: "<<sKey<<" is not exist."<<std::endl;
+    return;
+  }
 
-   std::cout<<"Set: "<<sKey<<" to "<< sValueOrg<<" "<<sUnit<<std::endl;
+  std::cout<<"Set: "<<sKey<<" to "<< sValueOrg<<" "<<sUnit<<std::endl;
 
 }
 
@@ -520,12 +519,12 @@ G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey,std::string sKe
     return dEnergyMean;
     else if(sKey=="energy.rms")
     return dEnergyRMS;
-    /*
+    
     else if(sKey=="momentum.mean")
     return dMommentumMean;
     else if(sKey=="momentum.rms")
     return dMommentumRMS;
-    */
+    
     else if(sKey=="time.rms")
     return dBunchLength;
     //else if(sKey=="verbose")
