@@ -95,24 +95,13 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       return;
     }
 
-  G4double 	r=randGauss->shoot(dPositionMean,dPositionRMS);
-  G4double 	theta=rand()%360;
-  r=std::abs(r);
-  G4double 	x0=r*cos(theta);
-  G4double 	y0=r*sin(theta);
-  G4double 	ptheta=rand()%360;
-  G4double 	ptm=2.0;
-
-  while(std::abs(ptm)>1.0)
-  {
-  ptm=randGauss->shoot(dMommentumMean,dMommentumRMS);
-  }
-  ptm=std::abs(ptm);
-  G4double 	px0=ptm*cos(ptheta);
-  G4double 	py0=ptm*sin(ptheta);
-  G4double 	pz0=sqrt(1.0-(px0*px0+py0*py0));
   G4double 	energy=randGauss->shoot(dEnergyMean,dEnergyRMS);
   energy=std::abs(energy);
+  G4double 	x0=randGauss->shoot(dPositionMean,dPositionRMS);
+  G4double 	y0=randGauss->shoot(dPositionMean,dPositionRMS);
+  G4double 	px0=randGauss->shoot(dMommentumMean,dMommentumRMS);
+  G4double 	px0=randGauss->shoot(dMommentumMean,dMommentumRMS);
+  G4double 	pz0=sqrt(1.0-(px0*px0+py0*py0));
 
   if(verbose>=1)
   {
@@ -133,10 +122,8 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 void GPPrimaryGeneratorAction::GeneratePrimariesFixedParticleGun(G4Event* anEvent)
 {
-  G4double 	r=dPositionMean;
-  G4double 	theta=rand()%360;
-  G4double 	x0=r*cos(theta);
-  G4double 	y0=r*sin(theta);
+  G4double 	x0=dPositionMean;
+  G4double 	y0=dPositionMean
 
   G4double 	energy=std::abs(dEnergyMean);
 
