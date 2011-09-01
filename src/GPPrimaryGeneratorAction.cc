@@ -115,6 +115,7 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   particleGun->SetParticlePosition(G4ThreeVector(x0*m,y0*m,dParticlePosZ*m));
   particleGun->SetParticleMomentumDirection(G4ThreeVector(px0,py0,pz0));
   particleGun->SetParticleEnergy(energy*MeV);
+  particleGun->SetParticleTime(randGauss->shoot(0.0,dBunchLength)*picosecond);
     
   particleGun->GeneratePrimaryVertex(anEvent);
 
