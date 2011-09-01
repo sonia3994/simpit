@@ -15,19 +15,10 @@ G4Allocator<GPParticleHit> GPParticleHitAllocator;
 
 GPParticleHit::GPParticleHit()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit()"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPParticleHit::GPParticleHit()"<<G4endl;
-#endif
 }
 
 GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)"<<G4endl;
-#endif
   sParticleName=step->GetTrack()->GetDefinition()->GetParticleName();
   iPDG = step->GetTrack()->GetDefinition()->GetPDGEncoding();
   iTrackID=step->GetTrack()->GetTrackID();
@@ -38,36 +29,23 @@ GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)
   vecMom=stepPoint->GetMomentum()/MeV;
   dTotalEnergy=stepPoint->GetTotalEnergy()/MeV;
   dGlobalTime=stepPoint->GetGlobalTime()/second;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPParticleHit::GPParticleHit(G4Step* step, G4int iDirection)"<<G4endl;
-#endif
+  v3Polarization=stepPoint->GetPolarization();
 }
 
 GPParticleHit::~GPParticleHit()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPParticleHit::~GPParticleHit()"<<G4endl;
-#endif
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPParticleHit::~GPParticleHit()"<<G4endl;
-#endif
 }
 
 GPParticleHit::GPParticleHit(const GPParticleHit &right)
   : G4VHit()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPParticleHit::GPParticleHit(const GPParticleHit&)"<<G4endl;
-#endif
   sParticleName=right.sParticleName;
   iTrackID=right.iTrackID;
   vecPos=right.vecPos;
   vecMom=right.vecMom;
   dTotalEnergy=right.dTotalEnergy;
   dGlobalTime=right.dGlobalTime;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPParticleHit::~GPParticleHit(const GPParticleHit&)"<<G4endl;
-#endif
+  v3Polarization=right.v3Polarization;
 }
 
 const GPParticleHit& GPParticleHit::operator=(const GPParticleHit &right)
