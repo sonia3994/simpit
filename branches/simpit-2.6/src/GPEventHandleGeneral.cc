@@ -134,6 +134,7 @@ void GPEventHandleGeneral::ProcessParticleHits(GPParticleHitsCollection* particl
   static std::vector<G4double>   vecTrackInf;
   static G4ThreeVector  vecPos;
   static G4ThreeVector  vecMom;
+  static G4ThreeVector  v3Polarization;
   static G4String       particleName;
   static G4double	totalE; 
   static G4double	globalTime; 
@@ -159,6 +160,7 @@ void GPEventHandleGeneral::ProcessParticleHits(GPParticleHitsCollection* particl
     vecMom = pParticleHit->GetMomentum();
     totalE = pParticleHit->GetTotalEnergy(); 
     globalTime = pParticleHit->GetGlobalTime(); 
+    v3Polarization = pParticleHit->GetPolarization();
 
     vecTrackInf.clear();
     vecTrackInf.push_back(pParticleHit->GetPDG());
@@ -172,6 +174,9 @@ void GPEventHandleGeneral::ProcessParticleHits(GPParticleHitsCollection* particl
     vecTrackInf.push_back(vecMom.z());
     vecTrackInf.push_back(totalE);
     vecTrackInf.push_back(globalTime*second/picosecond);
+    vecTrackInf.push_back(v3Polarization.x());
+    vecTrackInf.push_back(v3Polarization.y());
+    vecTrackInf.push_back(v3Polarization.z());
 
     for(size_t i=0;i!=vecTrackInf.size();i++)
     {

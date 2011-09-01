@@ -29,6 +29,7 @@ class GPParticleHit : public G4VHit
 
       inline G4ThreeVector GetPosition(){return vecPos;};
       inline G4ThreeVector GetMomentum(){return vecMom;};
+      inline G4ThreeVector GetPolarization(){return v3Polarization;};
       inline G4double 	   GetTotalEnergy(){return dTotalEnergy;}; 
       inline G4double 	   GetGlobalTime(){return dGlobalTime;}; 
       inline void 	   SetParticleName(G4String str ){sParticleName=str;};
@@ -47,6 +48,7 @@ class GPParticleHit : public G4VHit
       static std::map<G4String,G4AttDef> mapStrAttDef;
       G4ThreeVector     vecPos;
       G4ThreeVector     vecMom;
+      G4ThreeVector     v3Polarization;
       G4String		sParticleName;
       G4double		dTotalEnergy;
       G4double		dGlobalTime;

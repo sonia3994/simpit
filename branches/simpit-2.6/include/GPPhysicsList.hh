@@ -49,6 +49,7 @@ class GPPhysicsList: public G4VUserPhysicsList
 	G4double	dCutGamma;
 	G4double 	dCutElectron;
 	G4double	dCutPositron;
+	G4int		iPolarizedFlag;
 };
 
 #endif
