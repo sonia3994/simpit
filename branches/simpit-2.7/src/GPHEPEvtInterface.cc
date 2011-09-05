@@ -147,9 +147,6 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
     G4double 	VHEP3; //production vertex z
 //    G4double 	VHEP4; production time
 
-	G4double 	polX;
-	G4double 	polY;
-	G4double 	polZ;
 
         G4double 	x1=0;
 	G4double	y1=0;
@@ -182,10 +179,6 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 		//fsOutputFile<<x1<<" "<<y1<<"\n";
 		
 		
-		polX=G4UniformRand();
-		polY=G4UniformRand();
-		polZ=std::sqrt(1.0-polX*polX-polY*polY);
-		
 		vectVHEP= new G4ThreeVector(VHEP1*dUnitL+x1*m,VHEP2*dUnitL+y1*m,VHEP3*m);
 		
 		//rr=sqrt(VHEP1*VHEP1+VHEP2*VHEP2);
@@ -193,7 +186,7 @@ void GPHEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 		// create G4PrimaryParticle object
 		particle = new G4PrimaryParticle( IDHEP, PHEP1*dUnitP, PHEP2*dUnitP, PHEP3*dUnitP);
 		particle->SetMass( PHEP5*dUnitE);
-		particle->SetPolarization(polX,polY,polZ);
+		particle->SetPolarization(dPolX,dPolY,dPolZ);
 		
 		// create G4HEPEvtParticle object
 		hepParticle = new G4HEPEvtParticle( particle, ISTHEP, JDAHEP1, JDAHEP2 );
@@ -269,6 +262,7 @@ void GPHEPEvtInterface::Print()
     <<"\nEvents is implemented from: "<<sFileName
     <<"\nBeam length: "<<dBunchLength<<" ps"
     <<"\nBeam transverse dimension: "<<dRadiusRMSFactor<<" m"
+    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
     <<"\nDistance From crystal to amorphous target: "<<dParticlePosZ<<" m"
     <<"\n-----------------------------------------------------------------\n"
     <<G4endl;
@@ -283,6 +277,7 @@ void GPHEPEvtInterface::Print(std::ofstream& ofsOutput)
     <<"\nPrimary Generator type:, HEPEvt"
     <<"\nEvents is implemented from, "<<sFileName
     <<"\nBeam length, "<<dBunchLength<<" ps"
+    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
     <<"\nBeam transverse dimension, "<<dRadiusRMSFactor<<" m"
     <<"\nDistance From crystal to amorphous target, "<<dParticlePosZ<<" m"
     <<"\n-----------------------------------------------------------------\n"
@@ -352,6 +347,16 @@ void GPHEPEvtInterface::SetParameter(std::string sLocal, std::string sGlobal)
       dRadiusRMSFactor = dValueNew/m;
     else if(sLocalKey=="time.rms")
       dBunchLength = dValueNew/picosecond;
+    else if(sLocalKey=="polarization")
+    {
+      std::string  sTmp;
+      ss.clear();
+      ss.str(sLocal);
+      ss>>sTmp>>dPolX>>dPolY>>dPolZ;
+      std::cout<<"Set polarization(Sx,Sy,Sz): "
+	<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+	<<std::endl;
+    }
    else 
    {
      std::cout<<"The Key: "<<sGlobalKey<<" is not exist."<<std::endl;

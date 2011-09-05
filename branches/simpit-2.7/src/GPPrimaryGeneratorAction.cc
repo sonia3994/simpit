@@ -21,8 +21,8 @@
 #include <cmath>
 #include <iomanip>
 
-#define MacRightAlign  std::setiosflags(std::ios_base::right)
-#define MacLeftAlign  std::setiosflags(std::ios_base::left)
+#define AlignRight  std::setiosflags(std::ios_base::right)
+#define AlignLeft  std::setiosflags(std::ios_base::left)
 
 GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
 {
@@ -54,10 +54,11 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4ParticleDefinition* particle = particleTable->FindParticle(sParticleStyle);
   particleGun->SetParticleDefinition(particle);
-//particleGun->SetParticleTime(0.0*ns);
   particleGun->SetParticlePosition(G4ThreeVector(0.0*m,0.0*m,dParticlePosZ*m));
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
   particleGun->SetParticleEnergy(dEnergyMean*MeV);
+  particleGun->SetParticleTime(0.0);
+  particleGun->SetParticlePolarization(G4ThreeVector(dPolX,dPolY,dPolZ));
 
   HEPEvt = new GPHEPEvtInterface();
   crystalGenerator = new GPCrystalPrimaryGA();
@@ -116,6 +117,7 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   particleGun->SetParticleMomentumDirection(G4ThreeVector(px0,py0,pz0));
   particleGun->SetParticleEnergy(energy*MeV);
   particleGun->SetParticleTime(randGauss->shoot(0.0,dBunchLength)*picosecond);
+  particleGun->SetParticlePolarization(G4ThreeVector(dPolX,dPolY,dPolZ));
     
   particleGun->GeneratePrimaryVertex(anEvent);
 
@@ -140,6 +142,7 @@ void GPPrimaryGeneratorAction::GeneratePrimariesFixedParticleGun(G4Event* anEven
   particleGun->SetParticleMomentumDirection(vectMommentumDirection);
   particleGun->SetParticleEnergy(energy*MeV);
   particleGun->SetParticleTime(0);
+  particleGun->SetParticlePolarization(G4ThreeVector(dPolX,dPolY,dPolZ));
     
   particleGun->GeneratePrimaryVertex(anEvent);
 
@@ -160,72 +163,6 @@ void GPPrimaryGeneratorAction::SetParticleStyle(G4String tmpParticleStyle)
 	  G4cout<<"\nSet primary partilce failed: "<<tmpParticleStyle<<"\n"<<G4endl;
   }
 }
-/*
-
-void GPPrimaryGeneratorAction::SetParticleMomentumDirection(G4ThreeVector t)
-{
-  vectMommentumDirection=t.unit();
-  G4cout<<"Set particle momentum direction. px: "<<vectMommentumDirection.x()<<" px: "<<vectMommentumDirection.y()<<" pz: "<<vectMommentumDirection.z()<<G4endl;
-}
-
-void GPPrimaryGeneratorAction::SetVerboseLevel(G4int ver)
-{
-  verbose=ver;
-  G4cout<<"The verbose level is set to "<<ver<<G4endl;
-}
-
-void GPPrimaryGeneratorAction::SetParticleEnergyDistr(G4double tmpMean,G4double tmpRMS)
-{
-  if (tmpRMS<0)
-  { G4cout<<" Wrong value, RMS must set between [0,++]!"<<G4endl;return;}
-  dEnergyMean=tmpMean;
-  dEnergyRMS=tmpRMS;
-  G4cout<<"The initial energy distribution is set to mean: 	"
-	 	<<tmpMean/MeV<<" MeV, rms: "<< tmpRMS/MeV<<" MeV."<<G4endl;
-}
-
-void GPPrimaryGeneratorAction::SetParticlePositionDistr(G4double tmpMean,G4double tmpRMS)
-{
-  if (tmpRMS<0)
-  { G4cout<<" Wrong value, RMS must set between [0,++]!"<<G4endl;return;}
-    
-  dPositionMean=tmpMean;
-  dPositionRMS=tmpRMS;
-  G4cout<<"The initial position distribution is set to mean: 	"
-	 	<<tmpMean*m/mm<<" mm, rms: "<< tmpRMS*m/mm<<" mm."<<G4endl;
-}
-
-void GPPrimaryGeneratorAction::SetParticlePositionZ(G4double tmp)
-{
-  dParticlePosZ=tmp;
-  if(HEPEvt!=0) HEPEvt->SetParticlePosZ(tmp);
-}
-
-void GPPrimaryGeneratorAction::SetBunchLength(G4double tmp)
-{
-  dBunchLength=tmp;
-  if(HEPEvt!=0) HEPEvt->SetBunchLength(tmp);
-}
-
-void GPPrimaryGeneratorAction::SetParticleMomentumDistr(G4double tmpMean,G4double tmpRMS)
-{
-  if(std::abs(tmpMean>1.0)||std::abs(tmpRMS)>1.0)
-  { G4cout<<" Wrong value, must set between [0,1]!"<<G4endl;return;}
-
-  dMommentumMean=tmpMean;
-  dMommentumRMS=tmpRMS;
-  G4cout<<"The initial momentum direction distribution is set to mean: 	"
-	 	<<tmpMean<<", rms: "<< tmpRMS<<"."<<G4endl;
-}
-
-void GPPrimaryGeneratorAction::SetParticleInitNumber(G4int tmp)
-{
-  particleGun->SetNumberOfParticles(tmp);
-  iNParticles=tmp;
-  G4cout<<"The initial number per event is set to "<<tmp<<G4endl;
-
-}
-*/
 
 void GPPrimaryGeneratorAction::Print()
 { 
@@ -243,16 +180,17 @@ void GPPrimaryGeneratorAction::Print()
     {
   	G4cout
 	<<"\n------------------Print primary status---------------------------\n"
-  	<<MacRightAlign<<std::setw(32)<<"Fixed primary condition:\n"
-    	<<MacRightAlign<<std::setw(32)<<"Particle style: "<<sParticleStyle<<"\n"
-    	<<MacRightAlign<<std::setw(32)<<"Number per event: "<<iNParticles<<"\n"
-    	<<MacRightAlign<<std::setw(32)<<"Energy : "<<dEnergyMean<<"MeV\n"
-    	<<MacRightAlign<<std::setw(32)<<"Position radius(Transverse): "<<dPositionMean<<" m\n"
-    	<<MacRightAlign<<std::setw(32)<<"Position Z : "<<dParticlePosZ<<" m\n"
-    	<<MacRightAlign<<std::setw(32)<<"Momentum direction: "<<"\n" 
-	<<MacRightAlign<<std::setw(32)<<"px0: "<<vectMommentumDirection.x()<<"\n"
-	<<MacRightAlign<<std::setw(32)<<"py0: "<<vectMommentumDirection.y()<<"\n"
-	<<MacRightAlign<<std::setw(32)<<"pz0: "<<vectMommentumDirection.z()<<"\n"
+  	<<AlignRight<<std::setw(32)<<"Fixed primary condition:\n"
+    	<<AlignRight<<std::setw(32)<<"Particle style: "<<sParticleStyle<<"\n"
+    	<<AlignRight<<std::setw(32)<<"Number per event: "<<iNParticles<<"\n"
+    	<<AlignRight<<std::setw(32)<<"Energy : "<<dEnergyMean<<"MeV\n"
+        <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+    	<<AlignRight<<std::setw(32)<<"Position radius(Transverse): "<<dPositionMean<<" m\n"
+    	<<AlignRight<<std::setw(32)<<"Position Z : "<<dParticlePosZ<<" m\n"
+    	<<AlignRight<<std::setw(32)<<"Momentum direction: "<<"\n" 
+	<<AlignRight<<std::setw(32)<<"px0: "<<vectMommentumDirection.x()<<"\n"
+	<<AlignRight<<std::setw(32)<<"py0: "<<vectMommentumDirection.y()<<"\n"
+	<<AlignRight<<std::setw(32)<<"pz0: "<<vectMommentumDirection.z()<<"\n"
 	<<"-----------------------------------------------------------------\n"
         <<G4endl;	
 	return;
@@ -260,16 +198,17 @@ void GPPrimaryGeneratorAction::Print()
 
        G4cout
         <<"\n------------------Print primary status---------------------------\n"
-        <<MacRightAlign<<std::setw(30)<<"Selected distribution is: "<<"CLHEP::RandGauss\n	"
-    	<<MacRightAlign<<std::setw(30)<<"Particle style: "<<sParticleStyle<<"\n"
-    	<<MacRightAlign<<std::setw(30)<<"Number per event: "<<iNParticles<<"\n"
-    	<<MacRightAlign<<std::setw(30)<<"Energy mean: "<<dEnergyMean<<" MeV\n"
-    	<<MacRightAlign<<std::setw(30)<<"Energy rms: "<<dEnergyRMS<<" MeV\n"
-    	<<MacRightAlign<<std::setw(30)<<"Position mean(Transverse): "<<dPositionMean<<" m\n"
-    	<<MacRightAlign<<std::setw(30)<<"Position rms(Transverse): "<<dPositionRMS<<" m\n"
-    	<<MacRightAlign<<std::setw(30)<<"Position Z : "<<dParticlePosZ<<" m\n"
-    	<<MacRightAlign<<std::setw(30)<<"Momentum mean(Transverse): "<<dMommentumMean<<"\n"
-    	<<MacRightAlign<<std::setw(30)<<"Momentum rms(Transverse): "<<dMommentumRMS<<"\n"
+        <<AlignRight<<std::setw(30)<<"Selected distribution is: "<<"CLHEP::RandGauss\n	"
+    	<<AlignRight<<std::setw(30)<<"Particle style: "<<sParticleStyle<<"\n"
+    	<<AlignRight<<std::setw(30)<<"Number per event: "<<iNParticles<<"\n"
+    	<<AlignRight<<std::setw(30)<<"Energy mean: "<<dEnergyMean<<" MeV\n"
+    	<<AlignRight<<std::setw(30)<<"Energy rms: "<<dEnergyRMS<<" MeV\n"
+        <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+    	<<AlignRight<<std::setw(30)<<"Position mean(Transverse): "<<dPositionMean<<" m\n"
+    	<<AlignRight<<std::setw(30)<<"Position rms(Transverse): "<<dPositionRMS<<" m\n"
+    	<<AlignRight<<std::setw(30)<<"Position Z : "<<dParticlePosZ<<" m\n"
+    	<<AlignRight<<std::setw(30)<<"Momentum mean(Transverse): "<<dMommentumMean<<"\n"
+    	<<AlignRight<<std::setw(30)<<"Momentum rms(Transverse): "<<dMommentumRMS<<"\n"
 	<<"-----------------------------------------------------------------\n"
     	<<G4endl;
 
@@ -297,6 +236,7 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
     	<<"\nParticle style, "<<sParticleStyle
     	<<"\nNumber per event, "<<iNParticles
     	<<"\nEnergy , "<<dEnergyMean<<" MeV"
+        <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
     	<<"\nPosition radius(Transverse), "<<dPositionMean<<" m"
     	<<"\nPosition Z , "<<dParticlePosZ<<" m"
     	<<"\nMomentum direction: " 
@@ -315,6 +255,7 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
     	<<"\nNumber per event, "<<iNParticles
     	<<"\nEnergy mean, "<<dEnergyMean<<" MeV"
     	<<"\nEnergy rms, "<<dEnergyRMS<<" MeV"
+        <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
     	<<"\nPosition mean(Transverse), "<<dPositionMean<<" m"
     	<<"\nPosition rms(Transverse), "<<dPositionRMS<<" m"
     	<<"\nPosition Z , "<<dParticlePosZ<<" m"
@@ -323,42 +264,7 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
     	<<G4endl;
 
 }
-/*
-void GPPrimaryGeneratorAction::SetInputFile(G4String tmp)
-{ 
-	if(HEPEvt) 
-  	{
-   		HEPEvt->SetInputFile(tmp); 
-   		sInputFile=tmp;
-  	}
-  	else
-	{
-   		HEPEvt = new GPHEPEvtInterface(tmp);
-   		sInputFile=tmp;
-   	}
-}
 
-void GPPrimaryGeneratorAction::SetEnergyUnit(G4String tmp)
-{
-  if(HEPEvt!=0) HEPEvt->SetEnergyUnit(tmp);
-}
-
-void GPPrimaryGeneratorAction::SetMomentumUnit(G4String tmp)
-{
-  if(HEPEvt!=0) HEPEvt->SetMomentumUnit(tmp);
-}
-
-void GPPrimaryGeneratorAction::SetLengthUnit(G4String tmp)
-{
-  if(HEPEvt!=0) HEPEvt->SetLengthUnit(tmp);
-}
-
-void GPPrimaryGeneratorAction::SetInputFileRMSFactor(G4double tmp)
-{
-  if(HEPEvt!=0) HEPEvt->SetInputFileRMSFactor(tmp);
-}
-
-*/
 void GPPrimaryGeneratorAction::SetParameter(std::string sLocal)
 {
     std::stringstream ss(sLocal);
@@ -496,6 +402,16 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     dBunchLength=dValueNew/picosecond;
   else if(sKey=="fixed.flag")
     bFixedParticleGun=dValueNew;
+  else if(sKey=="polarization")
+  {
+    std::string  sTmp;
+    ss.clear();
+    ss.str(sLocal);
+    ss>>sTmp>>dPolX>>dPolY>>dPolZ;
+    std::cout<<"Set polarization(Sx,Sy,Sz): "
+      <<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+      <<std::endl;
+  }
 
   else 
   {

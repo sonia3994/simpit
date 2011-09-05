@@ -11,6 +11,7 @@
 
 class Crystal;
 class RunParameters;
+class GPCrystalManagerMessenger;
 
 //#include "G4VUserDetectorConstruction.hh"
 
@@ -29,17 +30,21 @@ class GPCrystalManager
     void SetRunPara(RunParameters* );
     Crystal* GetCrystal(){return crysW;};
     RunParameters* GetRunPara(){return runPara;};
-    void SetParameter(std::string, std::string);
+    void SetParameter(std::string);
     G4double GetParameter(std::string) const;
     void Print();
     void Print(std::ofstream& );
+    std::string GetGeometry();
 
   protected:
     static GPCrystalManager* instance;
+    void SetGeometry(std::string);
   protected:
     
     Crystal*	crysW;
     RunParameters* runPara;
+    std::string sGeometryName;
+    GPCrystalManagerMessenger* pMessenger;
 
 
 };

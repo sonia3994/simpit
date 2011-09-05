@@ -313,6 +313,12 @@ G4double GPGeometryGeneral::GetParameter(std::string sKey, std::string sGlobal) 
     return dStepLimit; 
   else if(sKey=="limit.step.flag")
     return iStepLimitFlag; 
+  else if(sKey=="pos_in_world.x")
+    return vPositionInGlobalFrame.x();
+  else if(sKey=="pos_in_world.y")
+    return vPositionInGlobalFrame.y();
+  else if(sKey=="pos_in_world.z")
+    return vPositionInGlobalFrame.z();
   //else if(sKey=="pSolid.type")
   //  return sSolidType;
   //else if(sKey=="pMaterial")

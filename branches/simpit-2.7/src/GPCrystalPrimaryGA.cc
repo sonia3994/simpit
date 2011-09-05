@@ -34,20 +34,12 @@
 extern CLHEP::RanecuEngine ranecuEngine;
 GPCrystalPrimaryGA::GPCrystalPrimaryGA()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPCrystalPrimaryGA::GPCrystalPrimaryGA()"<<G4endl;
-#endif
   Init();
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPCrystalPrimaryGA::GPCrystalPrimaryGA()"<<G4endl;
-#endif
 }
 
 void GPCrystalPrimaryGA::Init()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPCrystalPrimaryGA::Init()"<<G4endl;
-#endif
+  GPCrystalManager::GetInstance()->GetGeometry();
   dUnitE=MeV;
   dUnitP=MeV;
   dUnitL=cm;
@@ -68,33 +60,30 @@ void GPCrystalPrimaryGA::Init()
   CLHEP:: HepRandom::setTheSeed(time(0),time(0));
   randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.5);
 	
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPCrystalPrimaryGA::Init()"<<G4endl;
-#endif
 }
 
 GPCrystalPrimaryGA::~GPCrystalPrimaryGA()
 {  
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPCrystalPrimaryGA::~GPCrystalPrimaryGA()"<<G4endl;
-#endif
-
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPCrystalPrimaryGA::~GPCrystalPrimaryGA()"<<G4endl;
-#endif
 }
 
 void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPCrystalPrimaryGA::GeneratePrimaryVertex()"<<G4endl;
-#endif
     //G4double	dECharge=CLHEP::electron_charge;
   GPModuleManager* moduleManager = GPModuleManager::GetInstance();
-  G4double dCoordinateZG4FotCrystalToWorld =
+  /*
+  G4double dUpstreamOfCrystal =
     moduleManager->GetParameter("/crystal/geometry/ coordG4FotToGeant4.z");
-  G4double dCrystalBorderPositionZPositive =
+  G4double dDownstreamOfCrystal =
     moduleManager->GetParameter("/crystal/geometry/ border.z.positive");
+    */
+  std::string sCrystalName 
+    = GPCrystalManager::GetInstance()->GetGeometry();
+  G4double dCrystalLength 
+    = moduleManager->GetParameter(sCrystalName+" length");
+  G4double dCrystalPosInWorld_Z 
+    = moduleManager->GetParameter(sCrystalName+" pos_in_world.z");
+  G4double dUpstreamOfCrystal=dCrystalPosInWorld_Z-dCrystalLength/2;
+  G4double dDownstreamOfCrystal=dCrystalPosInWorld_Z+dCrystalLength/2;
   G4double	dECharge=-1.0;
   G4double	dGamma;
 
@@ -146,20 +135,22 @@ void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
   IDHEP = 22;
   for(it=lisPhotonKumakov.begin();it!=lisPhotonKumakov.end();it++)
   {
-    polX=G4UniformRand();
-    polY=G4UniformRand();
-    polZ=std::sqrt(1.0-polX*polX-polY*polY);
+    /*
+    dPolX=G4UniformRand();
+    dPolY=G4UniformRand();
+    dPolZ=std::sqrt(1.0-dPolX*dPolX-dPolY*dPolY);
+    */
     
     dPositionX = it->getXemis()*angstrom/m+randGauss->shoot(0.0,dRadiusRMSFactor);
     dPositionY = it->getYemis()*angstrom/m+randGauss->shoot(0.0,dRadiusRMSFactor);
     //dPositionZ = it->getZemis()*angstrom/m+dParticlePosZ;
-    dPositionZ = it->getZemis()*angstrom/m + dCoordinateZG4FotCrystalToWorld;
+    dPositionZ = it->getZemis()*angstrom/m + dUpstreamOfCrystal;
 
     //dPositionX = it->getXemis()*angstrom/m;
     //dPositionY = it->getYemis()*angstrom/m;
-    //dPositionZ = it->getZemis()*angstrom/m + dCoordinateZG4FotCrystalToWorld;
-    if(dPositionZ>dCrystalBorderPositionZPositive) 
-      dPositionZ = dCrystalBorderPositionZPositive;
+    //dPositionZ = it->getZemis()*angstrom/m + dUpstreamOfCrystal;
+    if(dPositionZ>dDownstreamOfCrystal) 
+      dPositionZ = dDownstreamOfCrystal;
     
     dEnergy = it->getEnergy()*GeV;
     //dMass = it->getWeight();
@@ -172,7 +163,7 @@ void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
     // create G4PrimaryParticle object
     G4PrimaryParticle* particle = new G4PrimaryParticle( IDHEP, dMomentumX, dMomentumY, dMomentumZ);
     particle->SetMass(0);
-    particle->SetPolarization(polX,polY,polZ);
+    particle->SetPolarization(dPolX,dPolY,dPolZ);
     
     particle_time=randGauss->shoot(0.0,dBunchLength)*picosecond;
     
@@ -191,28 +182,27 @@ void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
         -dMomentumY*dMomentumY);
     dPositionX = partCrys.getXPosition()*angstrom/m;
     dPositionY = partCrys.getYPosition()*angstrom/m;
-    dPositionZ = partCrys.getZPosition()*angstrom/m+dCoordinateZG4FotCrystalToWorld;
-    if(dPositionZ>dCrystalBorderPositionZPositive) 
-      dPositionZ = dCrystalBorderPositionZPositive; 
+    dPositionZ = partCrys.getZPosition()*angstrom/m+dUpstreamOfCrystal;
+    if(dPositionZ>dDownstreamOfCrystal) 
+      dPositionZ = dDownstreamOfCrystal; 
     particle_position = G4ThreeVector(dPositionX*m,dPositionY*m,dPositionZ*m);
 
-    polX=G4UniformRand();
-    polY=G4UniformRand();
-    polZ=std::sqrt(1.0-polX*polX-polY*polY);
+    /*
+    dPolX=G4UniformRand();
+    dPolY=G4UniformRand();
+    dPolZ=std::sqrt(1.0-dPolX*dPolX-dPolY*dPolY);
+    */
     particle_time=randGauss->shoot(0.0,dBunchLength)*picosecond;
     
     // create G4PrimaryParticle object
     G4PrimaryParticle* particle = new G4PrimaryParticle( IDHEP, dMomentumX, dMomentumY, dMomentumZ);
     particle->SetMass(ELECTRON_MASS_GEV);
-    particle->SetPolarization(polX,polY,polZ);
+    particle->SetPolarization(dPolX,dPolY,dPolZ);
     G4PrimaryVertex* vertex = new G4PrimaryVertex(particle_position,particle_time);
     vertex->SetPrimary( particle);
     evt->AddPrimaryVertex( vertex );
   }
 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPCrystalPrimaryGA::GeneratePrimaryVertex()"<<G4endl;
-#endif
 }
 
 void GPCrystalPrimaryGA::Print()
@@ -226,6 +216,7 @@ void GPCrystalPrimaryGA::Print()
     <<"\nBeam transverse momentum direction mean: "<<dMomentumTranAngleMean
     <<"\nBeam transverse momentum direction rms: "<<dMomentumTranAgngleRMS
     <<"\nBeam transverse dimension rms: "<<dRadiusRMSFactor<<" m"
+    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
     <<"\nDistance From crystal to amorphous target: "<<dParticlePosZ<<" m"
     <<G4endl;
 
@@ -240,6 +231,7 @@ void GPCrystalPrimaryGA::Print(std::ofstream& ofsOutput)
     <<"\nBeam length, "<<dBunchLength<<" ps"
     <<"\nBeam energy mean, "<<dEnergyMean<<" MeV"
     <<"\nBeam energy rms, "<<dEnergyRMS<<" MeV"
+    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
     <<"\nBeam transverse momentum direction mean, "<<dMomentumTranAngleMean
     <<"\nBeam transverse momentum direction rms, "<<dMomentumTranAgngleRMS
     <<"\nBeam transverse dimension rms, "<<dRadiusRMSFactor<<" m"
@@ -301,6 +293,16 @@ void GPCrystalPrimaryGA::SetParameter(std::string sLocal,std::string sGlobal)
     else if(sLocalKey == "photon.number")
     {
       iProducedPhoton=0;
+    }
+    else if(sLocalKey=="polarization")
+    {
+      std::string  sTmp;
+      ss.clear();
+      ss.str(sLocal);
+      ss>>sTmp>>dPolX>>dPolY>>dPolZ;
+      std::cout<<"Set polarization(Sx,Sy,Sz): "
+	<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+	<<std::endl;
     }
     else 
     {

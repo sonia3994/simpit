@@ -60,9 +60,9 @@ class GPCrystalPrimaryGA:public G4VPrimaryGenerator
     G4double 	dPositionZ; //production vertex z
     G4double 	dTime; //production time
 
-    G4double 	polX;
-    G4double 	polY;
-    G4double 	polZ;
+    G4double 	dPolX;
+    G4double 	dPolY;
+    G4double 	dPolZ;
 
     CLHEP::RandGauss* 				randGauss;
 

@@ -5,6 +5,10 @@
 #include "RunParameters.h"
 
 #include "GPCrystalManager.hh"
+#include "GPCrystalManagerMessenger.hh"
+#include "GPModuleManager.hh"
+
+#include "G4UIcommand.hh"
 
 #include "globals.hh"
 
@@ -18,10 +22,12 @@ GPCrystalManager* GPCrystalManager::GetInstance()
 }
 void GPCrystalManager::Delete()
 {
-  if(instance)  delete instance;
 }
 GPCrystalManager::GPCrystalManager()
 {
+  crysW = new Crystal("W",111);
+  runPara = new RunParameters(*crysW);
+  pMessenger = new GPCrystalManagerMessenger();
 }
 
 GPCrystalManager::~GPCrystalManager()
@@ -32,8 +38,6 @@ GPCrystalManager::~GPCrystalManager()
 
 void GPCrystalManager::Clear()
 {
-  if(crysW) delete crysW;
-  if(runPara) delete runPara;
 }
 
 void GPCrystalManager::SetCrystal(Crystal* value)
@@ -55,76 +59,62 @@ void GPCrystalManager::Print(std::ofstream& fstOutput)
 {
 
 }
-void GPCrystalManager::SetParameter(std::string str,std::string strGlobal)
+void GPCrystalManager::SetParameter(std::string str)
 {
-  /*
-	std::stringstream ss(str);
-	std::string		  unit;
-	std::string		  key;
-	G4double   		  dValueNew;
-	G4double   		  dValueOrg;
-	
-	ss>>key>>dValueOrg>>unit;
-    if(unit!="")
-    dValueNew=(dValueOrg*G4UIcommand::ValueOf(unit.c_str()))/m;
-    else dValueNew=dValueOrg;
+  std::stringstream ss(str);
+  std::string		  sUnit;
+  std::string		  sKey;
+  std::string		  sValue;
+  G4double   		  dValueNew;
+  G4double   		  dValueOrg;
 
-    if(key=="ir")
-    dCrystalTubeInnerRadius = dValueNew;
-    else if(key=="or")
-    dCrystalTubeOuterRadius = dValueNew;
-    else if(key=="l")
-    dCrystalTubeLength = dValueNew;
-    else if(key=="sa")
-    dCrystalTubeStartAngle = dValueNew;
-    else if(key=="ea")
-    dCrystalTubeSpanningAngle = dValueNew;
-    else if(key=="hit.flag")
-    iCrystalHitFlag = dValueNew;
-    else if(key=="limit.step.max")
-    dCrystalLimitStepMax = dValueNew;
-    else if(key=="limit.step.flag")
-    iCrystalLimitStepFlag = dValueNew;
-    else 
-    {
-  	std::cout<<"the key is not exist."<<std::endl;
-     	return;
-    }
+  ss>>sKey>>sValue>>sUnit;
+  ss.clear();
+  ss.str(sValue);
+  ss>>dValueOrg;
+  if(sUnit!="")
+    dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
+  else dValueNew=dValueOrg;
 
-    Init();
-    ss.clear();
-    ss.str(strGlobal);
-    ss>>key;
-    std::cout<<"Set "<<key<<" to "<< dValueOrg<<" "<<unit<<std::endl;
-    */
+  if(sKey=="geometry")
+  {
+    return SetGeometry(sValue);
+  }
+  else 
+  {
+    std::cout<<"The Key is not exist."<<std::endl;
+    return;
+  }
+
+  ss.clear();
+  ss.str(str);
+  ss>>sKey;
+  std::cout<<"Set "<<sKey<<" to "<< sValue<<" "<<sUnit<<std::endl;
 }
 
 G4double GPCrystalManager::GetParameter(std::string name) const
 {
-  /*
-    if(name=="ir")
-    return dCrystalTubeInnerRadius;
-    else if(name=="or")
-    return dCrystalTubeOuterRadius;
-    else if(name=="l")
-    return dCrystalTubeLength;
-    else if(name=="sa")
-    return dCrystalTubeStartAngle;
-    else if(name=="ea")
-    return dCrystalTubeSpanningAngle;
-    else if(name=="hit.flag")
-    return iCrystalHitFlag;
-    else if(name=="limit.step.max")
-    return dCrystalLimitStepMax;
-    else if(name=="limit.step.flag")
-    return iCrystalLimitStepFlag;
-
-    else
-    {
-      std::cout<<"key does not exist.\n"<<std::endl;
-      return -1;
-    }
-    */
-  return 0;
 }
 
+void GPCrystalManager::SetGeometry(std::string sValue)
+{
+  G4double dLength = GPModuleManager::GetInstance()
+    ->GetParameter(sValue+" length");
+  if(dLength>0.0)
+  {
+    std::cout<<"CrystalManager Set crystal geometry: "+sValue
+      <<"\nCrystal length: "<<dLength<<" m"
+      <<std::endl;
+    runPara->setZexit(dLength*m/angstrom); //?? G4Fot unit of length is angstrom;
+    sGeometryName=sValue;
+  }
+  else
+  {
+    std::cout<<"CrystalManager Set crystal geometry fatal: "+sValue
+      <<std::endl;
+  }
+}
+std::string GPCrystalManager::GetGeometry()
+{
+  return sGeometryName;
+}
