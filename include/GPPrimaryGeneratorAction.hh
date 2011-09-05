@@ -37,35 +37,6 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void GeneratePrimaries(G4Event*);
     void Print();
     void Print(std::ofstream& );
-    /*
-    void SetVerboseLevel(G4int);
-    void SetParticleInitNumber(G4int);
-    void SetParticleEnergyDistr(G4double,G4double);
-    void SetParticlePositionDistr(G4double,G4double);
-    void SetParticlePositionZ(G4double);
-    void SetParticleMomentumDirection(G4ThreeVector);
-    void SetParticleMomentumDistr(G4double,G4double);
-    void SetInputFile(G4String );
-    void SetEnergyUnit(G4String);
-    void SetMomentumUnit(G4String);
-    void SetLengthUnit(G4String);
-    void SetInputFileRMSFactor(G4double);    
-    void SetBunchLength(G4double);    
-    inline void SetHEPEvtGenerator(G4bool f)
-    { bHEPEvtFlag = f; G4cout<<"The HEPEvt flag is set to: "<<f<<G4endl;}
-
-//    G4String GetParticleStyle()	{return iNParticles;};
-    inline G4int GetParticleInitNumber()	{return iNParticles;}
-    inline G4String GetInputFileName()		{return	sInputFile;}
-    inline G4double GetParticleEnergyMean()	{return dEnergyMean;}
-    inline G4double GetParticleEnergyRMS()	{return dEnergyRMS;}
-    inline G4double GetParticlePositionMean()	{return dPositionMean;}
-    inline G4double GetParticlePositionRMS()	{return dPositionRMS;}
-    inline G4double GetParticleMomentumMean()	{return dMommentumMean;}
-    inline G4double GetParticleMomentumRMS()	{return dMommentumRMS;}
-
-    inline G4bool GetHEPEvtGenerator() { return bHEPEvtFlag; }
-    */
 
   protected:
     void GeneratePrimariesFixedParticleGun(G4Event* );
@@ -85,6 +56,10 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double 	dParticlePosZ;
     G4double 	dBunchLength;
     G4ThreeVector vectMommentumDirection;
+    G4double 	dPolX;
+    G4double 	dPolY;
+    G4double 	dPolZ;
+
     
     G4bool 						bHEPEvtFlag;
     G4bool 						bFixedParticleGun;

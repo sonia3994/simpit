@@ -99,6 +99,9 @@ class GPHEPEvtInterface:public G4VPrimaryGenerator
     G4double	dRadiusRMSFactor;
     G4bool		bRadiusRMSFactorFlag;
     G4ThreeVector* 	vectVHEP;
+    G4double 	dPolX;
+    G4double 	dPolY;
+    G4double 	dPolZ;
 
     std::fstream 	fsInputFile;
     std::fstream 	fsOutputFile;
