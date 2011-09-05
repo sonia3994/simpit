@@ -35,8 +35,10 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double GetParameter(std::string);
     G4double GetParameter(std::string,std::string);
     void GeneratePrimaries(G4Event*);
+    void Print();
+    void Print(std::ofstream& );
+    /*
     void SetVerboseLevel(G4int);
-    void SetParticleStyle(G4String);
     void SetParticleInitNumber(G4int);
     void SetParticleEnergyDistr(G4double,G4double);
     void SetParticlePositionDistr(G4double,G4double);
@@ -49,8 +51,6 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetLengthUnit(G4String);
     void SetInputFileRMSFactor(G4double);    
     void SetBunchLength(G4double);    
-    void Print();
-    void Print(std::ofstream& );
     inline void SetHEPEvtGenerator(G4bool f)
     { bHEPEvtFlag = f; G4cout<<"The HEPEvt flag is set to: "<<f<<G4endl;}
 
@@ -65,9 +65,11 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     inline G4double GetParticleMomentumRMS()	{return dMommentumRMS;}
 
     inline G4bool GetHEPEvtGenerator() { return bHEPEvtFlag; }
+    */
 
-	protected:
-	  void GeneratePrimariesFixedParticleGun(G4Event* );
+  protected:
+    void GeneratePrimariesFixedParticleGun(G4Event* );
+    void SetParticleStyle(G4String);
 
   private:
     G4int 		verbose;
