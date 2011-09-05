@@ -22,7 +22,7 @@ void GPMain::Delete()
 GPMain::GPMain()
 {
   sProgramName = "simpit";
-  sProgramVersion = "2.4";
+  sProgramVersion = "2.6";
 }
 
 

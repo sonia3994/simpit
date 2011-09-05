@@ -29,14 +29,12 @@ GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(
                                           GPPrimaryGeneratorAction* GPGun)
 :GPPrimary(GPGun)
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(GPPrimaryGeneratorAction*)"<<G4endl;
-#endif
   G4bool omitable;
   G4UIparameter* parameter;
   generatorDir = new G4UIdirectory("/GP/primary/");
   generatorDir->SetGuidance("PrimaryGenerator control");
    
+  /*
   ParStyleCmd = new G4UIcmdWithAString("/GP/primary/initialParticle",this);
   ParStyleCmd->SetGuidance("Select type of the Particle.");
   ParStyleCmd->SetParameterName("ParStyleCmd",false);
@@ -138,6 +136,7 @@ GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(
   PrintParaCmd = new G4UIcmdWithoutParameter("/GP/primary/printParameters",this);
   PrintParaCmd->SetGuidance("Print primary particle parameters.");
   PrintParaCmd->AvailableForStates(G4State_Idle);     
+  */
   
   SetParameter = new G4UIcmdWithAString("/GP/primary/SetParameter",this);
   SetParameter->SetGuidance("Set Primary parameter.");
@@ -152,18 +151,13 @@ GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(
   GetParameter->SetGuidance("For example: GetParameter crystal.time.rms");
   GetParameter->SetParameterName("choice",false);
   GetParameter->AvailableForStates(G4State_PreInit,G4State_Idle);
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorMessenger::GPPrimaryGeneratorMessenger(GPPrimaryGeneratorAction*)"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()"<<G4endl;
-#endif
+  /*
   delete						generatorDir;
   delete						ParStyleCmd;
   delete						InitFileCmd;
@@ -181,11 +175,9 @@ GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()
   delete						MomentumDirectionCmd;
   delete						LengthUnitCmd;
   delete						InputFileRMSFactorCmd;
+  */
   delete SetParameter; 
   delete GetParameter; 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -193,6 +185,7 @@ GPPrimaryGeneratorMessenger::~GPPrimaryGeneratorMessenger()
 void GPPrimaryGeneratorMessenger::SetNewValue(
                                         G4UIcommand* command, G4String newValue)
 { 
+  /*
   if( command == ParStyleCmd )
    { GPPrimary->SetParticleStyle(newValue);}
 
@@ -266,6 +259,7 @@ void GPPrimaryGeneratorMessenger::SetNewValue(
    {
    GPPrimary->SetInputFileRMSFactor(InputFileRMSFactorCmd->GetNewDoubleValue(newValue)/m); 
    }
+   */
    if( command == SetParameter )
    { GPPrimary->SetParameter(newValue);}
    if( command == GetParameter )

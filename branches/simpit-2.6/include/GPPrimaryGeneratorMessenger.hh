@@ -35,6 +35,7 @@ public:
 private:
   GPPrimaryGeneratorAction*			GPPrimary;
   G4UIdirectory*						generatorDir; 
+  /*
   G4UIcmdWithAString*				ParStyleCmd;
   G4UIcmdWithAString*				InitFileCmd;
   G4UIcmdWithAString*				EnergyUnitCmd;
@@ -51,6 +52,7 @@ private:
   G4UIcmdWithADoubleAndUnit*			InputFileRMSFactorCmd;
   G4UIcmdWithADoubleAndUnit*			BunchLengthCmd;
   G4UIcmdWithoutParameter* 			PrintParaCmd;
+  */
 
   G4UIcmdWithAString*	SetParameter;
   G4UIcmdWithAString*	GetParameter;

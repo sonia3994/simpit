@@ -139,6 +139,7 @@ void GPPrimaryGeneratorAction::GeneratePrimariesFixedParticleGun(G4Event* anEven
   particleGun->SetParticlePosition(G4ThreeVector(x0*m,y0*m,dParticlePosZ*m));
   particleGun->SetParticleMomentumDirection(vectMommentumDirection);
   particleGun->SetParticleEnergy(energy*MeV);
+  particleGun->SetParticleTime(0);
     
   particleGun->GeneratePrimaryVertex(anEvent);
 
@@ -159,6 +160,7 @@ void GPPrimaryGeneratorAction::SetParticleStyle(G4String tmpParticleStyle)
 	  G4cout<<"\nSet primary partilce failed: "<<tmpParticleStyle<<"\n"<<G4endl;
   }
 }
+/*
 
 void GPPrimaryGeneratorAction::SetParticleMomentumDirection(G4ThreeVector t)
 {
@@ -223,6 +225,7 @@ void GPPrimaryGeneratorAction::SetParticleInitNumber(G4int tmp)
   G4cout<<"The initial number per event is set to "<<tmp<<G4endl;
 
 }
+*/
 
 void GPPrimaryGeneratorAction::Print()
 { 
@@ -320,6 +323,7 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
     	<<G4endl;
 
 }
+/*
 void GPPrimaryGeneratorAction::SetInputFile(G4String tmp)
 { 
 	if(HEPEvt) 
@@ -354,6 +358,7 @@ void GPPrimaryGeneratorAction::SetInputFileRMSFactor(G4double tmp)
   if(HEPEvt!=0) HEPEvt->SetInputFileRMSFactor(tmp);
 }
 
+*/
 void GPPrimaryGeneratorAction::SetParameter(std::string sLocal)
 {
     std::stringstream ss(sLocal);
@@ -469,7 +474,7 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     iNParticles=dValueNew;
   else if(sKey=="position.z")
     dParticlePosZ=dValueNew/m;
-  else if(sKey=="position.mean")
+  else if(sKey=="position.tr.mean")
     dPositionMean=dValueNew/m;
   else if(sKey=="position.tr.rms")
     dPositionRMS=dValueNew/m;
@@ -482,9 +487,9 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     SetParticleStyle(sValueOrg);
     return;
   }
-  else if(sKey=="momentum.mean")
+  else if(sKey=="momentum.tr.mean")
     dMommentumMean=dValueNew;
-  else if(sKey=="momentum.rms")
+  else if(sKey=="momentum.tr.rms")
     dMommentumRMS=dValueNew;
 
   else if(sKey=="bunch.rms")
@@ -512,18 +517,18 @@ G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey,std::string sKe
     //return sParticleStyle;
     else if(sKey=="position.z")
     return dParticlePosZ;
-    else if(sKey=="position.transverse.mean")
+    else if(sKey=="position.tr.mean")
     return dPositionMean;
-    else if(sKey=="position.transverse.rms")
+    else if(sKey=="position.tr.rms")
     return dPositionRMS;
     else if(sKey=="energy.mean")
     return dEnergyMean;
     else if(sKey=="energy.rms")
     return dEnergyRMS;
     
-    else if(sKey=="momentum.mean")
+    else if(sKey=="momentum.tr.mean")
     return dMommentumMean;
-    else if(sKey=="momentum.rms")
+    else if(sKey=="momentum.tr.rms")
     return dMommentumRMS;
     
     else if(sKey=="time.rms")
