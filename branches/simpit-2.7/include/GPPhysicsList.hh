@@ -17,9 +17,11 @@
 #define GPPhysicsList_h 1
 
 #include "G4VUserPhysicsList.hh"
+#include "G4VPhysicsConstructor.hh"
 #include "globals.hh"
 
 class GPPhysicsList: public G4VUserPhysicsList
+//class GPPhysicsList: public G4VPhysicsConstructor
 {
   public:
     GPPhysicsList();
