@@ -1,9 +1,8 @@
-// $Id: GPPhysicsList.cc,v 1.6 2006/06/29 17:47:21 gunter Exp $
+// $Id: GPPhysicsPolarized.cc,v 1.6 2006/06/29 17:47:21 gunter Exp $
 // GEANT4 tag $Name: geant4-09-02 $
 //
 // 
 
-#include "GPPhysicsList.hh"
 #include "GPPhysicsPolarized.hh"
 
 #include "G4ProcessManager.hh"
@@ -11,90 +10,21 @@
 #include "globals.hh"
 
 
-GPPhysicsList::GPPhysicsList()
+GPPhysicsPolarized::GPPhysicsPolarized(const G4String& name)
+   :  G4VPhysicsConstructor(name)
 {	
-dCutGamma=1*mm;
-dCutElectron=1*mm;
-dCutPositron=1*mm;
-iPolarizedFlag=1;
-pPhysicsConstructor= new GPPhysicsPolarized();
 }
 
-GPPhysicsList::~GPPhysicsList()
+GPPhysicsPolarized::~GPPhysicsPolarized()
 {
-	delete pPhysicsConstructor;
 }
-
-
-void GPPhysicsList::ConstructParticle()
-{
-  // In this method, static member functions should be called
-  // for all particles which you want to use.
-  // This ensures that objects of these particle types will be
-  // created in the program. 
-
-  ConstructBosons();
-  ConstructLeptons();
-  ConstructMesons();
-  ConstructBaryons();
-  ConstructIons();
-}
-
-#include "G4BosonConstructor.hh"
-void GPPhysicsList::ConstructBosons()
-{
-  G4BosonConstructor pConstructor;
-  pConstructor.ConstructParticle();
-}
-
-#include "G4LeptonConstructor.hh"
-void GPPhysicsList::ConstructLeptons()
-{
-
-  // Construct all leptons
-  G4LeptonConstructor pConstructor;
-  pConstructor.ConstructParticle();
-}
-
-#include "G4MesonConstructor.hh"
-void GPPhysicsList::ConstructMesons()
-{
-
-  //  Construct all mesons
-  G4MesonConstructor pConstructor;
-  pConstructor.ConstructParticle();
-}
-
-#include "G4BaryonConstructor.hh"
-void GPPhysicsList::ConstructBaryons()
-{
-
-  //  Construct all barions
-  G4BaryonConstructor  pConstructor;
-  pConstructor.ConstructParticle();  
-}
-
-#include "G4IonConstructor.hh"
-void GPPhysicsList::ConstructIons()
-{
-  //  Construct light ions
-  G4IonConstructor pConstructor;
-  pConstructor.ConstructParticle();  
-}
-
-void GPPhysicsList::ConstructProcess()
+void GPPhysicsPolarized::ConstructProcess()
 {
   // Define transportation process
-  AddTransportation();
+  ConstructEM();
 
-  //ConstructEM();
-  pPhysicsConstructor->ConstructProcess();
-  ConstructDecay();
-
-  AddStepMax();
 }
 
-/*
 #include "G4ComptonScattering.hh"
 #include "G4GammaConversion.hh"
 #include "G4PhotoElectricEffect.hh"
@@ -123,7 +53,7 @@ void GPPhysicsList::ConstructProcess()
 #include "G4ePolarizedIonisation.hh"
 #include "G4ePolarizedBremsstrahlung.hh"
 #include "G4eplusPolarizedAnnihilation.hh"
-void GPPhysicsList::ConstructEM()
+void GPPhysicsPolarized::ConstructEM()
 {
 
   G4ParticleDefinition* particle; 
@@ -138,7 +68,7 @@ void GPPhysicsList::ConstructEM()
     particleName = particle->GetParticleName();
 
     // Polarized processes
-    if(iPolarizedFlag)
+    if (namePhysics=="polarized") 
     {
       if (particleName == "gamma") 
       {
@@ -192,6 +122,7 @@ void GPPhysicsList::ConstructEM()
       }
     }
 
+	/*
     ///*other particles
     if( particleName == "mu+" || 
 	particleName == "mu-"    )
@@ -232,92 +163,12 @@ void GPPhysicsList::ConstructEM()
       pmanager->AddProcess(new G4hMultipleScattering, -1, 1, 1);
       pmanager->AddProcess(new G4hIonisation,         -1, 2, 2);
     }
+	*/
 
   }
 
 }
 
-*/
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-#include "G4Decay.hh"
-
-void GPPhysicsList::ConstructDecay()
-{
-  // Add Decay Process
-  G4ParticleDefinition* particle;
-  G4ProcessManager* pmanager;
-  G4Decay* theDecayProcess = new G4Decay();
-  theParticleIterator->reset();
-
-  while( (*theParticleIterator)() )
-  {
-    particle = theParticleIterator->value();
-    pmanager = particle->GetProcessManager();
-    if (theDecayProcess->IsApplicable(*particle)) 
-    { 
-      pmanager ->AddProcess(theDecayProcess);
-      // set ordering for PostStepDoIt and AtRestDoIt
-      pmanager ->SetProcessOrdering(theDecayProcess, idxPostStep);
-      pmanager ->SetProcessOrdering(theDecayProcess, idxAtRest);
-    }
-  }
-}
-  
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-#include "G4StepLimiter.hh"
-#include "G4UserSpecialCuts.hh"
-
-void GPPhysicsList::AddStepMax()
-{
-///*
-  // Step limitation seen as a process
-  G4StepLimiter* stepLimiter = new G4StepLimiter("MyStepLimiter");
-  //G4UserSpecialCuts* userCuts = new G4UserSpecialCuts("MySpecialCuts");
-  
-  theParticleIterator->reset();
-  while ((*theParticleIterator)()){
-      G4ParticleDefinition* particle = theParticleIterator->value();
-      G4ProcessManager* pmanager = particle->GetProcessManager();
-
-      if (particle->GetPDGCharge() != 0.0)
-        {
-	  pmanager ->AddDiscreteProcess(stepLimiter);
-	  //pmanager ->AddDiscreteProcess(userCuts);
-        }
-  }
-//*/ 
-}
-//
-void GPPhysicsList::SetCuts()
-{
-  //SetDefaultCutValue(1);
-
-  // uppress error messages even in case e/gamma/proton do not exist            
-  //G4int temp = GetVerboseLevel();   
-  //SetVerboseLevel(0);                                                           
-
-  //  " G4VUserPhysicsList::SetCutsWithDefault" method sets 
-  //   the default cut value for all particle types 
-  //This method may not work!!!???
-  //SetCutsWithDefault();   
-  
-  SetCutValue(dCutGamma,"gamma");
-  SetCutValue(dCutElectron,"e+");
-  SetCutValue(dCutPositron,"e-");
-
-  if (verboseLevel >0)
-  {
-    G4cout 
-		<< "GPhysicsList::SetCuts:\n"
-    	<< "gamma CutLength : " << G4BestUnit(dCutGamma,"Length") 
-    	<< "electron CutLength : " << G4BestUnit(dCutElectron,"Length") 
-    	<< "positron CutLength : " << G4BestUnit(dCutPositron,"Length") 
-		<< G4endl;
-  }
-
-  // Retrieve verbose level
-  //SetVerboseLevel(temp);  
-}
 

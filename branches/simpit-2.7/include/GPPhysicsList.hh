@@ -19,7 +19,7 @@
 #include "G4VUserPhysicsList.hh"
 #include "G4VPhysicsConstructor.hh"
 #include "globals.hh"
-
+class G4VPhysicsConstructor;
 class GPPhysicsList: public G4VUserPhysicsList
 //class GPPhysicsList: public G4VPhysicsConstructor
 {
@@ -48,6 +48,7 @@ class GPPhysicsList: public G4VUserPhysicsList
     void AddParameterisation();
 
   protected:
+	G4VPhysicsConstructor* pPhysicsConstructor;
 	G4double	dCutGamma;
 	G4double 	dCutElectron;
 	G4double	dCutPositron;
