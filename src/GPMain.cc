@@ -4,6 +4,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "GPMain.hh"
+#include "GPMainMessenger.hh"
 #include <sstream>
 #include <iostream>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -22,12 +23,22 @@ void GPMain::Delete()
 GPMain::GPMain()
 {
   sProgramName = "simpit";
-  sProgramVersion = "2.7";
+  sProgramVersion = "2.8";
+  sWorkDir=*getenv("PWD");
+  time_t time_m=time(0);
+  G4String sTime;
+  sTime=ctime(&time_m);
+  sTime.resize(24);
+  replace(sTime.begin(),sTime.end(),' ','-');
+  replace(sTime.begin(),sTime.end(),':','-');
+  sDataDir="./output/"+sTime;
+  pMessenger=new GPMainMessenger();
 }
 
 
 GPMain::~GPMain()
 {
+  delete pMessenger;
 }
 
 void GPMain::Init(int argc,char** argv)
@@ -35,7 +46,7 @@ void GPMain::Init(int argc,char** argv)
 	for(int i=0;i<argc;i++)
 		vsArgv.push_back(argv[i]);
 }
-std::string GPMain::GetArgv(int i)
+std::string GPMain::GetArgv(size_t i)
 {
 	if(i<vsArgv.size())
 		return vsArgv[i];
@@ -61,23 +72,47 @@ void GPMain::Update()
 }
 void GPMain::SetParameter(std::string sGlobal)
 {
-    std::string sLocal=sGlobal;
-    std::stringstream ss(sLocal);
-    std::string sKey;
-    std::string sValue;
-    std::string sUnit;
-    ss>>sKey>>sValue>>sUnit;
-	if(sKey=="data.dir")
-		sDataDir=sValue;
-	else if(sKey=="work.dir")
-		sWorkDir=sValue;
-    else
-    {
-      std::cout<<"The key does not exist: "<<sKey<<std::endl;
-    }
+  std::string sLocal=sGlobal;
+  std::stringstream ss(sLocal);
+  std::string sKey;
+  std::string sValue;
+  std::string sUnit;
+  ss>>sKey>>sValue>>sUnit;
+  if(sKey=="app.out_dir")
+    sDataDir=sValue;
+  else
+  {
+    std::cout<<"The key does not exist: "<<sKey<<std::endl;
+  }
+  
+  std::cout<<"GPMain: Set "+sKey+": "+sValue<<std::endl;
+
 }
 double GPMain::GetParameter(std::string sGlobal)
 {
 	return -1;
+}
+std::string GPMain::GetValueInString(std::string sGlobal)
+{
+  std::string sLocal=sGlobal;
+  std::stringstream ss(sLocal);
+  std::string sKey;
+  ss>>sKey;
+  if(sKey=="app.out_dir")
+    return sDataDir;
+  else if (sKey=="app.version")
+    return sProgramVersion;
+  else if (sKey=="app.name")
+    return sProgramName;
+  else if (sKey=="app.work_dir")
+    return sWorkDir;
+  else
+  {
+    return "";
+  }
+
+  std::cout<<"The key does not exist: "<<sKey<<std::endl;
+  return "";
+
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -14,31 +14,34 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+class GPMainMessenger;
 class GPMain 
 {
   public:
-    static GPMain* GetInstance();
-    static void Delete();
-    void Init(int ,char** );
-    void Print();
-    void Print(std::ofstream&);
-    void Update();
-    void SetParameter(std::string);
-    double GetParameter(std::string);
-	std::string GetArgv(int);
-	std::string GetWorkDir();
-	std::string GetDataDir();
+  static GPMain* GetInstance();
+  static void Delete();
+  void Init(int ,char** );
+  void Print();
+  void Print(std::ofstream&);
+  void Update();
+  void SetParameter(std::string);
+  double GetParameter(std::string);
+  std::string GetValueInString(std::string);
+  std::string GetArgv(size_t);
+  std::string GetWorkDir();
+  std::string GetDataDir();
   protected:
-    GPMain();
-    ~GPMain();
+  GPMain();
+  ~GPMain();
   protected:
-    static GPMain* instance;
-    std::string sProgramName;
-    std::string sProgramVersion;
-	std::vector<std::string> vsArgv;
-    std::string sWorkDir;
-    std::string sDataDir;
-  
+  static GPMain* instance;
+  std::string sProgramName;
+  std::string sProgramVersion;
+  std::vector<std::string> vsArgv;
+  std::string sWorkDir;
+  std::string sDataDir;
+  GPMainMessenger* pMessenger;
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -11,6 +11,7 @@
 #include "GPFieldSetup.hh"
 #include "GPSteppingAction.hh"
 #include "GPModuleManager.hh"
+#include "GPMain.hh"
 
 #include "GPRunHandleManager.hh"
 
@@ -37,12 +38,11 @@
 #define MacLeftAlign  std::setiosflags(std::ios_base::left)
 using namespace std;
 namespace fs=boost::filesystem;
-extern std::string  sProgramName;
-extern std::string  sProgramVersion;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPRunAction::GPRunAction()
 {
+  /*
   time_t time_m=time(0);
   G4String sTime;
   sTime=ctime(&time_m);
@@ -57,6 +57,7 @@ GPRunAction::GPRunAction()
   ofsParaFile.open((bfsWorkPath/"Summary.csv").string().c_str(),ios::ate|ios::app);
   ofsParaFile<<"Program infor: "+sProgramName+"-"+sProgramVersion<<std::endl;
   //ofsParaFile.close();
+  */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -70,6 +71,14 @@ GPRunAction::~GPRunAction()
 
 void GPRunAction::BeginOfRunAction(const G4Run* aRun)
 { 
+  sFilePath=GPMain::GetInstance()->GetDataDir();
+  bfsWorkPath=fs::path(sFilePath);
+  fs::create_directories(bfsWorkPath);
+  std::string sProgramVersion=GPMain::GetInstance()->GetValueInString("app.version");
+  std::string sProgramName=GPMain::GetInstance()->GetValueInString("app.name");
+  ofsParaFile.open((bfsWorkPath/"Summary.csv").string().c_str(),ios::ate|ios::app);
+  ofsParaFile<<"Program infor: "+sProgramName+"-"+sProgramVersion<<std::endl;
+
   //inform the runManager to save random number seed
   GPRunHandleManager::GetInstance()->BeginOfRunAction(aRun);
   std::pair<std::string,std::ofstream* > pairHandle;
