@@ -13,6 +13,7 @@
 #include "GPEventAction.hh"
 #include "GPSteppingAction.hh"
 #include "GPTrackingAction.hh"
+#include "GPMain.hh"
 
 #include "Randomize.hh"
 #include "G4RunManager.hh"
@@ -27,9 +28,6 @@
 
   //CLHEP::HepRandomEngine* ranecuEngine=new CLHEP::RanecuEngine;
 CLHEP::RanecuEngine ranecuEngine;
-std::string sProgramName="simpit";
-std::string sProgramVersion="2.7";
-
 int main(int argc,char** argv)
 {
 //Choose the Random engine
@@ -70,6 +68,7 @@ int main(int argc,char** argv)
   // Initialize G4 kernel
   //
   runManager->Initialize();
+  GPMain::GetInstance()->Init(argc,argv);
 
   // Get the pointer to the UI manager and set verbosities
   //

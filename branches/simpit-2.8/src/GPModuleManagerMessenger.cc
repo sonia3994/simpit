@@ -21,9 +21,6 @@
 
 GPModuleManagerMessenger::GPModuleManagerMessenger()
 { 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPModuleManagerMessenger::GPModuleManagerMessenger(GPModuleManager*)"<<G4endl;
-#endif
   moduleDir = new G4UIdirectory("/GP/Module/");
   moduleDir->SetGuidance("Module control");
        
@@ -44,25 +41,16 @@ GPModuleManagerMessenger::GPModuleManagerMessenger()
   printCmd->SetGuidance("Print Module parameters.");
   printCmd->AvailableForStates(G4State_Idle);      
 
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPModuleManagerMessenger::GPModuleManagerMessenger(GPModuleManager*)"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 GPModuleManagerMessenger::~GPModuleManagerMessenger()
 {
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Enter GPModuleManagerMessenger::~GPModuleManagerMessenger()"<<G4endl;
-#endif
   delete setParameterCmd; 
   delete updateCmd;
   delete printCmd;
   delete moduleDir;
-#ifdef GP_DEBUG
-  G4cout<<"GP_DEBUG: Exit GPModuleManagerMessenger::~GPModuleManagerMessenger()"<<G4endl;
-#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
