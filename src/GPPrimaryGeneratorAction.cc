@@ -36,6 +36,9 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
   dParticlePosZ=-3.0e-3;
   dBunchLength=6;
   bFixedParticleGun=true;
+  dPolX=0;
+  dPolY=0;
+  dPolZ=1;
   vectMommentumDirection=G4ThreeVector(0,0,1);
 
   srand(time(0));
@@ -184,7 +187,7 @@ void GPPrimaryGeneratorAction::Print()
     	<<AlignRight<<std::setw(32)<<"Particle style: "<<sParticleStyle<<"\n"
     	<<AlignRight<<std::setw(32)<<"Number per event: "<<iNParticles<<"\n"
     	<<AlignRight<<std::setw(32)<<"Energy : "<<dEnergyMean<<"MeV\n"
-        <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)\n"
+        <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")\n"
     	<<AlignRight<<std::setw(32)<<"Position radius(Transverse): "<<dPositionMean<<" m\n"
     	<<AlignRight<<std::setw(32)<<"Position Z : "<<dParticlePosZ<<" m\n"
     	<<AlignRight<<std::setw(32)<<"Momentum direction: "<<"\n" 
@@ -203,7 +206,7 @@ void GPPrimaryGeneratorAction::Print()
     	<<AlignRight<<std::setw(30)<<"Number per event: "<<iNParticles<<"\n"
     	<<AlignRight<<std::setw(30)<<"Energy mean: "<<dEnergyMean<<" MeV\n"
     	<<AlignRight<<std::setw(30)<<"Energy rms: "<<dEnergyRMS<<" MeV\n"
-        <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)\n"
+        <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")\n"
     	<<AlignRight<<std::setw(30)<<"Position mean(Transverse): "<<dPositionMean<<" m\n"
     	<<AlignRight<<std::setw(30)<<"Position rms(Transverse): "<<dPositionRMS<<" m\n"
     	<<AlignRight<<std::setw(30)<<"Position Z : "<<dParticlePosZ<<" m\n"
@@ -236,7 +239,7 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
     	<<"\nParticle style, "<<sParticleStyle
     	<<"\nNumber per event, "<<iNParticles
     	<<"\nEnergy , "<<dEnergyMean<<" MeV"
-        <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+        <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
     	<<"\nPosition radius(Transverse), "<<dPositionMean<<" m"
     	<<"\nPosition Z , "<<dParticlePosZ<<" m"
     	<<"\nMomentum direction: " 
@@ -255,7 +258,7 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
     	<<"\nNumber per event, "<<iNParticles
     	<<"\nEnergy mean, "<<dEnergyMean<<" MeV"
     	<<"\nEnergy rms, "<<dEnergyRMS<<" MeV"
-        <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+        <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
     	<<"\nPosition mean(Transverse), "<<dPositionMean<<" m"
     	<<"\nPosition rms(Transverse), "<<dPositionRMS<<" m"
     	<<"\nPosition Z , "<<dParticlePosZ<<" m"
@@ -409,8 +412,9 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     ss.str(sLocal);
     ss>>sTmp>>dPolX>>dPolY>>dPolZ;
     std::cout<<"Set polarization(Sx,Sy,Sz): "
-      <<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+      <<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
       <<std::endl;
+	return;
   }
 
   else 

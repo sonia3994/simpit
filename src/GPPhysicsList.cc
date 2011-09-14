@@ -8,6 +8,7 @@
 
 #include "G4ProcessManager.hh"
 #include "G4ParticleTypes.hh"
+#include "G4UnitsTable.hh"
 #include "globals.hh"
 
 
