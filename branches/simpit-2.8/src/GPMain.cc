@@ -6,6 +6,8 @@
 #include "GPMain.hh"
 #include "GPMainMessenger.hh"
 #include <sstream>
+#include <string>
+#include <algorithm>
 #include <iostream>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -25,6 +27,7 @@ GPMain::GPMain()
   sProgramName = "simpit";
   sProgramVersion = "2.8";
   sWorkDir=*getenv("PWD");
+  sMacFile="";
   time_t time_m=time(0);
   G4String sTime;
   sTime=ctime(&time_m);
@@ -45,6 +48,25 @@ void GPMain::Init(int argc,char** argv)
 {
 	for(int i=0;i<argc;i++)
 		vsArgv.push_back(argv[i]);
+        std::string sArgv;
+        std::string sKey;
+        std::string sValue;
+        std::stringstream ss;
+        for(size_t j=0;j!=vsArgv.size();j++)
+        {
+          sArgv=vsArgv[j];
+          replace(sArgv.begin(),sArgv.end(),'=',' ');
+          ss.clear();ss.str(sArgv);
+          ss>>sKey>>sValue;
+          if(sKey=="-o")
+          {
+            sDataDir=sValue;
+          }
+          else if(sKey=="-e")
+          {
+            sMacFile=sValue;
+          }
+        }
 }
 std::string GPMain::GetArgv(size_t i)
 {
@@ -106,6 +128,8 @@ std::string GPMain::GetValueInString(std::string sGlobal)
     return sProgramName;
   else if (sKey=="app.work_dir")
     return sWorkDir;
+  else if (sKey=="app.mac_file")
+    return sMacFile;
   else
   {
     return "";

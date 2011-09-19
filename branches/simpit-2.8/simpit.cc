@@ -69,40 +69,41 @@ int main(int argc,char** argv)
   //
   runManager->Initialize();
   GPMain::GetInstance()->Init(argc,argv);
+  std::string sMacFile=
+    GPMain::GetInstance()->GetValueInString("app.mac_file");
 
   // Get the pointer to the UI manager and set verbosities
   //
   G4UImanager* UI = G4UImanager::GetUIpointer();
-  if (argc!=1)
-	{
-	G4String command="/control/execute ";
-	G4String fileName=argv[1];
-	UI->ApplyCommand(command+fileName);
-	}
+  if (sMacFile!="")
+  {
+    G4String command="/control/execute ";
+    UI->ApplyCommand(command+sMacFile);
+  }
   else
-    {
+  {
 #ifdef G4VIS_USE
-	G4VisManager * visManager = new G4VisExecutive;
-	visManager->Initialize();
-	visManager->SetVerboseLevel (1);
-	
+    G4VisManager * visManager = new G4VisExecutive;
+    visManager->Initialize();
+    visManager->SetVerboseLevel (1);
+
 #endif
 
-	G4UIsession * session=0;
+    G4UIsession * session=0;
 #ifdef G4UI_USE_QT
-	session = new G4UIQt(argc,argv);
+    session = new G4UIQt(argc,argv);
 #elif G4UI_USE_TCSH
-	session = new G4UIterminal(new G4UItcsh);
+    session = new G4UIterminal(new G4UItcsh);
 #else
-	session = new G4UIterminal();
+    session = new G4UIterminal();
 #endif
 
-	session->SessionStart();
-	delete session;
+    session->SessionStart();
+    delete session;
 #ifdef G4VIS_USE
-	delete visManager;
+    delete visManager;
 #endif
-    }
+  }
   // Job termination
   // Free the store: user actions, physics_list and detector_description are
   //                 owned and deleted by the run manager, so they should not

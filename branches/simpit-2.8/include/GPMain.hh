@@ -40,6 +40,7 @@ class GPMain
   std::vector<std::string> vsArgv;
   std::string sWorkDir;
   std::string sDataDir;
+  std::string sMacFile;
   GPMainMessenger* pMessenger;
 
 };
