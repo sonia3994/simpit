@@ -216,7 +216,7 @@ void GPCrystalPrimaryGA::Print()
     <<"\nBeam transverse momentum direction mean: "<<dMomentumTranAngleMean
     <<"\nBeam transverse momentum direction rms: "<<dMomentumTranAgngleRMS
     <<"\nBeam transverse dimension rms: "<<dRadiusRMSFactor<<" m"
-    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
     <<"\nDistance From crystal to amorphous target: "<<dParticlePosZ<<" m"
     <<G4endl;
 
@@ -231,7 +231,7 @@ void GPCrystalPrimaryGA::Print(std::ofstream& ofsOutput)
     <<"\nBeam length, "<<dBunchLength<<" ps"
     <<"\nBeam energy mean, "<<dEnergyMean<<" MeV"
     <<"\nBeam energy rms, "<<dEnergyRMS<<" MeV"
-    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
     <<"\nBeam transverse momentum direction mean, "<<dMomentumTranAngleMean
     <<"\nBeam transverse momentum direction rms, "<<dMomentumTranAgngleRMS
     <<"\nBeam transverse dimension rms, "<<dRadiusRMSFactor<<" m"
@@ -301,7 +301,7 @@ void GPCrystalPrimaryGA::SetParameter(std::string sLocal,std::string sGlobal)
       ss.str(sLocal);
       ss>>sTmp>>dPolX>>dPolY>>dPolZ;
       std::cout<<"Set polarization(Sx,Sy,Sz): "
-	<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<",)"
+	<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
 	<<std::endl;
     }
     else 
