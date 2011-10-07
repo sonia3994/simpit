@@ -5,10 +5,12 @@
 
 #include "GPPhysicsList.hh"
 #include "GPPhysicsPolarized.hh"
+#include "GPPhysicsMessenger.hh"
 
 #include "G4ProcessManager.hh"
 #include "G4ParticleTypes.hh"
 #include "G4UnitsTable.hh"
+#include "G4UIcommand.hh"
 #include "globals.hh"
 
 
@@ -19,11 +21,13 @@ dCutElectron=1*mm;
 dCutPositron=1*mm;
 iPolarizedFlag=1;
 pPhysicsConstructor= new GPPhysicsPolarized();
+pPhysicsMessenger = new GPPhysicsMessenger();
 }
 
 GPPhysicsList::~GPPhysicsList()
 {
 	delete pPhysicsConstructor;
+        delete pPhysicsMessenger;
 }
 
 
@@ -304,9 +308,9 @@ void GPPhysicsList::SetCuts()
   //This method may not work!!!???
   //SetCutsWithDefault();   
   
-  SetCutValue(dCutGamma,"gamma");
-  SetCutValue(dCutElectron,"e+");
-  SetCutValue(dCutPositron,"e-");
+  SetCutValue(dCutGamma*m,"gamma");
+  SetCutValue(dCutElectron*m,"e+");
+  SetCutValue(dCutPositron*m,"e-");
 
   if (verboseLevel >0)
   {
@@ -322,3 +326,58 @@ void GPPhysicsList::SetCuts()
   //SetVerboseLevel(temp);  
 }
 
+void GPPhysicsList::SetParameter(std::string,std::string)
+{
+}
+void GPPhysicsList::SetParameter(std::string sGlobal)
+{
+  std::stringstream ss(sGlobal);
+  std::string		  sUnit;
+  std::string		  sKey;
+  std::string		  sValueOrg;
+  G4double   		  dValueNew;
+  G4double   		  dValueOrg;
+      
+  ss>>sKey>>sValueOrg>>sUnit;
+  ss.clear();
+  ss.str(sValueOrg);
+  ss>>dValueOrg;
+
+  if(sUnit!="")
+  dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
+  else dValueNew=dValueOrg;
+
+  if(sKey=="cut_off")
+  {
+    dCutGamma=dValueNew;
+    dCutElectron=dValueNew;
+    dCutPositron=dValueNew;
+    SetCutValue(dCutGamma*m,"gamma");
+    SetCutValue(dCutElectron*m,"e+");
+    SetCutValue(dCutPositron*m,"e-");
+
+  }
+  else if(sKey=="cut_off.e-")
+  {
+    dCutElectron=dValueNew;
+    SetCutValue(dCutPositron*m,"e-");
+  }
+  else if(sKey=="cut_off.e+")
+  {
+    dCutPositron=dValueNew;
+    SetCutValue(dCutElectron*m,"e+");
+  }
+  else if(sKey=="cut_off.gamma")
+  {
+    dCutGamma=dValueNew;
+    SetCutValue(dCutGamma*m,"gamma");
+  }
+  else 
+  {
+    std::cout<<"GPPhysicsList: The sKey is not exist: "+sKey<<std::endl;
+    return;
+  }
+
+  //Update();
+  std::cout<<"GPPhysicsList: Set "<<sKey<<": "<< sValueOrg<<" "<<sUnit<<std::endl;
+}
