@@ -20,12 +20,15 @@
 #include "G4VPhysicsConstructor.hh"
 #include "globals.hh"
 class G4VPhysicsConstructor;
+class GPPhysicsMessenger;
 class GPPhysicsList: public G4VUserPhysicsList
 //class GPPhysicsList: public G4VPhysicsConstructor
 {
   public:
     GPPhysicsList();
     ~GPPhysicsList();
+    void SetParameter(std::string,std::string);
+    void SetParameter(std::string);
 
   protected:
     // Construct particle and physics process
@@ -49,6 +52,7 @@ class GPPhysicsList: public G4VUserPhysicsList
 
   protected:
 	G4VPhysicsConstructor* pPhysicsConstructor;
+        GPPhysicsMessenger*     pPhysicsMessenger;
 	G4double	dCutGamma;
 	G4double 	dCutElectron;
 	G4double	dCutPositron;
