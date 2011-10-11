@@ -6,6 +6,7 @@
 #include "GPPrimaryGeneratorMessenger.hh"
 #include "GPHEPEvtInterface.hh"
 #include "GPCrystalPrimaryGA.hh"
+#include "GPHelicalGenerator.hh"
 
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
@@ -65,8 +66,8 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
 
   HEPEvt = new GPHEPEvtInterface();
   crystalGenerator = new GPCrystalPrimaryGA();
-  bHEPEvtFlag = false;
-  iGeneratorType = 0;
+  helicalGenerator = new GPHelicalGenerator();
+  sGeneratorType = "HEPEvt";
 }
 
 GPPrimaryGeneratorAction::~GPPrimaryGeneratorAction()
@@ -77,27 +78,33 @@ GPPrimaryGeneratorAction::~GPPrimaryGeneratorAction()
   if(primaryMessenger) delete primaryMessenger;
   if(HEPEvt) delete HEPEvt;
   if(crystalGenerator) delete crystalGenerator;
+  if(helicalGenerator) delete helicalGenerator;
 }
 
 void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  //if(bHEPEvtFlag)
-  if(iGeneratorType==0)
-    { 
-      HEPEvt->GeneratePrimaryVertex(anEvent);
-      return;
-    }
-  else if(iGeneratorType==1)
-    { 
-      crystalGenerator->GeneratePrimaryVertex(anEvent);
-      return;
-    }
+  if(sGeneratorType=="HEPEvt")
+  { 
+    HEPEvt->GeneratePrimaryVertex(anEvent);
+    return;
+  }
+  else if(sGeneratorType=="crystal")
+  { 
+    crystalGenerator->GeneratePrimaryVertex(anEvent);
+    return;
+  }
+  else if(sGeneratorType=="helical")
+  { 
+    helicalGenerator->GeneratePrimaryVertex(anEvent);
+    return;
+  }
+
 
   if(bFixedParticleGun)
-    {
-      GeneratePrimariesFixedParticleGun(anEvent);
-      return;
-    }
+  {
+    GeneratePrimariesFixedParticleGun(anEvent);
+    return;
+  }
 
   G4double 	energy=randGauss->shoot(dEnergyMean,dEnergyRMS);
   energy=std::abs(energy);
@@ -169,102 +176,111 @@ void GPPrimaryGeneratorAction::SetParticleStyle(G4String tmpParticleStyle)
 
 void GPPrimaryGeneratorAction::Print()
 { 
-  if(iGeneratorType==0)
-    {
-      HEPEvt->Print();
-      return;
-    }
-  if(iGeneratorType==1)
-    {
-      crystalGenerator->Print();
-      return;
-    }
+  if(sGeneratorType=="HEPEvt")
+  {
+    HEPEvt->Print();
+    return;
+  }
+  if(sGeneratorType=="crystal")
+  {
+    crystalGenerator->Print();
+    return;
+  }
+  if(sGeneratorType=="helical")
+  {
+    helicalGenerator->Print();
+    return;
+  }
   else if(bFixedParticleGun== true)
-    {
-  	G4cout
-	<<"\n------------------Print primary status---------------------------\n"
-  	<<AlignRight<<std::setw(32)<<"Fixed primary condition:\n"
-    	<<AlignRight<<std::setw(32)<<"Particle style: "<<sParticleStyle<<"\n"
-    	<<AlignRight<<std::setw(32)<<"Number per event: "<<iNParticles<<"\n"
-    	<<AlignRight<<std::setw(32)<<"Energy : "<<dEnergyMean<<"MeV\n"
-        <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")\n"
-    	<<AlignRight<<std::setw(32)<<"Position radius(Transverse): "<<dPositionMean<<" m\n"
-    	<<AlignRight<<std::setw(32)<<"Position Z : "<<dParticlePosZ<<" m\n"
-    	<<AlignRight<<std::setw(32)<<"Momentum direction: "<<"\n" 
-	<<AlignRight<<std::setw(32)<<"px0: "<<vectMommentumDirection.x()<<"\n"
-	<<AlignRight<<std::setw(32)<<"py0: "<<vectMommentumDirection.y()<<"\n"
-	<<AlignRight<<std::setw(32)<<"pz0: "<<vectMommentumDirection.z()<<"\n"
-	<<"-----------------------------------------------------------------\n"
-        <<G4endl;	
-	return;
-     }
+  {
+    G4cout
+      <<"\n------------------Print primary status---------------------------\n"
+      <<AlignRight<<std::setw(32)<<"Fixed primary condition:\n"
+      <<AlignRight<<std::setw(32)<<"Particle style: "<<sParticleStyle<<"\n"
+      <<AlignRight<<std::setw(32)<<"Number per event: "<<iNParticles<<"\n"
+      <<AlignRight<<std::setw(32)<<"Energy : "<<dEnergyMean<<"MeV\n"
+      <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")\n"
+      <<AlignRight<<std::setw(32)<<"Position radius(Transverse): "<<dPositionMean<<" m\n"
+      <<AlignRight<<std::setw(32)<<"Position Z : "<<dParticlePosZ<<" m\n"
+      <<AlignRight<<std::setw(32)<<"Momentum direction: "<<"\n" 
+      <<AlignRight<<std::setw(32)<<"px0: "<<vectMommentumDirection.x()<<"\n"
+      <<AlignRight<<std::setw(32)<<"py0: "<<vectMommentumDirection.y()<<"\n"
+      <<AlignRight<<std::setw(32)<<"pz0: "<<vectMommentumDirection.z()<<"\n"
+      <<"-----------------------------------------------------------------\n"
+      <<G4endl;	
+    return;
+  }
 
-       G4cout
-        <<"\n------------------Print primary status---------------------------\n"
-        <<AlignRight<<std::setw(30)<<"Selected distribution is: "<<"CLHEP::RandGauss\n	"
-    	<<AlignRight<<std::setw(30)<<"Particle style: "<<sParticleStyle<<"\n"
-    	<<AlignRight<<std::setw(30)<<"Number per event: "<<iNParticles<<"\n"
-    	<<AlignRight<<std::setw(30)<<"Energy mean: "<<dEnergyMean<<" MeV\n"
-    	<<AlignRight<<std::setw(30)<<"Energy rms: "<<dEnergyRMS<<" MeV\n"
-        <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")\n"
-    	<<AlignRight<<std::setw(30)<<"Position mean(Transverse): "<<dPositionMean<<" m\n"
-    	<<AlignRight<<std::setw(30)<<"Position rms(Transverse): "<<dPositionRMS<<" m\n"
-    	<<AlignRight<<std::setw(30)<<"Position Z : "<<dParticlePosZ<<" m\n"
-    	<<AlignRight<<std::setw(30)<<"Momentum mean(Transverse): "<<dMommentumMean<<"\n"
-    	<<AlignRight<<std::setw(30)<<"Momentum rms(Transverse): "<<dMommentumRMS<<"\n"
-	<<"-----------------------------------------------------------------\n"
-    	<<G4endl;
+  G4cout
+    <<"\n------------------Print primary status---------------------------\n"
+    <<AlignRight<<std::setw(30)<<"Selected distribution is: "<<"CLHEP::RandGauss\n	"
+    <<AlignRight<<std::setw(30)<<"Particle style: "<<sParticleStyle<<"\n"
+    <<AlignRight<<std::setw(30)<<"Number per event: "<<iNParticles<<"\n"
+    <<AlignRight<<std::setw(30)<<"Energy mean: "<<dEnergyMean<<" MeV\n"
+    <<AlignRight<<std::setw(30)<<"Energy rms: "<<dEnergyRMS<<" MeV\n"
+    <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")\n"
+    <<AlignRight<<std::setw(30)<<"Position mean(Transverse): "<<dPositionMean<<" m\n"
+    <<AlignRight<<std::setw(30)<<"Position rms(Transverse): "<<dPositionRMS<<" m\n"
+    <<AlignRight<<std::setw(30)<<"Position Z : "<<dParticlePosZ<<" m\n"
+    <<AlignRight<<std::setw(30)<<"Momentum mean(Transverse): "<<dMommentumMean<<"\n"
+    <<AlignRight<<std::setw(30)<<"Momentum rms(Transverse): "<<dMommentumRMS<<"\n"
+    <<"-----------------------------------------------------------------\n"
+    <<G4endl;
 
 }
 
 void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
 { 
-  //if(bHEPEvtFlag == true)
-  if(iGeneratorType==0)
-    {           
-      HEPEvt->Print(ofsOutput);
-      return;
-    }
-  if(iGeneratorType==1)
-    {           
-      crystalGenerator->Print(ofsOutput);
-      return;
-    }
+  if(sGeneratorType=="HEPEvt")
+  {           
+    HEPEvt->Print(ofsOutput);
+    return;
+  }
+  if(sGeneratorType=="crystal")
+  {           
+    crystalGenerator->Print(ofsOutput);
+    return;
+  }
+  if(sGeneratorType=="helical")
+  {
+    helicalGenerator->Print(ofsOutput);
+    return;
+  }
   if(bFixedParticleGun== true)
-    {
-  	ofsOutput
-        <<"\nPrimary status:"
-  	<<"\nPrimary Generator type:,Particle Gun"
-  	<<"\nFixed primary condition:"
-    	<<"\nParticle style, "<<sParticleStyle
-    	<<"\nNumber per event, "<<iNParticles
-    	<<"\nEnergy , "<<dEnergyMean<<" MeV"
-        <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
-    	<<"\nPosition radius(Transverse), "<<dPositionMean<<" m"
-    	<<"\nPosition Z , "<<dParticlePosZ<<" m"
-    	<<"\nMomentum direction: " 
-	<<"\npx0, "<<vectMommentumDirection.x()
-	<<"\npy0, "<<vectMommentumDirection.y()
-	<<"\npz0, "<<vectMommentumDirection.z()
-        <<G4endl;	
-	return;
-     }
+  {
+    ofsOutput
+      <<"\nPrimary status:"
+      <<"\nPrimary Generator type:,Particle Gun"
+      <<"\nFixed primary condition:"
+      <<"\nParticle style, "<<sParticleStyle
+      <<"\nNumber per event, "<<iNParticles
+      <<"\nEnergy , "<<dEnergyMean<<" MeV"
+      <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
+      <<"\nPosition radius(Transverse), "<<dPositionMean<<" m"
+      <<"\nPosition Z , "<<dParticlePosZ<<" m"
+      <<"\nMomentum direction: " 
+      <<"\npx0, "<<vectMommentumDirection.x()
+      <<"\npy0, "<<vectMommentumDirection.y()
+      <<"\npz0, "<<vectMommentumDirection.z()
+      <<G4endl;	
+    return;
+  }
 
-       ofsOutput
-        <<"\nPrimary status:"
-  	<<"\nPrimary Generator type:,Particle Gun"
-        <<"\nSelected distribution is, "<<"CLHEP::RandGauss"
-    	<<"\nParticle style, "<<sParticleStyle
-    	<<"\nNumber per event, "<<iNParticles
-    	<<"\nEnergy mean, "<<dEnergyMean<<" MeV"
-    	<<"\nEnergy rms, "<<dEnergyRMS<<" MeV"
-        <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
-    	<<"\nPosition mean(Transverse), "<<dPositionMean<<" m"
-    	<<"\nPosition rms(Transverse), "<<dPositionRMS<<" m"
-    	<<"\nPosition Z , "<<dParticlePosZ<<" m"
-    	<<"\nMomentum mean(Transverse), "<<dMommentumMean
-    	<<"\nMomentum rms(Transverse), "<<dMommentumRMS
-    	<<G4endl;
+  ofsOutput
+    <<"\nPrimary status:"
+    <<"\nPrimary Generator type:,Particle Gun"
+    <<"\nSelected distribution is, "<<"CLHEP::RandGauss"
+    <<"\nParticle style, "<<sParticleStyle
+    <<"\nNumber per event, "<<iNParticles
+    <<"\nEnergy mean, "<<dEnergyMean<<" MeV"
+    <<"\nEnergy rms, "<<dEnergyRMS<<" MeV"
+    <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
+    <<"\nPosition mean(Transverse), "<<dPositionMean<<" m"
+    <<"\nPosition rms(Transverse), "<<dPositionRMS<<" m"
+    <<"\nPosition Z , "<<dParticlePosZ<<" m"
+    <<"\nMomentum mean(Transverse), "<<dMommentumMean
+    <<"\nMomentum rms(Transverse), "<<dMommentumRMS
+    <<G4endl;
 
 }
 
@@ -308,6 +324,11 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal)
       crystalGenerator->SetParameter(strLeft,sGlobal);
       return;
     }
+    if(strFirstLevel=="helical")
+    {
+      helicalGenerator->SetParameter(strLeft,sGlobal);
+      return;
+    }
     if(strFirstLevel=="particleGun")
     {
       SetParameter(strLeft,sGlobal);
@@ -316,8 +337,8 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal)
 
     if(sKey=="type")
     {
-      iGeneratorType=dValueNew;
-      std::cout<<"Set: "<<sKey<<" to "<< dValueOrg<<" "<<sUnit<<std::endl;
+      sGeneratorType=sValueOrg;
+      std::cout<<"Set: "<<sKey<<" to "<< sValueOrg<<" "<<sUnit<<std::endl;
       return;
     }
     
@@ -346,12 +367,14 @@ G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey)
     {
       return crystalGenerator->GetParameter(strLeft,sKey);
     }
+    if(strFirstLevel=="helical")
+    {
+      return helicalGenerator->GetParameter(strLeft,sKey);
+    }
     if(strFirstLevel=="particleGun")
     {
       return GetParameter(strLeft,sKey);
     }
-    if(sKey=="type")
-      return iGeneratorType;
     else 
     {
      std::cout<<"The Key: "<<sKey<<" is not exist."<<std::endl;
