@@ -23,6 +23,7 @@ class GPPrimaryGeneratorMessenger;
 class GPHEPEvtInterface;
 class GPCrystalPrimaryGA;
 class GPHelicalGenerator;
+class GPSimpitGenerator;
 
 class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
@@ -68,6 +69,7 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   GPHEPEvtInterface* 			HEPEvt;
   GPCrystalPrimaryGA*			crystalGenerator;
   GPHelicalGenerator*			helicalGenerator;
+  GPSimpitGenerator*			simpitGenerator;
   CLHEP::RandGauss* 			randGauss;
   GPPrimaryGeneratorMessenger* 	primaryMessenger;
 };

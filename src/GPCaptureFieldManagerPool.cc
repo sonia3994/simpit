@@ -74,7 +74,6 @@ void GPCaptureField::SetParameter(std::string sLocal, std::string sGlobal)
     ss.str(sValue);
     ss>>dValueOrg;
 
-    //TODO: units transform
     if(sUnit!="")
       dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/m;
     else dValueNew=dValueOrg;
@@ -82,19 +81,28 @@ void GPCaptureField::SetParameter(std::string sLocal, std::string sGlobal)
     if(sKey=="focal.length")
       dFocalLength = dValueNew;
     else if(sKey=="B0")
+    {
+      dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/tesla;
       dB0 = dValueNew;
+    }
     else if(sKey=="Bs")
+    {
+      dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/tesla;
       dB1 = dValueNew;
+    }
     else if(sKey=="current")
+    {
+      dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/ampere;
       dCurrentI = dValueNew;
+    }
     else if(sKey=="type")
-      iFieldType = dValueNew;
+      iFieldType = dValueOrg;
     else if(sKey=="fermi.alpha")
-      dQwtFermiAlpha = dValueNew;
+      dQwtFermiAlpha = dValueOrg;
     else if(sKey=="magnetic.rigidity")
-      dMagneticRigidity = dValueNew;
+      dMagneticRigidity = dValueOrg;
     else if(sKey=="verbose")
-      iVerbose = dValueNew;
+      iVerbose = dValueOrg;
     else 
     {
       std::cout<<sGeometryName+"field_mananger/field/: "+sKey+": Key does not exist."<<std::endl;

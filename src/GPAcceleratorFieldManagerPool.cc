@@ -59,11 +59,17 @@ void GPAcceleratorField::SetParameter(std::string sLocal, std::string sGlobal)
     else dValueNew=dValueOrg;
 
     if(sKey=="B0")
+    {
+      dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/tesla;
       dB0 = dValueNew;
+    }
     else if(sKey=="E0")
+    {
+      dValueNew=(dValueOrg*G4UIcommand::ValueOf(sUnit.c_str()))/(volt/m);
       dE0 = dValueNew;
+    }
     else if(sKey=="verbose")
-      iVerbose = dValueNew;
+      iVerbose = dValueOrg;
     else 
     {
       std::cout<<sGeometryName+"field_mananger/field/: "+sKey+": Key does not exist."<<std::endl;
