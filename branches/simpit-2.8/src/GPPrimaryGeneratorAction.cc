@@ -7,6 +7,7 @@
 #include "GPHEPEvtInterface.hh"
 #include "GPCrystalPrimaryGA.hh"
 #include "GPHelicalGenerator.hh"
+#include "GPSimpitGenerator.hh"
 
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
@@ -67,6 +68,7 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
   HEPEvt = new GPHEPEvtInterface();
   crystalGenerator = new GPCrystalPrimaryGA();
   helicalGenerator = new GPHelicalGenerator();
+  simpitGenerator = new GPSimpitGenerator();
   sGeneratorType = "HEPEvt";
 }
 
@@ -79,6 +81,7 @@ GPPrimaryGeneratorAction::~GPPrimaryGeneratorAction()
   if(HEPEvt) delete HEPEvt;
   if(crystalGenerator) delete crystalGenerator;
   if(helicalGenerator) delete helicalGenerator;
+  if(simpitGenerator) delete simpitGenerator;
 }
 
 void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
@@ -96,6 +99,11 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   else if(sGeneratorType=="helical")
   { 
     helicalGenerator->GeneratePrimaryVertex(anEvent);
+    return;
+  }
+  else if(sGeneratorType=="simpit")
+  { 
+    simpitGenerator->GeneratePrimaryVertex(anEvent);
     return;
   }
 
@@ -191,6 +199,11 @@ void GPPrimaryGeneratorAction::Print()
     helicalGenerator->Print();
     return;
   }
+  if(sGeneratorType=="simpit")
+  {
+    simpitGenerator->Print();
+    return;
+  }
   else if(bFixedParticleGun== true)
   {
     G4cout
@@ -244,6 +257,11 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
   if(sGeneratorType=="helical")
   {
     helicalGenerator->Print(ofsOutput);
+    return;
+  }
+  if(sGeneratorType=="simpit")
+  {
+    simpitGenerator->Print(ofsOutput);
     return;
   }
   if(bFixedParticleGun== true)
@@ -329,6 +347,11 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal)
       helicalGenerator->SetParameter(strLeft,sGlobal);
       return;
     }
+    if(strFirstLevel=="simpit")
+    {
+      simpitGenerator->SetParameter(strLeft,sGlobal);
+      return;
+    }
     if(strFirstLevel=="particleGun")
     {
       SetParameter(strLeft,sGlobal);
@@ -370,6 +393,10 @@ G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey)
     if(strFirstLevel=="helical")
     {
       return helicalGenerator->GetParameter(strLeft,sKey);
+    }
+    if(strFirstLevel=="simpit")
+    {
+      return simpitGenerator->GetParameter(strLeft,sKey);
     }
     if(strFirstLevel=="particleGun")
     {
