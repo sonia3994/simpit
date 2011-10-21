@@ -33,8 +33,8 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
   dPositionRMS=2.0e-3;
   dEnergyMean=30.0;
   dEnergyRMS=10.0;
-  dMommentumMean=0.0;
-  dMommentumRMS=0.0;
+  dAngleMeanTheta=0.0;
+  dAngleRMSTheta=0.0;
   dParticlePosZ=-3.0e-3;
   dBunchLength=6;
   bFixedParticleGun=true;
@@ -49,7 +49,7 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
 
   CLHEP:: HepRandom::setTheSeed(rand(),rand());
   randGauss = new CLHEP::RandGauss(&ranecuEngine,0.,2.);
-//  randFlat=new CLHEP::RandFlat(&ranecuEngine);
+  randFlat=new CLHEP::RandFlat(&ranecuEngine,-1.0,1.0);
 
   particleGun = new G4ParticleGun(iNParticles);
   primaryMessenger = new GPPrimaryGeneratorMessenger(this);
@@ -118,9 +118,18 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   energy=std::abs(energy);
   G4double 	x0=randGauss->shoot(dPositionMean,dPositionRMS);
   G4double 	y0=randGauss->shoot(dPositionMean,dPositionRMS);
-  G4double 	px0=randGauss->shoot(dMommentumMean,dMommentumRMS);
-  G4double 	py0=randGauss->shoot(dMommentumMean,dMommentumRMS);
-  G4double 	pz0=sqrt(1.0-(px0*px0+py0*py0));
+
+  G4double      dAngleTheta=randGauss->shoot(dAngleMeanTheta,dAngleRMSTheta);
+  G4double      dAngleAlpha=rand()%360;
+  G4double      pz0=cos(dAngleTheta);
+  G4double 	px0=sin(dAngleTheta)*cos(dAngleAlpha);
+  G4double 	py0=sin(dAngleTheta)*sin(dAngleAlpha);
+  G4double      dPolZ=randFlat->shoot(-1.0,1.0);
+  //G4double      dTheta=rand()%360;
+  //dPolX=sqrt(1.0-dPolZ*dPolZ)*cos(dTheta);
+  dPolX=0;
+  //dPolY=sqrt(1.0-dPolZ*dPolZ)*sin(dTheta);
+  dPolY=0;
 
   if(verbose>=1)
   {
@@ -232,11 +241,12 @@ void GPPrimaryGeneratorAction::Print()
     <<AlignRight<<std::setw(30)<<"Energy mean: "<<dEnergyMean<<" MeV\n"
     <<AlignRight<<std::setw(30)<<"Energy rms: "<<dEnergyRMS<<" MeV\n"
     <<AlignRight<<std::setw(32)<<"Polarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")\n"
+    <<AlignRight<<std::setw(32)<<"Sz: Distributin: Flat. Range: [-1,1]\n"
     <<AlignRight<<std::setw(30)<<"Position mean(Transverse): "<<dPositionMean<<" m\n"
     <<AlignRight<<std::setw(30)<<"Position rms(Transverse): "<<dPositionRMS<<" m\n"
     <<AlignRight<<std::setw(30)<<"Position Z : "<<dParticlePosZ<<" m\n"
-    <<AlignRight<<std::setw(30)<<"Momentum mean(Transverse): "<<dMommentumMean<<"\n"
-    <<AlignRight<<std::setw(30)<<"Momentum rms(Transverse): "<<dMommentumRMS<<"\n"
+    <<AlignRight<<std::setw(30)<<"Momentum Angle mean(To Z axis): "<<dAngleMeanTheta<<" deg.\n"
+    <<AlignRight<<std::setw(30)<<"Momentum Angle rms(To Z axis): "<<dAngleRMSTheta<<" deg.\n"
     <<"-----------------------------------------------------------------\n"
     <<G4endl;
 
@@ -293,11 +303,12 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
     <<"\nEnergy mean, "<<dEnergyMean<<" MeV"
     <<"\nEnergy rms, "<<dEnergyRMS<<" MeV"
     <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
+    <<"\nSz: Distributin: Flat. Range: [-1,1]"
     <<"\nPosition mean(Transverse), "<<dPositionMean<<" m"
     <<"\nPosition rms(Transverse), "<<dPositionRMS<<" m"
     <<"\nPosition Z , "<<dParticlePosZ<<" m"
-    <<"\nMomentum mean(Transverse), "<<dMommentumMean
-    <<"\nMomentum rms(Transverse), "<<dMommentumRMS
+    <<"\nMomentum Angle mean(To Z axis): "<<dAngleMeanTheta<<" deg."
+    <<"\nMomentum Angle rms(To Z axis): "<<dAngleRMSTheta<<" deg."
     <<G4endl;
 
 }
@@ -446,10 +457,10 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     SetParticleStyle(sValueOrg);
     return;
   }
-  else if(sKey=="momentum.tr.mean")
-    dMommentumMean=dValueNew;
-  else if(sKey=="momentum.tr.rms")
-    dMommentumRMS=dValueNew;
+  else if(sKey=="angle.theta.mean")
+    dAngleMeanTheta=dValueNew;
+  else if(sKey=="angle.theta.rms")
+    dAngleRMSTheta=dValueNew;
 
   else if(sKey=="bunch.rms")
     dBunchLength=dValueNew/picosecond;
@@ -496,10 +507,10 @@ G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey,std::string sKe
     else if(sKey=="energy.rms")
     return dEnergyRMS;
     
-    else if(sKey=="momentum.tr.mean")
-    return dMommentumMean;
-    else if(sKey=="momentum.tr.rms")
-    return dMommentumRMS;
+    else if(sKey=="angle.theta.mean")
+    return dAngleMeanTheta;
+    else if(sKey=="angle.theta.rms")
+    return dAngleRMSTheta;
     
     else if(sKey=="time.rms")
     return dBunchLength;

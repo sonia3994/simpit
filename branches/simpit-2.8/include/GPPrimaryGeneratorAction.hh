@@ -53,8 +53,8 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   G4double 	dPositionRMS;
   G4double 	dEnergyMean;
   G4double 	dEnergyRMS;
-  G4double 	dMommentumMean;
-  G4double 	dMommentumRMS;
+  G4double 	dAngleMeanTheta;
+  G4double 	dAngleRMSTheta;
   G4double 	dParticlePosZ;
   G4double 	dBunchLength;
   G4ThreeVector vectMommentumDirection;
@@ -71,6 +71,7 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   GPHelicalGenerator*			helicalGenerator;
   GPSimpitGenerator*			simpitGenerator;
   CLHEP::RandGauss* 			randGauss;
+  CLHEP::RandFlat* 			randFlat;
   GPPrimaryGeneratorMessenger* 	primaryMessenger;
 };
 

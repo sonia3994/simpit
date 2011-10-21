@@ -40,7 +40,7 @@ void GPSimpitGenerator::GeneratePrimaryVertex(G4Event* anEvent)
 
   if(fsInputFile.eof()) 
   {
-    G4Exception("GPSimpitGenerator: End-Of-File : HEPEvt input file");
+    G4Exception("GPSimpitGenerator: End-Of-File : simpit input file");
     return;
   }
 
@@ -65,7 +65,7 @@ void GPSimpitGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   std::stringstream ss;
   if(!getline(fsInputFile,sLine))
   {
-    G4Exception("GPSimpitGenerator: End-Of-File : HEPEvt input file");
+    G4Exception("GPSimpitGenerator: End-Of-File : simpit input file");
     return;
   }
   ss.clear();
