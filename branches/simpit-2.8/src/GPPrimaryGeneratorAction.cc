@@ -462,7 +462,7 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
   else if(sKey=="angle.theta.rms")
     dAngleRMSTheta=dValueNew;
 
-  else if(sKey=="bunch.rms")
+  else if(sKey=="time.rms")
     dBunchLength=dValueNew/picosecond;
   else if(sKey=="fixed.flag")
     bFixedParticleGun=dValueNew;

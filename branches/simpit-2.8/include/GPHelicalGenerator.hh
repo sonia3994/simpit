@@ -13,6 +13,9 @@
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_spline.h>
+#include <gsl/gsl_interp.h>
 #include <iostream>
 //using namespace std;
 
@@ -20,6 +23,8 @@ extern CLHEP::RanecuEngine ranecuEngine;
 
 class G4ParticleGun;
 class G4Event;
+//class gsl_interp_accel;
+//class gsl_spline;
 
 class GPHelicalGenerator : public G4VPrimaryGenerator
 {
@@ -38,6 +43,10 @@ class GPHelicalGenerator : public G4VPrimaryGenerator
 
   protected:
     void SetParticleStyle(G4String);
+    void InitInterPolator();
+    void ClearInterPolator();
+    double PhotonEnergy();
+    double PhotonSz(double);
 
   private:
     G4int 		verbose;
@@ -57,10 +66,21 @@ class GPHelicalGenerator : public G4VPrimaryGenerator
     G4double 	dPolY;
     G4double 	dPolZ;
 
-    
+    gsl_interp_accel* strEnergyAcc;
+    //gsl_spline* strEnInterp;
+    gsl_interp* strEnInterp;
+
+    gsl_interp_accel* strPolAcc;
+    //gsl_spline* strPolInterp;
+    gsl_interp* strPolInterp;
+
+
     G4ParticleGun* 				particleGun;
     CLHEP::RandGauss* 			randGauss;
 //    CLHEP::RandFlat*			randFlat;
+  double *daEnergy;
+  double *daEnSpec; 
+  double *daPol; 
 };
 
 #endif
