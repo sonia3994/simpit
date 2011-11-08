@@ -9,7 +9,6 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 
-
 #include <cmath>
 #include <iomanip>
 
@@ -51,11 +50,13 @@ GPHelicalGenerator::GPHelicalGenerator()
   particleGun->SetParticleTime(0.0);
   particleGun->SetParticlePolarization(G4ThreeVector(dPolX,dPolY,dPolZ));
 
+  InitInterPolator();
 }
 
 GPHelicalGenerator::~GPHelicalGenerator()
 {
   if(particleGun) delete particleGun;
+  ClearInterPolator();
 }
 
 void GPHelicalGenerator::GeneratePrimaryVertex(G4Event* anEvent)
@@ -66,15 +67,18 @@ void GPHelicalGenerator::GeneratePrimaryVertex(G4Event* anEvent)
   G4double 	py0=randGauss->shoot(dMommentumMean,dMommentumRMS);
   G4double 	pz0=sqrt(1.0-(px0*px0+py0*py0));
 
-  G4double 	energy=HelicalPhotonEnergy();
-  dPolZ=HelicalPhotonPolarization(energy);
+  //G4double 	energy=HelicalPhotonEnergy();
+  //dPolZ=HelicalPhotonPolarization(energy);
+  G4double 	energy=PhotonEnergy();
+  dPolZ=PhotonSz(energy);
+
   G4double dTheta=rand()%360;
   dPolX=sqrt(1.0-dPolZ*dPolZ)*sin(dTheta);
   dPolY=sqrt(1.0-dPolZ*dPolZ)*cos(dTheta);
 
   if(verbose>=1)
   {
-  G4cout<<"\nuse gauss to shoot particle initial parameters:"
+  G4cout<<"\nUse gauss to shoot particle initial parameters:"
         <<"\nThe initial particle condition:"
 		<<"\nx0: "<<x0<<" m, y0: "<<y0<<" m, z0: "<<dParticlePosZ<<" m"
 		<<"\npx0: "<<px0<<" py0: "<<py0<<" pz0: "<<pz0
@@ -245,9 +249,81 @@ G4double GPHelicalGenerator::GetParameter(std::string sKey,std::string sKeyGloba
    }
    return 0;
 }
+void GPHelicalGenerator::ClearInterPolator()
+{
+  //gsl_spline_free(strEnInterp);
+  gsl_interp_free(strEnInterp);
+  gsl_interp_accel_free(strEnergyAcc);
+
+  //gsl_spline_free(strPolInterp);
+  gsl_interp_free(strPolInterp);
+  gsl_interp_accel_free(strPolAcc);
+  delete []daEnergy;
+  delete []daEnSpec;
+  delete []daPol;
+}
+
+void GPHelicalGenerator::InitInterPolator()
+{
+  //double *daX=new double[40]{
+  daEnergy=new double[40]{
+    0.5 , 1.5 , 2.5 , 3.5 , 4.5 , 5.5 , 6.5 , 7.5 , 8.5 , 9.5 ,
+    10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5,
+    20.5, 21.5, 22.5, 23.5, 24.5, 25.5, 26.5, 27.5, 28.5, 29.5,
+    30.5, 31.5, 32.5, 33.5, 34.5, 35.5, 36.5, 37.5, 38.5, 39.5};
+  //double *daEnergySpectrum =new double[40]{ 
+  daEnSpec =new double[40]{ 
+    0.0, 0.0, 0.0, 0.0, 0.0, 1.93, 5.43, 12.3, 20.2, 26.6, 
+    0.27, 0.69, 1.21, 1.86, 2.69, 3.8, 4.98, 4.96, 4.58, 3.64, 
+    1.87, 1.08, 1.35, 1.61, 1.87, 1.85, 1.72, 1.53, 1.3, 1.05, 
+    0.83, 0.77, 0.84, 0.85, 0.79, 0.72, 0.65, 0.58, 0.52, 0.47 };
+  //double *daPol=new double[40]{ 
+  daPol=new double[40]{ 
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.27, 0.62, 0.84, 0.95, 0.99, 
+    0.71, 0.29, 0.49, 0.65, 0.77, 0.85, 0.89, 0.92, 0.93, 0.92, 
+    0.84, 0.71, 0.76, 0.81, 0.85, 0.87, 0.88, 0.87, 0.86, 0.83, 
+    0.80, 0.79, 0.81, 0.83, 0.84, 0.84, 0.83, 0.82, 0.81, 0.80 };
+
+  //energy
+  strEnergyAcc
+    = gsl_interp_accel_alloc();
+  strEnInterp
+    =gsl_interp_alloc(gsl_interp_linear,40);
+    //=gsl_spline_alloc(gsl_interp_cspline,40);
+  //gsl_spline_init(strEnInterp,daEnergy,daEnSpec,40);
+  gsl_interp_init(strEnInterp,daEnergy,daEnSpec,40);
+
+  //polarization
+  strPolAcc
+    = gsl_interp_accel_alloc();
+  strPolInterp
+    =gsl_interp_alloc(gsl_interp_linear,40);
+    //=gsl_spline_alloc(gsl_interp_cspline,40);
+  gsl_interp_init(strPolInterp,daEnergy,daPol,40);
+  //gsl_spline_init(strPolInterp,daEnergy,daPol,40);
+}
+double GPHelicalGenerator::PhotonSz(double dEnergy)
+{
+  return 
+    gsl_interp_eval(strPolInterp,daEnergy,daPol,dEnergy,strPolAcc);
+    //gsl_spline_eval(strPolInterp,dEnergy,strPolAcc);
+}
+double GPHelicalGenerator::PhotonEnergy()
+{
+  double dEnergy;
+  double dEnergyY;
+  do
+  {
+    dEnergy=rand() * 40.0 / RAND_MAX;
+    dEnergyY=rand() * 27.0 / RAND_MAX;
+  }
+  //while(dEnergyY>gsl_spline_eval(strEnInterp,dEnergy,strEnergyAcc));
+  while(dEnergyY>gsl_interp_eval(strEnInterp,daEnergy,daEnSpec,dEnergy,strEnergyAcc));
+  return dEnergy;
+}
 double HelicalPhotonEnergy()
 {
-  static double daEnergySpectrum[40]={ 
+  static double daEnSpec[40]={ 
     0.0, 0.0, 0.0, 0.0, 0.0, 1.93, 5.43, 12.3, 20.2, 26.6, 
     0.27, 0.69, 1.21, 1.86, 2.69, 3.8, 4.98, 4.96, 4.58, 3.64, 
     1.87, 1.08, 1.35, 1.61, 1.87, 1.85, 1.72, 1.53, 1.3, 1.05, 
@@ -261,7 +337,7 @@ double HelicalPhotonEnergy()
     dEnergyY=rand()*27.0/RAND_MAX;
     iIndex=(int)(dEnergy+0.5);
   }
-  while(dEnergyY>daEnergySpectrum[iIndex]);
+  while(dEnergyY>daEnSpec[iIndex]);
   return dEnergy;
 }
 double HelicalPhotonPolarization(double dEnergy)
