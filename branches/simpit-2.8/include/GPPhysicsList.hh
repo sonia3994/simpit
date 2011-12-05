@@ -51,12 +51,12 @@ class GPPhysicsList: public G4VUserPhysicsList
     void AddParameterisation();
 
   protected:
-	G4VPhysicsConstructor* pPhysicsConstructor;
-        GPPhysicsMessenger*     pPhysicsMessenger;
-	G4double	dCutGamma;
-	G4double 	dCutElectron;
-	G4double	dCutPositron;
-	G4int		iPolarizedFlag;
+    G4VPhysicsConstructor* pPhysicsConstructor;
+    GPPhysicsMessenger*     pPhysicsMessenger;
+    G4double	dCutGamma;
+    G4double 	dCutElectron;
+    G4double	dCutPositron;
+    G4String	sPolarizedFlag;
 };
 
 #endif

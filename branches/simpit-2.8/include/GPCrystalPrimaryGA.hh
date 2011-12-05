@@ -49,8 +49,8 @@ class GPCrystalPrimaryGA:public G4VPrimaryGenerator
     G4double 	dMomentumX; // px in MeV
     G4double 	dMomentumY; // py in MeV
     G4double 	dMomentumZ; // pz in MeV
-    G4double 	dMomentumTranAngleMean; //unit px and py mean in MeV
-    G4double 	dMomentumTranAgngleRMS; //unit px and py rms in MeV 
+    G4double 	dAngleThetaMean; //unit px and py mean in MeV
+    G4double 	dAngleThetaRMS; //unit px and py rms in MeV 
     G4double 	dEnergy; // energy in MeV
     G4double 	dEnergyRMS; // energy rms in MeV
     G4double 	dEnergyMean; // energy mean in MeV
