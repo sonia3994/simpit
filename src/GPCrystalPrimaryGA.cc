@@ -47,8 +47,8 @@ void GPCrystalPrimaryGA::Init()
   dMomentumY=0;
   dEnergyRMS = 0;
   dEnergyMean = 10000;
-  dMomentumTranAngleMean=0;
-  dMomentumTranAgngleRMS=0;
+  dAngleThetaMean=0;
+  dAngleThetaRMS=0;
   dRadiusRMSFactor=2.5e-3;
   dBunchLength=10;
   bRadiusRMSFactorFlag=TRUE;
@@ -103,13 +103,13 @@ void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
   G4double dEnergy   =randGauss->shoot(dEnergyMean,dEnergyRMS);
   dGamma = dEnergy*MeV/GeV/ELECTRON_MASS_GEV;
 
-  //srand(time(0));
-  //G4double dPhi = rand()%360;
+  srand(time(0));
+  G4double dPhi = rand()%360;
   G4double dTheta;
-  dTheta = abs(randGauss->shoot(dMomentumTranAngleMean,dMomentumTranAgngleRMS));
-  dMomentumX = sin(dTheta);
-  dTheta = abs(randGauss->shoot(dMomentumTranAngleMean,dMomentumTranAgngleRMS));
-  dMomentumY = sin(dTheta);
+  dTheta = abs(randGauss->shoot(dAngleThetaMean,dAngleThetaRMS));
+  //dMomentumX = sin(dTheta);
+  //dTheta = abs(randGauss->shoot(dAngleThetaMean,dAngleThetaRMS));
+  //dMomentumY = sin(dTheta);
   //dMomentumX = sin(dTheta)*cos(dPhi);
   //dMomentumY = sin(dTheta)*sin(dPhi);
 
@@ -117,8 +117,8 @@ void GPCrystalPrimaryGA::GeneratePrimaryVertex(G4Event* evt)
       1.0,
       1.0,
       0.0,
-      dMomentumX,
-      dMomentumY,
+      sin(dTheta)*cos(dPhi),
+      sin(dTheta)*sin(dPhi),
       dGamma);
   //Particle* particleFot = new Particle(dECharge,
   //    dPositionX*m/angstrom,
@@ -213,8 +213,8 @@ void GPCrystalPrimaryGA::Print()
     <<"\nBeam length: "<<dBunchLength<<" ps"
     <<"\nBeam energy mean: "<<dEnergyMean<<" MeV"
     <<"\nBeam energy rms: "<<dEnergyRMS<<" MeV"
-    <<"\nBeam transverse momentum direction mean: "<<dMomentumTranAngleMean
-    <<"\nBeam transverse momentum direction rms: "<<dMomentumTranAgngleRMS
+    <<"\nBeam transverse momentum direction mean: "<<dAngleThetaMean
+    <<"\nBeam transverse momentum direction rms: "<<dAngleThetaRMS
     <<"\nBeam transverse dimension rms: "<<dRadiusRMSFactor<<" m"
     <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
     <<"\nDistance From crystal to amorphous target: "<<dParticlePosZ<<" m"
@@ -232,8 +232,8 @@ void GPCrystalPrimaryGA::Print(std::ofstream& ofsOutput)
     <<"\nBeam energy mean, "<<dEnergyMean<<" MeV"
     <<"\nBeam energy rms, "<<dEnergyRMS<<" MeV"
     <<"\nPolarization(Sx,Sy,Sz): "<<"("<<dPolX<<","<<dPolY<<","<<dPolZ<<")"
-    <<"\nBeam transverse momentum direction mean, "<<dMomentumTranAngleMean
-    <<"\nBeam transverse momentum direction rms, "<<dMomentumTranAgngleRMS
+    <<"\nBeam transverse momentum direction mean, "<<dAngleThetaMean
+    <<"\nBeam transverse momentum direction rms, "<<dAngleThetaRMS
     <<"\nBeam transverse dimension rms, "<<dRadiusRMSFactor<<" m"
     <<"\nDistance From crystal to amorphous target, "<<dParticlePosZ<<" m"
     <<G4endl;
@@ -270,19 +270,19 @@ void GPCrystalPrimaryGA::SetParameter(std::string sLocal,std::string sGlobal)
     {
       dEnergyRMS = dValueNew/MeV;
     }
-    else if(sLocalKey=="momentum.direction.theta.mean")
+    else if(sLocalKey=="angle.theta.mean")
     {
-      dMomentumTranAngleMean= dValueNew;
+      dAngleThetaMean= dValueNew;
     }
-    else if(sLocalKey=="momentum.direction.theta.rms")
+    else if(sLocalKey=="angle.theta.rms")
     {
-      dMomentumTranAgngleRMS= dValueNew;
+      dAngleThetaRMS= dValueNew;
     }
     else if(sLocalKey=="position.z")
     {
       dParticlePosZ = dValueNew/m;
     }
-    else if(sLocalKey=="position.transverse.rms")
+    else if(sLocalKey=="position.tr.rms")
     {
       dRadiusRMSFactor = dValueNew/m;
     }

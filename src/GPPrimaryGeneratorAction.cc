@@ -33,8 +33,8 @@ GPPrimaryGeneratorAction::GPPrimaryGeneratorAction()
   dPositionRMS=2.0e-3;
   dEnergyMean=30.0;
   dEnergyRMS=10.0;
-  dAngleMeanTheta=0.0;
-  dAngleRMSTheta=0.0;
+  dAngleThetaMean=0.0;
+  dAngleThetaRMS=0.0;
   dParticlePosZ=-3.0e-3;
   dBunchLength=6;
   bFixedParticleGun=true;
@@ -119,7 +119,7 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double 	x0=randGauss->shoot(dPositionMean,dPositionRMS);
   G4double 	y0=randGauss->shoot(dPositionMean,dPositionRMS);
 
-  G4double      dAngleTheta=randGauss->shoot(dAngleMeanTheta,dAngleRMSTheta);
+  G4double      dAngleTheta=randGauss->shoot(dAngleThetaMean,dAngleThetaRMS);
   G4double      dAngleAlpha=rand()%360;
   G4double      pz0=cos(dAngleTheta);
   G4double 	px0=sin(dAngleTheta)*cos(dAngleAlpha);
@@ -245,8 +245,8 @@ void GPPrimaryGeneratorAction::Print()
     <<AlignRight<<std::setw(30)<<"Position mean(Transverse): "<<dPositionMean<<" m\n"
     <<AlignRight<<std::setw(30)<<"Position rms(Transverse): "<<dPositionRMS<<" m\n"
     <<AlignRight<<std::setw(30)<<"Position Z : "<<dParticlePosZ<<" m\n"
-    <<AlignRight<<std::setw(30)<<"Momentum Angle mean(To Z axis): "<<dAngleMeanTheta<<" deg.\n"
-    <<AlignRight<<std::setw(30)<<"Momentum Angle rms(To Z axis): "<<dAngleRMSTheta<<" deg.\n"
+    <<AlignRight<<std::setw(30)<<"Momentum Angle mean(To Z axis): "<<dAngleThetaMean<<" deg.\n"
+    <<AlignRight<<std::setw(30)<<"Momentum Angle rms(To Z axis): "<<dAngleThetaRMS<<" deg.\n"
     <<"-----------------------------------------------------------------\n"
     <<G4endl;
 
@@ -307,8 +307,8 @@ void GPPrimaryGeneratorAction::Print(std::ofstream& ofsOutput)
     <<"\nPosition mean(Transverse), "<<dPositionMean<<" m"
     <<"\nPosition rms(Transverse), "<<dPositionRMS<<" m"
     <<"\nPosition Z , "<<dParticlePosZ<<" m"
-    <<"\nMomentum Angle mean(To Z axis): "<<dAngleMeanTheta<<" deg."
-    <<"\nMomentum Angle rms(To Z axis): "<<dAngleRMSTheta<<" deg."
+    <<"\nMomentum Angle mean(To Z axis): "<<dAngleThetaMean<<" deg."
+    <<"\nMomentum Angle rms(To Z axis): "<<dAngleThetaRMS<<" deg."
     <<G4endl;
 
 }
@@ -458,9 +458,9 @@ void GPPrimaryGeneratorAction::SetParameter(std::string sLocal, std::string sGlo
     return;
   }
   else if(sKey=="angle.theta.mean")
-    dAngleMeanTheta=dValueNew;
+    dAngleThetaMean=dValueNew;
   else if(sKey=="angle.theta.rms")
-    dAngleRMSTheta=dValueNew;
+    dAngleThetaRMS=dValueNew;
 
   else if(sKey=="time.rms")
     dBunchLength=dValueNew/picosecond;
@@ -508,9 +508,9 @@ G4double GPPrimaryGeneratorAction::GetParameter(std::string sKey,std::string sKe
     return dEnergyRMS;
     
     else if(sKey=="angle.theta.mean")
-    return dAngleMeanTheta;
+    return dAngleThetaMean;
     else if(sKey=="angle.theta.rms")
-    return dAngleRMSTheta;
+    return dAngleThetaRMS;
     
     else if(sKey=="time.rms")
     return dBunchLength;

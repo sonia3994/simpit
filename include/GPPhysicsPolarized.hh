@@ -24,7 +24,7 @@ class GPPhysicsPolarized: public G4VPhysicsConstructor
 //class GPPhysicsPolarized: public G4VPhysicsConstructor
 {
   public:
-    GPPhysicsPolarized(const G4String& name = "polarized");
+    GPPhysicsPolarized(const G4String name = "polarized");
     ~GPPhysicsPolarized();
 
   public:

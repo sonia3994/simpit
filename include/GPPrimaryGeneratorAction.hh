@@ -53,8 +53,8 @@ class GPPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   G4double 	dPositionRMS;
   G4double 	dEnergyMean;
   G4double 	dEnergyRMS;
-  G4double 	dAngleMeanTheta;
-  G4double 	dAngleRMSTheta;
+  G4double 	dAngleThetaMean;
+  G4double 	dAngleThetaRMS;
   G4double 	dParticlePosZ;
   G4double 	dBunchLength;
   G4ThreeVector vectMommentumDirection;
