@@ -114,17 +114,43 @@ void GPPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     return;
   }
 
-  G4double 	energy=randGauss->shoot(dEnergyMean,dEnergyRMS);
-  energy=std::abs(energy);
-  G4double 	x0=randGauss->shoot(dPositionMean,dPositionRMS);
-  G4double 	y0=randGauss->shoot(dPositionMean,dPositionRMS);
+  G4double 	energy;
+  if(dEnergyRMS<=0.0)
+    energy=dEnergyMean;
+  else
+  {
+    energy=randGauss->shoot(dEnergyMean,dEnergyRMS);
+    energy=std::abs(energy);
+  }
 
-  G4double      dAngleTheta=randGauss->shoot(dAngleThetaMean,dAngleThetaRMS);
-  G4double      dAngleAlpha=rand()%360;
-  G4double      pz0=cos(dAngleTheta);
-  G4double 	px0=sin(dAngleTheta)*cos(dAngleAlpha);
-  G4double 	py0=sin(dAngleTheta)*sin(dAngleAlpha);
-  G4double      dPolZ=randFlat->shoot(-1.0,1.0);
+  G4double 	x0,y0;
+  if(dPositionRMS<=0.0)
+  {
+    x0=dPositionMean;
+    y0=dPositionMean;
+  }
+  else
+  {
+    x0=randGauss->shoot(dPositionMean,dPositionRMS);
+    y0=randGauss->shoot(dPositionMean,dPositionRMS);
+  }
+
+  G4double dAngleTheta, dAngleAlpha;
+  G4double px0, py0, pz0;
+  if(dAngleThetaRMS<=0.0)
+  {
+    dAngleTheta=dAngleThetaMean;
+  }
+  else
+  {
+    dAngleTheta=randGauss->shoot(dAngleThetaMean,dAngleThetaRMS);
+  }
+  dAngleAlpha=rand()%360;
+  pz0=cos(dAngleTheta);
+  px0=sin(dAngleTheta)*cos(dAngleAlpha);
+  py0=sin(dAngleTheta)*sin(dAngleAlpha);
+
+  //dPolZ=randFlat->shoot(-1.0,1.0);
   //G4double      dTheta=rand()%360;
   //dPolX=sqrt(1.0-dPolZ*dPolZ)*cos(dTheta);
   dPolX=0;
